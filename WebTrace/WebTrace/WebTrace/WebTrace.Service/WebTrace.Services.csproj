@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{79B2565F-8D07-4E1F-AF17-655FF71D0A3A}</ProjectGuid>
+    <ProjectGuid>{5D27272F-10C8-49AB-8146-87401DC7CEAD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebTrace.Services</RootNamespace>
-    <AssemblyName>WebTrace.Services</AssemblyName>
+    <RootNamespace>WebTrace.Service</RootNamespace>
+    <AssemblyName>WebTrace.Service</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,9 +43,6 @@
     <Reference Include="TraceLab.Components.DevelopmentKit">
       <HintPath>..\TraceLabDLLs\TraceLab.Components.DevelopmentKit.dll</HintPath>
     </Reference>
-    <Reference Include="TraceLabSDK">
-      <HintPath>..\TraceLabDLLs\TraceLabSDK.dll</HintPath>
-    </Reference>
     <Reference Include="TraceLabSDK.Types">
       <HintPath>..\TraceLabDLLs\TraceLabSDK.Types.dll</HintPath>
     </Reference>
@@ -53,6 +51,7 @@
     <Compile Include="Github.cs" />
     <Compile Include="IRServices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TermDocumentMatrix.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebTrace.Model\WebTrace.Model.csproj">

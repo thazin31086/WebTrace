@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("WebTrace.Services")]
+[assembly: AssemblyTitle("WebTrace.Service")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("WebTrace.Services")]
+[assembly: AssemblyProduct("WebTrace.Service")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("79b2565f-8d07-4e1f-af17-655ff71d0a3a")]
+[assembly: Guid("5d27272f-10c8-49ab-8146-87401dc7cead")]
 
 // Version information for an assembly consists of the following four values:
 //

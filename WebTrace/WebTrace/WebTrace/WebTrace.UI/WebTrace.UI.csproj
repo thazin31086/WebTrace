@@ -218,8 +218,8 @@
       <Project>{60b7281f-26e7-4004-9cac-10f4ccff02d0}</Project>
       <Name>WebTrace.Model</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WebTrace.Services\WebTrace.Services.csproj">
-      <Project>{79b2565f-8d07-4e1f-af17-655ff71d0a3a}</Project>
+    <ProjectReference Include="..\WebTrace.Service\WebTrace.Services.csproj">
+      <Project>{5d27272f-10c8-49ab-8146-87401dc7cead}</Project>
       <Name>WebTrace.Services</Name>
     </ProjectReference>
   </ItemGroup>
