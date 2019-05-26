@@ -20,10 +20,14 @@ namespace WebTrace.UI.Controllers
 
         public ActionResult Index()
         {
-            var test = IRServices.TermsMatrix();
-
-            ViewData["SimilartiyScore"] = "test";
-
+            var similarity = IRServices.AverageSimilarity();
+            var matrix = IRServices.TermsMatrix();
+            ViewData["TermMap"] = matrix.TermMap;
+            ViewData["RawMatrix"] = matrix.RawMatrix;
+            ViewData["DocMap"] = matrix.DocMap;
+            ViewData["TermIndexLookup"] = matrix.TermIndexLookup;
+            ViewData["DocIndexLookup"] = matrix.DocIndexLookup;
+           
             return View("Index");
         }
 

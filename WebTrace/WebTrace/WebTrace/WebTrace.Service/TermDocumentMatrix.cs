@@ -65,6 +65,21 @@ namespace WebTrace.Services
             }
         }
 
+        public Dictionary<string, int> TermIndexLookup
+        {
+            get
+            {
+                return _termIndexLookup;
+            }
+        }
+
+        public Dictionary<string, int> DocIndexLookup
+        {
+            get
+            {
+                return _docIndexLookup;
+            }
+        }
         /// <summary>
         /// Term index listing
         /// </summary>
@@ -108,6 +123,8 @@ namespace WebTrace.Services
                 return _termIndex.Count;
             }
         }
+
+
 
         #endregion
 

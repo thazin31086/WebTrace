@@ -11,13 +11,10 @@ namespace WebTrace.Services
     {
 		public static double AverageSimilarity()
 		{
-			TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory("C:\\PhD\\WebTrace\\Datasets\\eTour_ITA\\UC", "txt");
-			TLArtifactsCollection targetArtifacts = Artifacts.ImportDirectory("C:\\PhD\\WebTrace\\Datasets\\eTour_ITA\\CC", "txt");
-            
-			TLSimilarityMatrix sims = TraceLab.Components.DevelopmentKit.Tracers.InformationRetrieval.VSM.Compute(StopWordsRemoval(sourceArtifacts), StopWordsRemoval(targetArtifacts), TraceLab.Components.DevelopmentKit.Tracers.InformationRetrieval.VSMWeightEnum.TFIDF);
+            TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory("C:\\PhD\\WebTrace\\Datasets\\eTour_ENG\\UC", "txt");
+            TLArtifactsCollection targetArtifacts = Artifacts.ImportDirectory("C:\\PhD\\WebTrace\\Datasets\\eTour_ENG\\CC", "txt");
 
-
-
+            TLSimilarityMatrix sims = WebTrace.Services.VSM.Compute(StopWordsRemoval(sourceArtifacts), StopWordsRemoval(targetArtifacts));
 
             var result = TLSimilarityMatrixUtil.AverageSimilarity(sims);
 			return result;
@@ -33,15 +30,16 @@ namespace WebTrace.Services
 		}
 
 
-        public static double TermsMatrix()
+        public static TermDocumentMatrix TermsMatrix()
         {
             TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory("C:\\PhD\\WebTrace\\Datasets\\eTour_ENG\\UC", "txt");
             TLArtifactsCollection targetArtifacts = Artifacts.ImportDirectory("C:\\PhD\\WebTrace\\Datasets\\eTour_ENG\\CC", "txt");
 
-            var termsmatrix = new TermDocumentMatrix(StopWordsRemoval(sourceArtifacts), StopWordsRemoval(targetArtifacts));
+            return new TermDocumentMatrix(StopWordsRemoval(sourceArtifacts), StopWordsRemoval(targetArtifacts));
 
-            return 0;
+           
         }
+
 
     }
 }
