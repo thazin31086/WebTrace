@@ -48,6 +48,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Artifacts.cs" />
+    <Compile Include="BasePath.cs" />
+    <Compile Include="Dataset.cs" />
+    <Compile Include="DataSetPairs.cs" />
+    <Compile Include="DataSetPairsCollection.cs" />
+    <Compile Include="FilePath.cs" />
     <Compile Include="Github.cs" />
     <Compile Include="IRServices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

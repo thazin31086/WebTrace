@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 namespace WebTrace.Model
 {
     //JSON parsing methods
+    [Serializable]
     public struct LinkFields
     {
         public String self;
     }
 
+    [Serializable]
     public struct FileInfo
     {
         public String name;
@@ -21,11 +23,14 @@ namespace WebTrace.Model
     }
 
     //Structs used to hold file data
+    [Serializable]
     public struct FileData
     {
         public String name;
         public String contents;
     }
+
+    [Serializable]
     public struct Directory
     {
         public String name;

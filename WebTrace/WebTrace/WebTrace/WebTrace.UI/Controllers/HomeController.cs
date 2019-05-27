@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebTrace.Services;
@@ -18,9 +19,9 @@ namespace WebTrace.UI.Controllers
         //          return View("Index", await Github.getRepo());
         //}
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var similarity = IRServices.AverageSimilarity();
+            ///var similarity = IRServices.AverageSimilarity();
             var matrix = IRServices.TermsMatrix();
             ViewData["TermMap"] = matrix.TermMap;
             ViewData["RawMatrix"] = matrix.RawMatrix;
@@ -28,7 +29,7 @@ namespace WebTrace.UI.Controllers
             ViewData["TermIndexLookup"] = matrix.TermIndexLookup;
             ViewData["DocIndexLookup"] = matrix.DocIndexLookup;
            
-            return View("Index");
+            return View("Index", await Github.getRepo());
         }
 
         public ActionResult About()
