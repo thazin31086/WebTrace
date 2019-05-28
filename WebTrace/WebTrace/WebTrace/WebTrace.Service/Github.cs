@@ -28,8 +28,8 @@ namespace WebTrace.Services
         {
             //get the directory contents
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            //request.Headers.Add("Authorization",
-            //    "Basic " + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(String.Format("{0}:{1}", access_token, "x-oauth-basic"))));
+            request.Headers.Add("Authorization",
+                "Basic " + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(String.Format("{0}:{1}", access_token, "x-oauth-basic"))));
             request.Headers.Add("User-Agent", "lk-github-client");
 
             //parse result
@@ -46,7 +46,7 @@ namespace WebTrace.Services
 
             foreach (FileInfo file in dirContents)
             {
-              
+
                 if (file.type == "dir")
                 { //read in the subdirectory
                     Directory sub = await readDirectory(file.name, client, file._links.self, access_token);
@@ -54,24 +54,24 @@ namespace WebTrace.Services
                 }
                 else
                 {
-                   
-                        //get the file contents;
-                        HttpRequestMessage downLoadUrl = new HttpRequestMessage(HttpMethod.Get, file.download_url);
-                        //downLoadUrl.Headers.Add("Authorization",
-                        //    "Basic " + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(String.Format("{0}:{1}", access_token, "x-oauth-basic"))));
-                        request.Headers.Add("User-Agent", "lk-github-client");
 
-                        HttpResponseMessage contentResponse = await client.SendAsync(downLoadUrl);
-                        String content = await contentResponse.Content.ReadAsStringAsync();
-                        FileData data;
-                        data.name = file.name;
-                        data.contents = content;
-                        contentResponse.Dispose();
-                        result.files.Add(data);
-                    
+                    //get the file contents;
+                    HttpRequestMessage downLoadUrl = new HttpRequestMessage(HttpMethod.Get, file.download_url);
+                    //downLoadUrl.Headers.Add("Authorization",
+                    //    "Basic " + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(String.Format("{0}:{1}", access_token, "x-oauth-basic"))));
+                    request.Headers.Add("User-Agent", "lk-github-client");
+
+                    HttpResponseMessage contentResponse = await client.SendAsync(downLoadUrl);
+                    String content = await contentResponse.Content.ReadAsStringAsync();
+                    FileData data;
+                    data.name = file.name;
+                    data.contents = content;
+                    contentResponse.Dispose();
+                    result.files.Add(data);
+
                 }
-                //}
             }
+        
             return result;
         }
     }

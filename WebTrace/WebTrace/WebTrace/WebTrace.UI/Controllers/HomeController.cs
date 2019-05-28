@@ -19,7 +19,14 @@ namespace WebTrace.UI.Controllers
         //          return View("Index", await Github.getRepo());
         //}
 
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
+        {
+          
+           
+            return View("Index");
+        }
+
+        public ActionResult Workbench()
         {
             ///var similarity = IRServices.AverageSimilarity();
             var matrix = IRServices.TermsMatrix();
@@ -28,10 +35,9 @@ namespace WebTrace.UI.Controllers
             ViewData["DocMap"] = matrix.DocMap;
             ViewData["TermIndexLookup"] = matrix.TermIndexLookup;
             ViewData["DocIndexLookup"] = matrix.DocIndexLookup;
-           
-            return View("Index", await Github.getRepo());
-        }
 
+            return View("Index");
+        }
         public ActionResult About()
 		{
 			ViewBag.Message = "Your application description page.";

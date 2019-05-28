@@ -1,71 +1,8 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
-<div class="container">
-    <h3>Use Case and Test Case Trace Matrix</h3>
-    <hr />
-    <div class="row">
-        <div class="col-sm-2">
-            <table class="table table-hover">
-                @{
-                    var termmap = ViewData["TermMap"] as List<string>;
-                    <thead>Terms (Total = @termmap.Count()) </thead>
-                    foreach (var item in ViewData["TermMap"] as List<string>)
-                    {
-                        <tr><td> @item</td></tr>
-                    }
-                }
-            </table>
-        </div>
-        <div class="col-sm-2">
-            <table class="table table-hover">
-                @{
-                    var DocMap = ViewData["DocMap"] as List<string>;
-                    <thead>Documents (Total = @DocMap.Count())</thead>
-                    foreach (var item in ViewData["DocMap"] as List<string>)
-                    {
-                        <tr><td>@item</td></tr>
-                    }
-                }
-            </table>
-        </div>
-        <div class="col-sm-2">
-            <table class="table table-hover">
-                <thead>Rawmartix</thead>
-                @{
-                    var RawMatrix = ViewData["RawMatrix"] as double[][];
-                    var TermIndexLookup = ViewData["TermIndexLookup"] as Dictionary<string, int>;
-                    var DocIndexLookup = ViewData["DocIndexLookup"] as Dictionary<string, int>;
-                    for (int x = 0; x < RawMatrix.GetUpperBound(0); x++)
-                    {
-                        <tr>
-                            <td>
-                                <div class="panel panel-primary">
-                                    <div class="page-heading">
-                                        @DocIndexLookup.Where(z => z.Value == Convert.ToInt64(RawMatrix[x][0])).Select(z => z.Key).FirstOrDefault()
-                                    </div>
-                                    <div class="panel-body">
-                                        @for (int y = 0; y < RawMatrix.GetUpperBound(0); y++)
-                                        {                                            
-                                            <table class="table table-bordered">
-                                                <tr>
-                                                    <td>@RawMatrix[x][y] </td>
-                                                    <td>@TermIndexLookup.Where(z => z.Value == y).Select(z => z.Key).FirstOrDefault()</td>
-                                                </tr>
-                                            </table>
-                                        }
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                }
-            </table>
-        </div>
 
-    </div>
-</div>
-@*<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
+<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
         <ol class="carousel-indicators">
             <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
             <li data-target="#myCarousel" data-slide-to="1"></li>
@@ -136,8 +73,8 @@
             <h2>IR-based Traceability Links Recovery</h2>
             <ul>
                 <li>Vector Space Model</li>
-                <li><a href="https://go.microsoft.com/fwlink/?LinkId=518004">Bower</a> for managing client-side libraries</li>
-                <li>Theming using <a href="https://go.microsoft.com/fwlink/?LinkID=398939">Bootstrap</a></li>
+                @*<li><a href="https://go.microsoft.com/fwlink/?LinkId=518004">Bower</a> for managing client-side libraries</li>
+                <li>Theming using <a href="https://go.microsoft.com/fwlink/?LinkID=398939">Bootstrap</a></li>*@
             </ul>
         </div>
-    </div>*@
+    </div>

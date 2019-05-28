@@ -1,5 +1,7 @@
 ﻿
 using System;
+using System.IO;
+using System.Reflection;
 using TraceLab.Components.DevelopmentKit.IO;
 using TraceLab.Components.DevelopmentKit.Preprocessors;
 using TraceLab.Components.DevelopmentKit.Utils;
@@ -32,9 +34,13 @@ namespace WebTrace.Services
 
         public static TermDocumentMatrix TermsMatrix()
         {
-            TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory("C:\\PhD\\WebTrace\\Datasets\\eTour_ENG\\UC", "txt");
-            TLArtifactsCollection targetArtifacts = Artifacts.ImportDirectory("C:\\PhD\\WebTrace\\Datasets\\eTour_ENG\\CC", "txt");
-           
+            //    TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory("C:\\PhD\\WebTrace\\Datasets\\eTour_ENG\\UC", "txt");
+            //    TLArtifactsCollection targetArtifacts = Artifacts.ImportDirectory("C:\\PhD\\WebTrace\\Datasets\\eTour_ENG\\CC", "txt");
+
+            string path2 = Environment.CurrentDirectory;
+            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"eTour_ENG");
+            TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory(path + @"\UC", "txt");
+            TLArtifactsCollection targetArtifacts = Artifacts.ImportDirectory(path + @"\CC", "txt");
             return new TermDocumentMatrix(StopWordsRemoval(sourceArtifacts), StopWordsRemoval(targetArtifacts));
 
            
