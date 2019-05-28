@@ -22,3 +22,21 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.draggable.ui-draggable {
+    width: 100px;
+    height: 100px;
+    padding: 0.5em;
+    float: left;
+    margin: 10px 10px 10px 0;
+    background-color: #b6ff00;
+}
+
+.droppable {
+    width: 150px;
+    height: 150px;
+    padding: 0.5em;
+    float: left;
+    margin: 10px;
+    background-color: #00ff90;
+}

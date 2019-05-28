@@ -28,8 +28,6 @@ namespace WebTrace.UI.Controllers
 
         public ActionResult Workbench()
         {
-            ///var similarity = IRServices.AverageSimilarity();
-
             string path = Server.MapPath("~/Data/eTour_ENG");
             var matrix = IRServices.TermsMatrix(path);
             ViewData["TermMap"] = matrix.TermMap;
@@ -42,7 +40,7 @@ namespace WebTrace.UI.Controllers
         }
         public ActionResult About()
 		{
-			ViewBag.Message = "Your application description page.";
+			ViewBag.Message = "Webtrace allow to trace between more than two artifacts at a times based on textual similarity between them.";
 
 			return View();
 		}
