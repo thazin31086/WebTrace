@@ -29,14 +29,16 @@ namespace WebTrace.UI.Controllers
         public ActionResult Workbench()
         {
             ///var similarity = IRServices.AverageSimilarity();
-            var matrix = IRServices.TermsMatrix();
+
+            string path = Server.MapPath("~/Data/eTour_ENG");
+            var matrix = IRServices.TermsMatrix(path);
             ViewData["TermMap"] = matrix.TermMap;
             ViewData["RawMatrix"] = matrix.RawMatrix;
             ViewData["DocMap"] = matrix.DocMap;
             ViewData["TermIndexLookup"] = matrix.TermIndexLookup;
             ViewData["DocIndexLookup"] = matrix.DocIndexLookup;
 
-            return View("Index");
+            return View("Workbench");
         }
         public ActionResult About()
 		{

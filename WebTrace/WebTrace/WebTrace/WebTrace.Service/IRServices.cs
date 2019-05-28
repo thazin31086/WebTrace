@@ -32,15 +32,15 @@ namespace WebTrace.Services
 		}
 
 
-        public static TermDocumentMatrix TermsMatrix()
+        public static TermDocumentMatrix TermsMatrix(string path)
         {
             //    TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory("C:\\PhD\\WebTrace\\Datasets\\eTour_ENG\\UC", "txt");
             //    TLArtifactsCollection targetArtifacts = Artifacts.ImportDirectory("C:\\PhD\\WebTrace\\Datasets\\eTour_ENG\\CC", "txt");
 
-            string path2 = Environment.CurrentDirectory;
-            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"eTour_ENG");
-            TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory(path + @"\UC", "txt");
-            TLArtifactsCollection targetArtifacts = Artifacts.ImportDirectory(path + @"\CC", "txt");
+   
+            //string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"eTour_ENG");
+            TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory(path + @"/UC", "txt");
+            TLArtifactsCollection targetArtifacts = Artifacts.ImportDirectory(path + @"/CC", "txt");
             return new TermDocumentMatrix(StopWordsRemoval(sourceArtifacts), StopWordsRemoval(targetArtifacts));
 
            
