@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using WebTrace.Services;
 
 namespace WebTrace.UI.Controllers
@@ -28,7 +30,8 @@ namespace WebTrace.UI.Controllers
 
         public ActionResult Workbench()
         {
-            string path = Server.MapPath("~/Data/eTour_ENG");
+            ViewData["datafolders"] = PopulateTreeView();
+            string path = Server.MapPath("~/Data/EasyClinic");
             var matrix = IRServices.TermsMatrix(path);
             ViewData["TermMap"] = matrix.TermMap;
             ViewData["RawMatrix"] = matrix.RawMatrix;
@@ -51,5 +54,40 @@ namespace WebTrace.UI.Controllers
 
 			return View();
 		}
-	}
+
+        #region Methods
+        private TreeNode PopulateTreeView()
+        {
+            TreeNode rootNode;
+
+            DirectoryInfo info = new DirectoryInfo(Server.MapPath("~/Data"));
+            if (info.Exists)
+            {
+                rootNode = new TreeNode(info.Name);
+                GetDirectories(info.GetDirectories(), ref rootNode);
+                return rootNode;
+            }
+
+            return null;
+        }
+
+        private void GetDirectories(DirectoryInfo[] subDirs,
+            ref TreeNode nodeToAddTo)
+        {
+            TreeNode aNode;
+            DirectoryInfo[] subSubDirs;
+            foreach (DirectoryInfo subDir in subDirs)
+            {
+                aNode = new TreeNode(subDir.Name);              
+                subSubDirs = subDir.GetDirectories();
+                if (subSubDirs.Length != 0)
+                {
+                    GetDirectories(subSubDirs, ref aNode);
+                }
+                nodeToAddTo.ChildNodes.Add(aNode);
+            }
+        }
+
+        #endregion
+    }
 }

@@ -169,15 +169,15 @@
     padding: 2.5%;
 }
 
-.wizard > .content > .body ul
+/*.wizard > .content > .body ul
 {
     list-style: disc !important;
-}
+}*/
 
-.wizard > .content > .body ul > li
+/*.wizard > .content > .body ul > li
 {
     display: list-item;
-}
+}*/
 
 .wizard > .content > .body > iframe
 {
@@ -233,7 +233,7 @@
     width: 95%;
 }
 
-.wizard > .actions > ul
+/*.wizard > .actions > ul
 {
     display: inline-block;
     text-align: right;
@@ -247,7 +247,7 @@
 .wizard.vertical > .actions > ul > li
 {
     margin: 0 0 0 1em;
-}
+}*/
 
 .wizard > .actions a,
 .wizard > .actions a:hover,
