@@ -22,6 +22,11 @@ using TraceLab.Components.DevelopmentKit.Properties;
 
 namespace WebTrace.Services
 {
+    public class Functions
+    {
+        public string DocumentIndex { get; set; }
+        public string FunctionName { get; set; }
+    }
     public class TermDocumentMatrix
     {
         #region Private members
@@ -30,6 +35,8 @@ namespace WebTrace.Services
         private List<string> _docIndex;
         private Dictionary<string, int> _termIndexLookup;
         private Dictionary<string, int> _docIndexLookup;
+        private Dictionary<int, string> _docnamesmap;
+        private List<Functions> _functionMap;
         #endregion
 
         #region Public accessors
@@ -103,6 +110,17 @@ namespace WebTrace.Services
         }
 
         /// <summary>
+        /// Document index listing
+        /// </summary>
+        public Dictionary<int, string> DocNamesMap
+        {
+            get
+            {
+                return _docnamesmap;
+            }
+        }
+
+        /// <summary>
         /// Number of documents
         /// </summary>
         public int NumDocs
@@ -124,7 +142,16 @@ namespace WebTrace.Services
             }
         }
 
-
+        /// <summary>
+        /// Function Name and Source Code File Mapping
+        /// </summary>
+        public List<Functions> FunctionMap
+        {
+            get
+            {
+                return _functionMap;
+            }
+        }
 
         #endregion
 
@@ -140,6 +167,8 @@ namespace WebTrace.Services
             _docIndex = new List<string>();
             _termIndexLookup = new Dictionary<string, int>();
             _docIndexLookup = new Dictionary<string, int>();
+            _functionMap = new List<Functions>();
+            _docnamesmap = new Dictionary<int, string>();
 
             // create temporary corpus to build matrix with
             Dictionary<string, Dictionary<string, double>> corpus = new Dictionary<string, Dictionary<string, double>>();
@@ -150,7 +179,9 @@ namespace WebTrace.Services
                     // update document maps
                     _docIndex.Add(artifact.Id);
                     _docIndexLookup.Add(artifact.Id, _docIndex.Count - 1);
+
                     corpus.Add(artifact.Id, new Dictionary<string, double>());
+
                     foreach (string term in artifact.Text.Split())
                     {
                         if (!String.IsNullOrWhiteSpace(term))
@@ -170,6 +201,21 @@ namespace WebTrace.Services
                             {
                                 corpus[artifact.Id].Add(term, 1);
                             }
+                        }
+                    }
+
+                    // Get List of Functions                   
+                    foreach (string funname in artifact.Text.Split('('))
+                    {                       
+                        if (funname.ToLower().IndexOf("signature") > 0)
+                        {
+                            var value = funname.Substring(funname.ToLower().IndexOf("signature"));
+
+                            _functionMap.Add(new Functions
+                            {
+                                DocumentIndex = artifact.Id,
+                                FunctionName = value.ToLower().Replace("signature","")
+                           });
                         }
                     }
                 }

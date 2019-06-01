@@ -32,14 +32,30 @@ namespace WebTrace.Services
 
 		}
 
+        public static TermDocumentMatrix TermsMatrixRaw(string path)
+        {
+
+            TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory(path + @"/Use Case", "txt");
+            TLArtifactsCollection targetArtifacts = Artifacts.ImportDirectory(path + @"/Source Code", "txt");
+            return new TermDocumentMatrix(sourceArtifacts, targetArtifacts);
+        }
+
+
 
         public static TermDocumentMatrix TermsMatrix(string path)
         {
    
             TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory(path + @"/Use Case", "txt");
             TLArtifactsCollection targetArtifacts = Artifacts.ImportDirectory(path + @"/Source Code", "txt");
-            return new TermDocumentMatrix(StopWordsRemoval(sourceArtifacts), StopWordsRemoval(targetArtifacts));
+            return new TermDocumentMatrix(StopWordsRemoval(sourceArtifacts), targetArtifacts);
         }
 
+
+        public static TLSimilarityMatrix ComputeSimilarity(string path)
+        {
+            TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory(path + @"/Use Case", "txt");
+            TLArtifactsCollection targetArtifacts = Artifacts.ImportDirectory(path + @"/Source Code", "txt");
+            return VSM.Compute(StopWordsRemoval(sourceArtifacts), targetArtifacts);
+        }
     }
 }

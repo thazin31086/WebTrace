@@ -48,7 +48,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Artifacts.cs" />
     <Compile Include="BasePath.cs" />
     <Compile Include="Dataset.cs" />
     <Compile Include="DataSetPairs.cs" />

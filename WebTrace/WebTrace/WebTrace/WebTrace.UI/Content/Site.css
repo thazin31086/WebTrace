@@ -70,3 +70,13 @@ textarea {
     .list-group.list-group-root > .list-group > .list-group > .list-group-item {
         padding-left: 45px;
     }
+
+.wizard > .content > .body {
+    height: 100% !important;
+}
+
+@media (min-width: 768px) {
+    .col-sm-2 {
+        width: 20%!important;
+    }
+}

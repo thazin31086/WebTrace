@@ -23,23 +23,30 @@ namespace WebTrace.UI.Controllers
 
         public ActionResult Index()
         {
-          
-           
             return View("Index");
         }
 
         public ActionResult Workbench()
         {
+            return View("Workbench");
+        }
+
+        public ActionResult HRTracing()
+        {
             ViewData["datafolders"] = PopulateTreeView();
             string path = Server.MapPath("~/Data/EasyClinic");
+            var rawmatrix = IRServices.TermsMatrixRaw(path);
+            ViewData["RawTermMap"] = rawmatrix.TermMap;
             var matrix = IRServices.TermsMatrix(path);
             ViewData["TermMap"] = matrix.TermMap;
             ViewData["RawMatrix"] = matrix.RawMatrix;
             ViewData["DocMap"] = matrix.DocMap;
             ViewData["TermIndexLookup"] = matrix.TermIndexLookup;
             ViewData["DocIndexLookup"] = matrix.DocIndexLookup;
-
-            return View("Workbench");
+            ViewData["FunctionMap"] = matrix.FunctionMap;
+            var rankedlist = IRServices.ComputeSimilarity(path);
+            ViewData["rankedlist"] = rankedlist;
+            return View("HRTracing");
         }
         public ActionResult About()
 		{
@@ -50,7 +57,7 @@ namespace WebTrace.UI.Controllers
 
 		public ActionResult Contact()
 		{
-			ViewBag.Message = "Your contact page.";
+			ViewBag.Message = "PhD Student at University of technology sydney";
 
 			return View();
 		}

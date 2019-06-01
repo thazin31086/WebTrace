@@ -1,0 +1,230 @@
+﻿@{
+    ViewBag.Title = "Hierarchical Tracing";
+}
+
+<div class="container" style="width:100%;max-width:100%">
+    <h3>Hierarchical Tracing</h3>
+    <hr />
+    <div id="webtrace">
+
+        <h2>User Define Trace Artifacts</h2>
+        <section>
+            <h3>Project Folder</h3>
+            <div class="list-group">
+                @{
+                    var datafolders = ViewData["datafolders"] as System.Web.UI.WebControls.TreeNode;
+                    foreach (System.Web.UI.WebControls.TreeNode item in datafolders.ChildNodes)
+                    {
+                        <div class="list-group-item">
+                            <div class="panel panel-default">
+                                <div class="panel-heading"> @item.Text</div>
+                                <div class="panel-body">
+                                    <div class="alert alert-info" role="alert">
+                                        Project Description :  student-created datasets, which includes use case, interaction diagrams, test cases and class description.
+                                    </div>
+
+                                    <strong>Select Artifacts to Trace</strong>
+                                    <div class="list-group">
+                                        @if (@item.ChildNodes != null)
+                                        {
+                                            foreach (System.Web.UI.WebControls.TreeNode subitem in @item.ChildNodes)
+                                            {
+                                                <div class="list-group-item"><input type="checkbox" /> @subitem.Text</div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+
+            </div>
+        </section>
+        <h2>Pre-Processing</h2>
+        <section>
+            <div class="row">
+                <div class="col-sm-2">
+                    <table class="table table-hover">
+                        @{
+                            var rawtermmap = ViewData["RawTermMap"] as List<string>;
+                            <thead class="btn-info">
+                                <tr><th class="text-center">1. Extract Raw Terms <br />(Total = @rawtermmap.Count())</th></tr>
+                            </thead>
+                            foreach (var item in rawtermmap)
+                            {
+                                <tr><td> @item</td></tr>
+                            }
+                        }
+                    </table>
+                </div>
+                <div class="col-sm-2">
+                    <table class="table table-hover">
+                        @{
+                            var termmap = ViewData["TermMap"] as List<string>;
+                            <thead class="btn-info">
+                                <tr><th class="text-center">2. Removed Stopwords <br />(Total = @termmap.Count())</th></tr>
+                            </thead>
+                            foreach (var item in termmap)
+                            {
+                                <tr><td> @item</td></tr>
+                            }
+                        }
+                    </table>
+                </div>
+                <div class="col-sm-2">
+                    <table class="table table-hover">
+                        @{
+                            var DocMap = ViewData["DocMap"] as List<string>;
+                            var DocIndexLookup1 = ViewData["DocIndexLookup"] as Dictionary<string, int>;
+                            <thead class="btn-info">
+                                <tr><th class="text-center">3. Documents List <br /> (Total = @DocMap.Count())</th></tr>
+                            </thead>
+                            foreach (var item in ViewData["DocMap"] as List<string>)
+                            {
+                                <tr><td>@item</td></tr>
+                            }
+                        }
+                    </table>
+                </div>
+                <div class="col-sm-2">
+                    <table class="table table-hover">
+                        <thead class="btn-info">
+                            <tr><th class="text-center">Documents-Terms Mapping</th></tr>
+                        </thead>
+                        @{
+                            var RawMatrix = ViewData["RawMatrix"] as double[][];
+                            var TermIndexLookup = ViewData["TermIndexLookup"] as Dictionary<string, int>;
+                            var DocIndexLookup = ViewData["DocIndexLookup"] as Dictionary<string, int>;
+                            for (int x = 0; x < RawMatrix.GetUpperBound(0); x++)
+                            {
+                                var divname = "collapse" + x;
+                                var refdivname = "#collapse" + x;
+                                <tr>
+                                    <td>
+                                        <div class="panel panel-primary">
+                                            <div>
+                                                <div class="page-heading btn-warning" data-target=@refdivname>
+                                                    @DocIndexLookup.Where(z => z.Value == Convert.ToInt64(RawMatrix[x][0])).Select(z => z.Key).FirstOrDefault()
+                                                </div>
+                                                <div id=@divname class="panel-body collapse show" aria-labelledby="headingOne">
+                                                    <table class="table table-hover">
+                                                        <thead style="text-align:center;">
+                                                            <tr>
+                                                                <th>Terms</th>
+                                                                <th>Count</th>
+                                                            </tr>
+                                                        </thead>
+                                                        @for (int y = 0; y < RawMatrix.GetUpperBound(0); y++)
+                                                        {
+
+                                                            <tbody>
+                                                                @if (@RawMatrix[x][y] == 0)
+                                                                {
+                                                                    <tr>
+                                                                        <td>@TermIndexLookup.Where(z => z.Value == y).Select(z => z.Key).FirstOrDefault()</td>
+                                                                        <td>@RawMatrix[x][y] </td>
+                                                                    </tr>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <tr class="alert-success">
+                                                                        <td>@TermIndexLookup.Where(z => z.Value == y).Select(z => z.Key).FirstOrDefault()</td>
+                                                                        <td>@RawMatrix[x][y] </td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+
+                                                        }
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </table>
+                </div>
+                <div class="col-sm-2">
+                    <table class="table table-hover">
+                        @{
+                            var FunctionMap = ViewData["FunctionMap"] as List<WebTrace.Services.Functions>;
+                            <thead class="btn-info">
+                                <tr>
+                                    <td colspan="2" class="text-center">List of Source Code Functions <br /> (Total = @FunctionMap.Count())</td>
+                                </tr>
+                            </thead>
+                            foreach (var item in ViewData["FunctionMap"] as List<WebTrace.Services.Functions>)
+                            {
+                                <tr>
+                                    <td>@item.DocumentIndex</td>
+                                    <td>@item.FunctionName</td>
+                                </tr>
+                            }
+                        }
+                    </table>
+                </div>
+
+            </div>
+        </section>
+        <h2>IR Engine Trace Links Generation</h2>
+        <section>
+            @{
+                var rankedlist = ViewData["rankedlist"] as TraceLabSDK.Types.TLSimilarityMatrix;
+                if (rankedlist.AllLinks.Count() > 0)
+                {
+                    <table class="table table-bordered">
+                        <tr>
+                            <td class="alert-success">Green - High Similarity</td>
+                            <td class="alert-warning ">Amber - Low Similarity</td>
+                            <td class="alert-danger">Red - No Similarity</td>
+                        </tr>
+                    </table>
+                    <table class="table table-hover">
+                        <thead class="btn-info">
+                            <tr>
+                                <th>Source Aritifact</th>
+                                <th>Target Aritifact</th>
+                                <th>Similarity Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var links in rankedlist.AllLinks.OrderByDescending(x => x.Score))
+                            {
+                                <tr>
+                                    <td>@links.SourceArtifactId</td>
+                                    <td>@links.TargetArtifactId</td>
+                                    @if (links.Score == 0)
+                                    {
+                                        <td class="danger">@links.Score</td>
+                                    }
+                                    else if (links.Score >= 0.1)
+                                    {
+                                        <td class="success">@links.Score</td>
+                                    }
+                                    else
+                                    {
+                                        <td class="warning">@links.Score</td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            }
+        </section>
+        <h2>User Verify Trace Links</h2>
+        <section>
+            <p>
+                Quisque at sem turpis, id sagittis diam. Suspendisse malesuada eros posuere mauris vehicula vulputate. Aliquam sed sem tortor.
+                Quisque sed felis ut mauris feugiat iaculis nec ac lectus. Sed consequat vestibulum purus, imperdiet varius est pellentesque vitae.
+                Suspendisse consequat cursus eros, vitae tempus enim euismod non. Nullam ut commodo tortor.
+            </p>
+        </section>
+
+    </div>
+
+
+</div>
