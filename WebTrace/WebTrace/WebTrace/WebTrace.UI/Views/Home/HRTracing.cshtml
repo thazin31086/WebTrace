@@ -23,16 +23,36 @@
                                         Project Description :  student-created datasets, which includes use case, interaction diagrams, test cases and class description.
                                     </div>
 
-                                    <strong>Select Artifacts to Trace</strong>
-                                    <div class="list-group">
+
+                                    <table class="table table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th> <strong> Artifacts</strong></th>
+                                                <th> <strong>Select Trace Direction</strong></th>
+                                            </tr>
+                                        </thead>
                                         @if (@item.ChildNodes != null)
                                         {
+                                            int i = 0;
+
                                             foreach (System.Web.UI.WebControls.TreeNode subitem in @item.ChildNodes)
                                             {
-                                                <div class="list-group-item"><input type="checkbox" /> @subitem.Text</div>
+                                                var selectlist = "selectlist" + i++;
+                                                <tr>
+                                                    <td>@subitem.Text</td>
+                                                    <td>
+                                                        <select class="form-control" name="dropdown" id=@selectlist>
+                                                            <option value="None">Select..</option>
+                                                            <option value="Source">Source</option>
+                                                            <option value="Target">Target</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+
+
                                             }
                                         }
-                                    </div>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -172,55 +192,137 @@
         <h2>IR Engine Trace Links Generation</h2>
         <section>
             @{
-                var rankedlist = ViewData["rankedlist"] as TraceLabSDK.Types.TLSimilarityMatrix;
-                if (rankedlist.AllLinks.Count() > 0)
+                var similarityMatrices = ViewData["rankedlist"] as List<TraceLabSDK.Types.TLSimilarityMatrix>;
+
+                if (similarityMatrices.Count() > 0)
                 {
                     <table class="table table-bordered">
-                        <tr><td colspan="3">IR Techniques - Vector Space Model</td></tr>
+                        <tr><td colspan="3"><strong>Use IR Techniques - Vector Space Model</strong></td></tr>
                         <tr>
                             <td class="alert-success">Green - High Similarity</td>
                             <td class="alert-warning ">Amber - Low Similarity</td>
                             <td class="alert-danger">Red - No Similarity</td>
                         </tr>
                     </table>
-                    <table class="table table-hover">
-                        <thead class="btn-info">
-                            <tr>
-                                <th>Source Aritifact</th>
-                                <th>Target Aritifact</th>
-                                <th>Similarity Score</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var links in rankedlist.AllLinks.OrderByDescending(x => x.Score))
-                            {
-                                <tr>
-                                    <td>@links.SourceArtifactId</td>
-                                    <td>@links.TargetArtifactId</td>
-                                    @if (links.Score == 0)
+
+                    foreach (var similarityMatrix in similarityMatrices)
+                    {
+                        if (similarityMatrix.AllLinks.Count() > 0)
+                        {
+
+                            <table class="table table-hover">
+                                <thead class="btn-info">
+                                    <tr>
+                                        <th>Source Aritifact</th>
+                                        <th>Target Aritifact</th>
+                                        <th>Similarity Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var links in similarityMatrix.AllLinks.OrderByDescending(x => x.Score))
                                     {
-                                        <td class="danger">@links.Score</td>
+                                        <tr>
+                                            <td>@links.SourceArtifactId</td>
+                                            <td>@links.TargetArtifactId</td>
+                                            @if (links.Score == 0)
+                                            {
+                                                <td class="danger">@links.Score</td>
+                                            }
+                                            else if (links.Score >= 0.1)
+                                            {
+                                                <td class="success">@links.Score</td>
+                                            }
+                                            else
+                                            {
+                                                <td class="warning">@links.Score</td>
+                                            }
+                                        </tr>
                                     }
-                                    else if (links.Score >= 0.1)
-                                    {
-                                        <td class="success">@links.Score</td>
-                                    }
-                                    else
-                                    {
-                                        <td class="warning">@links.Score</td>
-                                    }
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                                </tbody>
+                            </table>
+                        }
+                    }
+
                 }
+
+
+            }
+
             }
         </section>
         <h2>User Verify Trace Links</h2>
         <section>
-            <p>
-               TO DO
-            </p>
+            <div id="dataTable"></div>
+            <div id="treemap"></div>
+            @section scripts {
+                <script type="text/javascript">
+            $(document).ready(function () {
+                var appserverpath = @Html.Raw(Json.Encode(Server.MapPath("~/Data/EasyClinic")));
+                // prepare the data
+                var source =
+                {
+                    dataType: "json",
+                    dataFields: [
+                        { name: 'SourceFile', type: 'string' },
+                        { name: 'TargetFile', type: 'string'  },
+                        { name: 'Score', type: 'number' }
+                    ],
+                    url: '/api/IR/GetSimilarityMartrixes?path=' + appserverpath
+                };
+
+                var dataAdapter = new $.jqx.dataAdapter(source);
+                console.log(dataAdapter);
+                // create Tree Grid
+                $("#dataTable").jqxDataTable(
+                    {
+                        width: 850,
+                        source: dataAdapter,
+                        theme: 'arctic',
+                        pageSize: 50,
+                        sortable: true,
+                        filterable: true,
+                        pageable: true,
+                        columns: [
+                            { text: 'Source', dataField: 'SourceFile', width: 200 },
+                            { text: 'Target', dataField: 'TargetFile', width: 200 },
+                            { text: 'Score', dataField: 'Score', width: 160 }
+                        ]
+                    });
+
+                $('#treemap').jqxTreeMap({
+                    width: '1000',
+                    height: '1000',
+                    source: dataAdapter,
+                    displayMember: 'SourceFile',
+                    valueMember: 'Score',
+                    colorMode: 'rangeColors',
+                    colorRanges: [
+                        { min: 0.01, max: 0.1, color: '#ff0300' },
+                        { min: 0.2, max: 0.6, color: '#fe2e00' },
+                        { min: 0.8, max: 1, color: '#fe3900' }
+                    ],
+                    legendScaleCallback: function (v) {
+                        return v;
+                    },
+                    renderCallbacks: {
+                        '*': function (element, data) {
+                            var content = '<div><div style="font-weight: bold; font-family: verdana; font-size: 13px;">Source File: ' + data.record.SourceFile + '</div>';
+                            content += '<div style=" font-family: verdana; font-size: 12px;">Target File: ' + data.record.TargetFile + '</div>';
+                            content += '<div style=" font-family: verdana; font-size: 12px;">Score: ' + data.record.Score + '</div>';
+                            content += '</div>';
+                            element.jqxTooltip({
+                                content: content,
+                                position: 'mouse',
+                                autoHideDelay: 6000
+                            });
+                        }
+                    },
+                    legendLabel: 'Interest Rate'
+                });
+                     });
+
+                </script>
+            }
         </section>
 
     </div>

@@ -46,16 +46,21 @@ namespace WebTrace.Services
         {
    
             TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory(path + @"/Use Case", "txt");
-            TLArtifactsCollection targetArtifacts = Artifacts.ImportDirectory(path + @"/Source Code", "txt");
-            return new TermDocumentMatrix(StopWordsRemoval(sourceArtifacts), targetArtifacts);
+            TLArtifactsCollection targetArtifact1 = Artifacts.ImportDirectory(path + @"/Source Code", "txt");
+            TLArtifactsCollection targetArtifact2 = Artifacts.ImportDirectory(path + @"/Test Case", "txt");
+            return new TermDocumentMatrix(StopWordsRemoval(sourceArtifacts), targetArtifact1, targetArtifact2);
         }
 
 
-        public static TLSimilarityMatrix ComputeSimilarity(string path)
+        public static List<TLSimilarityMatrix> ComputeSimilarity(string path)
         {
+            List<TLSimilarityMatrix> results = new List<TLSimilarityMatrix>();
             TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory(path + @"/Use Case", "txt");
-            TLArtifactsCollection targetArtifacts = Artifacts.ImportDirectory(path + @"/Source Code", "txt");
-            return VSM.Compute(StopWordsRemoval(sourceArtifacts), targetArtifacts);
+            TLArtifactsCollection targetArtifact1 = Artifacts.ImportDirectory(path + @"/Source Code", "txt");
+            TLArtifactsCollection targetArtifact2 = Artifacts.ImportDirectory(path + @"/Test Case", "txt");
+            results.Add(VSM.Compute(StopWordsRemoval(sourceArtifacts), targetArtifact1));
+            results.Add(VSM.Compute(StopWordsRemoval(sourceArtifacts), targetArtifact2));
+            return results;
         }
     }
 }
