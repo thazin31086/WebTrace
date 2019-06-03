@@ -30,8 +30,9 @@
                                             <th> <strong>Select Trace Direction</strong></th>
                                         </tr>
                                     </thead>
-                                    @{
-                                        int i = 0;
+
+                                    @{ int i = 0;
+
                                         foreach (System.Web.UI.WebControls.TreeNode subitem in datafolders.ChildNodes)
                                         {
                                             var selectlist = "selectlist" + i++;
@@ -49,6 +50,7 @@
 
                                         }
                                     }
+
                                 </table>
 
                             </div>
@@ -74,7 +76,7 @@
                         }
                     </table>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-1">
                     <table class="table table-hover">
                         @{
                             var termmap = ViewData["TermMap"] as List<string>;
@@ -103,16 +105,16 @@
                         }
                     </table>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-4">
                     <table class="table table-hover">
                         <thead class="btn-info">
-                            <tr><th class="text-center">Documents-Terms Mapping</th></tr>
+                            <tr><th class="text-center">3. Documents-Terms Mapping</th></tr>
                         </thead>
                         @{
                             var RawMatrix = ViewData["RawMatrix"] as double[][];
                             var TermIndexLookup = ViewData["TermIndexLookup"] as Dictionary<string, int>;
                             var DocIndexLookup = ViewData["DocIndexLookup"] as Dictionary<string, int>;
-                            for (int x = 0; x < RawMatrix.GetUpperBound(0); x++)
+                            for (int x = 0; x <= RawMatrix.GetUpperBound(0); x++)
                             {
                                 var divname = "collapse" + x;
                                 var refdivname = "#collapse" + x;
@@ -121,7 +123,7 @@
                                         <div class="panel panel-primary">
                                             <div>
                                                 <div class="page-heading btn-warning" data-target=@refdivname>
-                                                    @DocIndexLookup.Where(z => z.Value == Convert.ToInt64(RawMatrix[x][0])).Select(z => z.Key).FirstOrDefault()
+                                                    @DocIndexLookup.Where(z => z.Value == Convert.ToInt64(x)).Select(z => z.Key).FirstOrDefault()
                                                 </div>
                                                 <div id=@divname class="panel-body collapse show" aria-labelledby="headingOne">
                                                     <table class="table table-hover">
@@ -131,7 +133,7 @@
                                                                 <th>Count</th>
                                                             </tr>
                                                         </thead>
-                                                        @for (int y = 0; y < RawMatrix.GetUpperBound(0); y++)
+                                                        @for (int y = 0; y < RawMatrix[x].Length; y++)
                                                         {
 
                                                             <tbody>
@@ -168,7 +170,7 @@
                             var FunctionMap = ViewData["FunctionMap"] as List<WebTrace.Services.Functions>;
                             <thead class="btn-info">
                                 <tr>
-                                    <td colspan="2" class="text-center">List of Source Code Functions <br /> (Total = @FunctionMap.Count())</td>
+                                    <td colspan="2" class="text-center">4. List of Source Code Functions <br /> (Total = @FunctionMap.Count())</td>
                                 </tr>
                             </thead>
                             foreach (var item in ViewData["FunctionMap"] as List<WebTrace.Services.Functions>)
@@ -242,15 +244,22 @@
 
 
             }
+
+            
         </section>
         <h2>User Verify Trace Links</h2>
         <section>
+            <h1>DataTable</h1>
             <div id="dataTable"></div>
+
+            <hr />
+
+            <h1>TreeMap</h1>
             <div id="treemap"></div>
             @section scripts {
                 <script type="text/javascript">
             $(document).ready(function () {
-                var appserverpath = @Html.Raw(Json.Encode(Server.MapPath("~/Data/EasyClinic")));
+                var appserverpath = @Html.Raw(Json.Encode(Server.MapPath("~/Data/EasyClinic_")));
                 // prepare the data
                 var source =
                 {
@@ -286,13 +295,13 @@
                     width: '1000',
                     height: '1000',
                     source: dataAdapter,
-                    displayMember: 'SourceFile',
+                    displayMember: 'TargetFile',
                     valueMember: 'Score',
                     colorMode: 'rangeColors',
                     colorRanges: [
-                        { min: 0.01, max: 0.1, color: '#ff0300' },
-                        { min: 0.2, max: 0.6, color: '#fe2e00' },
-                        { min: 0.8, max: 1, color: '#fe3900' }
+                        { min: 0.01, max: 0, color: 'red' },
+                        { min: 0.1, max: 0.6, color: 'orange' },
+                        { min: 0.8, max: 1, color: 'green' }
                     ],
                     legendScaleCallback: function (v) {
                         return v;
@@ -309,8 +318,8 @@
                                 autoHideDelay: 6000
                             });
                         }
-                    },
-                    legendLabel: 'Interest Rate'
+                    }
+
                 });
                      });
 

@@ -173,6 +173,12 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\jquery.steps.css" />
     <Content Include="Content\jqx.arctic.css" />
+    <Content Include="Data\EasyClinic_\Source Code\Code 122.txt" />
+    <Content Include="Data\EasyClinic_\Source Code\Code 123.txt" />
+    <Content Include="Data\EasyClinic_\Source Code\Code 147.txt" />
+    <Content Include="Data\EasyClinic_\Source Code\Code 158.txt" />
+    <Content Include="Data\EasyClinic_\Test Case\Test Case 51.txt" />
+    <Content Include="Data\EasyClinic_\Use Case\Use Case 1.txt" />
     <Content Include="Data\EasyClinic\Source Code\Code 114.txt" />
     <Content Include="Data\EasyClinic\Source Code\Code 115.txt" />
     <Content Include="Data\EasyClinic\Source Code\Code 116.txt" />
@@ -220,26 +226,6 @@
     <Content Include="Data\EasyClinic\Source Code\Code 158.txt" />
     <Content Include="Data\EasyClinic\Source Code\Code 159.txt" />
     <Content Include="Data\EasyClinic\Source Code\Code 160.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 31.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 32.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 33.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 34.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 35.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 36.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 37.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 38.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 39.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 40.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 41.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 42.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 43.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 44.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 45.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 46.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 47.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 48.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 49.txt" />
-    <Content Include="Data\EasyClinic\Interaction Diagram\Interaction Diagram 50.txt" />
     <Content Include="Data\EasyClinic\Test Case\Test Case 100.txt" />
     <Content Include="Data\EasyClinic\Test Case\Test Case 101.txt" />
     <Content Include="Data\EasyClinic\Test Case\Test Case 102.txt" />
@@ -390,6 +376,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Workbench.cshtml" />
     <Content Include="Views\Home\HRTracing.cshtml" />
+    <Content Include="Views\Home\HRTracingChunk.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

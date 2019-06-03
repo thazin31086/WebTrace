@@ -32,9 +32,9 @@ namespace WebTrace.UI.Controllers
         }
 
         public ActionResult HRTracing()
-        {
-            ViewData["datafolders"] = PopulateTreeView();
+        {           
             string path = Server.MapPath("~/Data/EasyClinic");
+            ViewData["datafolders"] = PopulateTreeView(path);
             var rawmatrix = IRServices.TermsMatrixRaw(path);
             ViewData["RawTermMap"] = rawmatrix.TermMap;
             var matrix = IRServices.TermsMatrix(path);
@@ -47,6 +47,24 @@ namespace WebTrace.UI.Controllers
             var rankedlist = IRServices.ComputeSimilarity(path);
             ViewData["rankedlist"] = rankedlist;
             return View("HRTracing");
+        }
+
+        public ActionResult HRTracingChunk()
+        {
+            string path = Server.MapPath("~/Data/EasyClinic_");
+            ViewData["datafolders"] = PopulateTreeView(path);
+            var rawmatrix = IRServices.TermsMatrixRaw(path);
+            ViewData["RawTermMap"] = rawmatrix.TermMap;
+            var matrix = IRServices.TermsMatrix(path);
+            ViewData["TermMap"] = matrix.TermMap;
+            ViewData["RawMatrix"] = matrix.RawMatrix;
+            ViewData["DocMap"] = matrix.DocMap;
+            ViewData["TermIndexLookup"] = matrix.TermIndexLookup;
+            ViewData["DocIndexLookup"] = matrix.DocIndexLookup;
+            ViewData["FunctionMap"] = matrix.FunctionMap;
+            var rankedlist = IRServices.ComputeSimilarity(path);
+            ViewData["rankedlist"] = rankedlist;
+            return View("HRTracingChunk");
         }
         public ActionResult About()
 		{
@@ -63,11 +81,11 @@ namespace WebTrace.UI.Controllers
 		}
 
         #region Methods
-        private TreeNode PopulateTreeView()
+        private TreeNode PopulateTreeView(string path)
         {
             TreeNode rootNode;
 
-            DirectoryInfo info = new DirectoryInfo(Server.MapPath("~/Data"));
+            DirectoryInfo info = new DirectoryInfo(path);
             if (info.Exists)
             {
                 rootNode = new TreeNode(info.Name);

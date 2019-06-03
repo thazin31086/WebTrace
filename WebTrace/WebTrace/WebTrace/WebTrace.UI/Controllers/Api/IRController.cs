@@ -21,7 +21,6 @@ namespace WebTrace.UI.Controllers.Api
     {
         public JsonResult GetSimilarityMartrixes(string path)
         {
-
             var rawmatrix = IRServices.ComputeSimilarity(path);
             var martix = new List<Martix>();
             if (rawmatrix[0].AllLinks.Count() > 0)
