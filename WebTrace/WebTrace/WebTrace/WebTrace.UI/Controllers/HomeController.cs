@@ -80,6 +80,12 @@ namespace WebTrace.UI.Controllers
 			return View();
 		}
 
+        public ActionResult VisualizeTraceLinks()
+        {
+            ViewBag.Title = "Visualize Trace Link";
+            return View();
+        }
+
         #region Methods
         private TreeNode PopulateTreeView(string path)
         {

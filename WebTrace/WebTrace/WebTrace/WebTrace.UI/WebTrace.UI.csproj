@@ -166,11 +166,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\TraceVisualizationModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\font-awesome.css" />
     <Content Include="Content\jquery.steps.css" />
     <Content Include="Content\jqx.arctic.css" />
     <Content Include="Data\EasyClinic_\Source Code\Code 122.txt" />
@@ -320,6 +322,7 @@
     <Content Include="Data\EasyClinic\Use Case\Use Case 8.txt" />
     <Content Include="Data\EasyClinic\Use Case\Use Case 9.txt" />
     <Content Include="favicon.ico" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -328,15 +331,30 @@
     <Content Include="images\HierarchicalTracing.PNG" />
     <Content Include="images\Indirect Tracing.PNG" />
     <Content Include="Scripts\App.js" />
+    <Content Include="Scripts\bluebird.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="Scripts\data.json" />
     <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
+    <Content Include="Scripts\cytoscape-qtip.js" />
+    <Content Include="Scripts\cytoscape.min.js" />
+    <Content Include="Scripts\demo.js" />
+    <None Include="Scripts\demo.js.original" />
+    <Content Include="Scripts\fastclick.min.js" />
+    <Content Include="Scripts\handlebars.min.js" />
     <Content Include="Scripts\jquery-1.10.2-ui.js" />
     <None Include="Scripts\jquery-1.10.2-vsdoc.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.min.js" />
+    <Content Include="Scripts\jquery.qtip.min.js" />
     <Content Include="Scripts\jquery.steps.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
@@ -344,6 +362,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\jquery.wizard.js" />
     <Content Include="Scripts\jqx-all.js" />
+    <Content Include="Scripts\jqxbuttons.js" />
     <Content Include="Scripts\jqxdatatable.js" />
     <Content Include="Scripts\jqxgrid.aggregates.js" />
     <Content Include="Scripts\jqxgrid.columnsreorder.js" />
@@ -357,9 +376,13 @@
     <Content Include="Scripts\jqxgrid.selection.js" />
     <Content Include="Scripts\jqxgrid.sort.js" />
     <Content Include="Scripts\jqxgrid.storage.js" />
+    <Content Include="Scripts\jqxscrollbar.js" />
+    <Content Include="Scripts\jqxtreegrid.js" />
+    <Content Include="Scripts\lodash.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\typeahead.bundle.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -377,10 +400,11 @@
     <Content Include="Views\Home\Workbench.cshtml" />
     <Content Include="Views\Home\HRTracing.cshtml" />
     <Content Include="Views\Home\HRTracingChunk.cshtml" />
+    <Content Include="Views\Home\VisualizeTraceLinks.cshtml" />
+    <Content Include="Scripts\style.cycss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
