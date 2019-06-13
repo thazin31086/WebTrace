@@ -18,7 +18,11 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("WebTrace", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            
+                <a class="navbar-brand" rel="home" href="~/Home/Index" title="WebTrace">
+                    <img 
+                         src="~/images/WebTraceLogo.png">
+                </a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">

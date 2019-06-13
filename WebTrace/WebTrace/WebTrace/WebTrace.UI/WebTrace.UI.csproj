@@ -330,6 +330,7 @@
     <Content Include="images\Hierarchical Tracing Flowchart.svg" />
     <Content Include="images\HierarchicalTracing.PNG" />
     <Content Include="images\Indirect Tracing.PNG" />
+    <Content Include="images\WebTraceLogo.png" />
     <Content Include="Scripts\App.js" />
     <Content Include="Scripts\bluebird.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -345,6 +346,7 @@
     <Content Include="Scripts\cytoscape-qtip.js" />
     <Content Include="Scripts\cytoscape.min.js" />
     <Content Include="Scripts\demo.js" />
+    <None Include="Properties\PublishProfiles\CustomProfile1.pubxml" />
     <None Include="Scripts\demo.js.original" />
     <Content Include="Scripts\fastclick.min.js" />
     <Content Include="Scripts\handlebars.min.js" />
