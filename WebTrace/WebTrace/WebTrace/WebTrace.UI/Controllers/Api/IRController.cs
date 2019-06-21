@@ -135,7 +135,7 @@ namespace WebTrace.UI.Controllers.Api
                     var funcLists = FunctionMap.Where(z => z.DocumentIndex == doc.Key.ToString()).Select(x => x.FunctionName).ToList();
 
                     if (funcLists != null && funcLists.Count() > 0)
-                    {                        
+                    {                           
                         foreach (var fun in funcLists)
                         { 
                             functionshtmlformat += WebUtility.HtmlEncode(fun + "()" + ",");
