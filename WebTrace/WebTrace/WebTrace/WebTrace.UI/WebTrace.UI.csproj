@@ -404,6 +404,7 @@
     <Content Include="Views\Home\HRTracingChunk.cshtml" />
     <Content Include="Views\Home\VisualizeTraceLinks.cshtml" />
     <Content Include="Scripts\style.cycss" />
+    <Content Include="Views\Shared\_LayoutViz.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
