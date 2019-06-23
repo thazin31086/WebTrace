@@ -39,6 +39,18 @@ namespace WebTrace.Services
             return Compute(new TermDocumentMatrix(source), new TermDocumentMatrix(target));
         }
 
+
+        /// <summary>
+        /// Computes similarities between documents via the Vector Space Model In Same Collection
+        /// using a tf-idf weighting scheme and cosine similarity.
+        /// </summary>
+        /// <param name="source">Source artifacts</param>
+        /// <param name="target">Target artifacts</param>
+        /// <returns>Similarity matrix</returns>
+        public static TLSimilarityMatrix ComputeInSameCollection(TLArtifactsCollection source, TLArtifactsCollection target)
+        {
+            return Compute(new TermDocumentMatrix(source), new TermDocumentMatrix(target));
+        }
         /// <summary>
         /// Computes similarities between term-by-document matrices via the Vector Space Model
         /// using a tf-idf weighting scheme and cosine similarity.
@@ -55,6 +67,20 @@ namespace WebTrace.Services
             return ComputeSimilarities(IDs, TFIDF);
         }
 
+        /// <summary>
+        /// Compute Similarity Within Same Artifact Collection
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static TLSimilarityMatrix ComputeInSameCollection(TermDocumentMatrix source, TermDocumentMatrix target)
+        {
+            TermDocumentMatrix IDs = ComputeIdentities(source);
+            TermDocumentMatrix TF = ComputeTF(target);
+            double[] IDF = ComputeIDF(ComputeDF(target), target.NumDocs);
+            TermDocumentMatrix TFIDF = ComputeTFIDF(TF, IDF);
+            return ComputeSimilaritiesInSameCollection(IDs, TFIDF);
+        }
         #region private
 
         /// <summary>
@@ -83,6 +109,7 @@ namespace WebTrace.Services
         {
             for (int i = 0; i < matrix.NumDocs; i++)
             {
+                //get total num of term
                 double max = matrix.GetDocument(i).Max();
                 for (int j = 0; j < matrix.NumTerms; j++)
                 {
@@ -196,6 +223,48 @@ namespace WebTrace.Services
             return sims;
         }
 
+        private static TLSimilarityMatrix ComputeSimilaritiesInSameCollection(TermDocumentMatrix ids, TermDocumentMatrix tfidf)
+        {
+            TLSimilarityMatrix sims = new TLSimilarityMatrix();
+            List<TermDocumentMatrix> matrices = TermDocumentMatrix.Equalize(ids, tfidf);
+            for (int i = 0; i < ids.NumDocs; i++)
+            {
+                TLLinksList links = new TLLinksList();
+                for (int j = 0; j < tfidf.NumDocs; j++)
+                {
+                    //Skip Same File Compute Similarity process
+                    if (ids.GetDocumentName(i).ToUpper() != tfidf.GetDocumentName(j).ToUpper())
+                    {
+                        double product = 0.0;
+                        double asquared = 0.0;
+                        double bsquared = 0.0;
+                        for (int k = 0; k < matrices[0].NumTerms; k++)
+                        {
+                            double a = matrices[0][i, k];
+                            double b = matrices[1][j, k];
+                            product += (a * b);
+                            asquared += Math.Pow(a, 2);
+                            bsquared += Math.Pow(b, 2);
+                        }
+                        double cross = Math.Sqrt(asquared) * Math.Sqrt(bsquared);
+                        if (cross == 0.0)
+                        {
+                            links.Add(new TLSingleLink(ids.GetDocumentName(i), tfidf.GetDocumentName(j), 0.0));
+                        }
+                        else
+                        {
+                            links.Add(new TLSingleLink(ids.GetDocumentName(i), tfidf.GetDocumentName(j), product / cross));
+                        }
+                    }
+                }
+                links.Sort();
+                foreach (TLSingleLink link in links)
+                {
+                    sims.AddLink(link.SourceArtifactId, link.TargetArtifactId, link.Score);
+                }
+            }
+            return sims;
+        }
         #endregion
     }
 }

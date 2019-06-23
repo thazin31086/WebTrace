@@ -7,7 +7,7 @@ using TraceLab.Components.DevelopmentKit.IO;
 using TraceLab.Components.DevelopmentKit.Preprocessors;
 using TraceLab.Components.DevelopmentKit.Utils;
 using TraceLabSDK.Types;
-
+using System.Linq;
 namespace WebTrace.Services
 {
     public static class IRServices
@@ -58,8 +58,63 @@ namespace WebTrace.Services
             TLArtifactsCollection sourceArtifacts = Artifacts.ImportDirectory(path + @"/Use Case", "txt");
             TLArtifactsCollection targetArtifact1 = Artifacts.ImportDirectory(path + @"/Source Code", "txt");
             TLArtifactsCollection targetArtifact2 = Artifacts.ImportDirectory(path + @"/Test Case", "txt");
+            var sourcevstarget1collection= VSM.Compute(StopWordsRemoval(sourceArtifacts), targetArtifact1);
+            var sourcevstarget2collection = VSM.Compute(StopWordsRemoval(sourceArtifacts), targetArtifact2);
+
+            //var sourcevssourcecollection = VSM.ComputeInSameCollection(StopWordsRemoval(sourceArtifacts), StopWordsRemoval(sourceArtifacts));
+            TLSimilarityMatrix sourcevssource = new TLSimilarityMatrix();
+            foreach (var st1item in sourcevstarget1collection.AllLinks)
+            {
+                if (st1item.Score >= 0.1)
+                {
+                    foreach (var st1item2 in sourcevstarget1collection.AllLinks)
+                    {
+                        //Two Source Common Target Case
+                        if (st1item.TargetArtifactId == st1item2.TargetArtifactId
+                            && st1item.SourceArtifactId != st1item2.SourceArtifactId)
+                        {
+                            bool linkexist = false;
+                            if (sourcevssource != null)
+                            {
+                                linkexist = sourcevssource.AllLinks.Contains(new TLSingleLink(st1item.SourceArtifactId, st1item2.SourceArtifactId, 1));
+                            }
+
+                            if (!linkexist)
+                            {
+                                sourcevssource.AddLink(st1item.SourceArtifactId, st1item2.SourceArtifactId, 1);
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach (var st1item in sourcevstarget2collection.AllLinks)
+            {
+                if (st1item.Score >= 0.1)
+                {
+                    foreach (var st1item2 in sourcevstarget2collection.AllLinks)
+                    {
+                        //Two Source Common Target Case
+                        if (st1item.TargetArtifactId == st1item2.TargetArtifactId
+                            && st1item.SourceArtifactId != st1item2.SourceArtifactId)
+                        {
+                            bool linkexist = false;
+                            if (sourcevssource != null)
+                            {
+                                linkexist = sourcevssource.AllLinks.Contains(new TLSingleLink(st1item.SourceArtifactId, st1item2.SourceArtifactId, 1));
+                            }
+
+                            if (!linkexist)
+                            {
+                                sourcevssource.AddLink(st1item.SourceArtifactId, st1item2.SourceArtifactId, 1);
+                            }
+                        }
+                    }
+                }
+            }
             results.Add(VSM.Compute(StopWordsRemoval(sourceArtifacts), targetArtifact1));
             results.Add(VSM.Compute(StopWordsRemoval(sourceArtifacts), targetArtifact2));
+            results.Add(sourcevssource);
             return results;
         }
     }
