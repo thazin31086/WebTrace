@@ -75,7 +75,7 @@ namespace WebTrace.UI.Controllers
 
 		public ActionResult Contact()
 		{
-			ViewBag.Message = "PhD Student at University of technology sydney";
+			ViewBag.Message = "PhD Student at University of Technology Sydney";
 
 			return View();
 		}

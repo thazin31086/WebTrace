@@ -77,7 +77,7 @@ namespace WebTrace.UI.Controllers.Api
                 int i = 1;
                 foreach (var martrix in rawmatrix)
                 {
-                    foreach (var item in martrix.AllLinks.Where(x => x.Score >= 0.1))
+                    foreach (var item in martrix.AllLinks.Where(x => x.Score >= 0.15))
                     {
                         var _edge = new Edge();
                         _edge.selected = false;
@@ -114,21 +114,63 @@ namespace WebTrace.UI.Controllers.Api
                 Random rnd = new Random();
                 Random rnd2 = new Random();
 
+                int xu = 1000;
+                int yu = 1000;
+                int xt = 500;
+                int yt = 1500;
+                int xs = 2000;
+                int ys = 1500;
                 foreach (var doc in matrix.DocIndexLookup)
                 {
-                   
-                    int min = 1000;
-                    int max = 4000;
-                    double _x = min + rnd.NextDouble() * (max - min);
-                    // generates y values
-                    double _y = min + rnd.NextDouble() * (max - min);
+
+                    //int min = 1000;
+                    //int max = 4000;
+                    //double _x = min + rnd.NextDouble() * (max - min);
+                    //// generates y values
+                    //double _y = min + rnd.NextDouble() * (max - min);
+                    //var _node = new Node();
+                    //_node.selected = false;
+                    //_node.position = new Position
+                    //{
+                    //    x = _x,
+                    //    y = _y,
+                    //};
                     var _node = new Node();
-                    _node.selected = false;
-                    _node.position = new Position
+                    if (doc.Key.Contains("Use"))
                     {
-                        x = _x,
-                        y = _y,
-                    };
+                        _node.selected = false;
+                        _node.position = new Position
+                        {
+                            x = xu,
+                            y = yu,
+                        };
+                        xu += 5;
+                        yu += 5;
+                    }
+                    else if (doc.Key.Contains("Test"))
+                    {
+                        _node.selected = false;
+                        _node.position = new Position
+                        {
+                            x = xt,
+                            y = yt,
+                        };
+                        xt += 5;
+                        yt += 5;
+                    }
+                    else
+                    {
+                        _node.selected = false;
+                        _node.position = new Position
+                        {
+                            x = xs,
+                            y = ys,
+                        };
+                        xs += 5;
+                        ys += 5;
+
+                    }
+
                     string functionshtmlformat = "";
                     var _filefolder=  doc.Key.Contains("Use") ? "Use Case" :
                                                 doc.Key.Contains("Test") ? "Test Case" : "Source Code";
@@ -142,7 +184,9 @@ namespace WebTrace.UI.Controllers.Api
                         }
                 
                     }
-                    string fileurl = HttpContext.Current.Request.Url + "/Data/EasyClinic_/" + _filefolder + "/" + doc.Key + ".txt";
+
+                    string hostUrl = HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Host;
+                    string fileurl = hostUrl + "/Data/EasyClinic/" + _filefolder + "/" + doc.Key + ".txt";
                     _node.data = new Data
                     {
                         id = doc.Key,
@@ -153,7 +197,7 @@ namespace WebTrace.UI.Controllers.Api
                         SUID = doc.Key,
                         NodeType = doc.Key.Contains("Use") ? "UseCase" :
                                     doc.Key.Contains("Test") ? "TestCase" : "Code",
-
+                       
                         Quality = rnd2.Next(20, 100),
                         FileUrl = WebUtility.UrlEncode(fileurl) ,
                         functionhtmlformatted = functionshtmlformat,

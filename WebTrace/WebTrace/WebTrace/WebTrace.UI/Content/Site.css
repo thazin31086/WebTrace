@@ -178,9 +178,9 @@ button {
 #search-wrapper {
     position: absolute;
     left: 0;
-    /*top: 0;*/
     z-index: 9999;
     margin: 1em;
+    margin-top: 40px;
     width: 14em;
 }
 
