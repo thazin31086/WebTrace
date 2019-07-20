@@ -65,7 +65,7 @@ namespace WebTrace.Services
             TLSimilarityMatrix sourcevssource = new TLSimilarityMatrix();
             foreach (var st1item in sourcevstarget1collection.AllLinks)
             {
-                if (st1item.Score >= 0.1)
+                if (st1item.Score >= 0.5)
                 {
                     foreach (var st1item2 in sourcevstarget1collection.AllLinks)
                     {
@@ -90,7 +90,7 @@ namespace WebTrace.Services
 
             foreach (var st1item in sourcevstarget2collection.AllLinks)
             {
-                if (st1item.Score >= 0.1)
+                if (st1item.Score >= 0.5)
                 {
                     foreach (var st1item2 in sourcevstarget2collection.AllLinks)
                     {

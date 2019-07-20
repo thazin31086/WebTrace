@@ -24,11 +24,17 @@ $(function () {
 
     var infoTemplate = Handlebars.compile([
         '<p class="ac-name">{{name}}</p>',
-        '<p class="ac-node-type"><i class="fa fa-info-circle"></i> {{NodeTypeFormatted}} {{#if Type}}({{Type}}){{/if}}</p>',
-        '<p class="ac-more"><i class="fa fa-external-link"></i> <a target="_blank" href={{#if FileUrl}}{{FileUrl}}{{/if}}>More information</a></p>',
+        '<p class="ac-node-type"><i class="fa fa-info-circle"></i> {{NodeTypeFormatted}} {{#if Type}}({{Type}}){{/if}}</p>',      
+        '<p class="ac-more"><i class="fa fa-external-link"></i> {{#if FileUrl}}{{ link "More Information" FileUrl }}{{/if}}</p>',
         '{{#if functionhtmlformatted}}<p class="ac-function-head">List of Class Functions</p><p class="ac-function">{{functionhtmlformatted}}</p>{{/if}}'
     ].join(''));
 
+    Handlebars.registerHelper('link', function (text, url) {
+        url = Handlebars.escapeExpression(url);
+        text = Handlebars.escapeExpression(text);
+        var url_dec = decodeURIComponent(url).replace(/\+/g, " ");
+        return new Handlebars.SafeString("<a href='"+ url_dec + "'>" + text + "</a>");
+    });
     // when both graph export json and style loaded, init cy
     Promise.all([graphP, styleP]).then(initCy);
 
@@ -225,7 +231,7 @@ $(function () {
         var elements = expJson.Data.elements;
 
         elements.nodes.forEach(function (n) {
-            console.log(n);
+           // console.log(n);
             var data = n.data;
 
             data.NodeTypeFormatted = data.NodeType;
@@ -243,7 +249,7 @@ $(function () {
                 x: n.position.x,
                 y: n.position.y
             };
-            console.log(n.position.x + ' --' + n.position.y);
+
         });
 
         loading.classList.add('loaded');
@@ -309,8 +315,6 @@ $(function () {
 
                     return str.match(q);
                 }
-
-                // var fields = ['name', 'NodeType', 'Country', 'Type' 'Milk'];
 
                 var fields = ['name', 'NodeType'];
                 function anyFieldMatches(n) {
@@ -389,7 +393,7 @@ $(function () {
         }
     });
 
-
+    
     $('#filter').qtip({
         position: {
             my: 'top center',
