@@ -59,7 +59,7 @@ namespace WebTrace.UI.Controllers.Api
 
         public JsonResult GetData()
         {
-            var path = System.Web.Hosting.HostingEnvironment.MapPath("~/Data/EasyClinic"); ;
+            var path = System.Web.Hosting.HostingEnvironment.MapPath("~/Data/EasyClinic"); 
             var _data = new TraceVisualizationModel();
             _data.data = new Data();
             _data.data.selected = true;
@@ -95,8 +95,7 @@ namespace WebTrace.UI.Controllers.Api
                             shared_interaction = item.TargetArtifactId.Contains("Use") ? "cc" :
                                           item.TargetArtifactId.Contains("Test") ? "cw" :
                                           item.TargetArtifactId.Contains("Code") ? "cr" : "cc",
-                            shared_name = item.TargetArtifactId, 
-                  
+                            shared_name = item.TargetArtifactId,                   
                         };
                         _data.elements.edges.Add(_edge);
                         i++;
@@ -121,20 +120,7 @@ namespace WebTrace.UI.Controllers.Api
                 int xs = 2000;
                 int ys = 1500;
                 foreach (var doc in matrix.DocIndexLookup)
-                {
-
-                    //int min = 1000;
-                    //int max = 4000;
-                    //double _x = min + rnd.NextDouble() * (max - min);
-                    //// generates y values
-                    //double _y = min + rnd.NextDouble() * (max - min);
-                    //var _node = new Node();
-                    //_node.selected = false;
-                    //_node.position = new Position
-                    //{
-                    //    x = _x,
-                    //    y = _y,
-                    //};
+                {                    
                     var _node = new Node();
                     if (doc.Key.Contains("Use"))
                     {
@@ -168,7 +154,6 @@ namespace WebTrace.UI.Controllers.Api
                         };
                         xs += 5;
                         ys += 5;
-
                     }
 
                     string functionshtmlformat = "";
@@ -181,8 +166,7 @@ namespace WebTrace.UI.Controllers.Api
                         foreach (var fun in funcLists)
                         { 
                             functionshtmlformat += WebUtility.HtmlEncode(fun + "()" + ",");
-                        }
-                
+                        }                
                     }
 
                     string hostUrl = HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Host;
@@ -197,16 +181,16 @@ namespace WebTrace.UI.Controllers.Api
                         SUID = doc.Key,
                         NodeType = doc.Key.Contains("Use") ? "UseCase" :
                                     doc.Key.Contains("Test") ? "TestCase" : "Code",
-                       
-                        Quality = rnd2.Next(20, 100),
+                        Quality =  (doc.Key.Contains("Use") || doc.Key.Contains("Test")) 
+                                        ? rnd2.Next(20, 100)
+                                        :(funcLists.Count() / FunctionMap.Count() * 100),
                         FileUrl = WebUtility.UrlEncode(fileurl) ,
                         functionhtmlformatted = functionshtmlformat,
                     };
                     _data.elements.nodes.Add(_node);
                 }
             }
-
-           
+                       
             return new JsonResult()
             {
                 Data = _data,
