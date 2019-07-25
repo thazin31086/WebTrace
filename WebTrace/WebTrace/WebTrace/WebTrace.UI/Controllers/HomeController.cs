@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
+using WebTrace.DB;
 using WebTrace.Services;
 
 namespace WebTrace.UI.Controllers
@@ -23,6 +24,8 @@ namespace WebTrace.UI.Controllers
 
         public ActionResult Index()
         {
+            WebTraceDB result = new WebTraceDB();
+
             return View("Index");
         }
 
