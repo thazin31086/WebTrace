@@ -10,13 +10,13 @@ edge {
 	width: 2;
 	z-index: 0;
 	overlay-opacity: 0;
-  events: no;
+    events: no;
 }
 
 node {
-	width: 100;
-	height: 100;
-	font-size: 25;
+	width: 70;
+	height: 70;
+	font-size: 15;
 	font-weight: normal;
 	min-zoomed-font-size: 4;
 	content: data(name);
@@ -30,7 +30,7 @@ edge[interaction = "cc"] {
 	line-color: #FFE548;
 	opacity: 0.666;
 	z-index: 9;
-	width: 4;
+	width: 2;
 }
 
 node[NodeType = "Cheese"],

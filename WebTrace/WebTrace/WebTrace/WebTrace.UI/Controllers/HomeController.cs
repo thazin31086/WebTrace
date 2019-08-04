@@ -47,7 +47,7 @@ namespace WebTrace.UI.Controllers
             ViewData["TermIndexLookup"] = matrix.TermIndexLookup;
             ViewData["DocIndexLookup"] = matrix.DocIndexLookup;
             ViewData["FunctionMap"] = matrix.FunctionMap;
-            var rankedlist = IRServices.ComputeSimilarity(path);
+            var rankedlist = IRServices.ComputeSimilarity(path, 10, false, false);
             ViewData["rankedlist"] = rankedlist;
             return View("HRTracing");
         }
@@ -65,7 +65,7 @@ namespace WebTrace.UI.Controllers
             ViewData["TermIndexLookup"] = matrix.TermIndexLookup;
             ViewData["DocIndexLookup"] = matrix.DocIndexLookup;
             ViewData["FunctionMap"] = matrix.FunctionMap;
-            var rankedlist = IRServices.ComputeSimilarity(path);
+            var rankedlist = IRServices.ComputeSimilarity(path, 10, false, false);
             ViewData["rankedlist"] = rankedlist;
             return View("HRTracingChunk");
         }

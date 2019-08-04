@@ -1,0 +1,473 @@
+﻿    body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+.draggable.ui-draggable {
+    width: 100px;
+    height: 100px;
+    padding: 0.5em;
+    float: left;
+    margin: 10px 10px 10px 0;
+    background-color: #b6ff00;
+}
+
+.droppable {
+    width: 150px;
+    height: 150px;
+    padding: 0.5em;
+    float: left;
+    margin: 10px;
+    background-color: #00ff90;
+}
+
+.just-padding {
+    padding: 15px;
+}
+
+.list-group.list-group-root {
+    padding: 0;
+    overflow: hidden;
+}
+
+    .list-group.list-group-root .list-group {
+        margin-bottom: 0;
+    }
+
+    .list-group.list-group-root .list-group-item {
+        border-radius: 0;
+        border-width: 1px 0 0 0;
+    }
+
+    .list-group.list-group-root > .list-group-item:first-child {
+        border-top-width: 0;
+    }
+
+    .list-group.list-group-root > .list-group > .list-group-item {
+        padding-left: 30px;
+    }
+
+    .list-group.list-group-root > .list-group > .list-group > .list-group-item {
+        padding-left: 45px;
+    }
+
+.wizard > .content > .body {
+    height: 100% !important;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 10rem;
+    padding: .5rem 0;
+    margin: .125rem 0 0;
+    font-size: 1rem;
+    color: #212529;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: .25rem;
+}
+
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: .25rem 1.5rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+}
+
+
+    @media (min-width: 768px) {
+        .col-sm-2 {
+            width: 20% !important;
+        }
+    }
+
+
+/*/** Visualize JS**/
+#VisualTraceLinksDiv {
+    font: 14px fontawesome, helvetica neue, helvetica, liberation sans, nimbus sans, nimbus sans l, arial, sans-serif;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    overflow: hidden;
+}
+
+#cy {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: rgba(128, 128, 128, 0.15);
+}
+
+#loading {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    text-align: center;
+    margin-top: -0.5em;
+    font-size: 1.6em;
+    color: #fff;
+}
+
+    #loading.loaded {
+        display: none;
+    }
+
+#clear {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin: 0.25em;
+    visibility: hidden;
+}
+
+#search-wrapper {
+    /*position: absolute;*/
+    left: 0;
+    z-index: 9999;
+    margin: 1em;
+    margin-top: 40px;
+    width: 14em;
+}
+
+#search {
+    width: 14em;
+    font-family: inherit;
+}
+
+body.has-start #clear {
+    visibility: visible;
+}
+
+#end {
+    display: none;
+}
+
+body.has-start:not(.has-end) #end {
+    display: inline;
+}
+
+body.has-start:not(.has-end) #start {
+    display: none;
+}
+
+body.calc #loading {
+    display: block;
+}
+
+.tt-dropdown-menu {
+    background: #fff;
+    width: 14em;
+    border: 1px solid #ccc;
+    max-height: 80vh;
+    max-height: calc( 100vh - 4em );
+    overflow: auto;
+    margin-top: 0.5em;
+}
+
+    .tt-dropdown-menu * {
+        margin: 0;
+        padding: 0;
+    }
+
+.tt-suggestion {
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+    .tt-suggestion + .tt-suggestion {
+        border-top: 1px solid #ccc;
+    }
+
+.ac-name {
+    font-size: 1em;
+}
+
+.ac-node-type,
+.ac-milk,
+.ac-country,
+.ac-more,
+.ac-function,
+.ac-function-head {
+    font-size: 0.8em;
+}
+
+.ac-function-head {
+    font:bold !important;
+}
+
+#info {
+    position: absolute;
+    left: 0;
+    top: 3em;
+    margin: 10em 0 0 1em;
+    /*background: #bbdbf7;*/
+    background: #fff;
+    border: 1px solid #ccc;
+    /*box-shadow: inset 0 0 0 0.25em rgba(187, 219, 247, 0.9)*/;
+    width: 14em;
+    display: none;
+}
+
+    #info p {
+        margin: 8px;
+    }
+
+#linkout {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    margin: 0.25em;
+    z-index: 999;
+}
+
+#reset,
+#filter,
+#about {
+    width: 3em;
+    margin: 0.5em;
+    position: absolute;
+    z-index: 999;
+}
+
+#reset {
+    top: 20;
+    right: 0;
+}
+
+#filter {
+    top: 20;
+    right: 4em;
+}
+
+#about {
+    bottom: 0;
+    left: 0;
+}
+
+#about-content p + p {
+    margin: 0;
+    margin-top: 0.5em;
+}
+
+.qtip-about {
+    width: 13em;
+}
+
+    .qtip-about .qtip-content {
+        padding: 0.25em !important;
+    }
+
+#reset i {
+    transform: rotate(45deg);
+}
+
+#filters label {
+    font-weight: normal;
+    padding: 0 0.25em;
+}
+
+#filters strong {
+    display: block;
+}
+
+#filters hr {
+    margin: 0.25em 0;
+}
+
+#filters {
+    display: none;
+}
+
+.qtip #filter {
+    display: block;
+}
+
+.qtip-filters .qtip-content {
+    padding: 0 !important;
+    overflow: auto;
+    max-height: 80vh;
+    max-height: calc( 100vh - 4em );
+    width: 18em;
+}
+
+.filtersets {
+    width: 100%;
+}
+
+.filterset {
+    display: inline-block;
+    vertical-align: top;
+    line-height: 1.1;
+}
+
+    .filterset.right {
+    }
+
+    .filterset + .filterset {
+        margin-left: 0.5em;
+    }
+
+.filterset-section-title {
+    font-size: 1.25em;
+    margin-left: 0.2em;
+    margin-top: 0.5em;
+    margin-bottom: 0.25em;
+}
+
+* + .filterset-section-title {
+    border-top: 1px solid rgba(128, 128, 128, 0.15);
+    padding-top: 0.5em;
+    margin-left: 0;
+    padding-left: 0.2em;
+}
+
+.filterset input {
+    margin-left: 0.25em;
+}
+
+.filterset-title {
+    margin: 0.25em 0 0.25em 0.25em;
+}
+
+
+.navbar-brand > img {
+    max-height: 100%;
+    height: 100%;
+    width: auto;
+    margin: 0 auto;
+    /* probably not needed anymore, but doesn't hurt */
+    -o-object-fit: contain;
+    object-fit: contain;
+}
+
+.navbar-nav {
+    float: left;
+    margin: 10px;
+}
+
+/**Slider (BEGIN)**/
+.slidecontainer {
+    width: 100%; /* Width of the outside container */
+}
+
+/* The slider itself */
+.slider {
+    -webkit-appearance: none; /* Override default CSS styles */
+    appearance: none;
+    width: 100%; /* Full-width */
+    height: 25px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+
+    /* Mouse-over effects */
+    .slider:hover {
+        opacity: 1; /* Fully shown on mouse-over */
+    }
+
+    /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none; /* Override default look */
+        appearance: none;
+        width: 25px; /* Set a specific slider handle width */
+        height: 25px; /* Slider handle height */
+        background: #4CAF50; /* Green background */
+        cursor: pointer; /* Cursor on hover */
+    }
+
+    .slider::-moz-range-thumb {
+        width: 25px; /* Set a specific slider handle width */
+        height: 25px; /* Slider handle height */
+        background: #4CAF50; /* Green background */
+        cursor: pointer; /* Cursor on hover */
+    }
+/**Slider (END)***/
+
+/**Overlay (BEGIN)**/
+.overlay {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background: #222;
+}
+
+.overlay__inner {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.overlay__content {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.spinner {
+    width: 75px;
+    height: 75px;
+    display: inline-block;
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.05);
+    border-top-color: #fff;
+    animation: spin 1s infinite linear;
+    border-radius: 100%;
+    border-style: solid;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/**Overlay (END)**/

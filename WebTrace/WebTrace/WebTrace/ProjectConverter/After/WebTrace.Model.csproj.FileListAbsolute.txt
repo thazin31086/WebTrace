@@ -1,0 +1,10 @@
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.Model\bin\Debug\WebTrace.Model.dll
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.Model\bin\Debug\WebTrace.Model.pdb
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.Model\obj\Debug\WebTrace.Model.csprojAssemblyReference.cache
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.Model\obj\Debug\WebTrace.Model.csproj.CoreCompileInputs.cache
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.Model\obj\Debug\WebTrace.Model.dll
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.Model\obj\Debug\WebTrace.Model.pdb
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.Model\bin\Debug\TraceLab.Components.DevelopmentKit.dll
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.Model\bin\Debug\TraceLabSDK.Types.dll
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.Model\bin\Debug\TraceLabSDK.dll
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.Model\obj\Debug\WebTrace.Model.csproj.CopyComplete

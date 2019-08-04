@@ -1,4 +1,4 @@
-﻿body {
+﻿    body {
     padding-top: 50px;
     padding-bottom: 20px;
 }
@@ -124,10 +124,10 @@ textarea {
 /*/** Visualize JS**/
 #VisualTraceLinksDiv {
     font: 14px fontawesome, helvetica neue, helvetica, liberation sans, nimbus sans, nimbus sans l, arial, sans-serif;
-    width: 100%;
+    /*width: 100%;
     height: 100%;
     position: absolute;
-    overflow: hidden;
+    overflow: hidden;*/
 }
 
 #cy {
@@ -146,7 +146,7 @@ textarea {
     width: 100%;
     text-align: center;
     margin-top: -0.5em;
-    font-size: 2em;
+    font-size: 1.6em;
     color: #fff;
 }
 
@@ -163,7 +163,7 @@ textarea {
 }
 
 #search-wrapper {
-    position: absolute;
+    /*position: absolute;*/
     left: 0;
     z-index: 9999;
     margin: 1em;
@@ -216,13 +216,12 @@ body.calc #loading {
     padding: 0;
     cursor: pointer;
 }
-
     .tt-suggestion + .tt-suggestion {
         border-top: 1px solid #ccc;
     }
 
 .ac-name {
-    font-size: 1.25em;
+    font-size: 1em;
 }
 
 .ac-node-type,
@@ -273,12 +272,12 @@ body.calc #loading {
 }
 
 #reset {
-    top: 0;
+    top: 20;
     right: 0;
 }
 
 #filter {
-    top: 0;
+    top: 20;
     right: 4em;
 }
 
@@ -387,3 +386,95 @@ body.calc #loading {
     float: left;
     margin: 10px;
 }
+
+/**Slider (BEGIN)**/
+.slidecontainer {
+    width: 100%; /* Width of the outside container */
+}
+
+/* The slider itself */
+.slider {
+    -webkit-appearance: none; /* Override default CSS styles */
+    appearance: none;
+    width: 100%; /* Full-width */
+    height: 25px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+
+    /* Mouse-over effects */
+    .slider:hover {
+        opacity: 1; /* Fully shown on mouse-over */
+    }
+
+    /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none; /* Override default look */
+        appearance: none;
+        width: 25px; /* Set a specific slider handle width */
+        height: 25px; /* Slider handle height */
+        background: #3276b1; /*  background */
+        cursor: pointer; /* Cursor on hover */
+    }
+
+    .slider::-moz-range-thumb {
+        width: 25px; /* Set a specific slider handle width */
+        height: 25px; /* Slider handle height */
+        background: #3276b1; /* Green background */
+        cursor: pointer; /* Cursor on hover */
+    }
+/**Slider (END)***/
+
+/**Overlay (BEGIN)**/
+.overlay {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background: #222;
+}
+
+.overlay__inner {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.overlay__content {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.spinner {
+    width: 75px;
+    height: 75px;
+    display: inline-block;
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.05);
+    border-top-color: #fff;
+    animation: spin 1s infinite linear;
+    border-radius: 100%;
+    border-style: solid;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/**Overlay (END)**/
+
+/**Radio Button (BEGIN)**/
+#radioBtn .notActive {
+    color: #3276b1;
+    background-color: #fff;
+}
+/**Radio Button (END)**/

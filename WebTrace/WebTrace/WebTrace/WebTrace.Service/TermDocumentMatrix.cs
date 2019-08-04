@@ -37,6 +37,7 @@ namespace WebTrace.Services
         private Dictionary<string, int> _docIndexLookup;
         private Dictionary<int, string> _docnamesmap;
         private List<Functions> _functionMap;
+        private Dictionary<string, Dictionary<string, double>> _corpus;
         #endregion
 
         #region Public accessors
@@ -153,6 +154,16 @@ namespace WebTrace.Services
             }
         }
 
+        /// <summary>
+        /// Function Name and Source Code File Mapping
+        /// </summary>
+        public Dictionary<string, Dictionary<string, double>> Corpus
+        {
+            get
+            {
+                return _corpus;
+            }
+        }
         #endregion
 
         #region Constructor
@@ -169,9 +180,9 @@ namespace WebTrace.Services
             _docIndexLookup = new Dictionary<string, int>();
             _functionMap = new List<Functions>();
             _docnamesmap = new Dictionary<int, string>();
+            _corpus = new Dictionary<string, Dictionary<string, double>>();
 
             // create temporary corpus to build matrix with
-            Dictionary<string, Dictionary<string, double>> corpus = new Dictionary<string, Dictionary<string, double>>();
             foreach (TLArtifactsCollection artifacts in artifactsCollections)
             {
                 foreach (TLArtifact artifact in artifacts.Values)
@@ -180,7 +191,7 @@ namespace WebTrace.Services
                     _docIndex.Add(artifact.Id);
                     _docIndexLookup.Add(artifact.Id, _docIndex.Count - 1);
 
-                    corpus.Add(artifact.Id, new Dictionary<string, double>());
+                    _corpus.Add(artifact.Id, new Dictionary<string, double>());
 
                     foreach (string term in artifact.Text.Split())
                     {
@@ -193,13 +204,13 @@ namespace WebTrace.Services
                                 _termIndexLookup.Add(term, _termIndex.Count - 1);
                             }
                             // update document counts
-                            if (corpus[artifact.Id].ContainsKey(term))
+                            if (_corpus[artifact.Id].ContainsKey(term))
                             {
-                                corpus[artifact.Id][term]++;
+                                _corpus[artifact.Id][term]++;
                             }
                             else
                             {
-                                corpus[artifact.Id].Add(term, 1);
+                                _corpus[artifact.Id].Add(term, 1);
                             }
                         }
                     }
@@ -228,7 +239,7 @@ namespace WebTrace.Services
                 _matrix[i] = new double[_termIndex.Count];
                 for (int j = 0; j < _termIndex.Count; j++)
                 {
-                    corpus[_docIndex[i]].TryGetValue(_termIndex[j], out _matrix[i][j]);
+                    _corpus[_docIndex[i]].TryGetValue(_termIndex[j], out _matrix[i][j]);
                 }
             }
         }

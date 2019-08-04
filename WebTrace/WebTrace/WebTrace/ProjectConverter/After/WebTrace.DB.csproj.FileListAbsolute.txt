@@ -1,0 +1,12 @@
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.DB\bin\Debug\WebTrace.DB.dll
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.DB\bin\Debug\WebTrace.DB.pdb
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.DB\bin\Debug\MySql.Data.dll
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.DB\bin\Debug\Google.Protobuf.dll
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.DB\bin\Debug\Renci.SshNet.dll
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.DB\bin\Debug\BouncyCastle.Crypto.dll
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.DB\bin\Debug\MySql.Data.xml
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.DB\obj\Debug\WebTrace.DB.csprojAssemblyReference.cache
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.DB\obj\Debug\WebTrace.DB.csproj.CoreCompileInputs.cache
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.DB\obj\Debug\WebTrace.DB.csproj.CopyComplete
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.DB\obj\Debug\WebTrace.DB.dll
+C:\Phd\Webtrace\WebTrace\WebTrace\WebTrace\WebTrace.DB\obj\Debug\WebTrace.DB.pdb

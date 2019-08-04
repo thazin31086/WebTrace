@@ -4,27 +4,20 @@ This demo visualises use case and test case and source code pairings.
 
 $(function () {
 
-    var layoutPadding = 50;
+    var lastSearch = '';
+    var layoutPadding = 20;
     var aniDur = 500;
     var easing = 'linear';
     var cy;
-    // get exported json from cytoscape desktop via ajax
-    var graphP = $.ajax({
-        url: '/api/IR/GetData',
-        type: 'GET',
-        dataType: 'json'
-    });
-
-    // also get style via ajax
-    var styleP = $.ajax({
-        url: '/Scripts/style.cycss',
-        type: 'GET',
-        dataType: 'text'
-    });
+    var allNodes = null;
+    var allEles = null;
+    var lastHighlighted = null;
+    var lastUnhighlighted = null;
+    var selectedview = "All";
 
     var infoTemplate = Handlebars.compile([
         '<p class="ac-name">{{name}}</p>',
-        '<p class="ac-node-type"><i class="fa fa-info-circle"></i> {{NodeTypeFormatted}} {{#if Type}}({{Type}}){{/if}}</p>',      
+        '<p class="ac-node-type"><i class="fa fa-info-circle"></i> {{NodeTypeFormatted}} {{#if Type}}({{Type}}){{/if}}</p>',
         '<p class="ac-more"><i class="fa fa-external-link"></i> {{#if FileUrl}}{{ link "More Information" FileUrl }}{{/if}}</p>',
         '{{#if functionhtmlformatted}}<p class="ac-function-head">List of Class Functions</p><p class="ac-function">{{functionhtmlformatted}}</p>{{/if}}'
     ].join(''));
@@ -33,15 +26,8 @@ $(function () {
         url = Handlebars.escapeExpression(url);
         text = Handlebars.escapeExpression(text);
         var url_dec = decodeURIComponent(url).replace(/\+/g, " ");
-        return new Handlebars.SafeString("<a href='"+ url_dec + "'>" + text + "</a>");
+        return new Handlebars.SafeString("<a href='" + url_dec + "'>" + text + "</a>");
     });
-    // when both graph export json and style loaded, init cy
-    Promise.all([graphP, styleP]).then(initCy);
-
-    var allNodes = null;
-    var allEles = null;
-    var lastHighlighted = null;
-    var lastUnhighlighted = null;
 
     function getFadePromise(ele, opacity) {
         return ele.animation({
@@ -100,7 +86,7 @@ $(function () {
 
             var l = nhood.filter(':visible').makeLayout({
                 name: 'concentric',
-                fit: false,
+                fit: true,
                 animate: true,
                 animationDuration: aniDur,
                 animationEasing: easing,
@@ -152,9 +138,7 @@ $(function () {
             .then(reset)
             .then(runLayout)
             .then(fit)
-            .then(showOthersFaded)
-            ;
-
+            .then(showOthersFaded);
     }
 
     function isDirty() {
@@ -212,8 +196,7 @@ $(function () {
             .then(resetHighlight)
             .then(hideOthers)
             .then(restorePositions)
-            .then(showOthers)
-            ;
+            .then(showOthers);
     }
 
     function showNodeInfo(node) {
@@ -225,13 +208,12 @@ $(function () {
     }
 
     function initCy(then) {
-        var loading = document.getElementById('loading');
+        var loading = document.getElementById('divloading');
         var expJson = then[0];
         var styleJson = then[1];
         var elements = expJson.Data.elements;
 
         elements.nodes.forEach(function (n) {
-           // console.log(n);
             var data = n.data;
 
             data.NodeTypeFormatted = data.NodeType;
@@ -254,17 +236,31 @@ $(function () {
 
         loading.classList.add('loaded');
 
-        cy = window.cy = cytoscape({
-            container: $('#cy'),
-            layout: { name: 'preset', padding: layoutPadding },
-            style: styleJson,
-            elements: elements,
-            motionBlur: true,
-            selectionType: 'single',
-            boxSelectionEnabled: false,
-            autoungrabify: true
-        });
-
+        if ($("#chkmissinglinks").is(':checked')) {
+            cy = window.cy = cytoscape({
+                container: $('#cy'),
+                layout: { name: 'grid', padding: 10 },
+                style: styleJson,
+                elements: elements,
+                motionBlur: true,
+                selectionType: 'single',
+                boxSelectionEnabled: true,
+                autoungrabify: true
+            });
+        }
+        else {
+            cy = window.cy = cytoscape({
+                container: $('#cy'),
+                layout: { name: 'preset', padding: layoutPadding },
+                style: styleJson,
+                elements: elements,
+                motionBlur: true,
+                selectionType: 'single',
+                boxSelectionEnabled: false,
+                autoungrabify: true,
+                transform: function (node, position) { return position; }
+            });
+        }
         allNodes = cy.nodes();
         allEles = cy.elements();
 
@@ -296,11 +292,42 @@ $(function () {
                 clear();
             }
 
-        }, 100));
-
+        }, 100));       
     }
 
-    var lastSearch = '';
+    function loadData() {
+        $("#divloading").show();
+        $("#cy").hide();
+        var graphP = $.ajax({
+            url: '/api/IR/GetData',
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify({
+                "MissingLinks": $("#chkmissinglinks").is(':checked'),
+                "ExcludeTestCase": selectedview.includes('Test'),
+                "ExcludeSourceCode": selectedview.includes('Code'),
+                "SimilarityScore": $('#rngsimilarityscore').val(),
+            }),
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                return data;
+            },
+            failure: function (errorMsg) {
+                alert("Error retrieving message : " + errorMsg);
+            }
+        });
+
+        // also get style via ajax
+        var styleP = $.ajax({
+            url: '/Scripts/style.cycss',
+            type: 'GET',
+            dataType: 'text'
+        });
+        // when both graph export json and style loaded, init cy
+        Promise.all([graphP, styleP]).then(initCy);
+        $("#divloading").hide();
+        $("#cy").show();
+    }
 
     $('#search').typeahead({
         minLength: 2,
@@ -357,7 +384,6 @@ $(function () {
 
             cy.batch(function () {
                 allNodes.unselect();
-
                 n.select();
             });
 
@@ -377,9 +403,7 @@ $(function () {
             clear();
         } else {
             allNodes.unselect();
-
             hideNodeInfo();
-
             cy.stop();
 
             cy.animation({
@@ -387,68 +411,43 @@ $(function () {
                     eles: cy.elements(),
                     padding: layoutPadding
                 },
-                duration: aniDur,
+                duration: aniDur,   
                 easing: easing
             }).play();
         }
     });
 
-    
-    $('#filter').qtip({
-        position: {
-            my: 'top center',
-            at: 'bottom center',
-            adjust: {
-                method: 'shift'
-            },
-            viewport: true
-        },
-
-        show: {
-            event: 'click'
-        },
-
-        hide: {
-            event: 'unfocus'
-        },
-
-        style: {
-            classes: 'qtip-bootstrap qtip-filters',
-            tip: {
-                width: 16,
-                height: 8
-            }
-        },
-
-        content: $('#filters')
+    $('#btnFilter').on('click', function () {
+        loadData();
     });
 
-    $('#about').qtip({
-        position: {
-            my: 'bottom center',
-            at: 'top center',
-            adjust: {
-                method: 'shift'
-            },
-            viewport: true
-        },
+    /*Select Nodes All, Exlcude Source Code, Exclude Test Case*/
+    $('#radioBtn a').on('click', function () {
+        $('#radioBtn a').removeClass('active').addClass('notActive');
+        $(this).removeClass('notActive').addClass('active');
+        selectedview = $(this).html();
+    })
 
-        show: {
-            event: 'click'
-        },
-
-        hide: {
-            event: 'unfocus'
-        },
-
-        style: {
-            classes: 'qtip-bootstrap qtip-about',
-            tip: {
-                width: 16,
-                height: 8
-            }
-        },
-
-        content: $('#about-content')
+    $('.slider').on('input change', function () {
+        $(this).next($('.slider_label')).html(this.value);
     });
+    $('.slider_label').each(function () {
+        var value = $(this).prev().attr('value') + '%';
+        $(this).html(value);
+    });
+
+    var prevScrollpos = window.pageYOffset;
+    window.onscroll = function () {
+        var currentScrollPos = window.pageYOffset;
+        if (prevScrollpos > currentScrollPos) {
+            document.getElementById("navbar").style.top = "0";
+        } else {
+            document.getElementById("navbar").style.top = "-50px";
+        }
+        prevScrollpos = currentScrollPos;
+    }
+
+    /*Load Data*/
+    $('[data-toggle="tooltip"]').tooltip();
+    loadData();
 });

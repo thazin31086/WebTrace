@@ -1,0 +1,42 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutViz.cshtml";
+}
+<div id="VisualTraceLinksDiv">
+    @Scripts.Render("~/bundles/vis")
+    <div class="overlay" id="divloading">
+        <div class="overlay__inner">
+            <div class="overlay__content"><span class="spinner"></span></div>
+        </div>
+    </div>
+    <div id="cy"></div>
+    <div id="search-wrapper">
+        <button id="reset" class="btn btn-default"><i class="fa fa-arrows-h"></i></button>
+        <button id="filter" class="btn btn-default" data-toggle="modal" data-target="#searchModal"><i class="fa fa-filter"></i></button>
+        <input type="text" class="form-control" id="search" placeholder="&#xf002; Search">
+    </div>
+    <div class="modal" id="searchModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Filter By</h5>
+                </div>
+                <div class="modal-body">
+                    <input id="chkmissinglinks" type="checkbox" data-toggle="tooltip" title="Use Case with no Test Case or Source code" /><label for="chkmissinglinks">Missing Links</label><br />
+                    <input id="chktestcase" type="checkbox" /><label for="chktestcase" data-toggle="tooltip" title="Exclude Test Case from the view">Exclude Test Case</label><br />
+                    <input id="chksourcecode" type="checkbox" /><label for="chksourcecode" data-toggle="tooltip" title="Exclude Source Code from the view">Exclude Source Code</label><br />
+                    <div class="slidecontainer">
+                        <label for="range_weight" data-toggle="tooltip" title="Textual Similarity percentage between Source And Target Artifacts">Similarity Precentage: </label>
+                        <input type="range" min="1" max="100" value="10" class="slider" id="rngsimilarityscore">
+                        <span class="slider_label"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnFilter" data-dismiss="modal">Filter</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="info">
+    </div>
+</div>
