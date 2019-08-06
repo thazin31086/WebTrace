@@ -124,10 +124,10 @@ textarea {
 /*/** Visualize JS**/
 #VisualTraceLinksDiv {
     font: 14px fontawesome, helvetica neue, helvetica, liberation sans, nimbus sans, nimbus sans l, arial, sans-serif;
-    /*width: 100%;
+    width: 100%;
     height: 100%;
     position: absolute;
-    overflow: hidden;*/
+    overflow: hidden;
 }
 
 #cy {
