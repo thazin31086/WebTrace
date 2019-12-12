@@ -9,5 +9,7 @@ WebTrace reference library for IR Processing (VSM) : http://www.cs.wm.edu/semeru
 
 
 Published Paper 
-https://icsme2019.github.io/full_program.html
-https://github.com/thazin31086/WebTrace/blob/master/Interactive_Traceability_Links_Visualization__using_Hierarchical_Trace_Map.pdf
+T. W. W. Aung, H. Huo and Y. Sui, "Interactive Traceability Links Visualization using Hierarchical Trace Map," 2019 IEEE International Conference on Software Maintenance and Evolution (ICSME), Cleveland, OH, USA, 2019, pp. 367-369.
+doi: 10.1109/ICSME.2019.00059
+keywords: {Visualization;Software engineering;Conferences;Software maintenance;Task analysis;Information retrieval;Traceability, Information Retrieval, Visualization},
+URL: http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8919207&isnumber=8918933
