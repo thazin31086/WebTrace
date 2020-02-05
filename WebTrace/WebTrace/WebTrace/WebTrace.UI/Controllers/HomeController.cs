@@ -163,6 +163,14 @@ namespace WebTrace.UI.Controllers
             return View();
         }
 
+        public ActionResult ParseCode()
+        {
+            var sharpParser = new WebTrace.Services.CSharpParser();
+            var list = sharpParser.GetAllMethodNames("C:\\Users\\thazi\\Downloads\\File.txt");
+            ViewBag.Result = list;
+            return View();
+        }
+
         #region Methods
         private TreeNode PopulateTreeView(string path)
         {

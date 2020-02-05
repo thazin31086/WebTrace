@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasePath.cs" />
+    <Compile Include="CSharpParser.cs" />
     <Compile Include="Dataset.cs" />
     <Compile Include="DataSetPairs.cs" />
     <Compile Include="DataSetPairsCollection.cs" />
