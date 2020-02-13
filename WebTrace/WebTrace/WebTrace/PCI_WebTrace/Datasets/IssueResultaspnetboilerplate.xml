@@ -1,0 +1,1602 @@
+<Issues>
+  <Issue>
+    <IssueID>4452</IssueID>
+    <Title>Change Logging Facility Provider to NLog</Title>
+    <Description>Hi 
+I'm pleasure to use your framework.
+I use aspnetboilerplate for .net core cross platform.
+
+I can't configure the "Logging Facility" use the Nlog or SeriLog.
+Also, I didn't Find any article for this issue.
+Could you please help me?
+Thank you</Description>
+    <CreatedDate>14/04/2019</CreatedDate>
+    <ClosedDate>14/04/2019</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>4294</IssueID>
+    <Title>GetSettingValueForApplicationOrNullAsync fails if no tenant available yet</Title>
+    <Description>The behavior of retrieving application (=host) settings has changed in #4053. Now application settings are treated like tenant settings and fetched with the default tenant-id (which is 1).
+
+With this new behavior, there is a side-effect (see https://github.com/aspnetboilerplate/aspnetboilerplate/issues/4276#issuecomment-462838777):
+A call to `GetSettingValueForApplicationOrNull(Async)` fails, if 1) there is no seed data yet (fresh database) or 2) during unit-tests. I.e. this can happen, if you use `SettingManager.GetSettingValueForApplicationOrNullAsync("mySetting")` in module initialization (before AbpZeroTemplateEntityFrameworkCoreModule has initialized) such as `MyCompanyName.AbpZeroTemplate.Core/AbpZeroTemplateCoreModule` (i.e. [here](https://github.com/aspnetzero/aspnet-zero-core/blob/15259384fcb21e147058fd60b568cdbfc3d74dad/aspnet-core/src/MyCompanyName.AbpZeroTemplate.Core/AbpZeroTemplateCoreModule.cs#L109)).
+Expected behavior:
+If no tenant is available yet, then the db hasn't been seeded yet -&gt; fall back to defaults (but do not fail!).
+Suggested code:
+```
+private async Task&lt;SettingInfo&gt; GetSettingValueForApplicationOrNullAsync(string name)
+{
+	if (_multiTenancyConfig.IsEnabled)
+	{
+		return (await GetApplicationSettingsAsync()).GetOrDefault(name);
+	}
+	else if (AbpSession.GetTenantId() == MultiTenancyConsts.DefaultTenantId 
+			 &amp;&amp; tenantCache.GetOrNull(AbpSession.GetTenantId()) == null)
+	{
+		// if db-seed hasn't run yet, there is no default tenant
+		// -&gt; fallback to defaults
+		return null;
+	}
+
+	return (await GetReadOnlyTenantSettings(AbpSession.GetTenantId())).GetOrDefault(name);
+}
+```</Description>
+    <CreatedDate>17/02/2019</CreatedDate>
+    <ClosedDate>20/02/2019</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>4131</IssueID>
+    <Title>fix #4130 UserStore Normalize user name and email address.</Title>
+    <Description>https://github.com/aspnet/AspNetIdentity/blob/master/src/Microsoft.AspNet.Identity.EntityFramework/UserStore.cs#L265
+According to the implementation of identity2, directly convert the user name or email address to uppercase.
+
+For the identity core, we use `normalizedUserName `and `normalizedEmailAddress `in the `UserStore`.
+Normalizing parameters in the `UserManager`
+
+**Both include Role**</Description>
+    <CreatedDate>29/12/2018</CreatedDate>
+    <ClosedDate>06/02/2019</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>3335</IssueID>
+    <Title>Add Count Property</Title>
+    <Description>
+    </Description>
+    <CreatedDate>07/05/2018</CreatedDate>
+    <ClosedDate>07/05/2018</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>3330</IssueID>
+    <Title>How we can to create logout API in ABP for UI.</Title>
+    <Description>This will basically explicitly expire access token from DB. 
+
+Again if same access token is used it should give access token expire and should again return 401. 
+
+How we have write code to explicitly expire token?</Description>
+    <CreatedDate>04/05/2018</CreatedDate>
+    <ClosedDate>05/05/2018</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>2842</IssueID>
+    <Title>Get all value from cache</Title>
+    <Description>I have cache for group product that name is "GroupOfProduct"
+how can i get all value from "GroupOfProduct"? because i want to show list of group
+
+i set value as this code
+
+````C#
+  foreach (var node in groupsDto)
+            {
+                var children = groupsDto.Where(s =&gt; s.ParentId == node.Id).ToList();
+                if (children.Any())
+                {
+                    node.Children = children.ToList();
+                }
+                if (node.ParentId == 0)
+                    dataNodes.Add(node);
+                await _cacheManager
+                    .GetCache("GroupOfProduct")
+                    .SetAsync(node.Id.ToString(), node);
+            }
+````</Description>
+    <CreatedDate>01/01/2018</CreatedDate>
+    <ClosedDate>01/01/2018</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>2804</IssueID>
+    <Title>Question: using React</Title>
+    <Description>Hi just wondering, is anyone tried to use reactjs instead of angular, and how it's going?
+
+As for me I found that Angular is kind of overhead for quick development. For simple parts it's better to use server side rendering, and for complex one smth like React. As anyone have same experience or opinion here? :)</Description>
+    <CreatedDate>21/12/2017</CreatedDate>
+    <ClosedDate>26/01/2018</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>2430</IssueID>
+    <Title>When the ABP v3.0 release(abp with core2.0)</Title>
+    <Description>We hava a new Project. We want to use core2.0. I want to know when the new version release. thanks  a lot!</Description>
+    <CreatedDate>24/08/2017</CreatedDate>
+    <ClosedDate>24/08/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>2413</IssueID>
+    <Title>Remove Repository</Title>
+    <Description>We've gained a number of things:
+
+Explicit Transactions. We know exactly where our DbContext has come from, and what Unit of Work we're executing in each case. This is helpful both now and into the future.
+Less Abstraction == Clarity. We've lost our Repositories which didn't have a reason to exist other than to abstract an existing abstraction. Our Command/QueryObject approach is cleaner and the intent of each one is clearer.
+Less Chance of Bugs. The Repository overlap (and worse yet: Repository) increases the chance that we could have partially-executed transactions and screwed up data.
+So there it is. Repositories and UnitOfWork don't mix and hopefully you've found this helpful!
+
+please see my project: https://github.com/majidbigdeli/DNTIdentity And http://rob.conery.io/2014/03/03/repositories-and-unitofwork-are-not-a-good-idea/</Description>
+    <CreatedDate>15/08/2017</CreatedDate>
+    <ClosedDate>15/08/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>2374</IssueID>
+    <Title>upgrade 2.0.2 --&gt; 2.2.1 my custom repository can not be injected</Title>
+    <Description>my repository code:
+```c#
+    public abstract class EsdServiceRepositoryBase&lt;TEntity, TPrimaryKey&gt; : EfCoreRepositoryBase&lt;EsdServiceDbContext, TEntity, TPrimaryKey&gt;
+        where TEntity: class, IEntity&lt;TPrimaryKey&gt;
+    {
+        protected EsdServiceRepositoryBase(IDbContextProvider&lt;EsdServiceDbContext&gt; dbContextProvider)
+            : base(dbContextProvider) { }
+    }
+
+    public class EsdServiceRepository&lt;TEntity, TPrimaryKey&gt;
+        : EsdServiceRepositoryBase&lt;TEntity, TPrimaryKey&gt;
+        where TEntity : class, IEntity&lt;TPrimaryKey&gt;
+    {
+        public EsdServiceRepository(IDbContextProvider&lt;EsdServiceDbContext&gt; db) : base(db) { }
+    }
+
+    public class EsdServiceRepository&lt;TEntity&gt;
+        : EsdServiceRepositoryBase&lt;TEntity, string&gt;
+        where TEntity : class, IEntity&lt;string&gt;
+    {
+        public EsdServiceRepository(IDbContextProvider&lt;EsdServiceDbContext&gt; db) : base(db) { }
+    }
+```
+my application service code:
+```c#
+    public class ApplyService : EsdServiceAppServiceBase, IApplyService
+    {
+        private readonly IRepository&lt;Apply, string&gt; _applyRepository;
+
+        public ApplyService(IRepository&lt;Apply, string&gt; applyRepository)
+        {
+            _applyRepository = applyRepository;
+        }
+
+        public async Task&lt;GetApplyOutput&gt; Get(string id)
+        {
+            var apply = await _applyRepository.GetAsync(id);
+            return apply.MapTo&lt;GetApplyOutput&gt;();
+        }
+    }
+```
+
+my EsdServiceDbContext code:
+```c#
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            GetModelTypes().ToList().ForEach(
+                (type) =&gt;
+                {
+                    modelBuilder.Entity(type);
+                });
+            base.OnModelCreating(modelBuilder);
+        }
+
+        private IEnumerable&lt;Type&gt; GetModelTypes()
+        {
+            Assembly assembly = typeof(EsdServiceCoreModule).GetTypeInfo().Assembly;
+            return assembly.GetTypes().Where(IsModelType);
+        }
+
+        public static bool IsModelType(Type type)
+        {
+            Type baseType = typeof(IEntity&lt;&gt;);
+            return Array.Exists(
+                   type.GetInterfaces(),
+                   t =&gt;
+                       t.GetTypeInfo().IsGenericType &amp;&amp;
+                       t.GetTypeInfo().GetGenericTypeDefinition() == baseType
+                   ) &amp;&amp;
+                   !type.GetTypeInfo().IsAbstract &amp;&amp;
+                   !type.GetTypeInfo().IsGenericType &amp;&amp;
+                   type.GetTypeInfo().IsClass &amp;&amp;
+                   type.GetTypeInfo().IsPublic;
+        }
+```
+
+**I did not use the IDbSet &lt;&gt; attribute in DbContext , and I tried to use "[AutoRepositoryTypes(
+        typeof(IRepository&lt;&gt;),
+        typeof(IRepository&lt;,&gt;),
+        typeof(EsdServiceRepository&lt;&gt;),
+        typeof(EsdServiceRepository&lt;,&gt;))]" on DbContext is also invalid**
+
+**_I use a single database, so I do not want to use IDbSet &lt;&gt;, please give a solution, thanks!_**
+
+Exception Message:
+
+Can't create component 'Zac.EsdService.OrderInfos.ApplyService' as it has dependencies to be satisfied.\r\n\r\n'Zac.EsdService.OrderInfos.ApplyService' is waiting for the following dependencies:\r\n- Service 'Abp.Domain.Repositories.IRepository`2[[Zac.EsdService.OrderInfos.Apply, Zac.EsdService.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]' which was not registered.\r\n"</Description>
+    <CreatedDate>31/07/2017</CreatedDate>
+    <ClosedDate>01/08/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>2265</IssueID>
+    <Title>ABP framework has implemented separated write and read?</Title>
+    <Description>ABP framework has implemented separated write and read?</Description>
+    <CreatedDate>28/06/2017</CreatedDate>
+    <ClosedDate>28/06/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>2075</IssueID>
+    <Title>support IdentityServer3 and IdentityServer4</Title>
+    <Description>I wish module zero would support IdentityServer3 and IdentityServer4.
+theses startekits implements it:
+https://github.com/joeaudette/cloudscribe.StarterKits</Description>
+    <CreatedDate>26/04/2017</CreatedDate>
+    <ClosedDate>26/04/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>2045</IssueID>
+    <Title>System.OutOfMemoryException when use DbContextEfTransactionStrategy  lifeStyle Transient</Title>
+    <Description>Abp Version : 1.5.1
+Abp.EntityFramework Version : 1.5.1
+
+Hello ,
+
+I use DbContextEfTransactionStrategy and I send 10k requests to Readonly api service.
+
+IISexpress consumed 1GB ram ,then it crashed.
+
+StackTrace
+
+` nHandling.AbpApiExceptionFilterAttribute - Exception of type 'System.OutOfMemoryException' was thrown.
+System.OutOfMemoryException: Exception of type 'System.OutOfMemoryException' was thrown.
+   at System.Data.Entity.Core.Objects.EntityEntry.DetectChangesInRelationshipsOfSingleEntity()
+   at System.Data.Entity.Core.Objects.ObjectStateManager.DetectChangesInNavigationProperties(IList`1 entries)
+   at System.Data.Entity.Core.Objects.ObjectStateManager.DetectChanges()
+   at System.Data.Entity.Core.Objects.ObjectContext.DetectChanges()
+   at System.Data.Entity.Internal.InternalContext.DetectChanges(Boolean force)
+   at System.Data.Entity.Internal.InternalContext.GetStateEntries(Func`2 predicate)
+   at System.Data.Entity.Internal.InternalContext.GetStateEntries()
+   at System.Data.Entity.Infrastructure.DbChangeTracker.Entries()
+   at Abp.EntityFramework.AbpDbContext.ApplyAbpConcepts()
+   at Abp.EntityFramework.AbpDbContext.SaveChanges()
+   at Abp.EntityFramework.Uow.EfUnitOfWork.SaveChangesInDbContext(DbContext dbContext)
+   at Castle.Core.Internal.CollectionExtensions.ForEach[T](IEnumerable`1 items, Action`1 action)
+   at Abp.EntityFramework.Uow.EfUnitOfWork.SaveChanges()
+   at Abp.EntityFramework.Uow.EfUnitOfWork.CompleteUow()
+   at Abp.Domain.Uow.UnitOfWorkBase.Complete()
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.PerformSyncUow(IInvocation invocation, UnitOfWorkOptions options)
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.PerformUow(IInvocation invocation, UnitOfWorkOptions options)
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.Intercept(IInvocation invocation)
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Abp.Auditing.AuditingInterceptor.Intercept(IInvocation invocation)
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Abp.Runtime.Validation.Interception.ValidationInterceptor.Intercept(IInvocation invocation)
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Castle.Proxies.DataSourceAppServiceProxy.GetAll()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   at Abp.WebApi.Controllers.Dynamic.Interceptors.AbpDynamicApiControllerInterceptor`1.Intercept(IInvocation invocation)
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Castle.Proxies.DynamicApiController`1Proxy_1.GetAll()
+   at lambda_method(Closure , Object , Object[] )
+   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.&lt;&gt;c__DisplayClass10.&lt;GetExecutor&gt;b__9(Object instance, Object[] methodParameters)
+   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ActionExecutor.Execute(Object instance, Object[] arguments)
+   at System.Web.Http.Controllers.ReflectedHttpActionDescriptor.ExecuteAsync(HttpControllerContext controllerContext, IDictionary`2 arguments, CancellationToken cancellationToken)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Web.Http.Controllers.ApiControllerActionInvoker.&lt;InvokeActionAsyncCore&gt;d__0.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Abp.WebApi.Uow.AbpApiUowFilter.&lt;ExecuteActionFilterAsync&gt;d__5.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Abp.WebApi.Validation.AbpApiValidationFilter.&lt;ExecuteActionFilterAsync&gt;d__5.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Abp.WebApi.Auditing.AbpApiAuditFilter.&lt;ExecuteActionFilterAsync&gt;d__4.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Web.Http.Controllers.ActionFilterResult.&lt;ExecuteAsync&gt;d__2.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Abp.WebApi.Security.AntiForgery.AbpAntiForgeryApiFilter.&lt;ExecuteAuthorizationFilterAsync&gt;d__10.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at Abp.WebApi.Authorization.AbpApiAuthorizeFilter.&lt;ExecuteAuthorizationFilterAsync&gt;d__7.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Web.Http.Controllers.ExceptionFilterResult.&lt;ExecuteAsync&gt;d__0.MoveNext()`
+
+
+</Description>
+    <CreatedDate>18/04/2017</CreatedDate>
+    <ClosedDate>18/04/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1996</IssueID>
+    <Title>Is nos possible using database migration with Firebird Database, please I need It!</Title>
+    <Description>[Link to issue on firebird tracker](http://tracker.firebirdsql.org/browse/DNET-750)
+
+**Environment:**]
+Visual Studio 2015 
+Firebird 3.0.2 
+FirebirdSql.Data.FirebirdClient 5.8.0.0 
+EntityFramework.Firebird 5.8.0.0 
+aspnetboilerplate with Module Zero v1.5.2
+
+**Error:**
+
+Update-Database -Verbose
+ 
+Using StartUp project 'TestaSite.EntityFramework'. 
+Using NuGet project 'TestaSite.EntityFramework'. 
+Specify the '-Verbose' flag to view the SQL statements being applied to the target database. 
+System.NotSupportedException: There is no store type corresponding to the EDM type 'Edm.Byte' of primitive type 'Byte'. 
+   at FirebirdSql.Data.EntityFramework6.FbProviderManifest.GetStoreType(TypeUsage edmType) in C:\Users\Jiri\Documents\devel\NETProvider\working\Provider\src\FirebirdSql.Data.FirebirdClient\FirebirdClient\FbProviderManifest.cs:line 417 
+   at System.Data.Entity.ModelConfiguration.Edm.Services.StructuralTypeMappingGenerator.MapTableColumn(EdmProperty property, String columnName, Boolean isInstancePropertyOnDerivedType) 
+   at System.Data.Entity.ModelConfiguration.Edm.Services.PropertyMappingGenerator.Generate(EntityType entityType, IEnumerable`1 properties, EntitySetMapping entitySetMapping, MappingFragment entityTypeMappingFragment, IList`1 propertyPath, Boolean createNewColumn) 
+   at System.Data.Entity.ModelConfiguration.Edm.Services.TableMappingGenerator.Generate(EntityType entityType, DbDatabaseMapping databaseMapping) 
+   at System.Data.Entity.ModelConfiguration.Edm.Services.DatabaseMappingGenerator.GenerateEntityTypes(DbDatabaseMapping databaseMapping) 
+   at System.Data.Entity.ModelConfiguration.Edm.Services.DatabaseMappingGenerator.Generate(EdmModel conceptualModel) 
+   at System.Data.Entity.DbModelBuilder.Build(DbProviderManifest providerManifest, DbProviderInfo providerInfo) 
+   at System.Data.Entity.DbModelBuilder.Build(DbConnection providerConnection) 
+   at System.Data.Entity.Internal.LazyInternalContext.CreateModel(LazyInternalContext internalContext) 
+   at System.Data.Entity.Internal.RetryLazy`2.GetValue(TInput input) 
+   at System.Data.Entity.Internal.LazyInternalContext.InitializeContext() 
+   at System.Data.Entity.Internal.InternalContext.ForceOSpaceLoadingForKnownEntityTypes() 
+   at System.Data.Entity.DbContext.System.Data.Entity.Infrastructure.IObjectContextAdapter.get_ObjectContext() 
+   at Abp.EntityFramework.AbpDbContext.RegisterToChanges() 
+   at Abp.Zero.EntityFramework.AbpZeroDbContext`3..ctor(String nameOrConnectionString) 
+   at TestaSite.EntityFramework.TestaSiteDbContext..ctor() in C:\arquivos\TestaSite\TestaSite.EntityFramework\EntityFramework\TestaSiteDbContext.cs:line 20 
+--- End of stack trace from previous location where exception was thrown --- 
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() 
+   at System.Data.Entity.Infrastructure.DbContextInfo.CreateInstance() 
+   at System.Data.Entity.Infrastructure.DbContextInfo..ctor(Type contextType, DbProviderInfo modelProviderInfo, AppConfig config, DbConnectionInfo connectionInfo, Func`1 resolver) 
+   at System.Data.Entity.Migrations.DbMigrator..ctor(DbMigrationsConfiguration configuration, DbContext usersContext, DatabaseExistenceState existenceState, Boolean calledByCreateDatabase) 
+   at System.Data.Entity.Migrations.DbMigrator..ctor(DbMigrationsConfiguration configuration) 
+   at System.Data.Entity.Migrations.Design.ToolingFacade.BaseRunner.GetMigrator() 
+   at System.Data.Entity.Migrations.Design.ToolingFacade.UpdateRunner.Run() 
+   at System.AppDomain.DoCallBack(CrossAppDomainDelegate callBackDelegate) 
+   at System.AppDomain.DoCallBack(CrossAppDomainDelegate callBackDelegate) 
+   at System.Data.Entity.Migrations.Design.ToolingFacade.Run(BaseRunner runner) 
+   at System.Data.Entity.Migrations.Design.ToolingFacade.Update(String targetMigration, Boolean force) 
+   at System.Data.Entity.Migrations.UpdateDatabaseCommand.&lt;&gt;c__DisplayClass2.&lt;.ctor&gt;b__0() 
+   at System.Data.Entity.Migrations.MigrationsDomainCommand.Execute(Action command) 
+
+There is no store type corresponding to the EDM type 'Edm.Byte' of primitive type 'Byte'. 
+
+</Description>
+    <CreatedDate>04/04/2017</CreatedDate>
+    <ClosedDate>06/04/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1981</IssueID>
+    <Title>ISSUE: Api Service default validator and autogenerated js service</Title>
+    <Description>Hi, after Abp upgrade from 1.4.2 to 1.5.1 we got the issue with our app service calls.
+
+Request Example:
+```
+var promise = $dropDownService.getEnumItems('create');
+...
+```
+http://localhost:6233/api/services/app/myService/GetEnumItems?categoryName=create&amp;sort=undefined&amp;sortDesc=undefined
+
+Abp auto generated code:
+```
+this.getEnumItems = function (categoryName, sort, sortDesc, httpParams) {
+  return $http(angular.extend({
+    url: abp.appPath + 'api/services/app/myService/GetEnumItems?categoryName=' + encodeURIComponent(categoryName) + '&amp;sort=' + encodeURIComponent(sort) + '&amp;sortDesc=' + encodeURIComponent(sortDesc) + '',
+    method: 'GET',
+    params: {}
+  }, httpParams));
+};
+```
+
+Application Service method declaration:
+`public override IEnumerable&lt;EnumDto&gt; GetEnumItems(string categoryName, bool? sort, bool? sortDesc)
+{
+...
+}`
+
+Error Response:
+The following errors were detected during validation.
+  - The value 'undefined' is not valid for Nullable`1.
+  - The value 'undefined' is not valid for Nullable`1.</Description>
+    <CreatedDate>29/03/2017</CreatedDate>
+    <ClosedDate>30/05/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1890</IssueID>
+    <Title>Abp targetting netcoreapp </Title>
+    <Description>Any plans on including support for netcoreapp ?
+
+I really would appreciate running Abp framework on linux :)
+
+We have a new project coming in and plans are to use AspNetZero, but we need to use it on aspnetcore/linux box.
+
+Bruno
+</Description>
+    <CreatedDate>26/02/2017</CreatedDate>
+    <ClosedDate>26/02/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1872</IssueID>
+    <Title>upgrade to V1.4.2.0 make an error</Title>
+    <Description>Hi,
+
+i had upgraded my project to v1.4.2.0,but when i run my program there has an error:System.MissingMethodException
+
+````
+System.MissingMethodException: Method not found: 'Void EntityFramework.DynamicFilters.DynamicFilterExtensions.Filter(System.Data.Entity.DbModelBuilder, System.String, System.Linq.Expressions.Expression1&lt;System.Func3&lt;!!0,!!1,Boolean&gt;&gt;, !!1)'.
+at Abp.EntityFramework.AbpDbContext.OnModelCreating(DbModelBuilder modelBuilder)
+at Abp.Zero.EntityFramework.AbpZeroDbContext3.OnModelCreating(DbModelBuilder modelBuilder) in D:\Halil\Github\module-zero\src\Abp.Zero.EntityFramework\Zero\EntityFramework\AbpZeroDbContext.cs:line 100 at System.Data.Entity.Internal.LazyInternalContext.CreateModelBuilder() at System.Data.Entity.Internal.LazyInternalContext.CreateModel(LazyInternalContext internalContext) at System.Data.Entity.Internal.RetryLazy2.GetValue(TInput input)
+at System.Data.Entity.Internal.LazyInternalContext.InitializeContext()
+at System.Data.Entity.Internal.InternalContext.ForceOSpaceLoadingForKnownEntityTypes()
+at System.Data.Entity.DbContext.System.Data.Entity.Infrastructure.IObjectContextAdapter.get_ObjectContext()
+at Abp.EntityFramework.AbpDbContext.RegisterToChanges() in D:\Halil\Github\aspnetboilerplate\src\Abp.EntityFramework\EntityFramework\AbpDbContext.cs:line 141
+at Abp.Zero.EntityFramework.AbpZeroDbContext3..ctor(String nameOrConnectionString) in D:\Halil\Github\module-zero\src\Abp.Zero.EntityFramework\Zero\EntityFramework\AbpZeroDbContext.cs:line 66 at Test.EntityFramework.TestDbContext..ctor() in c:\temp\Test\Test\Test.EntityFramework\EntityFramework\TestDbContext.cs:line 18 --- End of stack trace from previous location where exception was thrown --- at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() at System.Data.Entity.Infrastructure.DbContextInfo.CreateInstance() at System.Data.Entity.Infrastructure.DbContextInfo..ctor(Type contextType, DbProviderInfo modelProviderInfo, AppConfig config, DbConnectionInfo connectionInfo, Func1 resolver)
+at System.Data.Entity.Migrations.DbMigrator..ctor(DbMigrationsConfiguration configuration, DbContext usersContext, DatabaseExistenceState existenceState, Boolean calledByCreateDatabase)
+at System.Data.Entity.Migrations.DbMigrator..ctor(DbMigrationsConfiguration configuration)
+at System.Data.Entity.Migrations.Design.ToolingFacade.BaseRunner.GetMigrator()
+at System.Data.Entity.Migrations.Design.ToolingFacade.UpdateRunner.Run()
+at System.AppDomain.DoCallBack(CrossAppDomainDelegate callBackDelegate)
+at System.AppDomain.DoCallBack(CrossAppDomainDelegate callBackDelegate)
+at System.Data.Entity.Migrations.Design.ToolingFacade.Run(BaseRunner runner)
+at System.Data.Entity.Migrations.Design.ToolingFacade.Update(String targetMigration, Boolean force)
+at System.Data.Entity.Migrations.UpdateDatabaseCommand.&lt;&gt;c__DisplayClass2.&lt;.ctor&gt;b__0()
+at System.Data.Entity.Migrations.MigrationsDomainCommand.Execute(Action command)
+Method not found: 'Void EntityFramework.DynamicFilters.DynamicFilterExtensions.Filter(System.Data.Entity.DbModelBuilder, System.String, System.Linq.Expressions.Expression1&lt;System.Func3&lt;!!0,!!1,Boolean&gt;&gt;, !!1)'.
+````
+
+i also upgrade the EntityFramework.DynamicFilters package to the latest version v2.6.0, but it still can not  work.
+i searched in issues,somebody had fixed it by manually downgrading to EntityFramework.DynamicFilters 1.4.11.
+i do not want this way,so is there another way to solve this problem?
+please help me,thanks!</Description>
+    <CreatedDate>18/02/2017</CreatedDate>
+    <ClosedDate>19/02/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1794</IssueID>
+    <Title>check and update dbcontext constructors in startup templates</Title>
+    <Description>to support https://github.com/aspnetboilerplate/aspnetboilerplate/commit/ea5a0fa4bfeb84e427e9897105eebe4a3fb0f08c
+</Description>
+    <CreatedDate>19/01/2017</CreatedDate>
+    <ClosedDate>19/01/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1757</IssueID>
+    <Title>upgrade 1.1.3 --&gt; 1.2.x System.InvalidOperationException Nested transactions are not supported.</Title>
+    <Description>**System.InvalidOperationException: Nested transactions are not supported.**
+
+after upgrade 1.1.3 to 1.2.x , with the following code:
+mvc controller:
+```c#
+        readonly ITaskService _taskService;
+
+        public HomeController(ITaskService taskService)
+        {
+            _taskService = taskService;
+        }
+
+        public void TestUnitOfWork()
+        {
+            _taskService.Create();
+        }
+```
+my service:
+```c#
+    public class TaskService : ApplicationService, ITaskService
+    {
+        readonly IRepository&lt;Task, int&gt; _taskRepository;
+
+        public TaskService(IRepository&lt;Task, int&gt; taskRepository)
+        {
+            _taskRepository = taskRepository;
+        }
+
+        public async System.Threading.Tasks.Task Create()
+        {
+            var task = await _taskRepository.FirstOrDefaultAsync(m =&gt; m.Id == 1);
+            task = await _taskRepository.InsertAsync(new Task()
+            {
+                Name = "Test"
+            });
+        }
+    }
+```
+I am using mysql database with **Mysql.Data.Entity and Mysql.Data(6.9.9), EF 6.1.3.**
+Sql Server is ok.
+in Abp version 1.1.3 , .no exception throws.
+after update to 1.2.0, it throws **System.InvalidOperationException: Nested transactions are not supported.** Then I degrade to 1.1.3 no exception throws.
+
+stacktrace:
+[InvalidOperationException: Nested transactions are not supported.]
+   MySql.Data.MySqlClient.ExceptionInterceptor.Throw(Exception exception) +308
+   MySql.Data.MySqlClient.MySqlConnection.Throw(Exception ex) +103
+   MySql.Data.MySqlClient.MySqlConnection.BeginTransaction(IsolationLevel iso) +340
+   MySql.Data.MySqlClient.MySqlConnection.BeginTransaction() +70
+   MySql.Data.MySqlClient.MySqlConnection.BeginDbTransaction(IsolationLevel isolationLevel) +80
+   System.Data.Common.DbConnection.BeginTransaction(IsolationLevel isolationLevel) +10
+   System.Data.Entity.Infrastructure.Interception.DbConnectionDispatcher.&lt;BeginTransaction&gt;b__0(DbConnection t, BeginTransactionInterceptionContext c) +26
+   System.Data.Entity.Infrastructure.Interception.InternalDispatcher`1.Dispatch(TTarget target, Func`3 operation, TInterceptionContext interceptionContext, Action`3 executing, Action`3 executed) +652
+   System.Data.Entity.Infrastructure.Interception.DbConnectionDispatcher.BeginTransaction(DbConnection connection, BeginTransactionInterceptionContext interceptionContext) +333
+   System.Data.Entity.Core.EntityClient.&lt;&gt;c__DisplayClassf.&lt;BeginDbTransaction&gt;b__d() +270
+   System.Data.Entity.Infrastructure.DefaultExecutionStrategy.Execute(Func`1 operation) +9
+   System.Data.Entity.Core.EntityClient.EntityConnection.BeginDbTransaction(IsolationLevel isolationLevel) +288
+
+[EntityException: An error occurred while starting a transaction on the provider connection. See the inner exception for details.]
+   System.Data.Entity.Core.EntityClient.EntityConnection.BeginDbTransaction(IsolationLevel isolationLevel) +342
+   System.Data.Common.DbConnection.BeginTransaction() +13
+   System.Data.Entity.Core.EntityClient.EntityConnection.BeginTransaction() +4
+   System.Data.Entity.Core.Objects.ObjectContext.ExecuteInTransaction(Func`1 func, IDbExecutionStrategy executionStrategy, Boolean startLocalTransaction, Boolean releaseConnectionOnSuccess) +274
+   System.Data.Entity.Core.Objects.ObjectContext.SaveChangesToStore(SaveOptions options, IDbExecutionStrategy executionStrategy, Boolean startLocalTransaction) +162
+   System.Data.Entity.Core.Objects.&lt;&gt;c__DisplayClass2a.&lt;SaveChangesInternal&gt;b__27() +22
+   System.Data.Entity.Infrastructure.DefaultExecutionStrategy.Execute(Func`1 operation) +9
+   System.Data.Entity.Core.Objects.ObjectContext.SaveChangesInternal(SaveOptions options, Boolean executeInExistingTransaction) +243
+   System.Data.Entity.Core.Objects.ObjectContext.SaveChanges(SaveOptions options) +7
+   System.Data.Entity.Internal.InternalContext.SaveChanges() +135
+   System.Data.Entity.Internal.LazyInternalContext.SaveChanges() +27
+   System.Data.Entity.DbContext.SaveChanges() +20
+   Abp.EntityFramework.AbpDbContext.SaveChanges() in D:\Halil\Github\aspnetboilerplate\src\Abp.EntityFramework\EntityFramework\AbpDbContext.cs:198
+   Abp.EntityFramework.Uow.EfUnitOfWork.SaveChangesInDbContext(DbContext dbContext) in D:\Halil\Github\aspnetboilerplate\src\Abp.EntityFramework\EntityFramework\Uow\EfUnitOfWork.cs:157
+   Castle.Core.Internal.CollectionExtensions.ForEach(IEnumerable`1 items, Action`1 action) +235
+   Abp.EntityFramework.Uow.EfUnitOfWork.SaveChanges() in D:\Halil\Github\aspnetboilerplate\src\Abp.EntityFramework\EntityFramework\Uow\EfUnitOfWork.cs:63
+   Abp.EntityFramework.Uow.EfUnitOfWork.CompleteUow() in D:\Halil\Github\aspnetboilerplate\src\Abp.EntityFramework\EntityFramework\Uow\EfUnitOfWork.cs:81
+   Abp.Domain.Uow.UnitOfWorkBase.Complete() in D:\Halil\Github\aspnetboilerplate\src\Abp\Domain\Uow\UnitOfWorkBase.cs:247
+   Abp.Web.Mvc.Uow.AbpMvcUowFilter.OnActionExecuted(ActionExecutedContext filterContext) in D:\Halil\Github\aspnetboilerplate\src\Abp.Web.Mvc\Web\Mvc\Uow\AbpMvcUowFilter.cs:70
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass46.&lt;InvokeActionMethodFilterAsynchronouslyRecursive&gt;b__3f() +257
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass46.&lt;InvokeActionMethodFilterAsynchronouslyRecursive&gt;b__3f() +229
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass46.&lt;InvokeActionMethodFilterAsynchronouslyRecursive&gt;b__3f() +229
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass46.&lt;InvokeActionMethodFilterAsynchronouslyRecursive&gt;b__3f() +229
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass33.&lt;BeginInvokeActionMethodWithFilters&gt;b__32(IAsyncResult asyncResult) +10
+   System.Web.Mvc.Async.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult) +10
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +46
+   System.Web.Mvc.Async.AsyncResultWrapper.End(IAsyncResult asyncResult, Object tag) +59
+   System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult) +18
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass2b.&lt;BeginInvokeAction&gt;b__1c() +26
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass21.&lt;BeginInvokeAction&gt;b__1e(IAsyncResult asyncResult) +121
+   System.Web.Mvc.Async.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult) +10
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +46
+   System.Web.Mvc.Async.AsyncResultWrapper.End(IAsyncResult asyncResult, Object tag) +18
+   System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeAction(IAsyncResult asyncResult) +13
+   System.Web.Mvc.Controller.&lt;BeginExecuteCore&gt;b__1d(IAsyncResult asyncResult, ExecuteCoreState innerState) +13
+   System.Web.Mvc.Async.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult) +29
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +46
+   System.Web.Mvc.Async.AsyncResultWrapper.End(IAsyncResult asyncResult, Object tag) +18
+   System.Web.Mvc.Async.AsyncResultWrapper.End(IAsyncResult asyncResult, Object tag) +6
+   System.Web.Mvc.Controller.EndExecuteCore(IAsyncResult asyncResult) +26
+   System.Web.Mvc.Controller.&lt;BeginExecute&gt;b__15(IAsyncResult asyncResult, Controller controller) +12
+   System.Web.Mvc.Async.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult) +22
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +46
+   System.Web.Mvc.Async.AsyncResultWrapper.End(IAsyncResult asyncResult, Object tag) +18
+   System.Web.Mvc.Async.AsyncResultWrapper.End(IAsyncResult asyncResult, Object tag) +6
+   System.Web.Mvc.Controller.EndExecute(IAsyncResult asyncResult) +12
+   System.Web.Mvc.Controller.System.Web.Mvc.Async.IAsyncController.EndExecute(IAsyncResult asyncResult) +10
+   System.Web.Mvc.MvcHandler.&lt;BeginProcessRequest&gt;b__5(IAsyncResult asyncResult, ProcessRequestState innerState) +21
+   System.Web.Mvc.Async.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult) +29
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +46
+   System.Web.Mvc.Async.AsyncResultWrapper.End(IAsyncResult asyncResult, Object tag) +18
+   System.Web.Mvc.Async.AsyncResultWrapper.End(IAsyncResult asyncResult, Object tag) +6
+   System.Web.Mvc.MvcHandler.EndProcessRequest(IAsyncResult asyncResult) +13
+   System.Web.Mvc.MvcHandler.System.Web.IHttpAsyncHandler.EndProcessRequest(IAsyncResult result) +9
+   System.Web.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute() +402
+   System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean&amp; completedSynchronously) +142
+</Description>
+    <CreatedDate>12/01/2017</CreatedDate>
+    <ClosedDate>12/01/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1755</IssueID>
+    <Title>Can I Override Login Method To Avoid TenantName?</Title>
+    <Description>I'm planning to develop a Multi Tenant SaaS Application hosted in the could. I'm using ASP.NET BoilerPlate. Can I override _logInManager.LoginAsync to override allowing users to logging in without TenancyName?
+
+I tried navigating through the code, but it seems like, the Abp.Zero Module is bundled and source code is not present in the BoilerPlate Template.
+
+PS : Is this the right place to ask questions? If not, please close this issue and let me know where should I head over to?</Description>
+    <CreatedDate>11/01/2017</CreatedDate>
+    <ClosedDate>12/01/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1749</IssueID>
+    <Title>Some performance optimization for app and ioc</Title>
+    <Description>Hi ,hikalkan  
+When use Abp,Zero,Abp.zero in project ,when i release to server i found every ajax called app service ,response time is more than 120ms, most of them is more than 150ms.
+So i write a blank method only return true ,no db search,no other operating,and also respone 120ms.
+In source i found ,ApplicationServiceBase is inject TenantManager and UserManager.
+In TenantManager
+
+```
+        public TenantManager(
+            IRepository&lt;Tenant&gt; tenantRepository,
+            IRepository&lt;TenantFeatureSetting&gt; tenantFeatureRepository,
+            EditionManager editionManager,
+            IUnitOfWorkManager unitOfWorkManager,
+            RoleManager roleManager,
+            IUserEmailer userEmailer,
+            TenantDemoDataBuilder demoDataBuilder,
+            UserManager userManager,
+            INotificationSubscriptionManager notificationSubscriptionManager,
+            IAppNotifier appNotifier,
+            IYueZeroFeatureValueStore featureValueStore
+            IYueZeroDbMigrator yueZeroDbMigrator
+            )
+            : base(
+                  tenantRepository,
+                  tenantFeatureRepository,
+                  editionManager,
+                  featureValueStore)
+        {
+            _unitOfWorkManager = unitOfWorkManager;
+            _roleManager = roleManager;
+            _userEmailer = userEmailer;
+           _demoDataBuilder = demoDataBuilder;
+            _userManager = userManager;
+            _notificationSubscriptionManager = notificationSubscriptionManager;
+            _appNotifier = appNotifier;
+            _yueZeroDbMigrator = yueZeroDbMigrator;
+        }
+```
+
+Resolve TenantManager will use about 70ms,and the ref classes is only use in CreateWithAdminUserAsync Method,this method is only use in tenant reg
+but resolve this ref class will cause all appService resolve init use 50ms-70ms
+```
+            //_roleManager = roleManager;
+            //_userEmailer = userEmailer;
+            //_demoDataBuilder = demoDataBuilder;
+            //_userManager = userManager;
+            //_notificationSubscriptionManager = notificationSubscriptionManager;
+            //_appNotifier = appNotifier;
+            //_yueZeroDbMigrator = yueZeroDbMigrator;
+```
+So i suggested TenantManager change to 
+```
+        public TenantManager(
+            IRepository&lt;Tenant&gt; tenantRepository,
+            IRepository&lt;TenantFeatureSetting&gt; tenantFeatureRepository,
+            EditionManager editionManager,
+            IUnitOfWorkManager unitOfWorkManager,
+            //RoleManager roleManager,
+            //IUserEmailer userEmailer,
+            //TenantDemoDataBuilder demoDataBuilder,
+            //UserManager userManager,
+            //INotificationSubscriptionManager notificationSubscriptionManager,
+            //IAppNotifier appNotifier,
+            IYueZeroFeatureValueStore featureValueStore
+            //IYueZeroDbMigrator yueZeroDbMigrator
+            )
+            : base(
+                  tenantRepository,
+                  tenantFeatureRepository,
+                  editionManager,
+                  featureValueStore)
+        {
+            _unitOfWorkManager = unitOfWorkManager;
+            //_roleManager = roleManager;
+            //_userEmailer = userEmailer;
+            //_demoDataBuilder = demoDataBuilder;
+            //_userManager = userManager;
+            //_notificationSubscriptionManager = notificationSubscriptionManager;
+            //_appNotifier = appNotifier;
+            //_yueZeroDbMigrator = yueZeroDbMigrator;
+        }
+
+        public async Task&lt;Guid&gt; CreateWithAdminUserAsync(string tenancyName, string name, string adminPassword, string adminEmailAddress, string connectionString, bool isActive, Guid? editionId, bool shouldChangePasswordOnNextLogin, bool sendActivationEmail)
+        {
+            Guid newTenantId;
+            Guid newAdminId;
+
+            if (_demoDataBuilder == null) _demoDataBuilder = Yue.Dependency.IocManager.Instance.Resolve&lt;TenantDemoDataBuilder&gt;();
+            if (_userManager == null) _userManager = Yue.Dependency.IocManager.Instance.Resolve&lt;UserManager&gt;();
+            if (_yueZeroDbMigrator == null) _yueZeroDbMigrator = Yue.Dependency.IocManager.Instance.Resolve&lt;IYueZeroDbMigrator&gt;();
+            if (_appNotifier == null) _appNotifier = Yue.Dependency.IocManager.Instance.Resolve&lt;IAppNotifier&gt;();
+            if (_notificationSubscriptionManager == null) _notificationSubscriptionManager = Yue.Dependency.IocManager.Instance.Resolve&lt;NotificationSubscriptionManager&gt;();
+            if (_roleManager == null) _roleManager = Yue.Dependency.IocManager.Instance.Resolve&lt;RoleManager&gt;();
+            if (_userEmailer == null) _userEmailer = Yue.Dependency.IocManager.Instance.Resolve&lt;IUserEmailer&gt;();
+
+```
+
+and change in ApplicationServiceBase
+```
+    public abstract class IWorksApplicationService : ApplicationService
+    {
+        private TenantManager _TenantManager;
+        public TenantManager TenantManager
+        {
+            get
+            {
+                if (_TenantManager == null)
+                {
+                    _TenantManager = Yue.Dependency.IocManager.Instance.Resolve&lt;TenantManager&gt;();
+                }
+                return _TenantManager;
+            }
+        }
+
+        private UserManager _UserManager;
+        public UserManager UserManager
+        {
+            get
+            {
+                if (_UserManager == null)
+                {
+                    _UserManager = Yue.Dependency.IocManager.Instance.Resolve&lt;UserManager&gt;();
+                }
+                return _UserManager;
+            }
+        }
+```
+
+and now every ajax response time is less than 80ms.
+
+
+
+
+
+
+
+
+
+ </Description>
+    <CreatedDate>11/01/2017</CreatedDate>
+    <ClosedDate>20/01/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1717</IssueID>
+    <Title>How to integrate Abp into my project ?</Title>
+    <Description>Hi,
+In order to  best debug,i want to integrate Abp into my project, i tried, but failed.
+Directly add existing solution seems to be not feasible, i don't know how to do, can you give me some idea please?</Description>
+    <CreatedDate>01/01/2017</CreatedDate>
+    <ClosedDate>03/01/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1677</IssueID>
+    <Title>The Zero installation documentation is outdated</Title>
+    <Description>This [document](http://www.aspnetboilerplate.com/Pages/Documents/Zero/Installation)
+
+Not suitable for template-generated code frameworks</Description>
+    <CreatedDate>19/12/2016</CreatedDate>
+    <ClosedDate>19/12/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1659</IssueID>
+    <Title>[Abp.Net.Mail.Smtp.Password] at table AbpSettings </Title>
+    <Description>Hi, 
+
+Shouldn't this field be hashed?
+[AbpSettings].[Abp.Net.Mail.Smtp.Password]
+
+Thanks, 
+HugoL</Description>
+    <CreatedDate>14/12/2016</CreatedDate>
+    <ClosedDate>14/12/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1598</IssueID>
+    <Title>Data has changed since the Results pane was last retrieved.</Title>
+    <Description>Abp version:0.9.1.0
+When I use repository to GetAll(), then I edit data in SQL table, SQL will show the message 'Data has changed since the Results pane was last retrieved.'
+Why?Why is that GetAll() can update data?
+`var menus = _menuRepository.GetAllList();` This is my code, only 1 line code.</Description>
+    <CreatedDate>29/11/2016</CreatedDate>
+    <ClosedDate>29/11/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1574</IssueID>
+    <Title>Maybe there is a wrong in AbpFeatureValueStore?</Title>
+    <Description>Hi @hikalkan 
+I'm using ABP V1.0.0.0,when i use edition feature,i create a edition "V1" with a feature as below:
+context.Create(
+                    AppFeatures.PriceFeature,
+                    defaultValue: "0",
+                    displayName: L("Price"),
+                    inputType: new SingleLineStringInputType()
+                );
+and assign it to tenant tenantA and tenantB, i set the feature with value of 100 for tenantA,then i set the feature for tenantB,in the feature dialog, it show 100 not the defaultValue 0.
+i debug it, in function "GetTenantFeatureCacheItemAsync", the filter of the tenantId dosen't work as below:
+
+````C#
+var newCacheItem = new TenantFeatureCacheItem { EditionId = tenant.EditionId };
+
+                using (var uow = _unitOfWorkManager.Begin())
+                {
+                    using (_unitOfWorkManager.Current.SetTenantId(tenantId))
+                    {
+                        var featureSettings = await _tenantFeatureRepository.GetAllListAsync();
+                        foreach (var featureSetting in featureSettings)
+                        {
+                            newCacheItem.FeatureValues[featureSetting.Name] = featureSetting.Value;
+                        }
+
+                        await uow.CompleteAsync();
+                    }
+                }
+````
+
+Can you give me some advice to resolve it? </Description>
+    <CreatedDate>20/11/2016</CreatedDate>
+    <ClosedDate>22/11/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1536</IssueID>
+    <Title>Tenant Feature</Title>
+    <Description>I  create  two new  tenant  name  is  test1 and test2.
+I change the test1's feature  then  I  open the  test2's  feature list ,  I  find  the  test2's  feature  is  the  same  as  test1.
+why?
+</Description>
+    <CreatedDate>03/11/2016</CreatedDate>
+    <ClosedDate>07/11/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1528</IssueID>
+    <Title>Dependency injection Performance Problem In Webapi</Title>
+    <Description>When a controller's constructor injected too many interface, the performance will be greatly reduced because of concurrent requests. Each http request causes a new object to be created. Because of the use of dependency injection, many objects that are not used in the current request are also created, resulting in wasted performance. Do you have any idea to optimize performance?
+
+I have a simple performance test. 
+
+**System Info**
+
+VM Type | CPU | VCPU| Memory
+---|---|---|---
+AWS EC2 | Interl(R) Xeon(R) CPU E5 2666-v3 @ 2.9.0GHz | 4 | 7.5G
+
+**TestController.cs**
+
+```
+using Abp.WebApi.Controllers;
+using Sparxo.Platform.Core.Domain.Users.Services;
+
+namespace Sparxo.Platform.WebApi.Controllers
+{
+    public class TestController : AbpApiController
+    {
+        private readonly UserManager _userManager;
+
+        public TestController(UserManager userManager)
+        {
+            _userManager = userManager;
+        }
+
+        public string Get()
+        {
+            return "Hello!";
+        }
+    }
+}
+```
+
+**UserManger.cs**
+
+```
+public class UserManager : AbpUserManager&lt;Role, User&gt;
+    {
+        private readonly IDataGenerator _dataGenerator;
+        private readonly IPermissionResourceStore _permissionResourceStore;
+        private readonly RoleManager _roleManager;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
+        private readonly UserStore _userStore;
+
+        public UserManager(
+            IDataGenerator dataGeneror,
+            UserStore userStore,
+            RoleManager roleManager,
+            IPermissionManager permissionManager,
+            IUnitOfWorkManager unitOfWorkManager,
+            ICacheManager cacheManager,
+            ISettingManager settingManager,
+            IRepository&lt;OrganizationUnit, long&gt; organizationUnitRepository,
+            IRepository&lt;UserOrganizationUnit, long&gt; userOrganizationUnitRepository,
+            IOrganizationUnitSettings organizationUnitSettings,
+            ILocalizationManager localizationManager,
+            IdentityEmailMessageService emailService,
+            IUserTokenProviderAccessor userTokenProviderAccessor,
+            IPermissionResourceStore permissionResourceStore
+            )
+            : base(
+                  userStore,
+                  roleManager,
+                  permissionManager,
+                  unitOfWorkManager,
+                  cacheManager,
+                  organizationUnitRepository,
+                  userOrganizationUnitRepository,
+                  organizationUnitSettings,
+                  localizationManager,
+                  emailService,
+                  settingManager,
+                  userTokenProviderAccessor)
+        {
+            _dataGenerator = dataGeneror;
+            _unitOfWorkManager = unitOfWorkManager;
+            _roleManager = roleManager;
+            _userStore = userStore;
+            _permissionResourceStore = permissionResourceStore;
+            UserValidator = new UserValidator&lt;User, long&gt;(this) { AllowOnlyAlphanumericUserNames = false };
+        }
+}
+```
+
+**Test Result**
+
+Req/sec | Max Request Time | Min Request Time | CPU useage
+---|---|---|---
+500 | 300ms | 10ms | 90%
+800 | 1200ms | 30ms | 100%</Description>
+    <CreatedDate>01/11/2016</CreatedDate>
+    <ClosedDate>20/01/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1406</IssueID>
+    <Title>UserId's type in IAbpSession can only be long?</Title>
+    <Description>In our system UserId is Guid, but in IAbpSession the UserId is long , is there any way to make them work together easily?
+</Description>
+    <CreatedDate>27/09/2016</CreatedDate>
+    <ClosedDate>27/09/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1340</IssueID>
+    <Title>Could not resolve DbContextOptions</Title>
+    <Description>I faced with the exception described below. Please advise, what might be a cause of that?
+
+Could not resolve DbContextOptions for Abp.Zero.EntityFrameworkCore.AbpZeroDbContext`4[[Crm.Core.MultiTenancy.Tenant, Crm.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[Crm.Core.Authorization.Roles.Role, Crm.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[Crm.Core.Users.User, Crm.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[Crm.Data.EntityFramework.CrmDbContext, Crm.Data, Version=0.10.3.1, Culture=neutral, PublicKeyToken=null]], Abp.Zero.EntityFrameworkCore, Version=0.10.1.0, Culture=neutral, PublicKeyToken=null.
+
+Stack trace:
+   at Abp.EntityFrameworkCore.DefaultDbContextResolver.CreateOptions[TDbContext](String connectionString) in C:\crm\src\Abp.EntityFrameworkCore\DefaultDbContextResolver.cs:line 62
+   at Abp.EntityFrameworkCore.DefaultDbContextResolver.Resolve[TDbContext](String connectionString) in C:\crm\src\Abp.EntityFrameworkCore\DefaultDbContextResolver.cs:line 24
+   at Abp.EntityFrameworkCore.Uow.EfCoreUnitOfWork.GetOrCreateDbContext[TDbContext](Nullable`1 multiTenancySide) in C:\Local\SafeSurf\crm\src\Abp.EntityFrameworkCore\Uow\EfCoreUnitOfWork.cs:line 151
+   at Abp.EntityFrameworkCore.Uow.UnitOfWorkExtensions.GetDbContext[TDbContext](IActiveUnitOfWork unitOfWork, Nullable`1 multiTenancySide) in C:\crm\src\Abp.EntityFrameworkCore\Uow\UnitOfWorkExtensions.cs:line 38
+   at Abp.EntityFrameworkCore.Uow.UnitOfWorkDbContextProvider`1.GetDbContext(Nullable`1 multiTenancySide) in C:\crm\src\Abp.EntityFrameworkCore\Uow\UnitOfWorkDbContextProvider.cs:line 38
+   at Abp.EntityFrameworkCore.Repositories.EfCoreRepositoryBase`3.get_Context() in C:\crm\src\Abp.EntityFrameworkCore\Repositories\EfCoreRepositoryBaseOfTEntityAndTPrimaryKey.cs:line 25
+   at Castle.Proxies.Invocations.EfCoreRepositoryBase`3_get_Context.InvokeMethodOnTarget()
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.PerformSyncUow(IInvocation invocation, UnitOfWorkOptions options) in C:\crm\src\Abp\Domain\Uow\UnitOfWorkInterceptor.cs:line 53
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.PerformUow(IInvocation invocation, UnitOfWorkOptions options) in C:\crm\src\Abp\Domain\Uow\UnitOfWorkInterceptor.cs:line 45
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.Intercept(IInvocation invocation) in C:\crm\src\Abp\Domain\Uow\UnitOfWorkInterceptor.cs:line 34
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Castle.Proxies.EfCoreRepositoryBase`3Proxy.get_Context()
+   at Abp.EntityFrameworkCore.Repositories.EfCoreRepositoryBase`3.get_Table() in C:\crm\src\Abp.EntityFrameworkCore\Repositories\EfCoreRepositoryBaseOfTEntityAndTPrimaryKey.cs:line 30
+   at Castle.Proxies.Invocations.EfCoreRepositoryBase`3_get_Table.InvokeMethodOnTarget()
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.PerformSyncUow(IInvocation invocation, UnitOfWorkOptions options) in C:\crm\src\Abp\Domain\Uow\UnitOfWorkInterceptor.cs:line 53
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.PerformUow(IInvocation invocation, UnitOfWorkOptions options) in C:\crm\src\Abp\Domain\Uow\UnitOfWorkInterceptor.cs:line 45
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.Intercept(IInvocation invocation) in C:\src\Abp\Domain\Uow\UnitOfWorkInterceptor.cs:line 34
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Castle.Proxies.EfCoreRepositoryBase`3Proxy.get_Table()
+   at Abp.EntityFrameworkCore.Repositories.EfCoreRepositoryBase`3.GetAll() in C:\crm\src\Abp.EntityFrameworkCore\Repositories\EfCoreRepositoryBaseOfTEntityAndTPrimaryKey.cs:line 45
+   at Castle.Proxies.Invocations.EfCoreRepositoryBase`3_GetAll.InvokeMethodOnTarget()
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.PerformSyncUow(IInvocation invocation, UnitOfWorkOptions options) in C:\crm\src\Abp\Domain\Uow\UnitOfWorkInterceptor.cs:line 53
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.PerformUow(IInvocation invocation, UnitOfWorkOptions options) in C:\crm\src\Abp\Domain\Uow\UnitOfWorkInterceptor.cs:line 45
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.Intercept(IInvocation invocation) in C:\crm\src\Abp\Domain\Uow\UnitOfWorkInterceptor.cs:line 34
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Castle.Proxies.EfCoreRepositoryBase`3Proxy.GetAll()
+   at Abp.BackgroundJobs.BackgroundJobStore.GetWaitingJobsAsync(Int32 maxResultCount) in C:\crm\src\Abp.Zero\BackgroundJobs\BackgroundJobStore.cs:line 31
+   at Castle.Proxies.Invocations.BackgroundJobStore_GetWaitingJobsAsync.InvokeMethodOnTarget()
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.PerformAsyncUow(IInvocation invocation, UnitOfWorkOptions options) in C:\crm\src\Abp\Domain\Uow\UnitOfWorkInterceptor.cs:line 62
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.PerformUow(IInvocation invocation, UnitOfWorkOptions options) in C:\crm\src\Abp\Domain\Uow\UnitOfWorkInterceptor.cs:line 41
+   at Abp.Domain.Uow.UnitOfWorkInterceptor.Intercept(IInvocation invocation) in C:\crm\src\Abp\Domain\Uow\UnitOfWorkInterceptor.cs:line 34
+   at Castle.DynamicProxy.AbstractInvocation.Proceed()
+   at Castle.Proxies.BackgroundJobStoreProxy.GetWaitingJobsAsync(Int32 maxResultCount)
+   at Abp.BackgroundJobs.BackgroundJobManager.&lt;DoWork&gt;b__9_0() in C:\crm\src\Crm.Base\BackgroundJobs\BackgroundJobManager.cs:line 67
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.Tasks.Task.Execute()
+</Description>
+    <CreatedDate>31/08/2016</CreatedDate>
+    <ClosedDate>31/08/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1280</IssueID>
+    <Title>Exception "No IUserTokenProvider is registered." When calling UserManager.GeneratePasswordResetToken</Title>
+    <Description>Hi, 
+
+When calling UserManager.GeneratePasswordResetToken a Exception "No IUserTokenProvider is registered."  is thrown.
+
+Abp 0.10.3.
+</Description>
+    <CreatedDate>13/08/2016</CreatedDate>
+    <ClosedDate>14/08/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1273</IssueID>
+    <Title>Create a ValueObject&lt;T&gt; class to support full DDD.</Title>
+    <Description>Any plans on adding support for ValueObjects? This is a key aspect of DDD. 
+</Description>
+    <CreatedDate>11/08/2016</CreatedDate>
+    <ClosedDate>12/08/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1257</IssueID>
+    <Title>AbpJsonResult</Title>
+    <Description>Data returned in JsonResult, I would like to change the formatting time, but through the view to see the source code can not be found to achieve this feature, the reason is the low version of the AbpJsonResult direct use of the
+`            if (Data != null)
+            {
+                //TODO: Make this static for performance reason?
+                var jsonSerializerSettings = new JsonSerializerSettings
+                                                 {
+                                                     ContractResolver = new CamelCasePropertyNamesContractResolver()
+                                                 };
+
+```
+            response.Write(JsonConvert.SerializeObject(Data, Formatting.Indented, jsonSerializerSettings));
+        }`
+```
+
+In the high version of the use of the
+`        public static string ToJsonString(this object obj, bool camelCase = false, bool indented = false)
+        {
+            var options = new JsonSerializerSettings();
+
+```
+        if (camelCase)
+        {
+            options.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        }
+
+        if (indented)
+        {
+            options.Formatting = Formatting.Indented;
+        }
+
+        options.Converters.Insert(0, new AbpDateTimeConverter());
+
+        return JsonConvert.SerializeObject(obj, options);
+    }`
+```
+
+I can't control the format of the JSON serialization, whether it's a low or a high version. Suggested here should be controlled
+</Description>
+    <CreatedDate>03/08/2016</CreatedDate>
+    <ClosedDate>04/08/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1211</IssueID>
+    <Title>Exception on Odata Service with latest version 0.9.7</Title>
+    <Description>HI ,
+
+I explain you my architecture as below 
+I want to develop Multi-tenant – multi databases: One database for the host (master) and separate databases for each tenant.
+We can have a HostDbContext (contains only host side entities) and a TenantDbContext (contains only tenant side entities).
+
+Previously I developed one OData service and its working fine but after up gradation with 0.9.7 version I faced a lot of issues.Below is List
+
+1) major Issue is when I want to add TenantDB context in Entity framework then below error occurs
+
+"Found more than one concrete type for given DbContext Type" I resolved this issue with the help of the previous issue.(#1097) Means this issue is not resolved in 0.9.7 version
+
+2) When I try to get Customer Data using OData Service below Exception Occurs 
+{
+"message": "An error has occurred.",
+"exceptionMessage": "Could not find a public constructor for type ~Base`1[~.Customer].\r\nWindsor by default cannot instantiate types that don't expose public constructors.\r\nTo expose the type as a service add public constructor, or use custom component activator.",
+"exceptionType": "Castle.MicroKernel.ComponentActivator.ComponentActivatorException",
+"stackTrace": " at Castle.MicroKernel.ComponentActivator.DefaultComponentActivator.FastCreateInstance(Type implType, Object[] arguments, ConstructorCandidate constructor)\r\n at Castle.MicroKernel.ComponentActivator.DefaultComponentActivator.CreateInstanceCore(ConstructorCandidate constructor, Object[] arguments, Type implType)\r\n at Castle.MicroKernel.ComponentActivator.DefaultComponentActivator.CreateInstance(CreationContext context, ConstructorCandidate constructor, Object[] arguments)\r\n at Castle.MicroKernel.ComponentActivator.DefaultComponentActivator.Instantiate(CreationContext context)\r\n at Castle.MicroKernel.ComponentActivator.DefaultComponentActivator.InternalCreate(CreationContext context)\r\n at Castle.MicroKernel.ComponentActivator.AbstractComponentActivator.Create(CreationContext context, Burden burden)\r\n at Castle.MicroKernel.Lifestyle.AbstractLifestyleManager.CreateInstance(CreationContext context, Boolean trackedExternally)\r\n at Castle.MicroKernel.Lifestyle.AbstractLifestyleManager.Resolve(CreationContext context, IReleasePolicy releasePolicy)\r\n at Castle.MicroKernel.Handlers.DefaultHandler.ResolveCore(CreationContext context, Boolean requiresDecommission, Boolean instanceRequired, Burden&amp; burden)\r\n at Castle.MicroKernel.Handlers.DefaultHandler.Resolve(CreationContext context, Boolean instanceRequired)\r\n at Castle.MicroKernel.Handlers.AbstractHandler.Resolve(CreationContext context)\r\n at Castle.MicroKernel.Handlers.DefaultGenericHandler.Resolve(CreationContext context, Boolean instanceRequired)\r\n at Castle.MicroKernel.Handlers.AbstractHandler.Resolve(CreationContext context)\r\n at Castle.MicroKernel.Resolvers.DefaultDependencyResolver.ResolveFromKernelByType(CreationContext context, ComponentModel model, DependencyModel dependency)\r\n at Castle.MicroKernel.Resolvers.DefaultDependencyResolver.ResolveFromKernel(CreationContext context, ComponentModel model, DependencyModel dependency)\r\n at Castle.MicroKernel.Resolvers.DefaultDependencyResolver.ResolveCore(CreationContext context, ISubDependencyResolver contextHandlerResolver, ComponentModel model, DependencyModel dependency)\r\n at Castle.MicroKernel.Resolvers.DefaultDependencyResolver.Resolve(CreationContext context, ISubDependencyResolver contextHandlerResolver, ComponentModel model, DependencyModel dependency)\r\n at Castle.MicroKernel.ComponentActivator.DefaultComponentActivator.CreateConstructorArguments(ConstructorCandidate constructor, CreationContext context)\r\n at Castle.MicroKernel.ComponentActivator.DefaultComponentActivator.Instantiate(CreationContext context)\r\n at Castle.MicroKernel.ComponentActivator.DefaultComponentActivator.InternalCreate(CreationContext context)\r\n at Castle.MicroKernel.ComponentActivator.AbstractComponentActivator.Create(CreationContext context, Burden burden)\r\n at Castle.MicroKernel.Lifestyle.AbstractLifestyleManager.CreateInstance(CreationContext context, Boolean trackedExternally)\r\n at Castle.MicroKernel.Lifestyle.AbstractLifestyleManager.Resolve(CreationContext context, IReleasePolicy releasePolicy)\r\n at Castle.MicroKernel.Handlers.DefaultHandler.ResolveCore(CreationContext context, Boolean requiresDecommission, Boolean instanceRequired, Burden&amp; burden)\r\n at Castle.MicroKernel.Handlers.DefaultHandler.Resolve(CreationContext context, Boolean instanceRequired)\r\n at Castle.MicroKernel.Handlers.AbstractHandler.Resolve(CreationContext context)\r\n at Castle.MicroKernel.DefaultKernel.ResolveComponent(IHandler handler, Type service, IDictionary additionalArguments, IReleasePolicy policy)\r\n at Castle.MicroKernel.DefaultKernel.Castle.MicroKernel.IKernelInternal.Resolve(Type service, IDictionary arguments, IReleasePolicy policy)\r\n at Castle.MicroKernel.DefaultKernel.Resolve(Type service, IDictionary arguments)\r\n at Castle.Windsor.WindsorContainer.Resolve(Type service)\r\n at Abp.Dependency.IocManager.Resolve(Type type) in D:\Halil\GitHub\aspnetboilerplate\src\Abp\Dependency\IocManager.cs:line 195\r\n at Abp.Dependency.IocResolverExtensions.ResolveAsDisposableT in D:\Halil\GitHub\aspnetboilerplate\src\Abp\Dependency\IocResolverExtensions.cs:line 32\r\n at Abp.WebApi.Controllers.AbpApiControllerActivator.Create(HttpRequestMessage request, HttpControllerDescriptor controllerDescriptor, Type controllerType) in D:\Halil\GitHub\aspnetboilerplate\src\Abp.Web.Api\WebApi\Controllers\AbpApiControllerActivator.cs:line 24\r\n at System.Web.Http.Controllers.HttpControllerDescriptor.CreateController(HttpRequestMessage request)\r\n at System.Web.Http.Dispatcher.HttpControllerDispatcher.d__1.MoveNext()"
+}
+
+A customer is my tenant Entity and I want to access this entity with the help of _unitOfWorkManager.Current.SetTenantId(tenantId)
+
+3) In UserApp and Notification service, I face below issue
+
+//Notifications
+await _notificationSubscriptionManager.SubscribeToAllAvailableNotificationsAsync(user.TenantId, user.Id);
+I had Changed this call to as below 
+Abp.UserIdentifier UserIdentifier = new UserIdentifier(user.TenantId, user.Id);
+await _notificationSubscriptionManager.SubscribeToAllAvailableNotificationsAsync(UserIdentifier);
+
+So it's written is Correct ? or any other changes is here?
+
+4) AppNotifier.cs below two methods I face issue 
+public async Task WelcomeToTheApplicationAsync(User user)
+{
+await _notificationPublisher.PublishAsync(
+AppNotificationNames.WelcomeToTheApplication,
+new MessageNotificationData(L("WelcomeToTheApplicationNotificationMessage")),
+severity: NotificationSeverity.Success,
+userIds: new[] { user.Id }
+);
+}
+
+public async Task SendMessageAsync(long userId, string message, NotificationSeverity severity = NotificationSeverity.Info)
+{
+await _notificationPublisher.PublishAsync(
+"App.SimpleMessage",
+new MessageNotificationData(message),
+severity: severity,
+userIds: new[] { userId }
+);
+}
+
+How I can resolved this Issue .
+</Description>
+    <CreatedDate>19/07/2016</CreatedDate>
+    <ClosedDate>19/07/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1194</IssueID>
+    <Title>Is this a bug of UnitOfWork's Filters?</Title>
+    <Description>I use UnitOfWorkManager filter some data,  but there are some problems.  
+
+``` csharp
+//build session.
+var identity = new ClaimsIdentity();
+ identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, "13"));
+ identity.AddClaim(new Claim(AbpClaimTypes.TenantId, "2"));
+ ClaimsPrincipal cp = new ClaimsPrincipal(identity);
+Thread.CurrentPrincipal = cp;
+
+            //first I build a UnitOfWork by abpSession
+           using (var unitOfWork = this.unitOfWorkManager.Begin())
+            {
+                Console.WriteLine("Before Set TenantId NULL------");
+                var filters = this.unitOfWorkManager.Current.Filters;
+                foreach (var item in filters)
+                {
+                    Console.WriteLine("{0}:{2}, Enabled:{1}", item.FilterName, item.IsEnabled,
+                        item.FilterParameters.ContainsKey(AbpDataFilters.Parameters.TenantId)
+                        ? item.FilterParameters[AbpDataFilters.Parameters.TenantId] : null);
+                }
+
+// then set tenant id null
+                using (this.unitOfWorkManager.Current.SetTenantId(null))
+                {
+                    Console.WriteLine("After Set TenantId NULL------");
+                    var filters2 = this.unitOfWorkManager.Current.Filters;
+                    foreach (var item in filters2)
+                    {
+                        Console.WriteLine("{0}: {2}, Enabled:{1}", item.FilterName, item.IsEnabled,
+                         item.FilterParameters.ContainsKey(AbpDataFilters.Parameters.TenantId)
+                         ? item.FilterParameters[AbpDataFilters.Parameters.TenantId] : null);
+                    }
+                }
+
+//back to abpsession
+                Console.WriteLine("After Back To AbpSession------");
+                var filters3 = this.unitOfWorkManager.Current.Filters;
+                foreach (var item in filters3)
+                {
+                    Console.WriteLine("{0}:{2}, Enabled:{1}", item.FilterName, item.IsEnabled,
+                         item.FilterParameters.ContainsKey(AbpDataFilters.Parameters.TenantId)
+                         ? item.FilterParameters[AbpDataFilters.Parameters.TenantId] : null);
+                }
+            }
+```
+
+The result is:
+Before Set TenantId NULL------
+SoftDelete:, Enabled:True
+MustHaveTenant:2, Enabled:True
+MayHaveTenant:2, Enabled:True
+
+After Set TenantId NULL------
+SoftDelete: , Enabled:True
+MustHaveTenant: 0, Enabled:False
+MayHaveTenant: , Enabled:True
+
+After Back To AbpSession------
+SoftDelete:, Enabled:True
+MustHaveTenant:, Enabled:True
+MayHaveTenant:2, Enabled:True
+
+**So, MustHaveTenant miss the value.** 
+</Description>
+    <CreatedDate>13/07/2016</CreatedDate>
+    <ClosedDate>13/07/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1189</IssueID>
+    <Title>500 (Internal Server Error) on AbpScripts/GetScripts</Title>
+    <Description>Could somebody help me out? Out of a sudden I get this error when trying to get AbpScripts:
+
+ERROR 2016-07-11 14:27:45,743 [56   ] Web.Mvc.Controllers.AbpScriptsController - An item with same key has already been added
+</Description>
+    <CreatedDate>11/07/2016</CreatedDate>
+    <ClosedDate>18/07/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1177</IssueID>
+    <Title>Provide a way of using dependency injection in DTOs.</Title>
+    <Description>For example, we can define an interface like INeedsIocManager:
+
+``` C#
+public interface INeedsIocManager
+{
+    void Initialize(IIocManager iocManager);
+}
+```
+
+If a DTO implements it, our interceptor then calls this method and passes the IocManager. Then DO can use iocManager to resolve dependencies.
+
+Alternative: We can define an attribute like [AbpInject] and allow use it in public properties. Then we can set this properties resolving from DI before executing the method (and before calling custom validate logic for example).
+
+See http://forum.aspnetboilerplate.com/viewtopic.php?f=2&amp;t=2819
+</Description>
+    <CreatedDate>05/07/2016</CreatedDate>
+    <ClosedDate>19/09/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1136</IssueID>
+    <Title>How to prevent CSRF in angularjs with abp ?</Title>
+    <Description>I used angularjs to develop my H5 website, how can i Preventing CSRF Hacks in ASP.NET WebAPI with abp?
+</Description>
+    <CreatedDate>22/06/2016</CreatedDate>
+    <ClosedDate>22/06/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1130</IssueID>
+    <Title>Suggest</Title>
+    <Description>I think you could publish a version of the end of the separation of the front and rear.Because now the basic front-end code defined in the angular.When we want to use it is very difficult to react js node or straight out of the way.If you can take my advice, thank you very much!
+</Description>
+    <CreatedDate>21/06/2016</CreatedDate>
+    <ClosedDate>21/06/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1120</IssueID>
+    <Title>Make IAbpSession Generic</Title>
+    <Description>It's not flexible that `IAbpSession` use `long` as user id type while I want to use int or string instead.
+Is it possible to change `IAbpSession` to a generic type such as `IAbpSession&lt;TUserIdType&gt;`?
+If so, auditing also need to be changed.
+</Description>
+    <CreatedDate>17/06/2016</CreatedDate>
+    <ClosedDate>23/06/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1110</IssueID>
+    <Title>Permissions at entity level</Title>
+    <Description>Hi, I have searched issues and forum for permission questions.
+I have found this below which is what I want, but there is no reply by you.
+http://forum.aspnetboilerplate.com/viewtopic.php?f=3&amp;t=949&amp;p=3247&amp;hilit=permission#p3247
+
+Sorry if I ask the question you have answered before, your reply would be appreciated.
+</Description>
+    <CreatedDate>16/06/2016</CreatedDate>
+    <ClosedDate>17/06/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1099</IssueID>
+    <Title>Change CallContext to AsyncLocal</Title>
+    <Description>
+    </Description>
+    <CreatedDate>13/06/2016</CreatedDate>
+    <ClosedDate>13/11/2017</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1055</IssueID>
+    <Title>how to leverage .net Web API Route attribute in ABP DynamicApi?</Title>
+    <Description>Hi,
+I have the same issue [here](https://github.com/aspnetboilerplate/aspnetboilerplate/issues/711).
+
+For example, I have below sample code in a service within Application Project.
+    public interface IMetricsService : IApplicationService
+    {
+        [HttpPost]
+        [Route("log")]
+        HttpResponseMessage Log([FromBody] Metrics metrics);
+        [HttpGet]
+        [Route("log/recent/{count=100}")]
+        HttpResponseMessage GetRecent(int count);
+    }
+
+When abp built a dynamic api, how can i get the service use the route instead of method name?
+</Description>
+    <CreatedDate>26/05/2016</CreatedDate>
+    <ClosedDate>26/05/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1037</IssueID>
+    <Title>add specification pattern</Title>
+    <Description>  I want use the  specification pattern，but I can't use it  in abp, so I  realized it  with apworks( a ddd framework )  think.
+
+The  specification pattern use to  select/query and  other,
+now  in abp use whereif()
+if use the  specification, user  can create a specification to  set the  expression  when  he  want to use multi-condition  query
+</Description>
+    <CreatedDate>21/05/2016</CreatedDate>
+    <ClosedDate>16/12/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1026</IssueID>
+    <Title>JavaScript runtime error in IE</Title>
+    <Description>see http://forum.aspnetboilerplate.com/viewtopic.php?f=2&amp;t=2566&amp;p=5802
+</Description>
+    <CreatedDate>16/05/2016</CreatedDate>
+    <ClosedDate>17/05/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>1021</IssueID>
+    <Title>Repository methods for multiple entities</Title>
+    <Description>It would be nice if default repository would implement methods to work with multiple entities at once. AddRange and RemoveRange should be faster than calling Add several times.
+Please check http://entityframework.codeplex.com/workitem/965 and https://msdn.microsoft.com/en-us/library/system.data.entity.dbset.addrange(v=vs.113).aspx
+</Description>
+    <CreatedDate>15/05/2016</CreatedDate>
+    <ClosedDate>04/10/2018</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>957</IssueID>
+    <Title>abp.ajax not show exception to user !</Title>
+    <Description>hello , 
+best regard .
+
+i am use Abp 0.8.3.0 , 
+
+in my controller : throw new UserFriendlyException("","");
+
+but not show this error to user  when i use ajax call !
+and not show "Error View" when use :  throw new  Exception("","");
+
+i think this a problem!
+
+please help me .
+
+thank you .
+</Description>
+    <CreatedDate>31/03/2016</CreatedDate>
+    <ClosedDate>01/04/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>934</IssueID>
+    <Title>Error in Castle.Windsor</Title>
+    <Description>Today I see that in Debug output window I catch this exception
+
+`Castle.Windsor Warning: 0 : Exception when resolving optional dependency Dependency 'FeatureDependencyContext' type 'Abp.Application.Features.FeatureDependencyContext' on component clay.Authorization.Users.UserManager., Castle.MicroKernel.CircularDependencyException: Dependency cycle has been detected when trying to resolve component 'Abp.Application.Features.FeatureChecker'.
+The resolution tree that resulted in the cycle is the following:
+Component 'Abp.Application.Features.FeatureChecker' resolved as dependency of
+    component 'Abp.Application.Features.FeatureDependencyContext' resolved as dependency of
+    component 'clay.Authorization.Users.UserManager' resolved as dependency of
+    component 'clay.MultiTenancy.TenantManager' resolved as dependency of
+    component 'clay.Editions.FeatureValueStore' resolved as dependency of
+    component 'Abp.Application.Features.FeatureChecker' resolved as dependency of
+    component 'Abp.Web.Mvc.Controllers.AbpScriptsController' which is the root component being resolved.
+
+   in Castle.MicroKernel.Handlers.DefaultHandler.ResolveCore(CreationContext context, Boolean requiresDecommission, Boolean instanceRequired, Burden&amp; burden)
+`
+
+And it's happen not only in my project but in a new empty one.
+</Description>
+    <CreatedDate>21/03/2016</CreatedDate>
+    <ClosedDate>06/04/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>883</IssueID>
+    <Title>[Mapper] Mapper.Map deprecated</Title>
+    <Description>Hi there, it seems that Mapper.Map function will be deprecated soon.
+
+[Obsolete("The static API will be removed in version 5.0. Use a MapperConfiguration instance and store statically as needed. Use CreateMapper to create a mapper instance.")]
+
+maybe adjust it in the doc http://aspnetboilerplate.com/Pages/Documents/Data-Transfer-Objects :)
+</Description>
+    <CreatedDate>18/02/2016</CreatedDate>
+    <ClosedDate>17/08/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>801</IssueID>
+    <Title>Refactor, test and document Abp.RedisCache package</Title>
+    <Description>I fixed bugs and it's working as I first tested. But it should be a bit refactored and well tested. Then we should document it.
+</Description>
+    <CreatedDate>15/01/2016</CreatedDate>
+    <ClosedDate>09/03/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>794</IssueID>
+    <Title>Create a CRUD application service base that supports IQueryable and can be exposed as OData endpoint.</Title>
+    <Description>see also https://github.com/aspnetboilerplate/aspnetboilerplate/issues/520
+</Description>
+    <CreatedDate>11/01/2016</CreatedDate>
+    <ClosedDate>09/09/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>768</IssueID>
+    <Title>Consider to return 500 on errors, instead of 200!</Title>
+    <Description>This also requires modification on abp.jquery.js, abp.ng.js and AbpWebApiClient.
+</Description>
+    <CreatedDate>31/12/2015</CreatedDate>
+    <ClosedDate>30/06/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>764</IssueID>
+    <Title>Problem of Modification Audit</Title>
+    <Description>Hi,
+
+I find out that IModificationAudited interface include twos properties LastModificationTime and LastModifierUserId to implement modification audit. But When I use it in a not multi-tenent or multi-user to login in a account, entity alway set a useless property LastModifierUserId, as it has the same value with CreatorUserId and never change.
+
+Thus, I think that  IModificationAudited should implemented like ICreationAudited to split userid and time to different interface.
+
+IDeletionAudited interface has the same situation too.
+
+Thank you.
+</Description>
+    <CreatedDate>27/12/2015</CreatedDate>
+    <ClosedDate>30/12/2015</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>649</IssueID>
+    <Title>Add a attribute to suppress response wrapping for MVC and Web API</Title>
+    <Description>That maybe needed for some cases where ABP's response wrapping is not wanted.
+</Description>
+    <CreatedDate>28/09/2015</CreatedDate>
+    <ClosedDate>31/12/2015</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>640</IssueID>
+    <Title>Add meta-data attributes to localized texts.</Title>
+    <Description>Now, a localization item in XML file looks like that:
+    &lt;text name="MyKey" value="MyValue" /&gt;
+We may want to add some additional attributes here, example:
+    &lt;text name="MyKey" value="MyValue" maxLength="100" uiType="Textbox" /&gt;
+Then ABP should provide a way of getting these attributes. For this example, we may want to create a UI to localize items.
+Also, it should be enough to define it for just the default language. Other languages may override it but this should be optional.
+</Description>
+    <CreatedDate>22/09/2015</CreatedDate>
+    <ClosedDate>28/09/2015</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>611</IssueID>
+    <Title>Enable/disable transaction based on method name</Title>
+    <Description>I will create an option named "IsConventionalTransactionsEnabled" or similar. If it's enabled then ABP will decide to start a transaction based on the method name (generally Application service method's name). We may not use transaction if method name starts with "Get", for example.
+</Description>
+    <CreatedDate>09/09/2015</CreatedDate>
+    <ClosedDate>09/01/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>588</IssueID>
+    <Title>Remove static DynamicApiControllerBuilder</Title>
+    <Description>Instead, we can create a configuration for AbpWebApiModule.
+</Description>
+    <CreatedDate>30/08/2015</CreatedDate>
+    <ClosedDate>10/09/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>547</IssueID>
+    <Title>Support for Paging, Sorting and Filtering</Title>
+    <Description>Hello, 
+
+Kudos for an awesome framework. It has drastically cut down our time to develop an application framework. 
+
+I was wondering if ABP supports paged lists, filtering, projections etc. 
+
+Thanks..
+</Description>
+    <CreatedDate>16/07/2015</CreatedDate>
+    <ClosedDate>09/09/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>530</IssueID>
+    <Title>Infrastructure for controlling tenants from host accounts</Title>
+    <Description>- Add HostUserId to IAbpSession
+- Add HostUserId to AuditInfo
+- Add an option to suppress Authorization for host users while performing tenant operations.
+</Description>
+    <CreatedDate>23/06/2015</CreatedDate>
+    <ClosedDate>14/10/2015</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>519</IssueID>
+    <Title>Define ContractResolver per request</Title>
+    <Description>It should be possible to change the format that JSON is formatted in Web API and JSON on MVC Controllers. At the moment JSON properties are formatted as camelCase.
+https://github.com/aspnetboilerplate/aspnetboilerplate/blob/master/src/Abp.Web.Mvc/Web/Mvc/Controllers/Results/AbpJsonResult.cs#L60
+
+https://github.com/aspnetboilerplate/aspnetboilerplate/blob/master/src/Abp.Web.Api/WebApi/AbpWebApiModule.cs#L56
+
+Also Formatting.Indented should be possible to control pr. request, as it is now, this gives overhead in production environment.
+</Description>
+    <CreatedDate>15/06/2015</CreatedDate>
+    <ClosedDate>02/09/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>468</IssueID>
+    <Title>Documentation Provider</Title>
+    <Description>Any plans or is there an easy way to integrate a documentation provider for the application services module?
+</Description>
+    <CreatedDate>30/04/2015</CreatedDate>
+    <ClosedDate>09/01/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>427</IssueID>
+    <Title>Provide enabling/disabling filters at startup configuration.</Title>
+    <Description>
+    </Description>
+    <CreatedDate>28/03/2015</CreatedDate>
+    <ClosedDate>26/08/2015</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>409</IssueID>
+    <Title>Allow a module manipulate depended modules's settings</Title>
+    <Description>
+    </Description>
+    <CreatedDate>20/03/2015</CreatedDate>
+    <ClosedDate>09/01/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>408</IssueID>
+    <Title>Add optional ignoreCase parameter to ToEnum() string extension</Title>
+    <Description>
+    </Description>
+    <CreatedDate>20/03/2015</CreatedDate>
+    <ClosedDate>20/03/2015</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>393</IssueID>
+    <Title>AbpAuthorizationException isn't localizable</Title>
+    <Description>The error message for AbpAuthorizationException is hard coded, it should read the value from localization file "AbpWeb.xml"
+</Description>
+    <CreatedDate>10/03/2015</CreatedDate>
+    <ClosedDate>19/09/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>391</IssueID>
+    <Title>Implement Soft-Delete and Multi-Tenancy filtering with EntityFramework.DynamicFilters</Title>
+    <Description>See https://github.com/jcachat/EntityFramework.DynamicFilters
+</Description>
+    <CreatedDate>10/03/2015</CreatedDate>
+    <ClosedDate>29/03/2015</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>380</IssueID>
+    <Title>Uow complete event and context state.</Title>
+    <Description>When complete event executed context is in invalid state. I think that the reason is that the call should be after transaction commit. Because of this i can not use lazy loading entity relation or insert some data into db. The worst thing is that I can not solve this problem by using
+`using(var uow = _uowManager.Begin())`, because _uowManager.Begin() no create new _uow if it exist. How i can use context in uow complete event handler?
+</Description>
+    <CreatedDate>06/03/2015</CreatedDate>
+    <ClosedDate>23/04/2015</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>341</IssueID>
+    <Title>Can Asp.Net help page work with dynamic Web API Controllers?</Title>
+    <Description>This would be very useful for clients not using the dynamic javascript proxies.
+</Description>
+    <CreatedDate>19/02/2015</CreatedDate>
+    <ClosedDate>02/03/2015</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>290</IssueID>
+    <Title>Dynamic API should create GET, POST, PUT, DELETE</Title>
+    <Description>If I'm correct, all services are generated with POST methods. Is it possible to generate GETs as default, and implement attributes like [HttpPost], [HttpPut] to generate a POST, PUT method, etc.?
+</Description>
+    <CreatedDate>23/01/2015</CreatedDate>
+    <ClosedDate>26/01/2015</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>242</IssueID>
+    <Title>Custom response in Dynamic API</Title>
+    <Description>Dynamic API is great, but for some services I need to have response different from `Abp.Web.Mvc.Models.MvcAjaxResponse`. Is there any way to make Dynamic API return another response type?
+</Description>
+    <CreatedDate>17/12/2014</CreatedDate>
+    <ClosedDate>31/12/2015</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>235</IssueID>
+    <Title>Boilerplate VNext?</Title>
+    <Description>http://www.aspnetboilerplate.com/About said to come here for suggestions, feature requests or bugs so here i am, was wondering if its planned to be done and if its not planned yet to request it.
+</Description>
+    <CreatedDate>01/12/2014</CreatedDate>
+    <ClosedDate>30/06/2016</ClosedDate>
+  </Issue>
+  <Issue>
+    <IssueID>169</IssueID>
+    <Title>TPrimaryKey of type GUID is throwing error.</Title>
+    <Description>TPrimaryKey of type GUID is throwing error when I try to call '...Repository.Get(myGuidId)" 
+
+http://i.imgur.com/IkEi3kP.png 
+
+As I found on Stackoverflow: http://stackoverflow.com/a/16466737/2814009 you should use "Id.Equals(@0)" in class 'EfRepositoryBase' in method 'FirstOrDefault' in case the TPrimaryKey is of type GUID, else use the old approach.
+
+Thanks
+</Description>
+    <CreatedDate>21/10/2014</CreatedDate>
+    <ClosedDate>22/10/2014</ClosedDate>
+  </Issue>
+</Issues>
