@@ -1,0 +1,2035 @@
+<PullRequests>
+  <PullRequest>
+    <IssueID>6299</IssueID>
+    <Title>Use current element for SimpleQueueCacheCursor.Element</Title>
+    <Description>Fixes #6298 
+Fixes #6281
+
+For brevity I am `using SQC = SimpleQueueCache; using SQCC = SimpleQueueCacheCursor;`, within this post.
+
+The whole idea of this change is to change SQCC so that its `Element` value always points to the cursors current element, rather than its next value. This change is remarkably small, especially if you do not count the comment changes.
+
+Specifically it has the invariant that: whenever a method is not currently executing, if `current` is not null, then it always equals `Element.Value.Batch`. (Note: Invariant does not need to hold at end of re-entrant calls while some other `SQCC` method is running.) I will informally prove that invariant holds a little further below. I will also informally argue as to why this change is safe.
+
+While there are further changes or refactorings that could be made, I've tried to keep this a minimal change, viewing this as a bug-fix rather than a substantial refactoring.
+
+While I have tried to be thorough in my analysis of the impact of this, it is possible I am overlooking something. If you see (or think you see) any scenarios where this change would break things, please let me know. 
+
+## Why this is safe
+`PersistentStreamPullingAgent` will not notice any difference between this version of the code, and the previous one, except as a side effect of any tiny changes in the execution time of the code in question. All calls to `SQC` or `SQCC` will return the same values. They won't always have exactly the same effect, but there is no observable difference from the pulling agent's perspective.
+
+From `SQC`'s perspective, not much changes. It sees one fewer call to `TryGetNextMessage(...)` per cursor, but that would have been the call when `SQCC.current` was not null, but `SQC.Element` is null, so that would be a call that does an early return anyway. It also returns a different value from the `TryGetNextMessage(...)` call, but that does not really impact the rest of the class in any meaningful way.
+
+The real difference to `SQC` is the timing of the remaining calls to `TryGetNextMessage(...)`, which occur one cursor `MoveNext()` cycle later than they previously did, ensuring that that the cursor's `Element` value always contains the current batch being processed, so that batch does not get cleaned up while it is processing. 
+
+For `SQCC`, the semantics of the `Element` property change substantially, to become the current value the cursor is pointing at, rather than the next value. Since `SQC` was already treating the value of `Element` as the current element this is desirable. There are two other minor differences: If `MoveNext()` returns false, the value of `current` is changed to null, rather than remaining the same. This is not an issue since the Enumerator pattern on which the cursors are based already says that the current value is undefined after `MoveNext()` returns false. Similarly upon calling `Dispose()`, the value of `current` is also set to null, which is needed to maintain the invariant, and accessing a cursor after disposing it would be a bug already anyway.
+
+## Proof that the invariant holds
+&lt;details&gt;&lt;summary&gt;Proof collapsed by default. Click to Expand&lt;/summary&gt;
+Inductive base case: When the `SQCC` class is constructed both values are null, so the invariant holds.
+
+Inductive recursive state: Our goal here is to show that any changes made to the object that impact the fields in question will preserve the invariant, assuming it already holds at the start. 
+
+In all cases where `current` changes it is either being set to `Element.Value.Batch`, or `Element` is also changing at the same time and `current` gets set to the same value. This happens in two places: `SQCC.Dispose(...)` ends up setting both values to null, while `SQCC.MoveNext()` sets `current` to `Element.Value.Batch` if `current` is null, and `Element`. Otherwise it calls `SQC.TryGetNextMessage(...)`, one or many times, and will end up setting `current` to the value it output. `SQC.TryGetNextMessage(...)` will output null if `Element` was already null. In all other cases it will update `Element`, and return `Element.Value.Batch`.
+
+Therefore we can conclude that `current` will never change in a way that will break the invariant. So the invariant can only be broken if `Element` changes while `current` is not null (unless current changes to match). (Note: I am ignoring somebody setting `Element.Value` or `Element.Value.Batch`, since no code actually does that).
+
+So when does `Element` change? It changes when `SQCC.Set(...)` or `SQCC.UnSet(...)` are called. Analyzing these:
+* `SQCC.Set(...)` called by:
+    * `SQC.AdvanceCursor(...)` which is only called by:
+        * `SQC.TryGetNextMessage(...)` which is only called by `SQCC.MoveNext()`, which also changes `current` to match.
+    * `SQC.SetCursor(...)` which is only called by:
+        * `SQC.InitializeCursor(...)` which is called by:
+            * `SQC.GetCacheCursor(...)`, which calls it immediately after constructing `SQCC`, so both `current` and `Element` are null.
+            * `SQC.RefreshCursor(...)` which is called by `SQC.Refresh(...)`, but only if `Element` is null. In that case, either `current` is either also null, per the invariant, or something else has already broken the invariant..
+* `SQCC.Unset(...)` called by:
+    * `SQC.UnsetCursor(...)` which is called by:
+        * `SQCC.Dispose(...)` which also sets `current` to match.
+        * `SQC.InitializeCursor(...)` which was analyzed above.
+        * `SQC.TryGetNextMessage(...)` which was analyzed above.
+
+Thus I have shown that the the invariant holds when constructed, and no method calls modify the the members in question in a way that breaks the invariant, unless the invariant is already broken. Therefore by induction, I have shown that the invariant always holds.
+&lt;/details&gt;</Description>
+    <CreatedDate>12/02/2020</CreatedDate>
+    <ClosedDate>18/02/2020</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>6298</IssueID>
+        <Title>Fix Design time builds to not fail before restoring nuget packages an…</Title>
+        <Description>…d building
+</Description>
+        <CreatedDate>24/10/2015</CreatedDate>
+        <ClosedDate>28/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>6281</IssueID>
+        <Title>Log low VM telemetry at most once per session</Title>
+        <Description>Fixes #6279 
+
+@heejaechang @Pilchie 
+
+This is the simplest fix for Update 1.
+
+Note: The shell will keep broadcasting VSM_VIRTUALMEMORYLOW/CRITICAL once a minute while the low VM situation persists. There is no corresponding message indicating "VM is back to normal".
+
+Another approach might be to do some rate limiting on the telemetry. i.e. note the time of the last notification and log telemetry only if it's been more than some interval (say 30 minutes or an hour). Thoughts?
+</Description>
+        <CreatedDate>23/10/2015</CreatedDate>
+        <ClosedDate>24/10/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/EditorFeatures/CSharpTest/CSharpGoToAdjacentMemberTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/ChangeSignature/RemoveParametersTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/EncapsulateField/EncapsulateFieldCommandHandlerTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/EncapsulateField/EncapsulateFieldTestState.cs</File>
+      <File>src/EditorFeatures/CSharpTest/ExtractInterface/ExtractInterfaceTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/ExtractMethod/ExtractMethodTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Organizing/OrganizeTypeDeclarationTests.cs</File>
+      <File>src/EditorFeatures/Core/CommandHandlers/GoToAdjacentMemberCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Commands/GoToAdjacentMemberCommandArgs.cs</File>
+      <File>src/EditorFeatures/Core/EditorFeaturesResources.Designer.cs</File>
+      <File>src/EditorFeatures/Core/Extensibility/Commands/PredefinedCommandHandlerNames.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/ChangeSignature/AbstractChangeSignatureCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/EncapsulateField/AbstractEncapsulateFieldCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/ExtractInterface/AbstractExtractInterfaceCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/ExtractMethod/AbstractExtractMethodCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/CommandHandlers/RenameCommandHandler_RenameHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/InlineRenameSession.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Organizing/OrganizeDocumentCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Suggestions/SuggestedActionsSourceProvider.cs</File>
+      <File>src/EditorFeatures/Core/Shared/DefaultDocumentSupportsSuggestionService.cs</File>
+      <File>src/EditorFeatures/Core/Shared/IDocumentSupportsSuggestionService.cs</File>
+      <File>src/EditorFeatures/TestUtilities/Traits.cs</File>
+      <File>src/Interactive/EditorFeatures/Core/Implementation/Interactive/InteractiveDocumentSupportsSuggestionService.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/AbstractOleCommandTarget.Execute.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/AbstractOleCommandTarget.Query.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/VisualStudioDocumentSupportsSuggestionService.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>6261</IssueID>
+    <Title>Schedule Tasks and WorkItems on .NET ThreadPool</Title>
+    <Description>This PR schedules Tasks and IWorkItems on the shared .NET ThreadPool instead of the fixed-size thread pool currently used by OrleansTaskScheduler.
+
+The numbers below are from the original PR, which is a combination of this, #6263, and #6264
+
+.NET Framework | Before | After | Improvement
+-- | -- | -- | --
+Client to Silo | 110100 | 167325 | 52%
+Client to 2 Silos | 129940 | 151976 | 17%
+Hosted Client | 866952 | 841110 | -3%
+Silo to Silo | 136971 | 148303 | 8%
+
+.NET Core 3.1 | Before | After | Improvement
+-- | -- | -- | --
+Client to Silo | 155065 | 222870 | 44%
+Client to 2 Silos | 215204 | 275873 | 28%
+Hosted Client | 1300241 | 1367962 | 5%
+Silo to Silo | 183478 | 230966 | 26%
+
+I believe this is worth merging even with a degradation in the HostedClient test on .NET Fx. The test I'm using suffers from a noisy neighbor problem because all nodes (clients/silos) are hosted in the same process and therefore sharing the same ThreadPool &amp; resources - so there will be a clear difference between the Before case (where everyone has their own set of dedicated threads) and the After case (where they share one pool).
+
+Distributed Tests:
+
+.NET Framework | Before | After | Improvement
+-- | -- | -- | --
+NightlyLoadTest | 252802.4 | 304374.3 | 20%
+ActivationCollectorStressTest | 319953.9 | 350815 | 10%
+PingLoadTest_LocalReentrant | 182881.7 | 214457.2 | 17%
+PingLoadTest_RandomReentrant_MultiSilos | 639675 | 665155.5 | 4%
+
+.NET Core 3.1 | Before | After | Improvement
+-- | -- | -- | --
+NightlyLoadTest | 336430.7 | 423326.2 | 26%
+ActivationCollectorStressTest | 379334.4 | 402166.2 | 6%
+PingLoadTest_LocalReentrant | 163721.5 | 222958.2| 36%
+PingLoadTest_RandomReentrant_MultiSilos | 615306.3 | 644713 | 5%</Description>
+    <CreatedDate>25/01/2020</CreatedDate>
+    <ClosedDate>21/02/2020</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>6263</IssueID>
+        <Title>Use ReferenceEquals for Diagnostic.Equals</Title>
+        <Description>See #6262.
+</Description>
+        <CreatedDate>23/10/2015</CreatedDate>
+        <ClosedDate>05/11/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>6264</IssueID>
+        <Title>Each call to SemanticModel.GetDiagnostics re-binds field initializers</Title>
+        <Description>Diagnostics are cached for source methods and re-used in subsequent calls to `SemanticModel.GetDiagnostics` (see `MethodCompiler.CompileMethod`) but diagnostics for field initializers are not cached. Each call to `GetDiagnostics` will re-bind field initializers.
+</Description>
+        <CreatedDate>23/10/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+    </Issues>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>6299</IssueID>
+    <Title>Use current element for SimpleQueueCacheCursor.Element</Title>
+    <Description>Fixes #6298 
+Fixes #6281
+
+For brevity I am `using SQC = SimpleQueueCache; using SQCC = SimpleQueueCacheCursor;`, within this post.
+
+The whole idea of this change is to change SQCC so that its `Element` value always points to the cursors current element, rather than its next value. This change is remarkably small, especially if you do not count the comment changes.
+
+Specifically it has the invariant that: whenever a method is not currently executing, if `current` is not null, then it always equals `Element.Value.Batch`. (Note: Invariant does not need to hold at end of re-entrant calls while some other `SQCC` method is running.) I will informally prove that invariant holds a little further below. I will also informally argue as to why this change is safe.
+
+While there are further changes or refactorings that could be made, I've tried to keep this a minimal change, viewing this as a bug-fix rather than a substantial refactoring.
+
+While I have tried to be thorough in my analysis of the impact of this, it is possible I am overlooking something. If you see (or think you see) any scenarios where this change would break things, please let me know. 
+
+## Why this is safe
+`PersistentStreamPullingAgent` will not notice any difference between this version of the code, and the previous one, except as a side effect of any tiny changes in the execution time of the code in question. All calls to `SQC` or `SQCC` will return the same values. They won't always have exactly the same effect, but there is no observable difference from the pulling agent's perspective.
+
+From `SQC`'s perspective, not much changes. It sees one fewer call to `TryGetNextMessage(...)` per cursor, but that would have been the call when `SQCC.current` was not null, but `SQC.Element` is null, so that would be a call that does an early return anyway. It also returns a different value from the `TryGetNextMessage(...)` call, but that does not really impact the rest of the class in any meaningful way.
+
+The real difference to `SQC` is the timing of the remaining calls to `TryGetNextMessage(...)`, which occur one cursor `MoveNext()` cycle later than they previously did, ensuring that that the cursor's `Element` value always contains the current batch being processed, so that batch does not get cleaned up while it is processing. 
+
+For `SQCC`, the semantics of the `Element` property change substantially, to become the current value the cursor is pointing at, rather than the next value. Since `SQC` was already treating the value of `Element` as the current element this is desirable. There are two other minor differences: If `MoveNext()` returns false, the value of `current` is changed to null, rather than remaining the same. This is not an issue since the Enumerator pattern on which the cursors are based already says that the current value is undefined after `MoveNext()` returns false. Similarly upon calling `Dispose()`, the value of `current` is also set to null, which is needed to maintain the invariant, and accessing a cursor after disposing it would be a bug already anyway.
+
+## Proof that the invariant holds
+&lt;details&gt;&lt;summary&gt;Proof collapsed by default. Click to Expand&lt;/summary&gt;
+Inductive base case: When the `SQCC` class is constructed both values are null, so the invariant holds.
+
+Inductive recursive state: Our goal here is to show that any changes made to the object that impact the fields in question will preserve the invariant, assuming it already holds at the start. 
+
+In all cases where `current` changes it is either being set to `Element.Value.Batch`, or `Element` is also changing at the same time and `current` gets set to the same value. This happens in two places: `SQCC.Dispose(...)` ends up setting both values to null, while `SQCC.MoveNext()` sets `current` to `Element.Value.Batch` if `current` is null, and `Element`. Otherwise it calls `SQC.TryGetNextMessage(...)`, one or many times, and will end up setting `current` to the value it output. `SQC.TryGetNextMessage(...)` will output null if `Element` was already null. In all other cases it will update `Element`, and return `Element.Value.Batch`.
+
+Therefore we can conclude that `current` will never change in a way that will break the invariant. So the invariant can only be broken if `Element` changes while `current` is not null (unless current changes to match). (Note: I am ignoring somebody setting `Element.Value` or `Element.Value.Batch`, since no code actually does that).
+
+So when does `Element` change? It changes when `SQCC.Set(...)` or `SQCC.UnSet(...)` are called. Analyzing these:
+* `SQCC.Set(...)` called by:
+    * `SQC.AdvanceCursor(...)` which is only called by:
+        * `SQC.TryGetNextMessage(...)` which is only called by `SQCC.MoveNext()`, which also changes `current` to match.
+    * `SQC.SetCursor(...)` which is only called by:
+        * `SQC.InitializeCursor(...)` which is called by:
+            * `SQC.GetCacheCursor(...)`, which calls it immediately after constructing `SQCC`, so both `current` and `Element` are null.
+            * `SQC.RefreshCursor(...)` which is called by `SQC.Refresh(...)`, but only if `Element` is null. In that case, either `current` is either also null, per the invariant, or something else has already broken the invariant..
+* `SQCC.Unset(...)` called by:
+    * `SQC.UnsetCursor(...)` which is called by:
+        * `SQCC.Dispose(...)` which also sets `current` to match.
+        * `SQC.InitializeCursor(...)` which was analyzed above.
+        * `SQC.TryGetNextMessage(...)` which was analyzed above.
+
+Thus I have shown that the the invariant holds when constructed, and no method calls modify the the members in question in a way that breaks the invariant, unless the invariant is already broken. Therefore by induction, I have shown that the invariant always holds.
+&lt;/details&gt;</Description>
+    <CreatedDate>12/02/2020</CreatedDate>
+    <ClosedDate>18/02/2020</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>6298</IssueID>
+        <Title>Fix Design time builds to not fail before restoring nuget packages an…</Title>
+        <Description>…d building
+</Description>
+        <CreatedDate>24/10/2015</CreatedDate>
+        <ClosedDate>28/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>6281</IssueID>
+        <Title>Log low VM telemetry at most once per session</Title>
+        <Description>Fixes #6279 
+
+@heejaechang @Pilchie 
+
+This is the simplest fix for Update 1.
+
+Note: The shell will keep broadcasting VSM_VIRTUALMEMORYLOW/CRITICAL once a minute while the low VM situation persists. There is no corresponding message indicating "VM is back to normal".
+
+Another approach might be to do some rate limiting on the telemetry. i.e. note the time of the last notification and log telemetry only if it's been more than some interval (say 30 minutes or an hour). Thoughts?
+</Description>
+        <CreatedDate>23/10/2015</CreatedDate>
+        <ClosedDate>24/10/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/EditorFeatures/CSharpTest/CSharpGoToAdjacentMemberTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/ChangeSignature/RemoveParametersTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/EncapsulateField/EncapsulateFieldCommandHandlerTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/EncapsulateField/EncapsulateFieldTestState.cs</File>
+      <File>src/EditorFeatures/CSharpTest/ExtractInterface/ExtractInterfaceTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/ExtractMethod/ExtractMethodTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Organizing/OrganizeTypeDeclarationTests.cs</File>
+      <File>src/EditorFeatures/Core/CommandHandlers/GoToAdjacentMemberCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Commands/GoToAdjacentMemberCommandArgs.cs</File>
+      <File>src/EditorFeatures/Core/EditorFeaturesResources.Designer.cs</File>
+      <File>src/EditorFeatures/Core/Extensibility/Commands/PredefinedCommandHandlerNames.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/ChangeSignature/AbstractChangeSignatureCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/EncapsulateField/AbstractEncapsulateFieldCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/ExtractInterface/AbstractExtractInterfaceCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/ExtractMethod/AbstractExtractMethodCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/CommandHandlers/RenameCommandHandler_RenameHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/InlineRenameSession.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Organizing/OrganizeDocumentCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Suggestions/SuggestedActionsSourceProvider.cs</File>
+      <File>src/EditorFeatures/Core/Shared/DefaultDocumentSupportsSuggestionService.cs</File>
+      <File>src/EditorFeatures/Core/Shared/IDocumentSupportsSuggestionService.cs</File>
+      <File>src/EditorFeatures/TestUtilities/Traits.cs</File>
+      <File>src/Interactive/EditorFeatures/Core/Implementation/Interactive/InteractiveDocumentSupportsSuggestionService.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/AbstractOleCommandTarget.Execute.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/AbstractOleCommandTarget.Query.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/VisualStudioDocumentSupportsSuggestionService.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5998</IssueID>
+    <Title>Propagate message [de]serialization exceptions to callers</Title>
+    <Description>Currently when deserialization fails for a response message we do not propagate that deserialization exception to the caller. This PR adds behavior to propate such exceptions back to the original caller.
+
+Fixes #4748
+
+Fixes #5397
+
+xref #5978</Description>
+    <CreatedDate>01/10/2019</CreatedDate>
+    <ClosedDate>02/10/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>4748</IssueID>
+        <Title>ArgumentException when manually invoking tests for specific DLL</Title>
+        <Description>I followed the instructions on the contribution guide in building tests:
+
+```
+msbuild /v:m /m BuildAndTest.proj /p:PublicBuild=true /p:DeployExtension=false
+```
+
+And at some point I also decide re-build a more specific project
+
+```
+msbuild /v:m /m src\EditorFeatures\CSharpTest\CSharpEditorServicesTest.csproj /p:PublicBuild=true /p:DeployExtension=false
+```
+
+(which actually ended up deploying the rest of the DLLs)
+
+And invoked xunit directly on the DLL I am interested in testing:
+
+```
+packages\xunit.runners.2.0.0-alpha-build2576\tools\xunit.console.x86.exe Binaries\Debug\Roslyn.Services.Editor.CSharp.UnitTests.dll -noshadow
+```
+
+```
+xUnit.net console test runner (32-bit .NET 4.0.30319.42000)
+Copyright (C) 2014 Outercurve Foundation.
+
+Starting: Roslyn.Services.Editor.CSharp.UnitTests.dll
+.... lots of skips ....
+
+   System.ArgumentException [FATAL]
+      Ambiguous method named TestEquivalenceKey in type Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Diagnostics.GenerateMethod.GenerateMethodTests+GenerateConversionTest
+      Stack Trace:
+            at Xunit.Sdk.Executor.RunTests..ctor(Executor executor, String _type, List`1 _methods, Object _handler)
+Finished: Roslyn.Services.Editor.CSharp.UnitTests.dll
+
+=== TEST EXECUTION SUMMARY ===
+   Roslyn.Services.Editor.CSharp.UnitTests.dll  Total: 11580, Failed: 0, Skipped: 43
+```
+
+The `ArgumentException` is not being reported in the test summary. Its also unclear if this error always happens but is failed to be reported in the `BuildAndTest` target, or if it only happens when targeting a specific DLL.
+</Description>
+        <CreatedDate>24/08/2015</CreatedDate>
+        <ClosedDate>22/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5397</IssueID>
+        <Title>Feature request - Embed source in PDB</Title>
+        <Description>The PDB format has long had the capability to include the full text of source files, but most compilers have not made use of it. I would like to add an optional command line argument to the compiler to use this PDB feature.
+
+Including the source gives the developer a way to transmit his code to anyone debugging it without requiring auxiliary mechanisms such as source control servers or saving source files on known file shares. Although it makes the PDB larger, in some cases this size gain might be preferable to overhead configuring those alternate mechanisms. Here are a few cases I imagine it might be useful:
+1) During the build, source code is auto-generated and then compiled. This auto-generated source does not exist on source control server and is often not preserved as a build artifact. Even if it is preserved, it can't be indexed on a symbol server making acquisition difficult at debug time. (This is my particular case)
+2) A company is OK from an IP standpoint to release source for some of their projects, but their source control system is behind a firewall. Their IT security policies prevent giving any external access to the source control system, which prevents typical usage of source server. They already provide PDBs to customers, and by including source in the PDBs the customer's debugging experience improves with minimal additional work.
+3) An Open Source project is doing all their development on GitHub and they current use source server to distribute source, but they don't like additional configuration necessary in VS to enable it. By distributing the source in the PDB they eliminate this additional configuration.
+
+From my quick experiments, the work to enable such a feature is not very much. This is a simple prototype I've been working on to get a quick idea of the scope:
+https://github.com/noahfalk/roslyn/commit/e4e20bfe08d11e378998e1346af376bb0c8f782e
+
+To the best of my knowledge Visual Studio Debugger doesn't currently automatically use source embedded in PDBs, but I would collaborate with both teams to enable the debugging experience together with the compiler experience.
+
+Please let me know what are the useful next steps. Thanks!
+</Description>
+        <CreatedDate>22/09/2015</CreatedDate>
+        <ClosedDate>09/09/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5978</IssueID>
+        <Title>Move to toolset with csc and vbc binding redirects</Title>
+        <Description>Both csc.exe and vbc.exe need to be shipped with binding redirects.  Right now only VBCSCompiler.exe has a config file that does redirects.  
+</Description>
+        <CreatedDate>14/10/2015</CreatedDate>
+        <ClosedDate>16/10/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Compilers/Core/Portable/Emit/CommonPEModuleBuilder.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Organizing/OrganizeDocumentCommandHandler.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/RemoveUnnecessaryUsings/RemoveUnnecessaryUsingsCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/RemoveUnnecessaryImports/CSharpRemoveUnnecessaryImportsService.cs</File>
+      <File>src/Features/Core/Portable/RemoveUnnecessaryImports/AbstractRemoveUnnecessaryImportsService.cs</File>
+      <File>src/Features/Core/Portable/RemoveUnnecessaryImports/IRemoveUnnecessaryImportsService.cs</File>
+      <File>src/Features/Core/Portable/RemoveUnnecessaryImports/RemoveUnnecessaryImportsService.cs</File>
+      <File>src/Features/Core/Portable/Shared/Extensions/DocumentExtensions.cs</File>
+      <File>src/Tools/Source/RunTests/Program.cs</File>
+      <File>src/Tools/Source/RunTests/TestRunner.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/CodeModel/CSharpCodeModelService.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/FindReferences/FindReferencesSearchEngine_MapCreation.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/FindReferences/Finders/ILanguageServiceReferenceFinder.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/FindReferences/Finders/NamedTypeSymbolReferenceFinder.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5988</IssueID>
+    <Title>Add additional internal health checks for membership</Title>
+    <Description>Fixes #5847 (see also #5987)</Description>
+    <CreatedDate>01/10/2019</CreatedDate>
+    <ClosedDate>01/10/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>5847</IssueID>
+        <Title>Add `#help` command to csi/vbi</Title>
+        <Description>![csi](https://cloud.githubusercontent.com/assets/788783/10407616/73386376-6ea2-11e5-862f-2ae28e209816.png)
+Fix https://github.com/dotnet/roslyn/issues/5321. Didn't use MEF as @amcasey suggested.
+
+@dotnet/interactive 
+</Description>
+        <CreatedDate>09/10/2015</CreatedDate>
+        <ClosedDate>10/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5987</IssueID>
+        <Title>Fixes crash in InteractiveEvaluator when the CWD changes</Title>
+        <Description>Fixes https://github.com/dotnet/roslyn/issues/5984
+</Description>
+        <CreatedDate>15/10/2015</CreatedDate>
+        <ClosedDate>16/10/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Interactive/EditorFeatures/CSharp/Interactive/CSharpInteractiveEvaluator.cs</File>
+      <File>src/Interactive/EditorFeatures/Core/Extensibility/Interactive/CSharpVBInteractiveCommandContentTypes.cs</File>
+      <File>src/Interactive/EditorFeatures/Core/Extensibility/Interactive/InteractiveCommandHandler.cs</File>
+      <File>src/Interactive/EditorFeatures/Core/Extensibility/Interactive/InteractiveEvaluator.cs</File>
+      <File>src/Interactive/Features/Interactive/Core/InteractiveLanguageNames.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5987</IssueID>
+    <Title>Remove unused IMembershipOracle interface</Title>
+    <Description>Fixes #5985
+
+See #5847</Description>
+    <CreatedDate>01/10/2019</CreatedDate>
+    <ClosedDate>01/10/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>5985</IssueID>
+        <Title>Proposal: Eval feature for scripts</Title>
+        <Description>It should be easy to evaluate dynamically created source code from within a script (without explicitly using the Scripting APIs):
+
+my_script.csx:
+
+``` C#
+var result = await Eval("1+1");
+var result = await Eval("X+Y", new C { X = 1, Y = 2});
+```
+
+Where Eval is a method defined on a globals object provided by the host.
+
+The provided capabilities would be similar to the Scripting APIs.
+
+Some questions:
+- Can we pass in info from the enclosing scope (such as usings)?
+
+``` C#
+using static System.Math;
+var f = "Sqrt";
+var result = await Eval($"{f}(x)", new { x = 1 });
+```
+
+  Using CallerFileName and CallerLineNumber attributes the host, which implements the Eval method, can get the exact line in the source code of the Eval call. From there it can infer the usings in scope, if it has the compilation still available. If the script was executed via CreateDelegate the compilation might not be available anymore (by design, to free up resources). That can be ok, we might just not support evals in this scenario and throw an exception.
+</Description>
+        <CreatedDate>15/10/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5847</IssueID>
+        <Title>Add `#help` command to csi/vbi</Title>
+        <Description>![csi](https://cloud.githubusercontent.com/assets/788783/10407616/73386376-6ea2-11e5-862f-2ae28e209816.png)
+Fix https://github.com/dotnet/roslyn/issues/5321. Didn't use MEF as @amcasey suggested.
+
+@dotnet/interactive 
+</Description>
+        <CreatedDate>09/10/2015</CreatedDate>
+        <ClosedDate>10/10/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Interactive/EditorFeatures/Core/Extensibility/Interactive/InteractiveEvaluator.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5864</IssueID>
+    <Title>Resubmit #5862 (Cherry-pick #5859 and #5863 for 2.4.1)</Title>
+    <Description>Log options on silo and client startup (#5859)
+Handle the case where the clustering provider does not support TableVersion (#5863)</Description>
+    <CreatedDate>13/08/2019</CreatedDate>
+    <ClosedDate>13/08/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>5859</IssueID>
+        <Title>build: Fixes unzip option</Title>
+        <Description>`u` and `o` are contradictory options. `unzip` utility on FreeBSD considers this mistake as an error:
+
+&gt; unzip: -n, -o and -u are contradictory
+##### Rationale:
+
+&gt; -n means "never overwrite"
+&gt; -o means "always overwrite"
+&gt; -u means "sometimes overwrite"
+
+from: http://svn-src-head.freebsd.narkive.com/TzP7fphF/svn-commit-r200068-head-usr-bin.
+
+/cc: @jaredpar, @agocke
+</Description>
+        <CreatedDate>10/10/2015</CreatedDate>
+        <ClosedDate>21/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5863</IssueID>
+        <Title>Improve highlighting for interpolated strings containing hyperlinks</Title>
+        <Description>![2015-10-11_01-34-32](https://cloud.githubusercontent.com/assets/7110884/10413813/5a59515a-6fb8-11e5-892a-75a04c18548c.png)
+When you have a string with a hyperlink in it, the blue will override all regular highlighting colors as it appears to.
+</Description>
+        <CreatedDate>10/10/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/AbstractKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/AddKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/AliasKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/AsKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/AscendingKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/AssemblyKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/AsyncKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/AwaitKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/BaseKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/BoolKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/BreakKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ByKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ByteKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/CaseKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/CatchKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/CharKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/CheckedKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ChecksumKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ClassKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ConstKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ContinueKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/DecimalKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/DefaultKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/DefineKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/DelegateKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/DescendingKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/DisableKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/DoKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/DoubleKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/DynamicKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ElifKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ElseKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/EndIfKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/EndRegionKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/EnumKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/EqualsKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ErrorKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/EventKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ExplicitKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ExternKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/FalseKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/FieldKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/FinallyKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/FixedKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/FloatKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ForEachKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ForKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/FromKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/GetKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/GlobalKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/GotoKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/GroupKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/HiddenKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/IfKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ImplicitKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/InKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/IntKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/InterfaceKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/InternalKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/IntoKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/IsKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/JoinKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/KeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/LetKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/LineKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/LockKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/LongKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/MethodKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ModuleKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/NameOfKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/NamespaceKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/NewKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/NullKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ObjectKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/OnKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/OperatorKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/OrderByKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/OutKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/OverrideKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ParamKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ParamsKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/PartialKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/PragmaKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/PrivateKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/PropertyKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ProtectedKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/PublicKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ReadOnlyKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/RecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/RefKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ReferenceKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/RegionKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/RemoveKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/RestoreKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ReturnKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/SByteKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/SealedKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/SelectKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/SetKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ShortKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/SizeOfKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/StackAllocKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/StaticKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/StringKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/StructKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/SwitchKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ThisKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ThrowKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/TrueKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/TryKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/TypeKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/TypeOfKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/TypeVarKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/UIntKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ULongKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/UShortKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/UncheckedKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/UndefKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/UnsafeKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/UsingKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/VarKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/VirtualKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/VoidKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/VolatileKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/WarningKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/WhenKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/WhereKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/WhileKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/YieldKeywordRecommenderTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5862</IssueID>
+    <Title>Cherry-pick #5859 and #5863 for 2.4.1</Title>
+    <Description>Log options on silo and client startup (#5859)
+Handle the case where the clustering provider does not support TableVersion (#5863)</Description>
+    <CreatedDate>13/08/2019</CreatedDate>
+    <ClosedDate>13/08/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>5859</IssueID>
+        <Title>build: Fixes unzip option</Title>
+        <Description>`u` and `o` are contradictory options. `unzip` utility on FreeBSD considers this mistake as an error:
+
+&gt; unzip: -n, -o and -u are contradictory
+##### Rationale:
+
+&gt; -n means "never overwrite"
+&gt; -o means "always overwrite"
+&gt; -u means "sometimes overwrite"
+
+from: http://svn-src-head.freebsd.narkive.com/TzP7fphF/svn-commit-r200068-head-usr-bin.
+
+/cc: @jaredpar, @agocke
+</Description>
+        <CreatedDate>10/10/2015</CreatedDate>
+        <ClosedDate>21/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5863</IssueID>
+        <Title>Improve highlighting for interpolated strings containing hyperlinks</Title>
+        <Description>![2015-10-11_01-34-32](https://cloud.githubusercontent.com/assets/7110884/10413813/5a59515a-6fb8-11e5-892a-75a04c18548c.png)
+When you have a string with a hyperlink in it, the blue will override all regular highlighting colors as it appears to.
+</Description>
+        <CreatedDate>10/10/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/EditorFeatures/CSharpTest/Classification/SyntacticTaggerTests.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Classification/SyntacticClassificationTaggerProvider.TagComputer.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Classification/SyntacticClassificationTaggerProvider.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5576</IssueID>
+    <Title>Cherry-pick #5570 and #5575 for 2.3.2</Title>
+    <Description>Prevent NullReferenceException with some storage providers when state is Nullable&lt;T&gt; (#5570)
+Accommodate existing RequestContext.PropagateActivityId value in ClusterClient (#5575)</Description>
+    <CreatedDate>03/05/2019</CreatedDate>
+    <ClosedDate>03/05/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>5570</IssueID>
+        <Title>Invalid pretty-lister behavior when #If directive is preceeded by a semicolon</Title>
+        <Description>1. Type ";" on an empty line
+2. Type "#If DEBUG" on the next line and press enter
+
+Ovbserved:
+
+```
+;
+#If DEBUGThen
+#End If
+```
+
+Expected:
+
+```
+;
+#If DEBUG Then
+#End If
+```
+</Description>
+        <CreatedDate>30/09/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5575</IssueID>
+        <Title>Go-to-definition doesn't work on the target type of conversion operators</Title>
+        <Description>Invoke go-to-definition on the `Bar` reference in the operator:
+
+```
+class Foo
+{
+    public static explicit operator Bar(Foo a)
+    {
+        return null;
+    }
+}
+
+class Bar
+{
+}
+```
+
+Expected: The cursor should jump to the class declaration.
+Actual: It highlights the operator declaration instead. This happens for both explicit and implicit operators.  
+This is a regression from VS2013.
+</Description>
+        <CreatedDate>30/09/2015</CreatedDate>
+        <ClosedDate>17/04/2017</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Workspaces/CSharp/Portable/Extensions/ExpressionSyntaxExtensions.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5242</IssueID>
+    <Title>Cherry-pick post 2.2.0-rc1 fixes for 2.2.0 final #2</Title>
+    <Description>Update ZooKeeperNetEx package to 3.4.12.1 (#5236)
+Include exception in TryForwardRequest info log (#5238)
+Improve logging of stream delivery errors. (#5230)
+Support ProxyGatewayEndpoint from legacy configuration (#5214)</Description>
+    <CreatedDate>11/12/2018</CreatedDate>
+    <ClosedDate>11/12/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>5236</IssueID>
+        <Title>Mapping each IL instruction to source</Title>
+        <Description>I'm working on SourceMap support for sq/JSIL#76. It is CIL-&gt;JavaScript translator.
+We are able read mapping of each statement (line) of source code to IL operator from PDB, but for better user experience it would be good if we have some option to map each IL operator to symbols in source code.
+So, in other word I'm looking on something similar to `CodeGenerator.EmitSequencePoint` after each IL instruction - or create something similar not in PDB, but in some additional file.
+Is it possible to implement using existing Roslyn extensions point and where should I start for it?
+</Description>
+        <CreatedDate>15/09/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5238</IssueID>
+        <Title>[Bug report] Passing in a combination of flags directly as method parameter causes PEVerify to fail</Title>
+        <Description>I am not yet sure what the impact is of this invalid IL and if it might be PEVerify being wrong. By default I run PEVerify for all libraries created (I use Fody for this, but you can also run PEVerify manually). It seems that the libraries had errors while being verified.
+
+To use PEVerify, use the following steps:
+1. Go to _C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools_
+2. Shift + right click on the directory =&gt; _Open command window here_
+3. Use the following command:
+
+```
+PEverify “[path to assembly]”
+```
+## Problem description
+
+To reproduce, use the following steps:
+1. Create a new blank universal windows store app
+2. Add this method to _MainPage.xaml.cs_
+
+```
+public void InvalidIlMethod()
+{
+    var field = typeof(MainPage).GetField("_testingField", BindingFlags.Instance | BindingFlags.Public);
+}
+```
+1. When verifying the generated IL by the compiler, this error shows up:
+
+```
+[IL]: Error: [C:\Source\Research\UniversalBindingFlags\UniversalBindingFlags\bin\Debug\UniversalBindingFlags.dll: BindingFlagsPoC.MainPage::InvalidIlMethod][offset 0x00000012] Unable to resolve token.
+```
+## Possible workaround
+
+To fix this, replace the generated method by this one:
+
+```
+public void ValidIlMethod()
+{
+    var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
+    var field = typeof(MainPage).GetField("_testingField", bindingFlags);
+}
+```
+
+Now PEVerify will correctly verify the assembly.
+</Description>
+        <CreatedDate>15/09/2015</CreatedDate>
+        <ClosedDate>08/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5230</IssueID>
+        <Title>Fix a little more REPL initialization</Title>
+        <Description>
+        </Description>
+        <CreatedDate>15/09/2015</CreatedDate>
+        <ClosedDate>15/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5214</IssueID>
+        <Title>Update the csi basic command-line REPL</Title>
+        <Description>
+        </Description>
+        <CreatedDate>14/09/2015</CreatedDate>
+        <ClosedDate>04/10/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Compilers/CSharp/Portable/CodeGen/Optimizer.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/AsyncRewriter/AwaitExpressionSpiller.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/LocalSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceLocalSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Synthesized/SynthesizedLocal.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Synthesized/TypeSubstitutedLocalSymbol.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenAsyncTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Source/ExpressionCompiler/Symbols/EELocalSymbolBase.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5228</IssueID>
+    <Title>Cherry-pick post 2.2.0-rc1 fixes for 2.2.0 final</Title>
+    <Description>Fix AzureSilo startup (#5213)
+Remove added type to fix backward compatibility (#5225)</Description>
+    <CreatedDate>07/12/2018</CreatedDate>
+    <ClosedDate>10/12/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>5213</IssueID>
+        <Title>Figure out how to make MSBuild happy with the DNXCore 5.0 target</Title>
+        <Description>We're currently using DNXCore 5.0 as the target runtime for our Core CLR projects. MSBuild is unhappy with this since DNXCore,v5.0 doesn't have a set of framework reference assemblies:
+
+```
+       "c:\Users\angocke\code\roslyn\Open\Compilers.sln" (default target) (1) -&gt;
+       "c:\Users\angocke\code\roslyn\Open\src\Compilers\VisualBasic\VbcCore\VbcCore.csproj" (default target) (35) -&gt;
+       (GetReferenceAssemblyPaths target) -&gt;
+         C:\Program Files (x86)\MSBuild\14.0\bin\Microsoft.Common.CurrentVersion.targets(1097,5): warning MSB3644: The reference assemblies for frame
+       work "DNXCore,Version=v5.0" were not found. To resolve this, install the SDK or Targeting Pack for this framework version or retarget your app
+       lication to a version of the framework for which you have the SDK or Targeting Pack installed. Note that assemblies will be resolved from the
+       Global Assembly Cache (GAC) and will be used in place of reference assemblies. Therefore your assembly may not be correctly targeted for the f
+       ramework you intend. [c:\Users\angocke\code\roslyn\Open\src\Compilers\VisualBasic\VbcCore\VbcCore.csproj]
+
+
+       "c:\Users\angocke\code\roslyn\Open\Compilers.sln" (default target) (1) -&gt;
+       "c:\Users\angocke\code\roslyn\Open\src\Compilers\CSharp\CscCore\CscCore.csproj" (default target) (36) -&gt;
+         C:\Program Files (x86)\MSBuild\14.0\bin\Microsoft.Common.CurrentVersion.targets(1097,5): warning MSB3644: The reference assemblies for frame
+       work "DNXCore,Version=v5.0" were not found. To resolve this, install the SDK or Targeting Pack for this framework version or retarget your app
+       lication to a version of the framework for which you have the SDK or Targeting Pack installed. Note that assemblies will be resolved from the
+       Global Assembly Cache (GAC) and will be used in place of reference assemblies. Therefore your assembly may not be correctly targeted for the f
+       ramework you intend. [c:\Users\angocke\code\roslyn\Open\src\Compilers\CSharp\CscCore\CscCore.csproj]
+```
+
+We should figure out if this is the right target and we want to fix up MSBuild in some way, or whether there's a more appropriate TFM.
+</Description>
+        <CreatedDate>14/09/2015</CreatedDate>
+        <ClosedDate>22/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5225</IssueID>
+        <Title>Script test wait</Title>
+        <Description>
+        </Description>
+        <CreatedDate>14/09/2015</CreatedDate>
+        <ClosedDate>15/09/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/EditorFeatures/CSharp/Completion/FileSystem/ReferenceDirectiveCompletionProvider.cs</File>
+      <File>src/EditorFeatures/Core/Extensibility/Completion/SnippetCompletionProvider.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/CompletionProviders/AbstractMemberInsertingCompletionProvider.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/CompletionProviders/AbstractOverrideCompletionProvider.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/CompletionProviders/AbstractPartialCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Portable/Completion/CompletionProviders/AttributeNamedParameterCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Portable/Completion/CompletionProviders/CrefCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Portable/Completion/CompletionProviders/EnumAndCompletionListTagCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Portable/Completion/CompletionProviders/ExplicitInterfaceCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Portable/Completion/CompletionProviders/ExternAliasCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Portable/Completion/CompletionProviders/KeywordCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Portable/Completion/CompletionProviders/NamedParameterCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Portable/Completion/CompletionProviders/ObjectInitializerCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Portable/Completion/CompletionProviders/SnippetCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Portable/Completion/CompletionProviders/SpeculativeTCompletionProvider.cs</File>
+      <File>src/Features/Core/Portable/Completion/Providers/AbstractCompletionProvider.UnionCompletionitemComparer.cs</File>
+      <File>src/Features/Core/Portable/Completion/Providers/AbstractCompletionProvider.cs</File>
+      <File>src/Features/Core/Portable/Completion/Providers/AbstractKeywordCompletionProvider.cs</File>
+      <File>src/Features/Core/Portable/Completion/Providers/AbstractObjectInitializerCompletionProvider.cs</File>
+      <File>src/Features/Core/Portable/Completion/Providers/UnionCompletionItemComparer.cs</File>
+      <File>src/Features/Core/Portable/Shared/Extensions/DocumentExtensions.cs</File>
+      <File>src/Interactive/EditorFeatures/CSharp/Completion/CompletionProviders/ReplCommandCompletionProvider.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5225</IssueID>
+    <Title>Remove RequestInvocationHistorySummary to fix backward compatibility</Title>
+    <Description>#5145 was a breaking change (my bad)
+
+Removing the added type `RequestInvocationHistorySummary` and using the previous `RequestInvocationHistory` implementation fix the bc issue while keeping the fix from #5145 </Description>
+    <CreatedDate>05/12/2018</CreatedDate>
+    <ClosedDate>05/12/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>5145</IssueID>
+        <Title>Respect noconfig in InteractiveEvaluator</Title>
+        <Description>Don't consume the response file when re-initializing after `#reset
+noconfig`.  The host already handles this correctly.
+
+Fixes #4397.
+
+Integration test to follow.
+</Description>
+        <CreatedDate>10/09/2015</CreatedDate>
+        <ClosedDate>11/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5145</IssueID>
+        <Title>Respect noconfig in InteractiveEvaluator</Title>
+        <Description>Don't consume the response file when re-initializing after `#reset
+noconfig`.  The host already handles this correctly.
+
+Fixes #4397.
+
+Integration test to follow.
+</Description>
+        <CreatedDate>10/09/2015</CreatedDate>
+        <ClosedDate>11/09/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Scripting/CSharpTest/InteractiveSessionTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5086</IssueID>
+    <Title>Revert "Don't enforce reentrancy for one way requests" #4382</Title>
+    <Description>It seems that #4382 introduced some regressions (see #5080, #5059, maybe other weird behavior).
+
+I propose we revert it, to be able to quickly publish a new 2.1 version. We can then work to bring it back in 2.2.0 once the issue is fixed.</Description>
+    <CreatedDate>09/10/2018</CreatedDate>
+    <ClosedDate>10/10/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>4382</IssueID>
+        <Title>Report diagnostics for exceptions within the analyzer driver.</Title>
+        <Description>We execute the analyzer driver's initialization and core analysis tasks on a background thread. Any exceptions from the driver itself (not the analyzer callbacks, we already report diagnostics for those) were getting swallowed and analyzer execution also skipped silently. See https://github.com/dotnet/roslyn/issues/2980#issuecomment-104433576 for an example.
+
+We now report an exception diagnostic for analyzer driver crash (with the complete exception trace), so that the user knows what happened and we can diagnose the bug when the issue is reported.
+
+Fixes #3005
+</Description>
+        <CreatedDate>06/08/2015</CreatedDate>
+        <ClosedDate>06/08/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5080</IssueID>
+        <Title>Consider if it is appropriate to use Enumerable.Repeat to implement DefaultLowerBounds function in src/Compilers/CSharp/Portable/Emitter/Model/ArrayTypeSymbolAdapter.cs</Title>
+        <Description>In code review for PR #5060 @gafter asked if we should use `Enumerable.Repeat` to implement DefaultLowerBounds, which is currently implemented as follows:
+
+```
+private static IEnumerable&lt;int&gt; DefaultLowerBounds(int rank)
+{
+    for (int i = 0; i &lt; rank; ++i)
+        yield return 0;
+}
+```
+</Description>
+        <CreatedDate>08/09/2015</CreatedDate>
+        <ClosedDate>15/01/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5059</IssueID>
+        <Title>Enhanced Debugging Support</Title>
+        <Description>Oftentimes, I find myself needing to check the values returned in methods with signatures like `GetFoo()`.  Would it be possible to allow us to manually activate such methods (essentially, any non-void method without a parameter) and view the result, similar to the way we can manually run other threads to view updated list results, etc.?
+</Description>
+        <CreatedDate>07/09/2015</CreatedDate>
+        <ClosedDate>08/09/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/InteractiveWindow/VisualStudio/InteractiveWindowPackage.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5082</IssueID>
+    <Title>Allow placement strategies to specify deterministic activation ids</Title>
+    <Description>When grains are placed using the (upcoming) Service Fabric Stateful Service strategy, there is no grain directory involvement and hence we need a mechanism to determine which activation id to use when routing messages.
+
+This PR enables that functionality but keeps it *`internal`* so that it will only be exposed to the SF library for now. The reasoning here is that it's unlikely anyone else will need it and if someone stumbles upon this they may opt-in to it for their placement strategy without understanding the consequences.
+
+If `PlacementStrategy.IsDeterministicActivationId` is `true`, then all activations for a particular grain will have an `ActivationId` whose `Key` is equal to the grain's `GrainId.Key`. If `false`, then no behavior changes and `ActivationId` is randomly generated.
+
+Without this PR, initial calls to already-activated grains placed using `StatefulServicePlacement` will round-trip to the target silo using the incorrect generated `ActivationId` and the silo will need to forward those calls to the correct activation. The response message will invalidate the caller's routing cache, but will not specify the activation's new address, so the caller will continue to call using incorrect `ActivationId`s. This is *benign* but unpleasant and inefficient. Users would almost certainly complain about warnings and other garbage in their logs. It is also slower. This PR enables the first and subsequent call to succeed without any round-trips for routing info.
+
+See #5073 under part 4:
+&gt; Changes to support activations which have a deterministic `ActivationId` (related to the above) so that a grain which is placed using `StatefulServicePlacement` has a fixed `ActivationId` which can be computed from its `GrainId` (i.e, 1:1 relationship). It's possible that this will be contentious, since previously an `ActivationId` was ephemeral. This change is important, though, because it lets us route calls without needing to learn the `ActivationId` from another source (the grain directory). This is implemented by adding an `IsDeterministicActivationId` property to `PlacementStrategy`, which is then used in `PlacementDirectorsManager.AddActivation`. (PR #5082)</Description>
+    <CreatedDate>09/10/2018</CreatedDate>
+    <ClosedDate>11/10/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>5073</IssueID>
+        <Title>Expose Smart-Up-Down on an option page</Title>
+        <Description>As in Python.
+</Description>
+        <CreatedDate>08/09/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>5082</IssueID>
+        <Title>Add a new analyzer and code-fix to detect and recommend when people can use the auto-property pattern.</Title>
+        <Description>i.e. if you have:
+
+``` c#
+class C {
+  int i;
+  int P { get { return i; } set { i = value; } }
+}
+```
+
+It will fade out `int i;` and offer to fix the code into:
+
+``` c#
+class C {
+  int P { get; set; }
+}
+```
+
+TODO: Still need to find all references to the field being replaced, and update them to access the property instead.
+</Description>
+        <CreatedDate>08/09/2015</CreatedDate>
+        <ClosedDate>10/09/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/EditorFeatures/CSharp/CSharpEditorResources.Designer.cs</File>
+      <File>src/EditorFeatures/CSharp/UseAutoProperty/UseAutoPropertyAnalyzer.cs</File>
+      <File>src/EditorFeatures/CSharp/UseAutoProperty/UseAutoPropertyCodeFixProvider.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/UseAutoProperty/UseAutoPropertyTests.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/AbstractEditorInlineRenameService.InlineRenameLocationSet.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/AbstractEditorInlineRenameService.SymbolRenameInfo.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/AbstractEditorInlineRenameService.cs</File>
+      <File>src/EditorFeatures/Test/CodeFixes/ExtensionOrderingTests.cs</File>
+      <File>src/EditorFeatures/TestUtilities/Traits.cs</File>
+      <File>src/Features/Core/Portable/EncapsulateField/AbstractEncapsulateFieldService.cs</File>
+      <File>src/Features/Core/Portable/FeaturesResources.Designer.cs</File>
+      <File>src/Features/Core/Portable/UseAutoProperty/AbstractUseAutoPropertyAnalyzer.cs</File>
+      <File>src/Features/Core/Portable/UseAutoProperty/AbstractUseAutoPropertyCodeFixProvider.cs</File>
+      <File>src/Workspaces/CSharp/Portable/CodeGeneration/CSharpSyntaxGenerator.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Rename/CSharpRenameRewriterLanguageService.cs</File>
+      <File>src/Workspaces/Core/Portable/Editing/SyntaxEditor.cs</File>
+      <File>src/Workspaces/Core/Portable/Editing/SyntaxGenerator.cs</File>
+      <File>src/Workspaces/Core/Portable/Rename/ConflictEngine/ConflictResolver.Session.cs</File>
+      <File>src/Workspaces/Core/Portable/Rename/ConflictEngine/ConflictResolver.cs</File>
+      <File>src/Workspaces/Core/Portable/Rename/RenameLocation.ReferenceProcessing.cs</File>
+      <File>src/Workspaces/Core/Portable/Rename/RenameLocation.cs</File>
+      <File>src/Workspaces/Core/Portable/Rename/RenameLocations.cs</File>
+      <File>src/Workspaces/Core/Portable/Rename/Renamer.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/SymbolInfoExtensions.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>4515</IssueID>
+    <Title>Non static statistics: Round 1</Title>
+    <Description>Note that this is based upon #4509
+Fixes #4499
+
+Submitting for CI testing, but it passed in VSO already.
+
+This starts the process of removing statics from the statistics system. It doesn't complete the process, but it is already enough to fix initialization order problems like we see in #4499.</Description>
+    <CreatedDate>26/04/2018</CreatedDate>
+    <ClosedDate>02/05/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>4509</IssueID>
+        <Title>Change to definitive assignment in LINQ queries</Title>
+        <Description>The following code compiles on VS 2013 but fails in VS 2015 
+
+``` csharp
+static void Main(string[] args)
+{
+    decimal a, b;
+    IEnumerable&lt;dynamic&gt; array = new string[] { "10", "20", "30" };
+    var result = (from v in array
+                  where decimal.TryParse(v, out a) &amp;&amp; decimal.TryParse("15", out b) &amp;&amp; a &lt;= b // Error here
+                  orderby decimal.Parse(v)
+                  select v).ToArray();
+}
+```
+
+The resulting error is:
+
+&gt; Error CS0165 Use of unassigned local variable 'b'
+
+This appears to be a bug in the definite assignment logic of the compiler.  
+
+Original source: http://stackoverflow.com/questions/31961411/roslyn-failed-to-compile-code
+
+&lt;!---
+@huboard:{"order":4362.0,"milestone_order":4509,"custom_state":""}
+--&gt;
+</Description>
+        <CreatedDate>12/08/2015</CreatedDate>
+        <ClosedDate>14/08/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>4499</IssueID>
+        <Title>Improve ResetCommand</Title>
+        <Description>1. Unflip the noconfig argument (fixes #4396).
+2. Classify `noconfig` anywhere in the argument list.
+</Description>
+        <CreatedDate>12/08/2015</CreatedDate>
+        <ClosedDate>12/08/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>4499</IssueID>
+        <Title>Improve ResetCommand</Title>
+        <Description>1. Unflip the noconfig argument (fixes #4396).
+2. Classify `noconfig` anywhere in the argument list.
+</Description>
+        <CreatedDate>12/08/2015</CreatedDate>
+        <ClosedDate>12/08/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/InteractiveWindow/Editor/Commands/HelpCommand.cs</File>
+      <File>src/InteractiveWindow/Editor/Commands/ResetCommand.cs</File>
+      <File>src/InteractiveWindow/EditorTest/InteractiveWindowTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>4000</IssueID>
+    <Title>Move IReminderTable assembly loading to legacy</Title>
+    <Description>Fixes #3954
+
+Partially addresses #3953 
+
+* Removes all `ReminderOptions` and adds specific options for each type, eg `MockReminderTableOptions` 
+* Removes `AdoNetOptions` and `StorageOptions`
+* Adds extensions for configuring reminders to `ISiloHostBuilder` &amp; `IServiceCollection`
+* Supports legacy configuration
+* Pulls stringly assembly loading for reminder tables out of core and into legacy</Description>
+    <CreatedDate>09/02/2018</CreatedDate>
+    <ClosedDate>09/02/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>3954</IssueID>
+        <Title>Added desktop analyzer project and one rule (CA2153) to FxCop diagnostics</Title>
+        <Description>- Added one security rule (CA2153) to FxCop diagnostics, to pave the road for adding more rules. 
+- Created Desktop.Analyzers project (and two VB and CSharp satellites, as well as tests) and added the CS2153 Analyzer to it.
+
+@mavasani @srivatsn @tmeschter
+</Description>
+        <CreatedDate>14/07/2015</CreatedDate>
+        <ClosedDate>30/07/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>3953</IssueID>
+        <Title>[proposal] Generalize array initializer syntax</Title>
+        <Description>C# has array initializer syntax from version 1.0, simply inheriting similar syntax construct from C/C++/Java languages:
+
+``` c#
+class ArrayInitializers {
+  private readonly int[] xs = {1, 2, 3};
+  public int[,] Values { get; } = {{1, 2}, {3, 4}};
+  void M() {
+    string[] localArray = {"abc"};
+    int[,] matrix = {
+      {1, 2, 3},
+      {4, 5, 6},
+      {7, 8, 9}
+    };
+  }
+}
+```
+
+Array initializer syntax seems to be a bit obsolete nowadays, mostly because it don't mix well with `var` locals (array initializers only work when right hand side of initialization has explicit type). However, in C# we still have explicit types annotations in class members:
+
+``` c#
+class C {
+  public static readonly Dictionary&lt;int, string&gt; StaticData = new Dictionary&lt;int, string&gt; {
+    {12, "I guess, practically every"},
+    {34, "C# programmer"},
+    {56, "wrote code like this"}
+  };
+}
+```
+
+We can reduce the amount of type annotations boilerplate here by:
+- Allowing `var` at type member level - complicates type checking and IDE tooling so much:
+
+``` c#
+  public static readonly var StaticData = new Dictionary&lt;int, string&gt; {
+    {123, "abc"},
+    {456, "def"}
+  };
+```
+- Introducing constructor type arguments inference - using collection initializer expressions to infer `Dictionary` type seems to be overly complex solution (+ we still have to repeat `Dictionary` type usage):
+
+``` c#
+  public static readonly Dictionary&lt;int, string&gt; StaticData = new Dictionary {
+    {123, "abc"},
+    {456, "def"}
+  };
+```
+- Extending array initializer syntax to work with arbitrary types, by making it behave exactly like C# 3.0 collection initializer:
+
+``` c#
+  public static readonly Dictionary&lt;int, string&gt; StaticData = {
+    {123, "abc"},
+    {456, "def"}
+  };
+```
+
+The generalization of array initializers looks similar to the idea of declaration expressions - just like "we already have `out`/`ref`-parameters, we can't drop them for good, let's make them more usable", generalization of array initializer syntax simply extends the usability of existing language syntax constructs in the modern days, since collection types dominate over plain CLR array types so much.
+
+``` c#
+  var xs = new HashSet&lt;string&gt; {"abc", "def", "ghi"};
+  var ys = new HashSet {"abc", "def", "ghi"};
+  HashSet&lt;string&gt; zs = {"abc", "def", "ghi"};
+
+  List&lt;int&gt; list = {firstItem, secondItem};
+```
+
+The only real difference with collection initializer is implicit parameterless constructor call. Instantiated type is determined purely by left hand side of initialization.
+</Description>
+        <CreatedDate>14/07/2015</CreatedDate>
+        <ClosedDate>24/03/2017</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EditAndContinue/EditAndContinueTests.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/MetadataHeapsBuilder.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>3891</IssueID>
+    <Title>Bring back PerfCounterEnvironmentStatistics </Title>
+    <Description>Related issues: #3567 #3586
+
+I added abstractions to get the total physical memory and the cpu/memory usage (`IAppEnvironmentStatistics` and `IHostEnvironmentStatistics`), and refactored the old `PerfCounterEnvironmentStatistics` to implement `IAppEnvironmentStatistics`, as a Windows-only solution. This class also now follow the lifecycle pattern.
+
+The built-in implementation of  `IAppEnvironmentStatistics` should be cross-platform, but the developer can make a custom implementation if needed.
+
+A Linux-specific implementation of `IHostEnvironmentStatistics` could be done in the future,</Description>
+    <CreatedDate>22/01/2018</CreatedDate>
+    <ClosedDate>24/01/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>3567</IssueID>
+        <Title>Refactor the PerfRunManager and related utilities into smaller pieces</Title>
+        <Description>The PerfRunManager has more evolved over the years than been designed. As such, it's become a pretty big ball of mud that encompasses a lot of unrelated functionality. Refactoring it would help people who want to make targeted changes to perf tests and is probably necessary for putting pieces into the open for public use.
+</Description>
+        <CreatedDate>17/06/2015</CreatedDate>
+        <ClosedDate>08/02/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>3586</IssueID>
+        <Title>End Construct adds Parentheses to Invocation ArgumentList on Return</Title>
+        <Description>Fix #2858 End Construct Command Handler adds parentheses to Invocation
+argumentlist given the identifier binds as invocable and happens on
+'Return' but not as part of pretty listing
+</Description>
+        <CreatedDate>18/06/2015</CreatedDate>
+        <ClosedDate>04/09/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Compilers/CSharp/Portable/CommandLine/CommandLineParser.cs</File>
+      <File>src/Compilers/CSharp/Test/CommandLine/CommandLineTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenAsyncEHTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/DeterministicTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/PDB/PDBConstantTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/PDB/PDBTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/PDB/PortablePdbTests.cs</File>
+      <File>src/Compilers/Core/Portable/Compilation/Compilation.cs</File>
+      <File>src/Compilers/Core/Portable/Emit/DebugInformationFormat.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataReader/PortableCustomDebugInfoKinds.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/FullMetadataWriter.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/MetadataHeapsBuilder.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/MetadataSizes.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/MetadataWriter.PortablePdb.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/MetadataWriter.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/PeWriter.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb.Tests/Resources/Async.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb.Tests/Resources/Documents.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb.Tests/Resources/Scopes.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb.Tests/Resources/TestResources.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb.Tests/SymMetadataImport.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb.Tests/SymReaderTests.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb.Tests/TestHelpers/AssertEx.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb.Tests/Utilities/EnumerableHelpersTests.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/AsyncMethodData.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/ChildScopeData.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/DocumentMap.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/IMetadataImport.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/PortablePdbReader.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/RootScopeData.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/ScopeData.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/SymBinder.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/SymConstant.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/SymDocument.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/SymMethod.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/SymReader.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/SymScope.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/SymVariable.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/Utilities/BlobWriter.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/Utilities/EnumerableHelpers.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/Utilities/FileNameUtilities.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/Utilities/HResult.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/Utilities/InteropUtilities.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/Utilities/KeyValuePair.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/Utilities/MetadataUtilities.cs</File>
+      <File>src/Test/PdbUtilities/Metadata/MetadataVisualizer.cs</File>
+      <File>src/Test/PdbUtilities/Pdb/PdbToXml.cs</File>
+      <File>src/Test/PdbUtilities/Shared/DummyMetadataImport.cs</File>
+      <File>src/Test/PdbUtilities/Shared/SymUnmanagedReaderTestExtensions.cs</File>
+      <File>src/Test/Utilities/CompilationExtensions.cs</File>
+      <File>src/Test/Utilities/SharedCompilationUtils.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>3842</IssueID>
+    <Title>Outgoing grain call filters</Title>
+    <Description>Fixes #3214 
+Fixes #2125 
+
+* Adds `IOutgoingGrainCallFilter` as a replacement for the current client-side interceptors (which are too low-level and less powerful than their counterpart, `IGrainCallFilter`).
+* Rename `IGrainCallFilter` to `IIncomingGrainCallFilter` and add `IGrainCallFilter : IIncomingGrainCallFilter` as `[Obsolete]`
+* Add methods to configure incoming/outgoing call filters to `IServiceCollection`, `IClientBuilder`, `ISiloHostBuilder`
+* Mark existing `AddGrainCallFilter` methods as `[Obsolete]`, pointing to the new methods.
+ 
+Need to perform perf test</Description>
+    <CreatedDate>08/01/2018</CreatedDate>
+    <ClosedDate>22/02/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>3214</IssueID>
+        <Title>Breaking change: CTP3, please make CreateSubmission public again</Title>
+        <Description>I have been using CTP2 version of Roslyn in following scenario:
+1. I was parsing syntax tree as Interactive
+2. Compiling and computing semantic model using CreateSubmission
+3. Translating SyntaxTree (using computed SemanticModel) to System.Linq.Expressions. (Applying my own "symbol access restrictions" as a security layer, preventing all "imperative" constructs).
+
+Great points about this:
+1. System.Linq.Expressions is the only way I know to execute dynamic code inside in Universal Apps and .NET Core. All the Roslyn assemblies required to perform this process were also portable.
+2. I was able to utilize incremental parsing and incremental handling of SourceText.
+
+If possible:
+1. Please make CSharpScript cross platform (afaik impossible or at least difficult) or
+2. or please provide xplat wrapper for CreateSubmission allowing to process interactive expression and get proper SyntaxTree and then SemanticModel
+3. or please give us back ;) CreateSubmission and parsing as interactive expression
+4. or provide out of the box xplat CSharp to System.Linq.Expressions converter
+5. or provide any other solution/guidance allowing to achieve my scenario
+</Description>
+        <CreatedDate>01/06/2015</CreatedDate>
+        <ClosedDate>17/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>2125</IssueID>
+        <Title>Show C# snippets with no SnippetType</Title>
+        <Description>Fixes internal TFS bug #1156267. The behavior now matches that of Visual
+Studio 2013.
+
+There is a separate closed-source code review for the updated tests.
+
+Reviewers: @Pilchie @jasonmalinowski @balajikris @balajikris @brettfo @rchande
+</Description>
+        <CreatedDate>20/04/2015</CreatedDate>
+        <ClosedDate>20/04/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/EditorFeatures/CSharpTest/EditAndContinue/RudeEditTopLevelTests.cs</File>
+      <File>src/Features/Core/EditAndContinue/AbstractEditAndContinueAnalyzer.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>3603</IssueID>
+    <Title>Force InvariantCulture in code generator startup</Title>
+    <Description>Fixes #3598
+Fixes #3597</Description>
+    <CreatedDate>26/10/2017</CreatedDate>
+    <ClosedDate>26/10/2017</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>3598</IssueID>
+        <Title>The code that distinguishes 0.0 and -0.0 literals is not reliable under certain conditions.</Title>
+        <Description>It appears there is a subtle and elusive bug in some JITs resulting in  "val == 0 &amp;&amp; 1/val &gt; 0" being true for -0.0 sometimes. That is most likely caused by the optimizations that propagate the first assert "val == 0" as a fact that val is 0.0, which would be not correct, since "val == 0" is true for -0.0 as well. 
+
+As a result compilers could emit something like 
+`static double negZero = -0.0`
+ incorrectly,  as equivalent of 
+`static double negZero = 0.0`
+
+The JIT issue would need to be fixed, but we can be immune to that now by using a different approach for matching 0.0 - For example by simply checking the bit pattern of the val to be all zeros. That would be more robust and perhaps slightly faster too.
+</Description>
+        <CreatedDate>19/06/2015</CreatedDate>
+        <ClosedDate>19/06/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>3597</IssueID>
+        <Title>Constants declared in the Immediate window can be modified</Title>
+        <Description>```
+const int z = 1;
+Expression has been evaluated and has no value
+Increment(ref z);
+Expression has been evaluated and has no value
+z
+0x00000002
+```
+
+We should probably just not allow declarations of constants in the Immediate window.  Otherwise, we'll have to have a "const" flag on each alias.
+</Description>
+        <CreatedDate>19/06/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Compilers/CSharp/Portable/Compilation/CSharpSemanticModel.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/UsingAliasTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>3130</IssueID>
+    <Title>Replace DuplicateActivationException with a strongly-typed return value</Title>
+    <Description>This PR resolves #2733.
+
+The fix focuses on the logic in `Catalog.InitActivation(...)` and how it interacts with `Catalog.RegisterActivationInGrainDirectoryAndValidate(...)`. Specifically, it removes the `DuplicateActivationException` thrown by the latter and caught by the former. Doing that required slightly reworking the control flow in `InitActivation` so that exceptions aren't the only means of error handling.
+
+* Move recovery logic in `InitActivation` from `catch` to a new method which is called from the `finally` block.
+* Return a new `ActivationRegistrationResult` struct from `RegisterActivationInGrainDirectoryAndValidate` which replaces `DuplicateActivationException`.
+* When an activation fails to register, return early from `InitActivation` so that the `finally` block can clean up the activation.
+
+One change worth noting: `InitActivation` will no longer throw when there is a duplicate activation. The activation returned by `GetOrCreateActivation` (which calls into `InitActivation`) will eventually have its `ForwardingAddress` fixed to point to the existing activation. Note that the result of `InitActivation` is only used in one specific case: when creating the `IMembershipTableGrain`. I opened #3129 to discuss converting that into a SystemTarget instead of routing it through the directory.</Description>
+    <CreatedDate>15/06/2017</CreatedDate>
+    <ClosedDate>19/06/2017</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>2733</IssueID>
+        <Title>Generalize assert to include source statements that result in bound try</Title>
+        <Description>Fixes #2567 
+@AlekseyTs @VSadov @agocke @jaredpar Please review
+</Description>
+        <CreatedDate>13/05/2015</CreatedDate>
+        <ClosedDate>14/05/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>3129</IssueID>
+        <Title>don't try to create an outlining span if valid start/end tokens can't be found</Title>
+        <Description>The issue arises when a metadata reference contains type/method/property/etc. names that aren't valid C#/VB identifiers, then the outliner is unable to properly parse the document and can't get appropriate start/end tokens.  The same code path will be hit for all **[C#] x [method, property, field, etc.]** or **[VB] x [method, property, field, etc.]** metadata as source outliners, so only one test was created for each language.
+
+Fixes internal bug 1174405.
+
+Tagging @Pilchie @dpoeschl @jasonmalinowski @DustinCampbell @rchande @balajikris @jmarolf @davkean as reviewers.
+</Description>
+        <CreatedDate>27/05/2015</CreatedDate>
+        <ClosedDate>28/05/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Compilers/CSharp/Portable/Emitter/EditAndContinue/PEDeltaAssemblyBuilder.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EditAndContinue/EditAndContinueClosureTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EditAndContinue/EditAndContinueTests.cs</File>
+      <File>src/Compilers/Core/Portable/Emit/EditAndContinue/EmitBaseline.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>3127</IssueID>
+    <Title>Upgrade WindowsAzure.ServiceBus to 4.1.0</Title>
+    <Description>Fixes #2910
+Fixes #3062</Description>
+    <CreatedDate>14/06/2017</CreatedDate>
+    <ClosedDate>15/06/2017</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>2910</IssueID>
+        <Title>Remove empty string array allocations in DeclarationTreeBuilder</Title>
+        <Description>I spotted some empty string arrays in a CodeLens memory dump that can be eliminated.
+</Description>
+        <CreatedDate>19/05/2015</CreatedDate>
+        <ClosedDate>29/05/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>3062</IssueID>
+        <Title>The debugger display for sizeof is inconsistent</Title>
+        <Description>Consider this code:
+
+``` csharp
+using Assembly2;
+
+public class Class1
+{
+    static unsafe void Main()
+    {
+        System.Console.WriteLine(sizeof(Foo));
+    }
+}
+```
+
+``` csharp
+namespace Assembly2
+{
+
+    public struct Foo
+    {
+
+    }
+}
+```
+
+Both files have to be in different assemblies. The WriteLine will print 1, but the debugger display and the intermediate window will show 0 for the sizeof expression.
+</Description>
+        <CreatedDate>24/05/2015</CreatedDate>
+        <ClosedDate>02/06/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder_Statements.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenConstructorInitTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/SemanticErrorTests.cs</File>
+      <File>src/Features/CSharp/Diagnostics/Analyzers/CSharpUnboundIdentifiersDiagnosticAnalyzer.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/PreviewPane/PreviewPane.xaml.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/PreviewPane/PreviewPaneService.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/TableDataSource/UriNavigator.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Utilities/BrowserHelper.cs</File>
+      <File>src/VisualStudio/Core/SolutionExplorerShim/AnalyzersCommandHandler.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Solution/Solution.cs</File>
+      <File>src/Workspaces/CoreTest/WorkspaceTests/AdhocWorkspaceTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>3126</IssueID>
+    <Title>Replace CacheSizeInMb setting with DataMaxAgeInCache and DataMinTimeInCache in stream providers</Title>
+    <Description>PR for issue #3120.
+- Remove CacheSzieInMb setting and its related infrastructure, including cache eviction logic around it and FixedSizeObjectPool, to simplify the system and avoid problems mentioned in #3104
+- Add DataMaxAgeInCache and DataMinTimeInCache setting to `EHStreamProvider`, `MemoryStreamProvider` and `GeneratorStreamProvider`
+- Add statistic monitoring to  MemoryStreamProvider and GeneratorStreamProvider </Description>
+    <CreatedDate>14/06/2017</CreatedDate>
+    <ClosedDate>19/06/2017</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>3120</IssueID>
+        <Title>Handle "Color color" from VB completion</Title>
+        <Description>Fixes #3086.
+
+Please review: @balajikris @brettfo @dpoeschl @jasonmalinowski @Pilchie 
+</Description>
+        <CreatedDate>27/05/2015</CreatedDate>
+        <ClosedDate>02/06/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>3104</IssueID>
+        <Title>changed error list to use SystemBrowser API from VS.</Title>
+        <Description>Customer scenario: When an user click on a link in the error list\lightbulb\solution explorer, today we open the link in the VS browser. We had done this to be consistent with F1 in the error list which opens in the VS browser. Given that we navigate to bing and potentially from there to other sites, it would be best to open the links in the system browser. The platform team recently made it so that we could launch in Edge on windows 10. Without this change, we'll be stuck in IE7 quirks mode forever and we've seen reports of people complaining about websites which don't open well in the VS browser.
+
+Fix is to make a different VS call (most of the change is removing the unnecessary IServiceProvider parameter now)
+
+...
+
+manual test is done to verify it opens up system browser. and debugged to make sure we are calling right Platform APIs.
+
+this fix basically get rid of our own implementation and call VS API directly.
+</Description>
+        <CreatedDate>26/05/2015</CreatedDate>
+        <ClosedDate>27/05/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/Dashboard/DashboardViewModel.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/InlineRenameSession.OpenTextBufferManager.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Rename/CSharpRenameRewriterLanguageService.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>2592</IssueID>
+    <Title>Non-static SerializationManager</Title>
+    <Description>Disclaimer: this is a work in progress. It needs work, more functional testing, and to be split into smaller, more mergable PRs. `SerialziationManager` is a core part of our system and `GrainReference` is serializable, so this PR is necessarily going to be large
+
+Implements changes from #2591 &amp; [#467](https://github.com/dotnet/orleans/issues/467#issuecomment-255074892) (with changes).
+
+When using an external serializer (eg, JSON.NET, ProtoBuf), `GrainReference` instances must be bound via a call to `IGrainFactory.Bind(IAddressable)` before they can be used. When using the Orleans serialization framework, this happens automatically.
+
+Once this is ready, we will be close to completing #467. Only some minor additional work is required to complete the task, basically changing the GrainClient class itself.
+
+Note: this is a breaking change.
+
+EDIT: to be clear, I don't expect this code to be reviewed in detail while I've got the work-in-progress tag on it. When it's ready, I'll remove the tag and update this PR.</Description>
+    <CreatedDate>13/01/2017</CreatedDate>
+    <ClosedDate>24/02/2017</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>2591</IssueID>
+        <Title>Make defaultValue a required parameter for ExtensionManager.PerformFunction*()</Title>
+        <Description>Fixes internal TFS bug 1166482.
+
+In cases where a fix provider throws an unhandled exception, `ExtensionManager.PerformFunction*()` was correctly handling the exception by displaying an 'info bar' alerting the user about the crash. However, because the `defaultValue` parameter for `ExtensionManager.PerformFunction*()` was optional, in some cases, we would end up returning `default(ImmutableArray&lt;T&gt;)` as opposed to `ImmutableArray&lt;T&gt;.Empty` to the VS platform's light bulb  engine. The difference is significant in this case since `ImmutableArray&lt;T&gt;` is a struct and since it is returned as an `IEnumerable&lt;T&gt;`. The platform code checks whether the returned `IEnumerable&lt;T&gt;` is `null` (which it won't be) and then calls `.Any()` on it and this results in an `InvalidOperationException` from `ImmutableArray&lt;T&gt;`...
+
+In addition to supplying the correct `defaultValue` of `ImmutableArray&lt;T&gt;.Empty` to avoid the above crash, I am also making `defaultValue` a **required** parameter (so that future consumers of `ExtensionManager.PerformFunction*()` don't run into this problem).
+</Description>
+        <CreatedDate>08/05/2015</CreatedDate>
+        <ClosedDate>08/05/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>467</IssueID>
+        <Title>Emit XML output in Jenkins</Title>
+        <Description>This change causes us to emit XML for xunit test results when run inside
+of Jenkins.  Having XML output enables Jenkins to provide a structured
+display of the test results instead of the raw console output that we
+see today.
+</Description>
+        <CreatedDate>13/02/2015</CreatedDate>
+        <ClosedDate>13/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>467</IssueID>
+        <Title>Emit XML output in Jenkins</Title>
+        <Description>This change causes us to emit XML for xunit test results when run inside
+of Jenkins.  Having XML output enables Jenkins to provide a structured
+display of the test results instead of the raw console output that we
+see today.
+</Description>
+        <CreatedDate>13/02/2015</CreatedDate>
+        <ClosedDate>13/02/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/VisualStudio/Core/Def/RoslynDocumentProvider.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>2558</IssueID>
+    <Title>Initial work to make SerializationManager non-static (#2547)</Title>
+    <Description>This is an implementation of #2547, &amp; is related to #467.
+
+This change moves `SerializationContext.Current` &amp; `DeserializationContext.Current` to `SerializationManager`, keeps them static, but makes them private. It continues to use static `SerializationManager` methods in the generated code, but it passes in all of the context information required - so we can begin to remove global state from those methods down the track.</Description>
+    <CreatedDate>03/01/2017</CreatedDate>
+    <ClosedDate>06/01/2017</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>2547</IssueID>
+        <Title>Results View does not work in Windows 10 Universal Apps</Title>
+        <Description>![capture](https://cloud.githubusercontent.com/assets/6464209/7487528/2d82cd76-f36e-11e4-9eda-182abe8dae47.PNG)
+</Description>
+        <CreatedDate>06/05/2015</CreatedDate>
+        <ClosedDate>23/06/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>467</IssueID>
+        <Title>Emit XML output in Jenkins</Title>
+        <Description>This change causes us to emit XML for xunit test results when run inside
+of Jenkins.  Having XML output enables Jenkins to provide a structured
+display of the test results instead of the raw console output that we
+see today.
+</Description>
+        <CreatedDate>13/02/2015</CreatedDate>
+        <ClosedDate>13/02/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Compilers/CSharp/Portable/Parser/SyntaxParser.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>2008</IssueID>
+    <Title>AWS DynamoDB Membership Provider</Title>
+    <Description>Implementation of #2006 which is part of #2005
+</Description>
+    <CreatedDate>02/08/2016</CreatedDate>
+    <ClosedDate>15/08/2016</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>2006</IssueID>
+        <Title>Simplifying some of the expressions.</Title>
+        <Description>
+        </Description>
+        <CreatedDate>15/04/2015</CreatedDate>
+        <ClosedDate>15/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>2005</IssueID>
+        <Title>Expose ExpressionGenerator.GenerateExpression()</Title>
+        <Description>This is a feature request to make [`ExpressionGenerator.GenerateExpression()`](https://github.com/dotnet/roslyn/blob/c8e8ad3682cd04b4159abdb9197b70bb06d4e82e/src/Workspaces/CSharp/Portable/CodeGeneration/ExpressionGenerator.cs#L22) public.
+
+Our use case: We build a code transformation utility where we want to copy attribute values from an `AttributeData` instance into a syntax tree. For this we utilize `ExpressionGenerator.GenerateExpression()` using a reflection call, because it does exactly what we want (converting an attribute value into an expression syntax), and an own implementation would be quite expensive.
+</Description>
+        <CreatedDate>15/04/2015</CreatedDate>
+        <ClosedDate>27/04/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Compilers/CSharp/Portable/Lowering/LambdaRewriter/ExpressionLambdaRewriter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/LambdaRewriter/LambdaRewriter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/SyntheticBoundNodeFactory.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenExprLambdaTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>1973</IssueID>
+    <Title>Azure storage update in changelog</Title>
+    <Description>Include comments about the upgrade to WindowsAzure Storage 7.0.0 (#1968) in the changelog, and also listed it as a known issue / constraint of previous versions (#1912).
+
+/cc @benjaminpetit 
+</Description>
+    <CreatedDate>21/07/2016</CreatedDate>
+    <ClosedDate>22/07/2016</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>1968</IssueID>
+        <Title>Support fully-qualified references in XML documentation</Title>
+        <Description>Currently editor features (especially Find All References, Quick Info, and Go To Definition), do not understand fully-qualified references in `cref` attributes. For example, the following is a valid `&lt;see&gt;` element, but no editor support is provided for it:
+
+``` xml
+&lt;see cref="T:System.Collections.Generic.IEnumerable`1"/&gt;
+```
+</Description>
+        <CreatedDate>14/04/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>1912</IssueID>
+        <Title>Compiler Support: Better Tuples</Title>
+        <Description>Provide automatic support for packing, and unpacking of Anonymous Types or Tuples (as structs). 
+
+``` C#
+public (int a, string b) SomeFunction() {
+  return new { 0, "Hello" };
+// Also
+  return (0, "Hello");
+}
+
+public void DoSomethingWithValues() {
+    (int a, var b) = SomeFunction();
+    Debug.Assert(a == 0);
+    Debug.Assert(b == "Hello");
+}
+
+public void DoSomething2() {
+   var b = (12, 34); // new { Item1 = 12, Item2 = 34 }
+   (int c, int g) = b;
+}
+```
+</Description>
+        <CreatedDate>10/04/2015</CreatedDate>
+        <ClosedDate>20/11/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Tools/Source/RunTests/TestRunner.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>911</IssueID>
+    <Title>Not use full assembly name in project file references</Title>
+    <Description>Not use full assembly name in project file references.
+- This change normalizes assembly references in project files to use **only** assembly short name, and not the full assembly reference string. 
+  This is the normal practice in all other Orleans runtime code projects.
+
+See detailed discussion on PR #910 related to issue #905 
+</Description>
+    <CreatedDate>15/10/2015</CreatedDate>
+    <ClosedDate>19/10/2015</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>910</IssueID>
+        <Title>Dynamically turn on and off esent</Title>
+        <Description>esent is there for scalibility. but small solution doesn't actually need esent and we could hold all information in memory without worrying too much about VM.
+
+create some mechanism to track those and dynamically turn on or off esent.
+</Description>
+        <CreatedDate>26/02/2015</CreatedDate>
+        <ClosedDate>11/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>905</IssueID>
+        <Title>Rename completely breaks reference to backing fields of ReadOnly properties</Title>
+        <Description>_Repro Steps:_
+1. Paste in the following code into a project:
+   
+   Class C1
+       Public ReadOnly Property P As String
+   
+   ```
+   Sub M()
+       _P = "asdf"
+   End Sub
+   ```
+   
+   End Class
+2. Choose rename on P.
+3. Don't actually type anything
+4. Press enter
+
+_Expected:_ nothing happened
+_Actual:_ the _ was deleted and thus breaks the code
+</Description>
+        <CreatedDate>26/02/2015</CreatedDate>
+        <ClosedDate>06/03/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Compilers/CSharp/CSharpAnalyzerDriver/CSharpDeclarationComputer.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Diagnostics/DiagnosticAnalyzerTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>660</IssueID>
+    <Title>More advanced json serialization example.</Title>
+    <Description>Follow up PR on top of #654 to demonstrate more advanced usage of json serialization in Orleans.
+Also demonstrates how the code in #651 should have been written.
+</Description>
+    <CreatedDate>29/07/2015</CreatedDate>
+    <ClosedDate>29/07/2015</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>654</IssueID>
+        <Title>Format hash directives inside other hash directives of complex trivia</Title>
+        <Description>Fix #285 : Analyze DisabledTextTrivia appropriately, so that when it is followed by a hash directive, we will be able to determine if we need to format the hash directive.
+</Description>
+        <CreatedDate>18/02/2015</CreatedDate>
+        <ClosedDate>20/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>651</IssueID>
+        <Title>Open source System.Linq.Expressions assembly</Title>
+        <Description>Creating an issue to track the open source effort.
+</Description>
+        <CreatedDate>18/02/2015</CreatedDate>
+        <ClosedDate>26/03/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Compilers/Core/AnalyzerDriver/AnalyzerManager.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>457</IssueID>
+    <Title>Make sure we handle all in flight requests correctly when silo is shutting down.</Title>
+    <Description>This is a 3rd step towards Gracefull Shutdown, related to:
+#381
+#320 (comment)
+
+http://orleans.codeplex.com/discussions/637820#post1425137
+Continues the work in #413.
+Continues the work in #448.
+
+Essentially, the silo was already largely handling this logic correctly. I merely simplified a couple of places, to make more clear what will actually happen. At a high level:
+1) Once silo is shutting down, it first updates its membership state. This will cause all other silos not to place new activation on it, not to use this silo as grain directory and not as reminder service. This logic was already handled correctly before. No change.
+2) Silo refuses to create any new activations, throws Non-existent activation and tries to forward the request. The activation will be placed on a different silo. This is a new bit added in this PR..
+3) Silo starts to deactivate all activations. 
+4) Any new requests that arrive to activations on that silo will be queued and after activation is deactivated, they will be forwarded to a new activation. There is no change in that logic.
+</Description>
+    <CreatedDate>28/05/2015</CreatedDate>
+    <ClosedDate>01/06/2015</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>381</IssueID>
+        <Title>properly handle VB Global namespace in DeclaredSymbolInfo</Title>
+        <Description>When walking the syntax trees to find DeclaredSymbolInfos, I missed a case where VB can have "Namespace Global".  Functionally this is no different than hitting the default case of the Select where I also Return Nothing, but it's a lot nicer to not have asserts :smile:.
+</Description>
+        <CreatedDate>10/02/2015</CreatedDate>
+        <ClosedDate>11/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>320</IssueID>
+        <Title>Possible bug in Batch Fixer merge algorithm</Title>
+        <Description>We have a code fix that uses the batch fixer to provide support for correcting all instances of a particular style problem in a document/project/solution. Even though each correction is made to a distinct `ExpressionSyntax` node in the source tree, the batch fixer fails to properly merge two changes in a particular scenario.
+
+The problem is described (with example input/output) in the following issue:
+https://github.com/DotNetAnalyzers/StyleCopAnalyzers/issues/466
+</Description>
+        <CreatedDate>09/02/2015</CreatedDate>
+        <ClosedDate>27/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>413</IssueID>
+        <Title>Visual studio crashes while typing inside expression nuggets in C# websites</Title>
+        <Description>1. With latest roslyn bits installed, open a new C# webforms website.
+2. Add a new webform - default2.aspx
+3. add below code inside `&lt;div&gt;`
+   
+   ```
+    &lt;asp:Label ID="Label1" runat="server" Text="Label"&gt;&lt;/asp:Label&gt;
+    &lt;%=Label1.$$%&gt;
+   ```
+4. When caret is at $$, type a few backspaces
+5. VS crashes.
+
+Here is the relevant stack trace: 
+
+```
+ArgumentNullException {"Value cannot be null.\r\nParameter name: path"}
+   at Microsoft.CodeAnalysis.FileLinePositionSpan..ctor(String path, LinePositionSpan span) in E:\Roslyn\Main\Open\src\Compilers\Core\Portable\Diagnostic\FileLinePositionSpan.cs:line 80
+   at Microsoft.CodeAnalysis.FileLinePositionSpan..ctor(String path, LinePosition start, LinePosition end) in E:\Roslyn\Main\Open\src\Compilers\Core\Portable\Diagnostic\FileLinePositionSpan.cs:line 66
+   at Microsoft.VisualStudio.LanguageServices.Implementation.Diagnostics.VisualStudioVenusSpanMappingService.GetAdjustedDiagnosticSpan(DocumentId documentId, Location location, TextSpan&amp; sourceSpan, FileLinePositionSpan&amp; originalLineInfo, FileLinePositionSpan&amp; mappedLineInfo) in E:\Roslyn\Main\Open\Src\VisualStudio\Core\Def\Implementation\Diagnostics\VisualStudioVenusSpanMappingService.cs:line 53
+   at Microsoft.CodeAnalysis.Diagnostics.DiagnosticData.GetLocationInfo(Document document, Location location, TextSpan&amp; sourceSpan, FileLinePositionSpan&amp; originalLineInfo, FileLinePositionSpan&amp; mappedLineInfo) in E:\Roslyn\Main\Open\Src\Features\Core\Diagnostics\DiagnosticData.cs:line 332
+   at Microsoft.CodeAnalysis.Diagnostics.DiagnosticData.Create(Document document, Diagnostic diagnostic) in E:\Roslyn\Main\Open\Src\Features\Core\Diagnostics\DiagnosticData.cs:line 286
+   at Microsoft.CodeAnalysis.Diagnostics.DiagnosticAnalyzerService.DiagnosticIncrementalAnalyzer.&lt;&gt;c__DisplayClass57_0.&lt;GetDiagnosticData&gt;b__1(Diagnostic d) in E:\Roslyn\Main\Open\Src\Features\Core\Diagnostics\DiagnosticAnalyzerService.IncrementalAnalyzer.cs:line 804
+   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   at System.Linq.Buffer`1..ctor(IEnumerable`1 source)
+   at System.Linq.Enumerable.ToArray[TSource](IEnumerable`1 source)
+   at System.Collections.Immutable.ImmutableArray.CreateRange[T](IEnumerable`1 items)
+   at Microsoft.CodeAnalysis.ImmutableArrayExtensions.AsImmutableOrEmpty[T](IEnumerable`1 items) in E:\Roslyn\Main\Open\src\Compilers\Core\Portable\Collections\ImmutableArrayExtensions.cs:line 45
+   at Microsoft.CodeAnalysis.Diagnostics.DiagnosticAnalyzerService.DiagnosticIncrementalAnalyzer.AnalyzerExecutor.&lt;GetSyntaxAnalysisDataAsync&gt;d__2.MoveNext() in E:\Roslyn\Main\Open\Src\Features\Core\Diagnostics\DiagnosticAnalyzerService.IncrementalAnalyzer.AnalyzerExecutor.cs:line 50
+```
+</Description>
+        <CreatedDate>11/02/2015</CreatedDate>
+        <ClosedDate>13/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>448</IssueID>
+        <Title>Bug: The new managed Expression Evaluator ignores DEBUGPROP_INFO_NOFUNCEVAL</Title>
+        <Description>In _VS2010 and VS2012_, a consumer could call the debugger API's `IDebugProperty3.EnumChildren` passing in only the `DEBUGPROP_INFO_NAME` flag, to obtain only the names of the expressions,  without incurring the performance cost of the EE actually evaluating their values and performing func-evals. We've built a lot of functionality around this ability. 
+
+In _VS2013_, this ability was broken. I reported it on [Connect ticket 813045](https://connect.microsoft.com/VisualStudio/feedback/details/813045/bug-in-new-managed-debug-engine-idebugproperty2s-children-are-func-evalled-when-value-was-not-requested), and was offered a workaround of using `DEBUGPROP_INFO_NOFUNCEVAL`, which works.
+
+In _VS2015 CTP5_, both the original approach and the suggested workaround no longer work. 
+
+To reproduce:
+1. Run the  [scenario I described](https://connect.microsoft.com/VisualStudio/feedback/details/813045/bug-in-new-managed-debug-engine-idebugproperty2s-children-are-func-evalled-when-value-was-not-requested) in VS2015  instead of VS2013.
+2. Apply the workaround suggested by Azeem Khan on the Connect case and re-run the scenario. 
+   Observe that the workaround doesn't work in VS2015 CTP5.
+3. Go into Tools-&gt;Options and check the "Use the legacy C# and VB expression evaluators" option. Re-run the scenario and observe that the workaround now works.
+</Description>
+        <CreatedDate>12/02/2015</CreatedDate>
+        <ClosedDate>18/02/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Compilers/CSharp/Test/Syntax/Syntax/SyntaxDiffingTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>422</IssueID>
+    <Title>Testing Host Part 3</Title>
+    <Description>Fixes bug in Nightly test suite introduced by PR #408 
+
+Failure case was: SMSDeactivationTest_ClientConsumer
+
+Change:
+- Need a different client config for testing client-side streams.
+
+This PR replaces #420 and #421 which got into a bit of a mess!
+</Description>
+    <CreatedDate>16/05/2015</CreatedDate>
+    <ClosedDate>16/05/2015</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>408</IssueID>
+        <Title>Debug.Assert in WorkCoordinator</Title>
+        <Description>I left a debug VS open overnight and came back to this. Dump is in the internal fileshare under dumps/408/
+
+```
+&gt;   Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll!Microsoft.CodeAnalysis.VisualBasic.VisualBasicSyntaxFactsService.GetNodeName(Microsoft.CodeAnalysis.SyntaxNode node, Boolean includeTypeParameters) Line 897  Basic
+    Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll!Microsoft.CodeAnalysis.VisualBasic.VisualBasicSyntaxFactsService.GetNodeName(Microsoft.CodeAnalysis.SyntaxNode node, Boolean includeTypeParameters) Line 883  Basic
+    Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll!Microsoft.CodeAnalysis.VisualBasic.VisualBasicSyntaxFactsService.GetContainer(Microsoft.CodeAnalysis.SyntaxNode node, Boolean immediate) Line 832 Basic
+    Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll!Microsoft.CodeAnalysis.VisualBasic.VisualBasicSyntaxFactsService.GetContainerDisplayName(Microsoft.CodeAnalysis.SyntaxNode node) Line 824 Basic
+    Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll!Microsoft.CodeAnalysis.VisualBasic.VisualBasicSyntaxFactsService.TryGetDeclaredSymbolInfo(Microsoft.CodeAnalysis.SyntaxNode node, Microsoft.CodeAnalysis.FindSymbols.DeclaredSymbolInfo declaredSymbolInfo) Line 718  Basic
+    Microsoft.CodeAnalysis.Workspaces.dll!Microsoft.CodeAnalysis.FindSymbols.SyntaxTreeInfo.CreateInfoAsync(Microsoft.CodeAnalysis.Document document, System.Threading.CancellationToken cancellationToken) Line 163    C#
+    Microsoft.CodeAnalysis.Workspaces.dll!Microsoft.CodeAnalysis.FindSymbols.SyntaxTreeInfo.PrecalculateBasicInfoAsync(Microsoft.CodeAnalysis.Document document, System.Threading.CancellationToken cancellationToken) Line 62  C#
+    Microsoft.CodeAnalysis.Workspaces.dll!Microsoft.CodeAnalysis.FindSymbols.SyntaxTreeInfo.PrecalculateAsync(Microsoft.CodeAnalysis.Document document, System.Threading.CancellationToken cancellationToken) Line 29   C#
+    Microsoft.CodeAnalysis.Features.dll!Microsoft.CodeAnalysis.IncrementalCaches.SyntaxTreeInfoIncrementalAnalyzerProvider.IncrementalAnalyzer.AnalyzeSyntaxAsync(Microsoft.CodeAnalysis.Document document, System.Threading.CancellationToken cancellationToken) Line 23   C#
+    Microsoft.CodeAnalysis.Features.dll!Microsoft.CodeAnalysis.SolutionCrawler.WorkCoordinatorRegistrationService.WorkCoordinator.IncrementalAnalyzerProcessor.ProcessDocumentAnalyzersAsync.AnonymousMethod__24_0(Microsoft.CodeAnalysis.SolutionCrawler.IIncrementalAnalyzer a, Microsoft.CodeAnalysis.Document d, System.Threading.CancellationToken c) Line 147 C#
+    Microsoft.CodeAnalysis.Features.dll!Microsoft.CodeAnalysis.SolutionCrawler.WorkCoordinatorRegistrationService.WorkCoordinator.IncrementalAnalyzerProcessor.RunAnalyzersAsync.AnonymousMethod__0(T v, System.Threading.CancellationToken c) Line 174 C#
+    Microsoft.CodeAnalysis.Features.dll!Microsoft.CodeAnalysis.SolutionCrawler.WorkCoordinatorRegistrationService.WorkCoordinator.IncrementalAnalyzerProcessor.GetOrDefaultAsync&lt;TData, TResult&gt;(TData value, System.Func&lt;TData, System.Threading.CancellationToken, System.Threading.Tasks.Task&lt;TResult&gt;&gt; funcAsync, System.Threading.CancellationToken cancellationToken) Line 217    C#
+    Microsoft.CodeAnalysis.Features.dll!Microsoft.CodeAnalysis.SolutionCrawler.WorkCoordinatorRegistrationService.WorkCoordinator.IncrementalAnalyzerProcessor.RunAnalyzersAsync&lt;T&gt;(System.Collections.Immutable.ImmutableArray&lt;Microsoft.CodeAnalysis.SolutionCrawler.IIncrementalAnalyzer&gt; analyzers, T value, System.Func&lt;Microsoft.CodeAnalysis.SolutionCrawler.IIncrementalAnalyzer, T, System.Threading.CancellationToken, System.Threading.Tasks.Task&gt; runnerAsync, System.Threading.CancellationToken cancellationToken) Line 172   C#
+```
+</Description>
+        <CreatedDate>11/02/2015</CreatedDate>
+        <ClosedDate>11/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>420</IssueID>
+        <Title>What language proposals would benefit from CLR changes?</Title>
+        <Description>If we were to plan for one language feature that requires a revision of the CLR, then we might as well do as many of them at the same time as make sense. What changes would we consider for C# 7 and VB 15 that would benefit from CLR support? See #166 for related discussion. This is a pared-down list for us to select from.
+1. Virtual extension methods (see #73, #258)
+2. Generic constraints about static methods or constructors (see also #129, #154).
+3. Array slicing (see #120)
+4. Language support for tuples (see #347) and function types (no issue yet) might benefit from CLR unification across assemblies.
+5. Traits (see #60) aka structural interfaces (see #154) or mixins (no issue yet)
+
+Those that we would likely _not_ do in this timeframe include
+1. Make void a first-class type with one value; see #234 (Suggested by @ashmind) (Given how long the CLR has been around, it is probably too late for APIs to benefit, as those that would benefit most have already been written)
+2. Covariance and contravariance for classes (see #171)
+3. Allow |, &amp;, and ~ operators on a type parameter with the enum constraint (see #262)
+4. Intersection types (#2146, though likely not that syntax) and/or union types.
+5. Support generic indexers (see #523)
+6. Higher-kinded polymorphism (see #2212)
+</Description>
+        <CreatedDate>12/02/2015</CreatedDate>
+        <ClosedDate>22/03/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>421</IssueID>
+        <Title>Progression should properly descend into types for IntelliTrace MVC queries</Title>
+        <Description>When BeginGetGraphData() (in GraphProvider.cs) was migrated from the old code, a query type of the format {Direction=Target, LinkCategories=[Contains]} was missed that IntelliTrace produced when it wanted us to descend into types.
+</Description>
+        <CreatedDate>12/02/2015</CreatedDate>
+        <ClosedDate>12/02/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Test/Utilities/HostedRuntimeEnvironment.cs</File>
+    </Files>
+  </PullRequest>
+</PullRequests>

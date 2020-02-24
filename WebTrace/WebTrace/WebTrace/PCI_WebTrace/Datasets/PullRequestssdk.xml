@@ -1,0 +1,519 @@
+<PullRequests>
+  <PullRequest>
+    <IssueID>3412</IssueID>
+    <Title>Update Microsoft.NET.HostModel version</Title>
+    <Description>This is for dotnet/core-setup#7173
+
+Same change as #3411, but for Preview 7</Description>
+    <CreatedDate>12/07/2019</CreatedDate>
+    <ClosedDate>12/07/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>7173</IssueID>
+        <Title>Visual Studio 2015 Update 1 crashing with Code Cracker</Title>
+        <Description>Originally reported by @Cybermaxs on https://github.com/code-cracker/code-cracker/issues/610#issuecomment-160966346.
+
+Here is the stack trace from his event logs:
+
+```
+Message : System.ArgumentException: SyntaxTree ' {{CsCodeRemovedForClarity}}'
+not found to remove
+Parameter name: syntaxTree
+   at Microsoft.CodeAnalysis.CSharp.CSharpCompilation.GetSemanticModel(SyntaxTree syntaxTree, Boolean ignoreAccessibility)
+   at Microsoft.CodeAnalysis.CSharp.CSharpCompilation.CommonGetSemanticModel(SyntaxTree syntaxTree, Boolean ignoreAccessibility)
+   at Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.IsDiagnosticSuppressed(String id, Location location, SuppressMessageInfo&amp; info)
+   at Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.ApplySourceSuppressions(Diagnostic diagnostic, Compilation compilation, ISymbol symbolOpt)
+   at Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver.FilterDiagnosticsSuppressedInSource(ImmutableArray`1 diagnostics, Compilation compilation)
+   at Microsoft.CodeAnalysis.Diagnostics.AnalysisResult.StoreAnalysisResult(AnalysisScope analysisScope, AnalyzerDriver driver, Compilation compilation)
+   at Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers.&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54.MoveNext()
+Pile :
+   à System.Environment.FailFast(System.String, System.Exception)
+   à Microsoft.CodeAnalysis.FailFast.OnFatalException(System.Exception)
+   à Microsoft.CodeAnalysis.FatalError.Report(System.Exception, System.Action`1&lt;System.Exception&gt;)
+   à Microsoft.CodeAnalysis.FatalError.ReportUnlessCanceled(System.Exception)
+   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54.MoveNext()
+   à Microsoft.CodeAnalysis.CSharp.CSharpCompilation.GetSemanticModel(Microsoft.CodeAnalysis.SyntaxTree, Boolean)
+   à Microsoft.CodeAnalysis.CSharp.CSharpCompilation.CommonGetSemanticModel(Microsoft.CodeAnalysis.SyntaxTree, Boolean)
+   à Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.IsDiagnosticSuppressed(System.String, Microsoft.CodeAnalysis.Location, Microsoft.CodeAnalysis.Diagnostics.SuppressMessageInfo ByRef)
+   à Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.ApplySourceSuppressions(Microsoft.CodeAnalysis.Diagnostic, Microsoft.CodeAnalysis.Compilation, Microsoft.CodeAnalysis.ISymbol)
+   à Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver.FilterDiagnosticsSuppressedInSource(System.Collections.Immutable.ImmutableArray`1&lt;Microsoft.CodeAnalysis.Diagnostic&gt;, Microsoft.CodeAnalysis.Compilation)
+   à Microsoft.CodeAnalysis.Diagnostics.AnalysisResult.StoreAnalysisResult(Microsoft.CodeAnalysis.Diagnostics.AnalysisScope, Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver, Microsoft.CodeAnalysis.Compilation)
+   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54.MoveNext()
+   à System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[[Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54, Microsoft.CodeAnalysis, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35]](&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54 ByRef)
+   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers.ComputeAnalyzerDiagnosticsCoreAsync(Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver, Microsoft.CodeAnalysis.Diagnostics.AsyncQueue`1&lt;Microsoft.CodeAnalysis.Diagnostics.CompilationEvent&gt;, Microsoft.CodeAnalysis.Diagnostics.AnalysisScope, System.Threading.CancellationToken)
+   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;&gt;c__DisplayClass51_2+&lt;&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1&gt;d.MoveNext()
+   à System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[[Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;&gt;c__DisplayClass51_2+&lt;&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1&gt;d, Microsoft.CodeAnalysis, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35]](&lt;&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1&gt;d ByRef)
+   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;&gt;c__DisplayClass51_2.&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1()
+   à System.Threading.Tasks.Task`1[[System.__Canon, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]].InnerInvoke()
+   à System.Threading.Tasks.Task.Execute()
+   à System.Threading.Tasks.Task.ExecutionContextCallback(System.Object)
+   à System.Threading.ExecutionContext.RunInternal(System.Threading.ExecutionContext, System.Threading.ContextCallback, System.Object, Boolean)
+   à System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext, System.Threading.ContextCallback, System.Object, Boolean)
+   à System.Threading.Tasks.Task.ExecuteWithThreadLocal(System.Threading.Tasks.Task ByRef)
+   à System.Threading.Tasks.Task.ExecuteEntry(Boolean)
+   à System.Threading.Tasks.Task.System.Threading.IThreadPoolWorkItem.ExecuteWorkItem()
+   à System.Threading.ThreadPoolWorkQueue.Dispatch()
+   à System.Threading._ThreadPoolWaitCallback.PerformWaitCallback()
+```
+</Description>
+        <CreatedDate>02/12/2015</CreatedDate>
+        <ClosedDate>09/12/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>3411</IssueID>
+        <Title>EE: "Internal Error evaluating expression" when instruction does not map to IL offset</Title>
+        <Description>
+        </Description>
+        <CreatedDate>10/06/2015</CreatedDate>
+        <ClosedDate>10/06/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Workspaces/Core/Desktop/Workspace/MSBuild/ProjectFile/ProjectFile.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>3412</IssueID>
+    <Title>Update Microsoft.NET.HostModel version</Title>
+    <Description>This is for dotnet/core-setup#7173
+
+Same change as #3411, but for Preview 7</Description>
+    <CreatedDate>12/07/2019</CreatedDate>
+    <ClosedDate>12/07/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>7173</IssueID>
+        <Title>Visual Studio 2015 Update 1 crashing with Code Cracker</Title>
+        <Description>Originally reported by @Cybermaxs on https://github.com/code-cracker/code-cracker/issues/610#issuecomment-160966346.
+
+Here is the stack trace from his event logs:
+
+```
+Message : System.ArgumentException: SyntaxTree ' {{CsCodeRemovedForClarity}}'
+not found to remove
+Parameter name: syntaxTree
+   at Microsoft.CodeAnalysis.CSharp.CSharpCompilation.GetSemanticModel(SyntaxTree syntaxTree, Boolean ignoreAccessibility)
+   at Microsoft.CodeAnalysis.CSharp.CSharpCompilation.CommonGetSemanticModel(SyntaxTree syntaxTree, Boolean ignoreAccessibility)
+   at Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.IsDiagnosticSuppressed(String id, Location location, SuppressMessageInfo&amp; info)
+   at Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.ApplySourceSuppressions(Diagnostic diagnostic, Compilation compilation, ISymbol symbolOpt)
+   at Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver.FilterDiagnosticsSuppressedInSource(ImmutableArray`1 diagnostics, Compilation compilation)
+   at Microsoft.CodeAnalysis.Diagnostics.AnalysisResult.StoreAnalysisResult(AnalysisScope analysisScope, AnalyzerDriver driver, Compilation compilation)
+   at Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers.&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54.MoveNext()
+Pile :
+   à System.Environment.FailFast(System.String, System.Exception)
+   à Microsoft.CodeAnalysis.FailFast.OnFatalException(System.Exception)
+   à Microsoft.CodeAnalysis.FatalError.Report(System.Exception, System.Action`1&lt;System.Exception&gt;)
+   à Microsoft.CodeAnalysis.FatalError.ReportUnlessCanceled(System.Exception)
+   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54.MoveNext()
+   à Microsoft.CodeAnalysis.CSharp.CSharpCompilation.GetSemanticModel(Microsoft.CodeAnalysis.SyntaxTree, Boolean)
+   à Microsoft.CodeAnalysis.CSharp.CSharpCompilation.CommonGetSemanticModel(Microsoft.CodeAnalysis.SyntaxTree, Boolean)
+   à Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.IsDiagnosticSuppressed(System.String, Microsoft.CodeAnalysis.Location, Microsoft.CodeAnalysis.Diagnostics.SuppressMessageInfo ByRef)
+   à Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.ApplySourceSuppressions(Microsoft.CodeAnalysis.Diagnostic, Microsoft.CodeAnalysis.Compilation, Microsoft.CodeAnalysis.ISymbol)
+   à Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver.FilterDiagnosticsSuppressedInSource(System.Collections.Immutable.ImmutableArray`1&lt;Microsoft.CodeAnalysis.Diagnostic&gt;, Microsoft.CodeAnalysis.Compilation)
+   à Microsoft.CodeAnalysis.Diagnostics.AnalysisResult.StoreAnalysisResult(Microsoft.CodeAnalysis.Diagnostics.AnalysisScope, Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver, Microsoft.CodeAnalysis.Compilation)
+   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54.MoveNext()
+   à System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[[Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54, Microsoft.CodeAnalysis, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35]](&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54 ByRef)
+   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers.ComputeAnalyzerDiagnosticsCoreAsync(Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver, Microsoft.CodeAnalysis.Diagnostics.AsyncQueue`1&lt;Microsoft.CodeAnalysis.Diagnostics.CompilationEvent&gt;, Microsoft.CodeAnalysis.Diagnostics.AnalysisScope, System.Threading.CancellationToken)
+   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;&gt;c__DisplayClass51_2+&lt;&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1&gt;d.MoveNext()
+   à System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[[Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;&gt;c__DisplayClass51_2+&lt;&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1&gt;d, Microsoft.CodeAnalysis, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35]](&lt;&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1&gt;d ByRef)
+   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;&gt;c__DisplayClass51_2.&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1()
+   à System.Threading.Tasks.Task`1[[System.__Canon, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]].InnerInvoke()
+   à System.Threading.Tasks.Task.Execute()
+   à System.Threading.Tasks.Task.ExecutionContextCallback(System.Object)
+   à System.Threading.ExecutionContext.RunInternal(System.Threading.ExecutionContext, System.Threading.ContextCallback, System.Object, Boolean)
+   à System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext, System.Threading.ContextCallback, System.Object, Boolean)
+   à System.Threading.Tasks.Task.ExecuteWithThreadLocal(System.Threading.Tasks.Task ByRef)
+   à System.Threading.Tasks.Task.ExecuteEntry(Boolean)
+   à System.Threading.Tasks.Task.System.Threading.IThreadPoolWorkItem.ExecuteWorkItem()
+   à System.Threading.ThreadPoolWorkQueue.Dispatch()
+   à System.Threading._ThreadPoolWaitCallback.PerformWaitCallback()
+```
+</Description>
+        <CreatedDate>02/12/2015</CreatedDate>
+        <ClosedDate>09/12/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>3411</IssueID>
+        <Title>EE: "Internal Error evaluating expression" when instruction does not map to IL offset</Title>
+        <Description>
+        </Description>
+        <CreatedDate>10/06/2015</CreatedDate>
+        <ClosedDate>10/06/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Workspaces/Core/Desktop/Workspace/MSBuild/ProjectFile/ProjectFile.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>2085</IssueID>
+    <Title>Roll forward self-contained apps to latest patch version</Title>
+    <Description>- Bring back behavior where self-contained apps will roll-forward to the latest patch the SDK knows about
+  - We had reverted this in #1574
+  - Hopefully the implementation here should be a bit easier to follow
+- Add an error message when the version of .NET Core in the assets file is different than what was expected based on current settings: `The project was restored using Microsoft.NETCore.App version 2.0.0, but with current settings, version 2.0.6 would be used instead.  To resolve this issue, make sure the same settings are used for restore and for subsequent operations such as build or publish.  Typically this issue can occur if the RuntimeIdentifier property is set during build or publish but not during restore.`
+- Fix various test issues
+
+Related: #1570
+
+@nguerrera @livarcocc @dotnet/dotnet-cli for review</Description>
+    <CreatedDate>23/03/2018</CreatedDate>
+    <ClosedDate>28/03/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>1574</IssueID>
+        <Title>'Open Active Rule Set' doesn't work if I have ruleset file already opened</Title>
+        <Description>1. Create a solution with multiple projects (I used one with a C# console app and a VB console app)
+2. Add some analyzer references in both projects
+3. Click References -&gt; Analyzers -&gt; Open Active Rule Set for the C# project
+4. Click References -&gt; Analyzers -&gt; Open Active Rule Set for the VB project
+
+New rule set should be displayed after step 4 above (or if the rule set file is the same then the 'Project' context drop down in the rule set editor should be switched to the project selected in step 4). This doesn't seem to work - after step 4 I see the same rule set as I see after step 3.
+</Description>
+        <CreatedDate>25/03/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>1570</IssueID>
+        <Title>[VB/EnC] Disallow an edit of methods containing static locals.</Title>
+        <Description>
+        </Description>
+        <CreatedDate>25/03/2015</CreatedDate>
+        <ClosedDate>25/03/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/EditorFeatures/Core/Implementation/ReferenceHighlighting/AbstractDocumentHighlightsService.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>2008</IssueID>
+    <Title>Re-enable a few tests</Title>
+    <Description>Fixes #1077
+Fixes #1293</Description>
+    <CreatedDate>01/03/2018</CreatedDate>
+    <ClosedDate>15/03/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>1077</IssueID>
+        <Title>Upgrade BCL nuget packages to RC releases</Title>
+        <Description>There are 3 parts:
+- 6891c08  - (yawn) Version search and replace across _.config;_.nupsec;_.csproj;_.vbproj
+- ae23df1 - Adjust to small breaking changes in System.Collections.Immutable
+- a663279 - Adjust test expectation to correct projected version of System.Numerics.Vectors
+
+cc @tmat @jaredpar @theoy @joshfree
+</Description>
+        <CreatedDate>06/03/2015</CreatedDate>
+        <ClosedDate>06/03/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>1293</IssueID>
+        <Title>Completion not triggered on . in With after numeric literal</Title>
+        <Description>``` VB
+Class Program
+    Public Property P As Long
+
+    Sub M()
+        With Me
+            .P = 122
+            .$$
+        End With
+    End Sub
+End Class
+```
+
+Completion should be triggered at $$, but isn't.
+</Description>
+        <CreatedDate>16/03/2015</CreatedDate>
+        <ClosedDate>10/04/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Compilers/CSharp/Portable/Lowering/LambdaRewriter/ExpressionLambdaRewriter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/LambdaRewriter/LambdaRewriter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/SyntheticBoundNodeFactory.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenExprLambdaTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>1442</IssueID>
+    <Title>Fix #1435 - calculation of ResolvedPath for project references</Title>
+    <Description>See #479 and #1435 for error description and analysis of the problem. In short:
+
+The old implementation combined the relative `&lt;ProjectReference Include="..." /&gt;` path with the directory of the `ProjectAssetFile`.
+Corrected this to combine the relative project reference with the current's project path.
+
+Questions:
+ - Is it actually the desired outcome that ResolvedPath points to the csproj file? Or should it point to the output directory of that project?
+ - Is ProjectPath always passed in as full path? (otherwise it needs to be enclosed by a `Path.GetFullPath`)</Description>
+    <CreatedDate>22/07/2017</CreatedDate>
+    <ClosedDate>30/10/2017</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>479</IssueID>
+        <Title>Replace Task.WaitAll with Task.WhenAll in async method.</Title>
+        <Description>Task.WaitAll has an overload that accepts a CancellationToken whereas the Task.WhenAll method does not. So I've added some useful extension methods that enable the same pattern you had before, but doing so in an async fashion rather than blocking a thread.
+
+Fix #478 
+</Description>
+        <CreatedDate>13/02/2015</CreatedDate>
+        <ClosedDate>16/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>1435</IssueID>
+        <Title>Update Microsoft.DiaSymReader to v1.0.3-rc2</Title>
+        <Description>
+        </Description>
+        <CreatedDate>20/03/2015</CreatedDate>
+        <ClosedDate>20/03/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/EditorFeatures/CSharpTest/Completion/CompletionProviders/SymbolCompletionProviderTests.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Extensions/SyntaxNodeExtensions.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Recommendations/CSharpRecommendationService.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>806</IssueID>
+    <Title>Update property name for exclude pattern in project folder to match where it's consumed</Title>
+    <Description>Fixes #631 
+
+#### Scenario
+
+Build or publish a project using the .NET SDK that has a .vscode, .git, or other folder starting with "." in the project folder.  Without this fix files in these folders that match the right extensions (.json, .cs, etc.) will be included in the project and, in the case of Web SDK projects, the .json files will be included in the publish output.
+
+#### Bug
+
+#631
+
+#### Workarounds
+
+Add the following property to the project file, or otherwise explicitly exclude the unwanted folder from the items:
+
+```xml
+&lt;DefaultExcludesInProjectFolder&gt;$(DefaultItemExcludesInProjectFolder);**/.*/**&lt;/DefaultExcludesInProjectFolder&gt;
+```
+
+#### Risk
+
+Low
+
+#### Performance Impact
+
+Low
+
+#### Regression Analysis
+
+This was introduced in #630, where I accidentally renamed a property where it was defined, but not where it was consumed.</Description>
+    <CreatedDate>03/02/2017</CreatedDate>
+    <ClosedDate>03/02/2017</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>631</IssueID>
+        <Title>The Kind extension members have no documentation</Title>
+        <Description>Repro:
+- Install the rc1 NuGet packages.
+- Goto definition on the `Kind()` extension method.
+
+Result is no documentation present.  This is not a flaw in the documentation uptake as other members like `GetTypeInfo` in the same file have documentation.
+
+This is particularly important because the latest update changed how you determine what keyword a given `SyntaxToken` is.  The `CSharpKind` method was replaced with possibly `Kind` and `CSharpContextualKind` was simply deleted.  
+
+I said possible above because I don't know if `Kind` is the direct equivalent of `CSharpKind` or if it's a combination of `CSharpKind` and `CSharpContextualKind`.  I use the two methods for different purposes and the documentation gives me no hint as to how they function now.  I'm going to have to run some experiments to figure out how they work.
+</Description>
+        <CreatedDate>18/02/2015</CreatedDate>
+        <ClosedDate>13/12/2019</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>631</IssueID>
+        <Title>The Kind extension members have no documentation</Title>
+        <Description>Repro:
+- Install the rc1 NuGet packages.
+- Goto definition on the `Kind()` extension method.
+
+Result is no documentation present.  This is not a flaw in the documentation uptake as other members like `GetTypeInfo` in the same file have documentation.
+
+This is particularly important because the latest update changed how you determine what keyword a given `SyntaxToken` is.  The `CSharpKind` method was replaced with possibly `Kind` and `CSharpContextualKind` was simply deleted.  
+
+I said possible above because I don't know if `Kind` is the direct equivalent of `CSharpKind` or if it's a combination of `CSharpKind` and `CSharpContextualKind`.  I use the two methods for different purposes and the documentation gives me no hint as to how they function now.  I'm going to have to run some experiments to figure out how they work.
+</Description>
+        <CreatedDate>18/02/2015</CreatedDate>
+        <ClosedDate>13/12/2019</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>630</IssueID>
+        <Title>Obsolete messages could be more helpful</Title>
+        <Description>The upgrade from beta1 to rc1 NuGet packages introduced a number of `Obsolete` members.  The messages though are not very helpful:
+
+```
+[Obsolete("This member is obsolete.", true)]
+public ClassStatementSyntax Begin { get; }
+```
+
+This just tells the user the member is obsolete but gives them no direction on how to fix the problem.  Intellisense is also not helpful here because `Begin` has no matches.  I'm forced to go to the metadata view of the file and search for the new member.  
+
+ A much better message would be:
+
+```
+[Obsolete("This member is obsolete, use ClassStatement instead", true)]
+public ClassStatementSyntax Begin { get; }
+```
+</Description>
+        <CreatedDate>18/02/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/VisualStudio/Setup/IRoslynTelemetrySetup.cs</File>
+      <File>src/VisualStudio/Setup/RoslynPackage.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>539</IssueID>
+    <Title>Import common targets if LanguageTargets property isn't set.</Title>
+    <Description>This will allow restore to succeed.  Fixes #448. Fixes #373 
+
+Rather than generating an error (as specified in #448), this PR imports the common targets if the `LanguageTargets` property isn't set.  This means that restore can succeed even if the language targets aren't otherwise set, which means that F# or another language could be provided solely as a NuGet package instead of an MSBuild SDK.
+
+@enricosada How does this look to you?  Once it is possible to have third party SDKs (see https://github.com/Microsoft/msbuild/issues/1493), you may still prefer to use an SDK for F# over a NuGet package.  It would make the project files more succinct and might avoid the project showing up differently in solution explorer when you create or open a project before the restore completes.</Description>
+    <CreatedDate>20/12/2016</CreatedDate>
+    <ClosedDate>28/12/2016</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>448</IssueID>
+        <Title>Bug: The new managed Expression Evaluator ignores DEBUGPROP_INFO_NOFUNCEVAL</Title>
+        <Description>In _VS2010 and VS2012_, a consumer could call the debugger API's `IDebugProperty3.EnumChildren` passing in only the `DEBUGPROP_INFO_NAME` flag, to obtain only the names of the expressions,  without incurring the performance cost of the EE actually evaluating their values and performing func-evals. We've built a lot of functionality around this ability. 
+
+In _VS2013_, this ability was broken. I reported it on [Connect ticket 813045](https://connect.microsoft.com/VisualStudio/feedback/details/813045/bug-in-new-managed-debug-engine-idebugproperty2s-children-are-func-evalled-when-value-was-not-requested), and was offered a workaround of using `DEBUGPROP_INFO_NOFUNCEVAL`, which works.
+
+In _VS2015 CTP5_, both the original approach and the suggested workaround no longer work. 
+
+To reproduce:
+1. Run the  [scenario I described](https://connect.microsoft.com/VisualStudio/feedback/details/813045/bug-in-new-managed-debug-engine-idebugproperty2s-children-are-func-evalled-when-value-was-not-requested) in VS2015  instead of VS2013.
+2. Apply the workaround suggested by Azeem Khan on the Connect case and re-run the scenario. 
+   Observe that the workaround doesn't work in VS2015 CTP5.
+3. Go into Tools-&gt;Options and check the "Use the legacy C# and VB expression evaluators" option. Re-run the scenario and observe that the workaround now works.
+</Description>
+        <CreatedDate>12/02/2015</CreatedDate>
+        <ClosedDate>18/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>373</IssueID>
+        <Title>Make a built-in symbol for the nameof() operator</Title>
+        <Description>The compiler already provides symbols for built-in operators such as +(int,int). I think this would be one of those built-in operators, probably something like
+
+``` cs
+public string nameof(object arg);
+```
+
+even though the argument might be something like a namespace.
+
+This would (only) be visible through the `SemanticModel` API.
+
+[Ported from TFS DevDiv 1078941]
+
+&lt;!---
+@huboard:{"order":419.9296875,"milestone_order":373,"custom_state":""}
+--&gt;
+</Description>
+        <CreatedDate>10/02/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>448</IssueID>
+        <Title>Bug: The new managed Expression Evaluator ignores DEBUGPROP_INFO_NOFUNCEVAL</Title>
+        <Description>In _VS2010 and VS2012_, a consumer could call the debugger API's `IDebugProperty3.EnumChildren` passing in only the `DEBUGPROP_INFO_NAME` flag, to obtain only the names of the expressions,  without incurring the performance cost of the EE actually evaluating their values and performing func-evals. We've built a lot of functionality around this ability. 
+
+In _VS2013_, this ability was broken. I reported it on [Connect ticket 813045](https://connect.microsoft.com/VisualStudio/feedback/details/813045/bug-in-new-managed-debug-engine-idebugproperty2s-children-are-func-evalled-when-value-was-not-requested), and was offered a workaround of using `DEBUGPROP_INFO_NOFUNCEVAL`, which works.
+
+In _VS2015 CTP5_, both the original approach and the suggested workaround no longer work. 
+
+To reproduce:
+1. Run the  [scenario I described](https://connect.microsoft.com/VisualStudio/feedback/details/813045/bug-in-new-managed-debug-engine-idebugproperty2s-children-are-func-evalled-when-value-was-not-requested) in VS2015  instead of VS2013.
+2. Apply the workaround suggested by Azeem Khan on the Connect case and re-run the scenario. 
+   Observe that the workaround doesn't work in VS2015 CTP5.
+3. Go into Tools-&gt;Options and check the "Use the legacy C# and VB expression evaluators" option. Re-run the scenario and observe that the workaround now works.
+</Description>
+        <CreatedDate>12/02/2015</CreatedDate>
+        <ClosedDate>18/02/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/ExpressionCompilerTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ResultProvider/ResultsViewTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>457</IssueID>
+    <Title>Skip ResolvePackageDependencies task during design-time builds where restore hasn't occured</Title>
+    <Description>Fixes #453 
+
+When the Sdk was a NuGet package, its targets would never run before a restore completed.  Now that it's an MSBuild Sdk, the targets can get run before a restore.  The ResolvePackageDependencies task will generate an an error if the project assets file isn't found.  When a project was created, it would generate an error in the design time build, which would show up in the error list in Visual Studio and then disappear when the package restore operation completed.
+
+This change skips the RunResolvePackageDependencies target if the `DesignTimeBuild` property is true and the assets file can't be found.
+
+
+**Escrow Template:**
+
+Customer scenario –On project creation, nuget package restore error shows up in the error list and goes away once the restore is complete.
+Bugs this fixes: #453 
+Workarounds - none
+Risk – Low.
+Performance impact - None.
+Is this a regression? - Yes
+Root cause analysis - When the Sdk was a NuGet package, its targets would never run before a restore completed.  Now that it's an MSBuild Sdk, the targets can get run before a restore. 
+How was the bug found? - Internal testing.
+
+@MattGertz  for RC.2 Approval</Description>
+    <CreatedDate>05/12/2016</CreatedDate>
+    <ClosedDate>05/12/2016</ClosedDate>
+    <Issues>
+      <Issue>
+        <IssueID>453</IssueID>
+        <Title>Enable 64 bit test runs</Title>
+        <Description>This change allows provides the option of running our tests in 64 bit
+mode.  Simply invoke BuildAndTest.proj in the following manner:
+
+&gt; msbuild /v:m /m BuildAndTest.proj /p:Test64=true
+
+There are a set of tests today that don't run correctly in 64.  All have
+been annotated with the trait
+
+&gt; Require32=true
+
+We need to push on these to get a clean 64 bit run.  But short term this
+will at least give us protection against regressions.
+</Description>
+        <CreatedDate>12/02/2015</CreatedDate>
+        <ClosedDate>13/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <IssueID>453</IssueID>
+        <Title>Enable 64 bit test runs</Title>
+        <Description>This change allows provides the option of running our tests in 64 bit
+mode.  Simply invoke BuildAndTest.proj in the following manner:
+
+&gt; msbuild /v:m /m BuildAndTest.proj /p:Test64=true
+
+There are a set of tests today that don't run correctly in 64.  All have
+been annotated with the trait
+
+&gt; Require32=true
+
+We need to push on these to get a clean 64 bit run.  But short term this
+will at least give us protection against regressions.
+</Description>
+        <CreatedDate>12/02/2015</CreatedDate>
+        <ClosedDate>13/02/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <File>src/Compilers/CSharp/Test/Syntax/Syntax/SyntaxDiffingTests.cs</File>
+    </Files>
+  </PullRequest>
+</PullRequests>
