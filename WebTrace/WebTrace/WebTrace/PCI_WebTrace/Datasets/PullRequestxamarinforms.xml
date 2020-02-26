@@ -1,0 +1,2643 @@
+<PullRequests>
+  <PullRequest>
+    <IssueID>5955</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>[Android] Fix previewer exceptions with shell</Title>
+    <Description>### Description of Change ###
+
+This is a WIP but its purpose was to get through all the Forms SDK exceptions to the point where the previewer would just run shell or not
+
+Current exception coming from previewer
+```
+[2019-04-18 16:32:31.5] ERROR: : The renderer encountered an error while rendering this file: System.NullReferenceException: Object reference not set to an instance of an object
+Xamarin.Forms.Previewer.XamarinFormsLoaderAndroid.GetViewGroup (System.Object renderer)
+AndroidFormsRendering.XFPageRendererView.SetupView (MonoTouch.Design.XamlRenderContext xamlContext)
+AndroidFormsRendering.XFPageRendererView.Initialize (System.String xamlId)
+
+[2019-04-18 16:32:31.5] ERROR: : AndroidXamlRenderer had a rendering error: System.NullReferenceException: Object reference not set to an instance of an object
+Xamarin.Forms.Previewer.XamarinFormsLoaderAndroid.GetViewGroup (System.Object renderer)
+AndroidFormsRendering.XFPageRendererView.SetupView (MonoTouch.Design.XamlRenderContext xamlContext)
+AndroidFormsRendering.XFPageRendererView.Initialize (System.String xamlId)
+```
+
+### Issues Resolved ### 
+&lt;!-- Please use the format "fixes #xxxx" for each issue this PR addresses --&gt;
+
+- fixes #5908
+
+### API Changes ###
+&lt;!-- List all API changes here (or just put None), example:
+
+Added:
+ - string ListView.GroupName { get; set; } //Bindable Property
+ - int ListView.GroupId { get; set; } // Bindable Property
+ - void ListView.Clear ();
+
+Changed:
+ - object ListView.SelectedItem =&gt; Cell ListView.SelectedItem
+ 
+ Removed:
+ - object ListView.SelectedItem =&gt; Cell ListView.SelectedItem
+ 
+ --&gt;
+ 
+ None
+
+### Platforms Affected ### 
+&lt;!-- Please list all platforms affected by these changes --&gt;
+
+- Core/XAML (all platforms)
+- iOS
+- Android
+- UWP
+
+### Behavioral/Visual Changes ###
+&lt;!-- Describe any changes that may change how a user's app behaves or appears when upgrading to this version of the codebase. --&gt;
+
+None
+
+### Before/After Screenshots ### 
+&lt;!-- If possible, take a screenshot of your test case before these changes were made and another screenshot after the changes were made to show possible visual changes. --&gt;
+
+Not applicable
+
+### Testing Procedure ###
+&lt;!-- Please list the steps that should be taken to properly test these changes on each relevant platform. If you were unable to test these changes yourself on any or all platforms, please let us know. Also, if you are able to attach a video of your test run, you will be our personal hero. --&gt;
+
+### PR Checklist ###
+
+- [ ] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [ ] Rebased on top of the target branch at time of PR
+- [ ] Changes adhere to coding standard
+
+&gt; VS bug [#854002](https://devdiv.visualstudio.com/DevDiv/_workitems/edit/854002)</Description>
+    <CreatedDate>18/04/2019</CreatedDate>
+    <ClosedDate>02/05/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5955</PullRequestID>
+        <IssueID>5908</IssueID>
+        <Title>made CS0067 another build only error</Title>
+        <Description>
+        </Description>
+        <CreatedDate>13/10/2015</CreatedDate>
+        <ClosedDate>14/10/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5955</PullRequestID>
+      <File>src/Compilers/Core/MSBuildTask/InteractiveCompiler.cs</File>
+      <File>src/Compilers/Core/MSBuildTaskTests/CsiTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5922</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>WpfHelper.FindChildren: Pass forceUsingTheVisualTreeHelper to recursive calls.</Title>
+    <Description>### Description of Change ###
+
+`WpfHelper.FindChildren`: Pass `forceUsingTheVisualTreeHelper` to recursive calls.
+
+### Issues Resolved ### 
+
+- fixes #5921 
+
+### API Changes ###
+
+ None
+
+### Platforms Affected ### 
+&lt;!-- Please list all platforms affected by these changes --&gt;
+
+- WPF
+
+### Behavioral/Visual Changes ###
+
+If using the visual tree helper, `TreeHelper.FindChildren` now uses the visual tree helper all the way down to the leaf nodes.
+
+### Before/After Screenshots ### 
+&lt;!-- If possible, take a screenshot of your test case before these changes were made and another screenshot after the changes were made to show possible visual changes. --&gt;
+
+Not applicable
+
+### Testing Procedure ###
+&lt;!-- Please list the steps that should be taken to properly test these changes on each relevant platform. If you were unable to test these changes yourself on any or all platforms, please let us know. Also, if you are able to attach a video of your test run, you will be our personal hero. --&gt;
+
+As described in #5921 
+
+### PR Checklist ###
+
+- [ ] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [ ] Rebased on top of the target branch at time of PR
+- [ ] Changes adhere to coding standard
+</Description>
+    <CreatedDate>15/04/2019</CreatedDate>
+    <ClosedDate>26/04/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5922</PullRequestID>
+        <IssueID>5921</IssueID>
+        <Title>Test only: unskip and add more asserts</Title>
+        <Description>Not to be submitted
+</Description>
+        <CreatedDate>13/10/2015</CreatedDate>
+        <ClosedDate>15/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5922</PullRequestID>
+        <IssueID>5921</IssueID>
+        <Title>Test only: unskip and add more asserts</Title>
+        <Description>Not to be submitted
+</Description>
+        <CreatedDate>13/10/2015</CreatedDate>
+        <ClosedDate>15/10/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5922</PullRequestID>
+      <File>src/Workspaces/Core/Portable/FindSymbols/FindReferences/FindReferencesSearchEngine_MapCreation.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/FindReferences/Finders/ILanguageServiceReferenceFinder.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/FindReferences/Finders/NamedTypeSymbolReferenceFinder.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5905</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>Allow CollectionView items to resize with their content</Title>
+    <Description>### Description of Change ###
+
+Allow CollectionView items on iOS and Android to dynamically resize as their content changes.
+
+Also fixes some invalidation issues which were causing the problems noted in issues #5521 and #5721.
+
+### Issues Resolved ### 
+
+- fixes #5647
+- fixes #5521
+- fixes #5721
+
+### API Changes ###
+
+ None
+
+### Platforms Affected ### 
+
+- iOS
+- Android
+
+### Behavioral/Visual Changes ###
+
+None
+
+### Before/After Screenshots ### 
+
+![dynamic_cell_ios](https://user-images.githubusercontent.com/538025/56065407-fb281700-5d31-11e9-9c7a-b8b5f154643c.gif)
+
+![dynamic_cell_android](https://user-images.githubusercontent.com/538025/56066094-ffedca80-5d33-11e9-872f-114458c7df16.GIF)
+
+
+### Testing Procedure ###
+
+In Control Gallery, navigate to CollectionView Gallery -&gt; Item Size Galleries -&gt; Expanding Text
+
+### PR Checklist ###
+
+- [ ] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [x] Rebased on top of the target branch at time of PR
+- [x] Changes adhere to coding standard
+</Description>
+    <CreatedDate>12/04/2019</CreatedDate>
+    <ClosedDate>24/04/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5905</PullRequestID>
+        <IssueID>5521</IssueID>
+        <Title>IOperation and associated analyzer actions, now in future</Title>
+        <Description>This change set adds IOperation, a common abstract view on the bound trees of the C# and VB compilers, and extends the analyzers API to include operation actions that operate upon them.
+
+It is now possible to write a single analyzer that works for both C# and VB, so long as the analyzer operates entirely within semantic realms.
+
+@mavasani  @heejaechang @gafter @cston @srivatsn @mattwar @amcasey @AnthonyDGreen @CyrusNajmabadi @tmat @genlu @ManishJayaswal may have specific interest.
+
+Many thanks to @tannergooding and @agocke for getting me through the process of rebasing to future.
+</Description>
+        <CreatedDate>29/09/2015</CreatedDate>
+        <ClosedDate>07/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5905</PullRequestID>
+        <IssueID>5721</IssueID>
+        <Title>Three tests are failing in MSBuildWorkspaceTests</Title>
+        <Description>Follow instructions on https://github.com/dotnet/roslyn how to enlist.
+Run `msbuild /v:m /m BuildAndTest.proj` from the root
+
+Observed:
+3 tests failed
+
+```
+Microsoft.CodeAnalysis.UnitTests.MSBuildWorkspaceTests.TestOpenProject_VisualBasic_WithoutPrefer32BitAndConsoleApplication [FAIL]
+        Assert.Equal() Failure\r\nExpected: AnyCpu32BitPreferred\r\nActual:   AnyCpu
+        Stack Trace:
+           src\Workspaces\CoreTest\WorkspaceTests\MSBuildWorkspaceTests.cs(507,0): at Microsoft.CodeAnalysis.UnitTests.MSBuildWorkspaceTests.TestOpenProject_VisualBasic_WithoutPrefer32BitAndConsoleApplication()
+     Microsoft.CodeAnalysis.UnitTests.MSBuildWorkspaceTests.TestOpenProject_VisualBasic_WithPrefer32BitAndConsoleApplication [FAIL]
+        Assert.Equal() Failure\r\nExpected: AnyCpu32BitPreferred\r\nActual:   AnyCpu
+        Stack Trace:
+           src\Workspaces\CoreTest\WorkspaceTests\MSBuildWorkspaceTests.cs(532,0): at Microsoft.CodeAnalysis.UnitTests.MSBuildWorkspaceTests.TestOpenProject_VisualBasic_WithPrefer32BitAndConsoleApplication()
+     Microsoft.CodeAnalysis.UnitTests.MSBuildWorkspaceTests.TestCompilationOptions_VisualBasic_OptionStrict_On [FAIL]
+        Assert.Equal() Failure\r\nExpected: On\r\nActual:   Off
+        Stack Trace:
+           src\Workspaces\CoreTest\WorkspaceTests\MSBuildWorkspaceTestBase.cs(32,0): at Microsoft.CodeAnalysis.UnitTests.MSBuildWorkspaceTestBase.AssertVBOptions[T](T expected, Fu
+  nc`2 actual)
+           src\Workspaces\CoreTest\WorkspaceTests\MSBuildWorkspaceTests.cs(1622,0): at Microsoft.CodeAnalysis.UnitTests.MSBuildWorkspaceTests.TestCompilationOptions_VisualBasic_OptionStrict_On()
+```
+</Description>
+        <CreatedDate>06/10/2015</CreatedDate>
+        <ClosedDate>23/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5905</PullRequestID>
+        <IssueID>5647</IssueID>
+        <Title>Intellisense diagnostics for projects selected not to be build in Configuration Manager</Title>
+        <Description>Ported from VSO [96699](https://devdiv.visualstudio.com/DefaultCollection/DevDiv/_workitems#_a=edit&amp;id=96699)
+
+See the attached screenshots. Should we consider turning off intellisense diagnostics for such scenarios?
+
+![configurationmanagersetting](https://cloud.githubusercontent.com/assets/10605811/10250513/11568628-68e0-11e5-9971-83da058160d1.png)
+![errorlist](https://cloud.githubusercontent.com/assets/10605811/10250518/1493bea0-68e0-11e5-812e-a6de9e60e78e.png)
+</Description>
+        <CreatedDate>02/10/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5905</PullRequestID>
+        <IssueID>5521</IssueID>
+        <Title>IOperation and associated analyzer actions, now in future</Title>
+        <Description>This change set adds IOperation, a common abstract view on the bound trees of the C# and VB compilers, and extends the analyzers API to include operation actions that operate upon them.
+
+It is now possible to write a single analyzer that works for both C# and VB, so long as the analyzer operates entirely within semantic realms.
+
+@mavasani  @heejaechang @gafter @cston @srivatsn @mattwar @amcasey @AnthonyDGreen @CyrusNajmabadi @tmat @genlu @ManishJayaswal may have specific interest.
+
+Many thanks to @tannergooding and @agocke for getting me through the process of rebasing to future.
+</Description>
+        <CreatedDate>29/09/2015</CreatedDate>
+        <ClosedDate>07/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5905</PullRequestID>
+        <IssueID>5721</IssueID>
+        <Title>Three tests are failing in MSBuildWorkspaceTests</Title>
+        <Description>Follow instructions on https://github.com/dotnet/roslyn how to enlist.
+Run `msbuild /v:m /m BuildAndTest.proj` from the root
+
+Observed:
+3 tests failed
+
+```
+Microsoft.CodeAnalysis.UnitTests.MSBuildWorkspaceTests.TestOpenProject_VisualBasic_WithoutPrefer32BitAndConsoleApplication [FAIL]
+        Assert.Equal() Failure\r\nExpected: AnyCpu32BitPreferred\r\nActual:   AnyCpu
+        Stack Trace:
+           src\Workspaces\CoreTest\WorkspaceTests\MSBuildWorkspaceTests.cs(507,0): at Microsoft.CodeAnalysis.UnitTests.MSBuildWorkspaceTests.TestOpenProject_VisualBasic_WithoutPrefer32BitAndConsoleApplication()
+     Microsoft.CodeAnalysis.UnitTests.MSBuildWorkspaceTests.TestOpenProject_VisualBasic_WithPrefer32BitAndConsoleApplication [FAIL]
+        Assert.Equal() Failure\r\nExpected: AnyCpu32BitPreferred\r\nActual:   AnyCpu
+        Stack Trace:
+           src\Workspaces\CoreTest\WorkspaceTests\MSBuildWorkspaceTests.cs(532,0): at Microsoft.CodeAnalysis.UnitTests.MSBuildWorkspaceTests.TestOpenProject_VisualBasic_WithPrefer32BitAndConsoleApplication()
+     Microsoft.CodeAnalysis.UnitTests.MSBuildWorkspaceTests.TestCompilationOptions_VisualBasic_OptionStrict_On [FAIL]
+        Assert.Equal() Failure\r\nExpected: On\r\nActual:   Off
+        Stack Trace:
+           src\Workspaces\CoreTest\WorkspaceTests\MSBuildWorkspaceTestBase.cs(32,0): at Microsoft.CodeAnalysis.UnitTests.MSBuildWorkspaceTestBase.AssertVBOptions[T](T expected, Fu
+  nc`2 actual)
+           src\Workspaces\CoreTest\WorkspaceTests\MSBuildWorkspaceTests.cs(1622,0): at Microsoft.CodeAnalysis.UnitTests.MSBuildWorkspaceTests.TestCompilationOptions_VisualBasic_OptionStrict_On()
+```
+</Description>
+        <CreatedDate>06/10/2015</CreatedDate>
+        <ClosedDate>23/10/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5905</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Syntax/InternalSyntax/Syntax.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/InternalSyntax/SyntaxNode.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/SyntaxFactory.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/SyntaxKind.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/SyntaxKindFacts.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/SyntaxNodeRemover.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/SyntaxNormalizer.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Parsing/ScriptParsingTests.cs</File>
+      <File>src/Compilers/Core/Portable/SourceFileResolver.cs</File>
+      <File>src/Interactive/Features/Interactive/Core/InteractiveHost.Service.cs</File>
+      <File>src/Scripting/CSharp/CSharpScriptCompiler.cs</File>
+      <File>src/Scripting/CSharp/Hosting/ObjectFormatter/CSharpObjectFormatter.cs</File>
+      <File>src/Scripting/CSharpTest.Desktop/InteractiveSessionTests.cs</File>
+      <File>src/Scripting/CSharpTest/InteractiveSessionTests.cs</File>
+      <File>src/Scripting/Core/CompilationErrorException.cs</File>
+      <File>src/Scripting/Core/Hosting/ObjectFormatter/ObjectFormatter.cs</File>
+      <File>src/Scripting/Core/Hosting/ObjectFormatter/ObjectFormattingOptions.cs</File>
+      <File>src/Scripting/Core/Script.cs</File>
+      <File>src/Scripting/Core/ScriptMetadataResolver.cs</File>
+      <File>src/Scripting/Core/ScriptOptions.cs</File>
+      <File>src/Scripting/Core/ScriptSourceResolver.cs</File>
+      <File>src/Scripting/Core/ScriptState.cs</File>
+      <File>src/Scripting/Core/Utilities/ParameterValidationHelpers.cs</File>
+      <File>src/Scripting/CoreTest/ScriptOptionsTests.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Extensions/SyntaxNodeExtensions.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Extensions/SyntaxTreeExtensions.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Extensions/SyntaxTriviaExtensions.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5880</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>Automated UI Tests</Title>
+    <Description>### Description of Change ###
+
+Automated tests for:
+
+fixes #2374 
+fixes #2372
+fixes #2366
+fixes #2364
+fixes #2354
+fixes #2349
+fixes #2344
+fixes #2340
+fixes #2334 and  fixes #2337 (Same UI Test)
+### API Changes ### 
+ None
+
+### Platforms Affected ### 
+- Android
+- UWP
+
+### Behavioral/Visual Changes ###
+None
+
+### Before/After Screenshots ### 
+Not applicable
+
+### Testing Procedure ###
+
+
+### PR Checklist ###
+
+- [x] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [x] Rebased on top of the target branch at time of PR
+- [x] Changes adhere to coding standard
+</Description>
+    <CreatedDate>10/04/2019</CreatedDate>
+    <ClosedDate>27/08/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5880</PullRequestID>
+        <IssueID>2374</IssueID>
+        <Title>Disable Roslyn.Compilers.CSharp.Emit.Unitests until we figure out why th...</Title>
+        <Description>...ey're failing in Jenkins (but not otherwise).
+</Description>
+        <CreatedDate>29/04/2015</CreatedDate>
+        <ClosedDate>29/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5880</PullRequestID>
+        <IssueID>2372</IssueID>
+        <Title>Use IEditorFormattingService to format on commit</Title>
+        <Description>Previously, if the user committed completion with semicolon (or another
+auto-format triggering character), the completion commit code would run,
+followed by the autoformat code. Both features run in places where
+multiple edits happen sequentially, so they use
+AutomaticCodeChangeMergePolicy when creating undo transactions. However,
+this meant that commit followed by format-on-typechar would only produce
+one undo transaction.
+
+To avoid this, when committing, completion queries the relevant
+IEditorFormattingService to determine if the commit character should
+result in formatting, and then uses IEditorFormattingService to format
+within a separate undo transaction with the default merge policy (the
+command handler for format-on-typechar does essentially the same thing).
+
+This results in two items in the undo stack: one for committing
+completion, and one for the format. When the normal formatting command
+handler runs, the formatter doesn't produce any changes, so it does
+nothing.
+
+Mind taking a look? @balajikris @basoundr @davkean @dpoeschl @jasonmalinowski @jmarolf @Pilchie 
+</Description>
+        <CreatedDate>29/04/2015</CreatedDate>
+        <ClosedDate>30/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5880</PullRequestID>
+        <IssueID>2366</IssueID>
+        <Title>TEST ONLY (do not review) Only reopen documents on navigation when required</Title>
+        <Description>Fixes internal TFS bug #1063320
+
+This is just for testing. Will write description later.
+</Description>
+        <CreatedDate>29/04/2015</CreatedDate>
+        <ClosedDate>05/05/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5880</PullRequestID>
+        <IssueID>2364</IssueID>
+        <Title>Restore missing interactive pkgdefs.</Title>
+        <Description>
+        </Description>
+        <CreatedDate>29/04/2015</CreatedDate>
+        <ClosedDate>29/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5880</PullRequestID>
+        <IssueID>2354</IssueID>
+        <Title>Add missing reference to Roslyn.VisualStudio.InteractiveComponents.vsix.</Title>
+        <Description>
+        </Description>
+        <CreatedDate>29/04/2015</CreatedDate>
+        <ClosedDate>29/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5880</PullRequestID>
+        <IssueID>2349</IssueID>
+        <Title>Intermittent failure in DiagnosticAnalyzerTests.DiagnosticAnalyzerAllInOne</Title>
+        <Description>Assert below fails from time to time.
+
+```
+Private Function BuildMembersAndInitializers(diagBag As DiagnosticBag) As MembersAndInitializers
+#If DEBUG Then
+            Dim threadId = Environment.CurrentManagedThreadId
+            Debug.Assert(m_computingMembersThreadId &lt;&gt; threadId)
+            Interlocked.CompareExchange(m_computingMembersThreadId, threadId, 0)
+#End If 
+```
+
+Here is the stack trace of the exception:
+
+```
+   at System.Diagnostics.TraceInternal.Fail(String message)
+   at System.Diagnostics.Debug.Assert(Boolean condition)
+   at Microsoft.CodeAnalysis.VisualBasic.Symbols.SourceMemberContainerTypeSymbol.BuildMembersAndInitializers(DiagnosticBag diagBag) in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\VisualBasic\Portable\Symbols\Source\SourceMemberContainerTypeSymbol.vb:line 1683
+   at Microsoft.CodeAnalysis.VisualBasic.Symbols.SourceMemberContainerTypeSymbol.GetMembersAndInitializers() in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\VisualBasic\Portable\Symbols\Source\SourceMemberContainerTypeSymbol.vb:line 1646
+   at Microsoft.CodeAnalysis.VisualBasic.Symbols.SourceMemberContainerTypeSymbol.get_MemberAndInitializerLookup() in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\VisualBasic\Portable\Symbols\Source\SourceMemberContainerTypeSymbol.vb:line 1639
+   at Microsoft.CodeAnalysis.VisualBasic.Symbols.SourceMemberContainerTypeSymbol.GetMembers(String name) in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\VisualBasic\Portable\Symbols\Source\SourceMemberContainerTypeSymbol.vb:line 3131
+   at Microsoft.CodeAnalysis.VisualBasic.Symbols.NamedTypeSymbolExtensions.FindMember(NamedTypeSymbol container, String symbolName, SymbolKind kind, TextSpan nameSpan, SyntaxTree tree) in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\VisualBasic\Portable\Symbols\NamedTypeSymbolExtensions.vb:line 34
+   at Microsoft.CodeAnalysis.VisualBasic.Symbols.SourceMethodSymbol.FindSymbolFromSyntax(MethodBaseSyntax syntax, SyntaxTree tree, NamedTypeSymbol container) in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\VisualBasic\Portable\Symbols\Source\SourceMethodSymbol.vb:line 1100
+   at Microsoft.CodeAnalysis.VisualBasic.SyntaxTreeSemanticModel.GetDeclaredSymbol(MethodBaseSyntax declarationSyntax, CancellationToken cancellationToken) in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\VisualBasic\Portable\Compilation\SyntaxTreeSemanticModel.vb:line 1032
+   at Microsoft.CodeAnalysis.VisualBasic.VBSemanticModel.GetDeclaredSymbol(MethodBlockBaseSyntax declarationSyntax, CancellationToken cancellationToken) in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\VisualBasic\Portable\Compilation\SemanticModel.vb:line 2650
+   at Microsoft.CodeAnalysis.VisualBasic.VBSemanticModel.GetDeclaredSymbolCore(SyntaxNode declaration, CancellationToken cancellationToken) in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\VisualBasic\Portable\Compilation\SemanticModel.vb:line 3302
+   at Microsoft.CodeAnalysis.SemanticModel.GetDeclarationInfo(SyntaxNode node, Boolean getSymbol, IEnumerable`1 executableCodeBlocks, CancellationToken cancellationToken) in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\Core\Portable\Compilation\SemanticModel.cs:line 839
+   at Microsoft.CodeAnalysis.VisualBasic.VBSemanticModel.ComputeDeclarationsCore(SyntaxNode node, Func`3 shouldSkip, Boolean getSymbol, ArrayBuilder`1 builder, Nullable`1 levelsToCompute, CancellationToken cancellationToken) in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\VisualBasic\Portable\Compilation\SemanticModel.vb:line 3596
+   at Microsoft.CodeAnalysis.VisualBasic.VBSemanticModel.ComputeDeclarationsCore(SyntaxNode node, Func`3 shouldSkip, Boolean getSymbol, ArrayBuilder`1 builder, Nullable`1 levelsToCompute, CancellationToken cancellationToken) in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\VisualBasic\Portable\Compilation\SemanticModel.vb:line 3551
+   at Microsoft.CodeAnalysis.VisualBasic.VBSemanticModel.GetDeclarationsInNode(SyntaxNode node, Boolean getSymbol, CancellationToken cancellationToken, Nullable`1 levelsToCompute) in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\VisualBasic\Portable\Compilation\SemanticModel.vb:line 3447
+   at Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver`1.&lt;AnalyzeDeclaringReferenceAsync&gt;d__1.MoveNext() in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\Core\Portable\DiagnosticAnalyzer\AnalyzerDriver.cs:line 1139
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver.&lt;ProcessEventAsync&gt;d__1.MoveNext() in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\Core\Portable\DiagnosticAnalyzer\AnalyzerDriver.cs:line 351
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver.&lt;ProcessEventsAsync&gt;d__1.MoveNext() in C:\Builds\Roslyn\Main-PerCheckin-Debug\src\Open\Compilers\Core\Portable\DiagnosticAnalyzer\AnalyzerDriver.cs:line 319").WithLocation(1, 1)s
+```
+</Description>
+        <CreatedDate>28/04/2015</CreatedDate>
+        <ClosedDate>29/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5880</PullRequestID>
+        <IssueID>2344</IssueID>
+        <Title>Reenable some msbuild workspace tests</Title>
+        <Description>
+        </Description>
+        <CreatedDate>28/04/2015</CreatedDate>
+        <ClosedDate>30/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5880</PullRequestID>
+        <IssueID>2340</IssueID>
+        <Title>Improve Overload Resolution error reporting.</Title>
+        <Description>Fixes #2291.
+
+@VSadov, @gafter, @jaredpar, @agocke Please review.  
+</Description>
+        <CreatedDate>28/04/2015</CreatedDate>
+        <ClosedDate>29/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5880</PullRequestID>
+        <IssueID>2334</IssueID>
+        <Title>No fixes generated for BC30109</Title>
+        <Description># Repro Code
+
+(Copy paste the following snippet into a new VB console project to observe the documented behavior)
+
+``` VB
+Class C1
+    Sub foo()
+        Dim obj As Object
+        If obj &lt;&gt; System.DBNull Then
+        End If
+    End Sub
+End Class
+```
+## Dev12 Behavior
+
+![image](https://cloud.githubusercontent.com/assets/9797472/7376946/26497e00-ed98-11e4-98db-1d9426354b28.png)
+
+Module1.vb(4,19): error BC30109: 'System.DBNull' is a class type and cannot be used as an expression.
+Module1.vb(4,12): warning BC42104: Variable 'obj' is used before it has been assigned a value. A null reference exception could result at runtime.
+
+After generating class for DBNull
+
+**Module1.vb:**
+
+``` VB
+Class C1
+    Sub foo()
+        Dim obj As Object
+        If obj &lt;&gt; System.DBNull Then
+        End If
+    End Sub
+End Class
+```
+
+**DBNull.vb:**
+
+``` VB
+Namespace System
+    Class DBNull
+
+    End Class
+End Namespace
+```
+
+Module1.vb(4,19): error BC30109: 'ConsoleApplication21.System.DBNull' is a class type and cannot be used as an expression.
+Module1.vb(4,12): warning BC42104: Variable 'obj' is used before it has been assigned a value. A null reference exception could result at runtime.
+## Roslyn Behavior
+
+![image](https://cloud.githubusercontent.com/assets/9797472/7376984/58b29a2a-ed98-11e4-8727-29741714984e.png)
+# Proposed Action
+
+In this particular case that the original story (872441) posed, it's unclear whether this code fix should be available.  On the one hand, you could generate a new class then manually rename the class, namespace, and usage of the class.  On the other hand, that doesn't make a lot of sense.  I should just type the name of the namespace and type that I meant to create and GFU those.
+
+But, there is this case which also doesn't work in Roslyn that a user would probably expect to work:
+
+``` VB
+Class C
+
+End Class
+
+Class C1
+    Sub foo()
+        Dim obj As Object
+        If obj &lt;&gt; C Then
+        End If
+    End Sub
+End Class
+```
+
+In this case, we should probably offer the following fixes which resolve the original error:
+    • Generate method stub for C
+    • Generate property stub for C
+    • Generate field for C
+</Description>
+        <CreatedDate>28/04/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5880</PullRequestID>
+        <IssueID>2337</IssueID>
+        <Title>Vsix contents - attempt 2</Title>
+        <Description>Revert "Revert "Exclude transitive dependencies from vsixes."" 
+
+This reverts commit 8cfc284.
+
+Also, include pkgdefs in setup vsix.
+</Description>
+        <CreatedDate>28/04/2015</CreatedDate>
+        <ClosedDate>28/04/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5880</PullRequestID>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV1/MemberRangeMap.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5851</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>[Android] Null check on Switch TrackDrawable</Title>
+    <Description>### Description of Change ###
+
+Add a null check to `TrackDrawable`, which may not be set and thus may be null.
+
+### Issues Resolved ### 
+&lt;!-- Please use the format "fixes #xxxx" for each issue this PR addresses --&gt;
+
+- fixes #5553
+
+### API Changes ###
+&lt;!-- List all API changes here (or just put None), example:
+
+Added:
+ - string ListView.GroupName { get; set; } //Bindable Property
+ - int ListView.GroupId { get; set; } // Bindable Property
+ - void ListView.Clear ();
+
+Changed:
+ - object ListView.SelectedItem =&gt; Cell ListView.SelectedItem
+ 
+ Removed:
+ - object ListView.SelectedItem =&gt; Cell ListView.SelectedItem
+ 
+ --&gt;
+ 
+ None
+
+### Platforms Affected ### 
+&lt;!-- Please list all platforms affected by these changes --&gt;
+
+
+- Android
+
+
+### Behavioral/Visual Changes ###
+&lt;!-- Describe any changes that may change how a user's app behaves or appears when upgrading to this version of the codebase. --&gt;
+
+None
+
+### Before/After Screenshots ### 
+&lt;!-- If possible, take a screenshot of your test case before these changes were made and another screenshot after the changes were made to show possible visual changes. --&gt;
+
+Not applicable
+
+### Testing Procedure ###
+See if the project attached to #5456 crashes. Spoiler alert: It will, but for a different and totally unrelated reason (https://github.com/xamarin/Xamarin.Forms/issues/5456#issuecomment-481486341).
+
+### PR Checklist ###
+
+- [ ] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [x] Rebased on top of the target branch at time of PR
+- [x] Changes adhere to coding standard
+</Description>
+    <CreatedDate>09/04/2019</CreatedDate>
+    <ClosedDate>11/04/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5851</PullRequestID>
+        <IssueID>5553</IssueID>
+        <Title>Roslyn.VisualStudio.Closed.UnitTests.dll</Title>
+        <Description>xUnit is failing to load the this suite of unit tests. It gives a System.BadImageFormatException. This suite will be disabled until it is fixed.
+
+System.BadImageFormatException: Could not load file or assembly 'Roslyn.VisualStudio.Closed.UnitTests, Version=1.1.0.0, Culture=neutral, PublicKeyToken=fc793a00266884fb' or one of its dependencies. An attempt was made to load a program with an incorrect format.
+   at System.Reflection.RuntimeAssembly._nLoad(AssemblyName fileName, String codeBase, Evidence assemblySecurity, RuntimeAssembly locationHint, StackCrawlMark&amp; stackMark, IntPtr pPrivHostBinder, Boolean throwOnFileNotFound, Boolean forIntrospection, Boolean suppressSecurityChecks)
+   at System.Reflection.RuntimeAssembly.InternalLoadAssemblyName(AssemblyName assemblyRef, Evidence assemblySecurity, RuntimeAssembly reqAssembly, StackCrawlMark&amp; stackMark, IntPtr pPrivHostBinder, Boolean throwOnFileNotFound, Boolean forIntrospection, Boolean suppressSecurityChecks)
+   at System.Reflection.Assembly.Load(AssemblyName assemblyRef)
+   at Xunit.Sdk.Executor..ctor(String assemblyFilename)$$RethrowMarker$$   at ExceptionExtensions.RethrowWithNoStackTraceLoss(Exception ex)
+   at Xunit.RemoteAppDomainManager.CreateObject[TObject](String assemblyName, String typeName, Object[] args)
+   at Xunit.Xunit1Executor..ctor(String testAssemblyFileName, String configFileName, Boolean shadowCopy)
+   at Xunit.Xunit1.CreateExecutor(String testAssemblyFileName, String configFileName, Boolean shadowCopy)
+   at Xunit.Xunit1..ctor(ISourceInformationProvider sourceInformationProvider, String assemblyFileName, String configFileName, Boolean shadowCopy)
+   at Xunit.XunitFrontController.CreateInnerController()
+   at Xunit.XunitFrontController.get_InnerController()
+   at Xunit.XunitFrontController.Find(Boolean includeSourceInformation, IMessageSink messageSink)
+   at Xunit.ConsoleClient.Program.ExecuteAssembly(Object consoleLock, String defaultDirectory, XunitProjectAssembly assembly, Boolean needsXml, Boolean teamCity, Boolean silent)
+</Description>
+        <CreatedDate>29/09/2015</CreatedDate>
+        <ClosedDate>09/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5851</PullRequestID>
+        <IssueID>5456</IssueID>
+        <Title>ErrorLogger need to be a public API</Title>
+        <Description>http://source.roslyn.io/#Microsoft.CodeAnalysis/CommandLine/ErrorLogger.cs,f724fbca034fb970
+
+With SARIF being the standard format for issues, I think having a ErrorLogger which knows how to translate to that format will be quite handy.
+</Description>
+        <CreatedDate>25/09/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5851</PullRequestID>
+      <File>src/Compilers/Core/Portable/NativePdbWriter/ISymUnmanagedWriter.cs</File>
+      <File>src/Compilers/Core/Portable/NativePdbWriter/PdbWriter.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5810</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>[Shell,iOS,Android] Add Colors, Font, HorizontalAlignment. Keyboard, Focus to SearchHandler</Title>
+    <Description>Add basic styling properties to Shell SearchHandler
+
+### Description of Change ###
+
+Allow to style the search bar inside shell the same we did for basic `SearchBar`
+
+### Issues Resolved ### 
+&lt;!-- Please use the format "fixes #xxxx" for each issue this PR addresses --&gt;
+
+- fixes #3125 
+- fixes #5768 
+
+### API Changes ###
+
+Added:
+ - public string FontFamily{ get; set; } //Bindable Property
+ - public string FontSize{ get; set; } //Bindable Property
+ - public string FontAttributes{ get; set; } //Bindable Property
+ - public Color PlaceholderColor { get; set; } // Bindable Property
+ - public Color BackgroundColor { get; set; } // Bindable Property
+ - public Color TextColor { get; set; } // Bindable Property
+ - public Color CancelButtonColor { get; set; } // Bindable Property
+ - public TextAlignment HorizontalTextAlignment { get; set; } // Bindable Property
+ - public public Keyboard Keyboard { get; set; } // Bindable Property
+ - public bool Focus();
+ - public void Unfocus(); 
+ - public bool IsFocused() { get; } 
+ -[EditorBrowsable(EditorBrowsableState.Never)]
+   public event EventHandler&lt;FocusRequestArgs&gt; FocusChangeRequested;
+
+Changed:
+ - public class SearchHandler : BindableObject, ISearchHandlerController -&gt; public class SearchHandler : BindableObject, ISearchHandlerController, IPlaceholderElement, IFontElement, ITextElement, ITextAlignmentElement
+ 
+ Removed:
+ - None
+
+### Platforms Affected ### 
+- Core/XAML (all platforms)
+- iOS
+- Android
+
+### Behavioral/Visual Changes ###
+
+Will allow to change the text color and background color of the search as well as tint color for buttons and placeholder
+
+### Before/After Screenshots ### 
+
+iOS: 
+
+![Screenshot_1555004338](https://user-images.githubusercontent.com/1235097/55980541-95ce1a80-5c8c-11e9-9c1c-9b62d87ca272.png)
+![Screenshot_1555004344](https://user-images.githubusercontent.com/1235097/55980555-9b2b6500-5c8c-11e9-8a5d-b9ce0d9516e2.png)
+
+![Simulator Screen Shot - iPhone Xs - 2019-04-11 at 18 40 26](https://user-images.githubusercontent.com/1235097/55980567-a1214600-5c8c-11e9-8289-3d52b362f7f6.png)
+![Simulator Screen Shot - iPhone Xs - 2019-04-11 at 18 40 14](https://user-images.githubusercontent.com/1235097/55980572-a5e5fa00-5c8c-11e9-9bd5-cbd3a7a33ffd.png)
+
+
+### Testing Procedure ###
+&lt;!-- Please list the steps that should be taken to properly test these changes on each relevant platform. If you were unable to test these changes yourself on any or all platforms, please let us know. Also, if you are able to attach a video of your test run, you will be our personal hero. --&gt;
+
+### PR Checklist ###
+
+- [ ] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [ ] Rebased on top of the target branch at time of PR
+- [ ] Changes adhere to coding standard
+</Description>
+    <CreatedDate>04/04/2019</CreatedDate>
+    <ClosedDate>09/05/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5810</PullRequestID>
+        <IssueID>3125</IssueID>
+        <Title>On VS startup, squiggles appear but error list is empty</Title>
+        <Description>Repro:
+1. In my main instance of VS, I press F5 to debug my analyzers assembly.
+   The sandbox instance of VS appears.
+2. In the sandbox instance, I open a test solution that contains a source file that demonstrates the issues my analyzers detect. I open the source file.
+   The green squiggles appear, and the issues appear in the error list.
+3. In the sandbox instance, I uninstall the "Analyzers1" VSIX that still happened to be installed, and then restart VS.
+
+Expected: The same document would be open, I would still see the green squiggles, and the error list would still be populated.
+
+Actual: The same document was open, I saw the green squiggles, but the error list was empty.
+
+HeeJae thinks it's because the error list populates asynchronously, and there's a race condition where it populates the error list before the document opens. On this theory, it's irrelevant that I was using the sandbox instance, or that I uninstalled a VSIX. It's just relevant that I restarted VS while a document with squiggles was open.
+</Description>
+        <CreatedDate>27/05/2015</CreatedDate>
+        <ClosedDate>28/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5810</PullRequestID>
+        <IssueID>5768</IssueID>
+        <Title>Add null check for appconfig</Title>
+        <Description>Fixes #5767 
+
+Adds simple check to avoid generating the appconfig command line argument when the configuration is null.
+
+@rchande @dpoeschl @Pilchie  please review
+</Description>
+        <CreatedDate>07/10/2015</CreatedDate>
+        <ClosedDate>08/10/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5810</PullRequestID>
+      <File>src/Compilers/CSharp/Test/Symbol/DocumentationComments/MethodDocumentationCommentTests.cs</File>
+      <File>src/Compilers/Core/Portable/DocumentationComments/XmlDocumentationCommentTextReader.XmlStream.cs</File>
+      <File>src/Compilers/Core/Portable/DocumentationComments/XmlDocumentationCommentTextReader.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5808</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>Fix disappearing MasterDetail menu on UWP</Title>
+    <Description>### Description of Change ###
+
+Fix issue where unable to get to the Popover MasterDetail menu so unable to navigate through the app.
+
+### Issues Resolved ### 
+
+- fixes #5412
+- fixes #5637 (although not 100% certain as it doesn't have a good repro)
+
+### API Changes ###
+ 
+ None
+
+### Platforms Affected ### 
+&lt;!-- Please list all platforms affected by these changes --&gt;
+
+- UWP
+
+### Behavioral/Visual Changes ###
+&lt;!-- Describe any changes that may change how a user's app behaves or appears when upgrading to this version of the codebase. --&gt;
+
+Before: gets into a state where can't navigate.
+Now: doesn't get in that state.
+
+### Before/After Screenshots ### 
+&lt;!-- If possible, take a screenshot of your test case before these changes were made and another screenshot after the changes were made to show possible visual changes. --&gt;
+
+Added tests which include manual instructions on how to repro the issue/verify the fix.
+
+Before: (Navigating through the app could lead to hamburger menu not being displayed)
+![image](https://user-images.githubusercontent.com/189547/55554200-1e234d00-56da-11e9-952c-2b3ecb9e01dd.png)
+
+After: (Even after navigating between pages, the hamburger menu is always displayed)
+![image](https://user-images.githubusercontent.com/189547/55554255-3e530c00-56da-11e9-8333-f1d6025adcd9.png)
+
+
+### Testing Procedure ###
+&lt;!-- Please list the steps that should be taken to properly test these changes on each relevant platform. If you were unable to test these changes yourself on any or all platforms, please let us know. Also, if you are able to attach a video of your test run, you will be our personal hero. --&gt;
+
+**Only tested on UWP** as the reported issue only happens there.
+Recording of automated test run (launched from within VS)
+![Issue5412-test-run-recording](https://user-images.githubusercontent.com/189547/55556111-ad326400-56de-11e9-9bce-5f38f5c0e62a.gif)
+
+
+
+### PR Checklist ###
+
+- [x] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [x] Rebased on top of the target branch at time of PR
+- [x] Changes adhere to coding standard
+</Description>
+    <CreatedDate>04/04/2019</CreatedDate>
+    <ClosedDate>01/06/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5808</PullRequestID>
+        <IssueID>5412</IssueID>
+        <Title>Fix Roslyn EE to handle function pointers</Title>
+        <Description>Fix NullReferenceException's in the result provider when consuming
+function pointers.
+
+The VS 2015 Update 1 version of
+Microsoft.VisualStudio.Debugger.Metadata.dll adds support for functions
+pointers on the metadata api layer.  We represent it in the LMR type
+system through new api's to detect if a type is a function pointer and,
+if so, get the return type and argument types.  Currently, the result
+provider crashes because it doesn't know how to handle a pointer type
+with a null element type.  This change adds a couple of checks to
+disable expansion on function pointers, which avoids the problem.  With
+this change, the EE will simply display the memory address of the
+function pointer in the value column, with the function pointer type in
+the type column.
+
+To avoid taking a dependency on the Update 1 version of
+Microsoft.VisualStudio.Debugger.MetadataReader.dll before it ships, we
+temporarily shim Type.IsFunctionPointer() via an extension method.  The
+extension method exploits the fact that the function pointer case is the
+only time we can have a pointer type with a null element type.  Once
+Update 1 ships and the project references are updated, we can remove the
+shim layer can just call Type.IsFunctionPointer() directly.
+</Description>
+        <CreatedDate>23/09/2015</CreatedDate>
+        <ClosedDate>24/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5808</PullRequestID>
+        <IssueID>5637</IssueID>
+        <Title>Fix a few issues related to trivia generation for add/remove suppress…</Title>
+        <Description>…ion fixes from the error list. Unit tests have been added for the same.
+</Description>
+        <CreatedDate>01/10/2015</CreatedDate>
+        <ClosedDate>02/10/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5808</PullRequestID>
+      <File>src/VisualStudio/CSharp/Repl/CSharpVsInteractiveWindowProvider.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5764</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>[GTK] Fix Padding/Margin properties of Frame element (#5533)</Title>
+    <Description>Frame's content wrapped into a Gtk.Fixed container since Gtk.Frame itself can't position it's content.
+
+### Description of Change ###
+
+In FrameRenderer.cs Frame's native content wrapped into a Gtk.Fixed container since Gtk.Frame itself can't position it's content. So content view will be positioned by wrapping Gtk.Fixed.
+
+### Issues Resolved ### 
+
+- fixes #5533 
+
+### API Changes ###
+None
+
+### Platforms Affected ### 
+
+- GTK
+
+### Behavioral/Visual Changes ###
+
+Padding and margin properties will work when view is a Content of a Frame.
+
+### Before/After Screenshots ### 
+
+Before
+![before_fix](https://user-images.githubusercontent.com/3056222/55277583-0717e000-5313-11e9-95f2-96cab11e5c4e.png)
+
+After
+![after_fix](https://user-images.githubusercontent.com/3056222/55277582-04b58600-5313-11e9-9ef8-3a13d8ecdbef.png)
+
+### Testing Procedure ###
+
+Described in the issue #5533 
+
+### PR Checklist ###
+
+- [ ] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [ ] Rebased on top of the target branch at time of PR
+- [ ] Changes adhere to coding standard
+</Description>
+    <CreatedDate>30/03/2019</CreatedDate>
+    <ClosedDate>24/04/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5764</PullRequestID>
+        <IssueID>5533</IssueID>
+        <Title>#r "nuget:..." should report failures</Title>
+        <Description># r "nuget:package/version" should report failures such as not finding the package locally.
+</Description>
+        <CreatedDate>29/09/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5764</PullRequestID>
+        <IssueID>5533</IssueID>
+        <Title>#r "nuget:..." should report failures</Title>
+        <Description># r "nuget:package/version" should report failures such as not finding the package locally.
+</Description>
+        <CreatedDate>29/09/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5764</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Compilation/MemberSemanticModel.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/BindingTests.cs</File>
+      <File>src/Compilers/Core/Portable/Text/TextSpan.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5754</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>[Android/iOS] RemainingItemsThreshold and Scrolled implementation for CollectionView</Title>
+    <Description>### Description of Change ###
+
+Not sure if this is the perfect implementation, but here's my take on "load on demand" scrolling for `CollectionView` as well as scroll event notifications. Here's a [demo](https://1drv.ms/v/s!AjlbPgOcTyP2dP_tvMTJjru423E) on Android. Implementation for UWP and Tizen is left out for others.
+
+![giphy (2)](https://user-images.githubusercontent.com/16855542/55303077-c9e24980-5409-11e9-91e4-62dcd57d8b04.gif)
+
+**Note:** You should review [UICollectionViewDataSourcePrefetching](https://developer.apple.com/documentation/uikit/uicollectionviewdatasourceprefetching) that was made available with iOS 10 before merging this code. I briefly looked at it but could not figure out how `RemainingItemsThreshold` could be used with prefetching.
+
+### Issues Resolved ### 
+&lt;!-- Please use the format "fixes #xxxx" for each issue this PR addresses --&gt;
+
+- fixes #5623
+- fixes #5716 
+- fixes #4654
+- fixes #6812
+
+### API Changes ###
+Added:
+- RemainingItemsThreshold
+- RemainingItemsThresholdReached (event)
+- RemainingItemsThresholdCommand
+- Scrolled (event)
+- ScrolledEventArgs
+
+### Platforms Affected ### 
+&lt;!-- Please list all platforms affected by these changes --&gt;
+
+- Core/XAML (all platforms)
+- iOS
+- Android
+
+### Testing Procedure ###
+Added an automated test but could not get it to run due to workspace issues with the UI test projects. For example, despite setting ANDROID_HOME variable, the UI test framework still seems to be confused about the location of this variable. Please run the test and if it doesn't work, please modify it to make sure it does.
+
+### PR Checklist ###
+
+- [x] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [x] Rebased on top of the target branch at time of PR
+- [x] Changes adhere to coding standard
+</Description>
+    <CreatedDate>29/03/2019</CreatedDate>
+    <ClosedDate>25/07/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5754</PullRequestID>
+        <IssueID>5623</IssueID>
+        <Title>Equals signs in solution path causes CS1679 when calling CSC</Title>
+        <Description>Originally filed at: https://github.com/Microsoft/msbuild/issues/242
+
+It is valid for a Windows path to contain an equals ("=") sign.
+
+**Preconditions**:
+- The solution is located in a path containing an equals sign and no spaces.
+- A project in the solution references another project or a Nuget package under the solution folder.
+
+**Actual Result**
+- References are passed to `csc.exe` unquoted in the form `/reference:C:\Development\=solution=\packages\test.dll`.
+- The C# compiler returns `CS1679: Invalid extern alias for '/reference'; 'C:\Development\' is not a valid identifier`
+
+**Expected Result**
+- The solution builds without error.
+
+**Comments**
+
+When the solution path contains spaces, the Csc task encloses the paths passed to CSC `/reference` in double quotes. The issue would be resolved if all reference paths were quoted, or if reference paths containing an equals sign were quoted. Currently, CSC interprets unquoted reference paths containing an equals as aliases. I suppose the issue could be fixed in CSC (first check if the entire reference switch represents a valid path, only fall back on alias behavior if it does not), but it seems more appropriate for the Csc task to understand how to craft valid arguments to CSC.
+
+It should not be a `CSC.EXE` responsibility to uncover after the fact the difference between an alias and a path with an equals, especially because the task already knows if alias was intended. What if I want to alias a reference that has an equals in its path? It is even possible to construct a path with multiple equals signs and commandline where it is ambiguous whether alias or direct reference is intended, without quotes. The Csc task has all of the information required to construct a valid commandline. 
+</Description>
+        <CreatedDate>01/10/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5754</PullRequestID>
+        <IssueID>5716</IssueID>
+        <Title>VB Remove Unnecessary Cast should not remove necessary casts from Nothing to T?</Title>
+        <Description>Fixes #5685
+
+There are several scenarios where removing a cast from Nothing to T? can result in the value of Nothing changing. Essentially, the value uses its "nullness" and gets the default value of T. For example:
+
+``` VB
+Dim x As Integer? = If(True, DirectCast(Nothing, Integer?), 42)
+Console.Write(x)
+```
+
+In the code above, `Write` won't print anything to the console because the argument passed in is null. However, if the cast is removed, the program changes because `Nothing` gets the default value of Integer, which is 0.
+
+This change adds logic for the Nothing to T? case. Additionally, there is now code to compute the outer type for checking casts as the "other side" (i.e. the when-true and when-false) branches of a ternary conditional expression.
+
+Tagging @dotnet/mlangide 
+</Description>
+        <CreatedDate>06/10/2015</CreatedDate>
+        <ClosedDate>06/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5754</PullRequestID>
+        <IssueID>4654</IssueID>
+        <Title>UnitTests don't clean up modified SynchronizationContext</Title>
+        <Description>There are multiple unit tests (https://github.com/dotnet/roslyn/search?utf8=%E2%9C%93&amp;q=SynchronizationContext) which modify the SynchronizationContext and don't restore it when completed.
+</Description>
+        <CreatedDate>19/08/2015</CreatedDate>
+        <ClosedDate>27/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5754</PullRequestID>
+        <IssueID>6812</IssueID>
+        <Title>VS integration tests time out</Title>
+        <Description>http://dotnet-ci.cloudapp.net/job/roslyn-internal_prtest_win_vsi_p3/36/console
+</Description>
+        <CreatedDate>16/11/2015</CreatedDate>
+        <ClosedDate>30/11/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5754</PullRequestID>
+      <File>src/EditorFeatures/CSharp/Outlining/Outliners/RegionDirectiveOutliner.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Outlining/OutliningSpan.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Outlining/OutliningTaggerProvider.Tag.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Outlining/OutliningTaggerProvider.cs</File>
+      <File>src/EditorFeatures/Test/Outlining/OutliningSpanTests.cs</File>
+      <File>src/EditorFeatures/Text/Shared/Extensions/ITextSnapshotLineExtensions.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/LanguageService/AbstractLanguageService`3.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5743</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>[Shell] propagate BC to BackButtonBehavior</Title>
+    <Description>### Description of Change ###
+
+no test, as it's straightforward, and mimics #5730
+
+&lt;!-- Describe your changes here. --&gt;
+
+### Issues Resolved ### 
+&lt;!-- Please use the format "fixes #xxxx" for each issue this PR addresses --&gt;
+
+- fixes #5734
+
+### API Changes ###
+&lt;!-- List all API changes here (or just put None), example:
+
+Added:
+ - string ListView.GroupName { get; set; } //Bindable Property
+ - int ListView.GroupId { get; set; } // Bindable Property
+ - void ListView.Clear ();
+
+Changed:
+ - object ListView.SelectedItem =&gt; Cell ListView.SelectedItem
+ 
+ Removed:
+ - object ListView.SelectedItem =&gt; Cell ListView.SelectedItem
+ 
+ --&gt;
+ 
+ None
+
+### Platforms Affected ### 
+&lt;!-- Please list all platforms affected by these changes --&gt;
+
+- Core/XAML (all platforms)
+
+### Behavioral/Visual Changes ###
+&lt;!-- Describe any changes that may change how a user's app behaves or appears when upgrading to this version of the codebase. --&gt;
+
+None
+
+### Before/After Screenshots ### 
+&lt;!-- If possible, take a screenshot of your test case before these changes were made and another screenshot after the changes were made to show possible visual changes. --&gt;
+
+Not applicable
+
+### Testing Procedure ###
+&lt;!-- Please list the steps that should be taken to properly test these changes on each relevant platform. If you were unable to test these changes yourself on any or all platforms, please let us know. Also, if you are able to attach a video of your test run, you will be our personal hero. --&gt;
+
+### PR Checklist ###
+
+- [ ] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [x] Rebased on top of the target branch at time of PR
+- [x] Changes adhere to coding standard
+</Description>
+    <CreatedDate>29/03/2019</CreatedDate>
+    <ClosedDate>02/04/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5743</PullRequestID>
+        <IssueID>5730</IssueID>
+        <Title>Inline Rename: Show more of the identifier before truncating</Title>
+        <Description>![image](https://cloud.githubusercontent.com/assets/235241/10322885/b67e9526-6c34-11e5-8588-2717e7246150.png)
+
+We can remove the quotes around the original name and let WPF "..." it at the correct width instead of limiting it to 15 chars artificially.
+</Description>
+        <CreatedDate>06/10/2015</CreatedDate>
+        <ClosedDate>12/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5743</PullRequestID>
+        <IssueID>5734</IssueID>
+        <Title>Extra conversion is observed in expression trees in nullable enum equality</Title>
+        <Description>The repro:
+
+``` C#
+using System;
+using System.Linq.Expressions;
+
+namespace ConsoleApplication1
+{
+    enum YesNo
+    {
+        Yes,
+        No
+    }
+
+    class MyType
+    {
+        public string Name { get; set; }
+        public YesNo? YesNo { get; set; }
+
+        public int? Age { get; set; }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+
+            Expression&lt;Func&lt;MyType, bool&gt;&gt; expr = (MyType x) =&gt; x.YesNo == YesNo.Yes;
+            Console.WriteLine(expr.ToString());
+        }
+    }
+
+}
+```
+
+result:     
+
+```
+     x =&gt; (Convert(x.YesNo) == Convert(Convert(Yes)))
+```
+
+expected  (old compiler):
+
+```
+      x =&gt; (Convert(x.YesNo) == Convert(Yes))
+```
+</Description>
+        <CreatedDate>06/10/2015</CreatedDate>
+        <ClosedDate>08/10/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5743</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Compiler/MethodCompiler.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalyzerDriver.CompilationData.cs</File>
+      <File>src/EditorFeatures/CSharp/UseAutoProperty/CSharpUseAutoPropertyAnalyzer.cs</File>
+      <File>src/EditorFeatures/CSharp/UseAutoProperty/CSharpUseAutoPropertyCodeFixProvider.cs</File>
+      <File>src/EditorFeatures/CSharp/UseAutoProperty/CSharpUseAutoPropertyService.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/UseAutoProperty/UseAutoPropertyTests.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/AbstractEditorInlineRenameService.InlineRenameLocationSet.cs</File>
+      <File>src/Features/Core/Portable/EncapsulateField/AbstractEncapsulateFieldService.cs</File>
+      <File>src/Features/Core/Portable/UseAutoProperty/AbstractUseAutoPropertyAnalyzer.cs</File>
+      <File>src/Features/Core/Portable/UseAutoProperty/AbstractUseAutoPropertyCodeFixProvider.cs</File>
+      <File>src/Features/Core/Portable/UseAutoProperty/IUseAutoPropertyService.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Rename/CSharpRenameRewriterLanguageService.cs</File>
+      <File>src/Workspaces/Core/Portable/Rename/ConflictEngine/ConflictResolver.Session.cs</File>
+      <File>src/Workspaces/Core/Portable/Rename/ConflictEngine/ConflictResolver.cs</File>
+      <File>src/Workspaces/Core/Portable/Rename/RenameRewriterParameters.cs</File>
+      <File>src/Workspaces/Core/Portable/Rename/Renamer.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5694</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>[Core] FIX RelativeLayout layout error when only width or height specified</Title>
+    <Description>### Description of Change ###
+
+This change lets RelativeLayout to size width and height independently. For example if height constraint is unset, it will adapt to content height automatically. This is neccessary when constraining width for label with text wrapping enabled. (See screenshots in #5581)
+
+### Issues Resolved ### 
+
+- fixes #5581
+
+ None
+
+### Platforms Affected ### 
+
+- Core/XAML (all platforms)
+
+### Before/After Screenshots ### 
+
+no wrap:
+![nowrap](https://user-images.githubusercontent.com/4233752/54993388-f806fa00-4fc1-11e9-9c31-add4c67c0735.jpg)
+
+incorrect:
+
+![wrap_incorrect1](https://user-images.githubusercontent.com/4233752/54993394-f9382700-4fc1-11e9-979c-dcfb987d9224.jpg)
+![wrap_incorrect2](https://user-images.githubusercontent.com/4233752/54993395-f9382700-4fc1-11e9-8edf-e57daa128fdc.jpg)
+![wrap_incorrect3](https://user-images.githubusercontent.com/4233752/54993396-f9382700-4fc1-11e9-8f45-8ec69ed44aab.jpg)
+![wrap_incorrect4](https://user-images.githubusercontent.com/4233752/54993397-f9d0bd80-4fc1-11e9-9829-7f23e99ec093.jpg)
+
+correct:
+
+![wrap_correct1](https://user-images.githubusercontent.com/4233752/54993389-f89f9080-4fc1-11e9-95b0-b7661510fda4.jpg)
+![wrap_correct2](https://user-images.githubusercontent.com/4233752/54993391-f89f9080-4fc1-11e9-81c6-52061f9d7ae7.jpg)
+![wrap_correct3](https://user-images.githubusercontent.com/4233752/54993392-f89f9080-4fc1-11e9-9b42-324a5d39a5df.jpg)
+![wrap_correct4](https://user-images.githubusercontent.com/4233752/54993393-f9382700-4fc1-11e9-93b6-584ffe13fa1d.jpg)
+
+### Testing Procedure ###
+
+see #5581
+
+### PR Checklist ###
+
+- [ ] Has automated tests
+- [x] Rebased on top of the target branch at time of PR
+- [x] Changes adhere to coding standard
+</Description>
+    <CreatedDate>26/03/2019</CreatedDate>
+    <ClosedDate>16/08/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5694</PullRequestID>
+        <IssueID>5581</IssueID>
+        <Title>Adjustment of the fix for #4471</Title>
+        <Description>Old compiler did not insert casts for interface property accesses on generic receiver when receiver was constrained to be a class.
+
+Fixes #4471
+</Description>
+        <CreatedDate>30/09/2015</CreatedDate>
+        <ClosedDate>30/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5694</PullRequestID>
+        <IssueID>5581</IssueID>
+        <Title>Adjustment of the fix for #4471</Title>
+        <Description>Old compiler did not insert casts for interface property accesses on generic receiver when receiver was constrained to be a class.
+
+Fixes #4471
+</Description>
+        <CreatedDate>30/09/2015</CreatedDate>
+        <ClosedDate>30/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5694</PullRequestID>
+        <IssueID>5581</IssueID>
+        <Title>Adjustment of the fix for #4471</Title>
+        <Description>Old compiler did not insert casts for interface property accesses on generic receiver when receiver was constrained to be a class.
+
+Fixes #4471
+</Description>
+        <CreatedDate>30/09/2015</CreatedDate>
+        <ClosedDate>30/09/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5694</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Syntax/InternalSyntax/BinaryExpressionSyntax.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenOperators.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5691</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>Templated view GetTemplateChild(string)</Title>
+    <Description>### Description of Change ###
+
+Adds a way for templated views (i.e. ContentView, ContentPage) to get template child by name.
+
+When creating custom controls, especially more complex ones, there's the need to get an instance of an element in the template. This is because not everything can be done in the template XAML or it could be harder to achieve some UI logic in XAML than doing it in code:
+
+```
+&lt;controls:MyCustomControl... &gt;
+    &lt;controls:MyCustomControl.ControlTemplate&gt;
+         &lt;ControlTemplate&gt;
+              &lt;Label x:Name="myLabel"/&gt;
+         &lt;/ControlTemplate&gt;
+    &lt;controls:MyCustomControl.ControlTemplate&gt;
+&lt;/controls:MyCustomControl&gt;
+```
+
+```
+class MyCustomControl : TemplatedView
+{
+      Label _myLabel;
+
+       protected override OnApplyTemplate()
+       {  
+               _myLabel = GetTemplateChild("myLabel");
+       }
+}
+```
+
+This is a **very** simple example which only shows how the new OnApplyTemplate/GetTemplateChild mechanism works. In an actual app, you have different elements of the template which need to be updated (size, etc.) based on gestures, etc. Also, obviously, I usually have an implicit `Style` for the custom control with the `ControlTemplate`,  such that the control is reusable across the app.
+
+As you can see above, part of this change is also adding a virtual `OnApplyTemplate()` which `ContentView`/`ContentPage` derived classes should use when calling `GetTemplateChild()`. The `GetTemplateChild()` should be called only **after** `OnApplyTemplate()` was called. 
+
+Here's my reasoning for adding `OnApplyTemplate()`:
+
+Currently, creating the control hierarchy from the `ControlTemplate` property is synchronous, it's done as soon as `ControlTemplate` is set. Which means OnApplyTemplate is not needed.
+However, in the future, I wonder if this behavior could change. If you look to WPF/UWP, they follow this pattern. In WPF/UWP, the template visual tree is not created when you set `ControlTemplate` property, the tree is created asynchronously (I assume it's when the control actually start taking part of layout process).  See [this](https://docs.microsoft.com/en-us/dotnet/api/system.windows.frameworkelement.onapplytemplate?view=netframework-4.7.2) and [this](https://docs.microsoft.com/en-us/uwp/api/windows.ui.xaml.frameworkelement.onapplytemplate).
+
+Even if currently XF doesn't look like it needs `OnApplyTemplate()` today, if tomorrow creating the visual tree when setting the ControlTemplate is not synchronous anymore, then all apps using `GetTemplateChild()` at that point will break.
+But if you really think `OnApplyTemplate()` is really not necessary, I can remove it, and just keep `GetTemplateChild()`
+
+### Issues Resolved ### 
+&lt;!-- Please use the format "fixes #xxxx" for each issue this PR addresses --&gt;
+
+fixes #1620 
+fixes #5674
+closes #5343
+
+### API Changes ###
+&lt;!-- List all API changes here (or just put None), example:
+
+Added:
+ - static BindableObject GetTemplateChild(this IControlTemplated controlTemplated, string name)
+- protected virtual TemplatedView.OnApplyTemplate()
+- protected virtual TemplatedPage.OnApplyTemplate()
+
+ --&gt;
+ 
+ None
+
+### Platforms Affected ### 
+&lt;!-- Please list all platforms affected by these changes --&gt;
+
+- Core/XAML (all platforms)
+
+
+### Behavioral/Visual Changes ###
+&lt;!-- Describe any changes that may change how a user's app behaves or appears when upgrading to this version of the codebase. --&gt;
+
+None
+
+### Before/After Screenshots ### 
+&lt;!-- If possible, take a screenshot of your test case before these changes were made and another screenshot after the changes were made to show possible visual changes. --&gt;
+
+Not applicable
+
+### Testing Procedure ###
+&lt;!-- Please list the steps that should be taken to properly test these changes on each relevant platform. If you were unable to test these changes yourself on any or all platforms, please let us know. Also, if you are able to attach a video of your test run, you will be our personal hero. --&gt;
+
+Please check-out the unit tests I added.
+
+### PR Checklist ###
+
+- [ ] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [x] Rebased on top of the target branch at time of PR
+- [x] Changes adhere to coding standard
+</Description>
+    <CreatedDate>26/03/2019</CreatedDate>
+    <ClosedDate>06/05/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5691</PullRequestID>
+        <IssueID>1620</IssueID>
+        <Title>Porting fix for #1476 to the preview branch</Title>
+        <Description>
+        </Description>
+        <CreatedDate>26/03/2015</CreatedDate>
+        <ClosedDate>27/03/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5691</PullRequestID>
+        <IssueID>5674</IssueID>
+        <Title>[Proposal] scoped keyword for local variable</Title>
+        <Description>I suggest to add `scoped` keyword.
+It's purpose is to use variable in piece of code and hide it further.
+Image a function
+
+```
+void Work()
+{
+    bool success = PerformWork();
+    if (success)
+    {
+        PerformAdditionalWork();
+    }
+
+    Result success = Result::CreateSuccessResult();
+    SetResult(success);
+}
+```
+
+Currently it is invalid, because `success` with type `Result` override previous with type `bool`. Basic approach to place each piece of code inside of parantheses
+
+```
+void Work()
+{
+    {
+        bool success = PerformWork();
+        if (success)
+        {
+            PerformAdditionalWork();
+        }
+    }
+    {
+        Result success = Result::CreateSuccessResult();
+        SetResult(success);
+    }
+}
+```
+
+This is very ugly.
+I'd like to write like
+
+```
+void Work()
+{
+    // success variable declares here
+    scoped bool success = PerformWork();
+    if (success)
+    {
+        PerformAdditionalWork();
+    }
+    // success variable hides here. success variable now is undeclared. 
+
+    Result success = Result::CreateSuccessResult();
+    SetResult(success);
+}
+```
+
+Scoped variable visible only in next statement.
+If next statement is another scoped variable then to next statement after scoped variable.
+For example
+
+```
+void Work()
+{
+    scoped var object = GetObject();
+    scoped var anotherObject = GetAnotherObject();
+    scoped bool success = PerformWork(object, anotherObject);
+    if (success)
+    {
+        PerformAdditionalWork();
+    }
+
+    Result success = Result::CreateSuccessResult();
+    SetResult(success);
+}
+```
+</Description>
+        <CreatedDate>04/10/2015</CreatedDate>
+        <ClosedDate>06/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5691</PullRequestID>
+        <IssueID>5343</IssueID>
+        <Title>The project context navigation bar doesn't cause classification to update.</Title>
+        <Description>**Short project setup (internal only)**:
+1. Copy the `Closed\Test\Files\SharedProjectCS` directory from our internal sources to another location (e.g., Desktop.)
+2. Open `TestProj.sln`.
+3. Open `Class2.cs` from the shared project.
+
+**Long project setup (manual)**:
+1. Create a new Windows app.
+2. Add a new WindowsPhone app to the solution.
+3. Add a shared project to the solution that both Windows and WindowsPhone apps reference.
+4. Add a file to the shared project with the body:
+
+``` C#
+namespace TestNamespace
+{
+    public class TestClass
+    {
+        #if WINDOWS_PHONE_APP
+        public void PhoneMethod(bool b) { }
+        #elif WINDOWS_APP
+        public void WinMethod(int i) { }
+        #endif
+    }
+}
+```
+
+**Rest of the repro steps**:
+1. With the shared file open, verify that changing the project context navigation bar causes the classification inside the `#if/#elif/#endif` block to change.
+2. Close the shared file.
+3. Re-open the shared file.
+4. Change the project context navigation bar.
+
+**Result**:
+The classification no longer changes.
+
+_(This failure is visible in the internal-only `CSharpSharedProjects` integration test.)_
+</Description>
+        <CreatedDate>18/09/2015</CreatedDate>
+        <ClosedDate>02/03/2017</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5691</PullRequestID>
+      <File>src/Compilers/Core/Portable/MetadataReader/MetadataHelpers.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5658</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>[UWP] Allow embedding Forms page in secondary window</Title>
+    <Description>### Description of Change ###
+
+Adds a check for the existence of the Forms resources when opening a secondary window and loads them if necessary.
+
+Adds a workaround for using the correct dispatcher from Device.BeginInvokeOnMainThread when there are multiple windows present. Also adds a workaround for using multiple Tickers when multiple windows are present.
+
+### Issues Resolved ### 
+
+- helps #2229
+- closes #2432
+
+### API Changes ###
+ 
+Added `protected virtual Ticker GetTickerInstance()` to `Ticker` to allow platforms to modify the number of instances of Tickers available.
+
+### Platforms Affected ### 
+
+- Core
+- UWP
+
+### Behavioral/Visual Changes ###
+
+None
+
+### Before/After Screenshots ### 
+
+Not applicable
+
+### Testing Procedure ###
+
+On UWP, Control Gallery now includes a button to open a secondary window; it will be populated by the test page for issue 2842.
+
+We do not currently have a mechanism for automating tests in a secondary window.
+
+### PR Checklist ###
+
+- [ ] Has automated tests 
+- [x] Rebased on top of the target branch at time of PR
+- [x] Changes adhere to coding standard
+</Description>
+    <CreatedDate>21/03/2019</CreatedDate>
+    <ClosedDate>22/04/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5658</PullRequestID>
+        <IssueID>2229</IssueID>
+        <Title>Increment the compiler client pipe name if one already exists</Title>
+        <Description>There are certain cases, e.g. when a user elevates their permission
+level, when a user would like to use two concurrent compiler servers
+started from the same path, but with different processes. Since the
+current connection semantics depend on the pipe name being the hash
+of the directory containing the client exe, this is not possible.
+
+This change appends an incrementing integer to the requested pipe
+name until an available pipe is found, and changes the connection
+semantics for the client to search all pipe name variants until an
+empty one is found or it has connected.
+
+@jaredpar @pharring @VSadov @gafter @AlekseyTs 
+</Description>
+        <CreatedDate>24/04/2015</CreatedDate>
+        <ClosedDate>13/05/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5658</PullRequestID>
+        <IssueID>2432</IssueID>
+        <Title>Fix for internal bug 1132014: Implement interface generates innacessible...</Title>
+        <Description>... attributes on implemented members
+
+Fix is to remove inaccessible attributes from the generated members and its parameters.
+</Description>
+        <CreatedDate>01/05/2015</CreatedDate>
+        <ClosedDate>01/05/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5658</PullRequestID>
+      <File>src/ExpressionEvaluator/CSharp/Source/ExpressionCompiler/EvaluationContext.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/LocalsTests.cs</File>
+      <File>src/ExpressionEvaluator/Core/Test/ExpressionCompiler/MethodDebugInfo.cs</File>
+      <File>src/ExpressionEvaluator/Core/Test/ExpressionCompiler/MockSymUnmanaged.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5655</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>cellrenderer leak fixes + test</Title>
+    <Description>see #5604 + #5603 with unit test</Description>
+    <CreatedDate>21/03/2019</CreatedDate>
+    <ClosedDate>22/03/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5655</PullRequestID>
+        <IssueID>5604</IssueID>
+        <Title>Using Nullable in switch does not work as expected</Title>
+        <Description>Given the following code:
+
+&lt;code&gt;
+
+```
+long? value = 1000;
+
+  switch (value)
+  {
+    case 1000:
+      Console.WriteLine("Switch: Value is 1000");
+      break;
+    default:
+      Console.WriteLine("Switch: Value is not 1000");
+      break;
+  }
+```
+
+&lt;/code&gt;
+
+One would expect to get a printout of **Swich: Value is 1000**
+This is true in VS 2013, but not in VS 2015 when compiled with roslyn. Instead you get **Switch: Value is not 1000**.
+
+To further support the case, replacing the switch with if-else:
+
+&lt;code&gt;
+
+```
+  if (value == 1000)
+  {
+    Console.WriteLine("If: Value is 1000");
+  }
+  else
+  {
+    Console.WriteLine("If: Value is not 1000");
+  }
+```
+
+&lt;/code&gt;
+yields the expected result, i.e. the output is **If: Value is 1000**
+
+If the new switch behavior is the desired one, the code above should at least result in a compiler warning.
+</Description>
+        <CreatedDate>01/10/2015</CreatedDate>
+        <ClosedDate>20/01/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5655</PullRequestID>
+        <IssueID>5603</IssueID>
+        <Title>Make *Core projects IL-only and use win7 runtime identifier globally</Title>
+        <Description>We're in the weird situation where we want the runtime implementations for x64 on all platforms, but NuGet by default uses the PlatformTarget property to decide which runtime implementations to copy and PlatformTarget of x64 forces PE32+ emit on the compiler. To resolve this we set MSBuild to emit AnyCPU but override the NuGet defaults to our own runtime identifier.
+
+@tmat @jaredpar @TyOverby Please review
+</Description>
+        <CreatedDate>01/10/2015</CreatedDate>
+        <ClosedDate>06/10/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5655</PullRequestID>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalyzerDriver.CompilationData.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalyzerDriver.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5182</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>DetectPlatform Fixed for UWP</Title>
+    <Description>…onInfo.DeviceFamily
+
+UWP-Xbox sets TV...Surface tablets sets Desktop intead of Phone
+
+### Description of Change ###
+
+fixes #4852
+
+### Issues Resolved ### 
+
+Using previous code, it was missing platforms like Xbox which should be set as TV.
+Beside that Surface tablet PCs were getting Idiom as phone. Because ApiInformation.IsTypePresent("Windows.Phone.UI.Input.HardwareButtons")  returns false for Surface. It supposed to be Desktop not Phone as confirmed in the msdn question below. Using DeviceFamily returns Desktop. 
+
+https://social.msdn.microsoft.com/Forums/windowsapps/en-US/0b75ea16-1d2a-4997-bfa2-8cb6f73ff1e8/uwp-what-device-family-is-a-surface-tablet?forum=wpdevelop#39c5d17a-4706-4c24-b3c0-9b17ca60dd4f
+
+
+- fixes #
+
+### API Changes ###
+Running UWP app on Xbox returns Idiom as TV, Surface returns as Desktop
+ 
+### Platforms Affected ### 
+
+- UWP
+ </Description>
+    <CreatedDate>09/02/2019</CreatedDate>
+    <ClosedDate>21/03/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5182</PullRequestID>
+        <IssueID>4852</IssueID>
+        <Title>Using correct case in-sensitive comparer</Title>
+        <Description>Fixes #4782
+</Description>
+        <CreatedDate>27/08/2015</CreatedDate>
+        <ClosedDate>04/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5182</PullRequestID>
+        <IssueID>39</IssueID>
+        <Title>Recursive Debugger Crash</Title>
+        <Description>Here are my exact repro steps
+1. Clone https://github.com/madskristensen/WebEssentials2015/commit/d946b8b44aa0bf3a53b67c6a7d0922a458ca12bb (the version of WE shouldn't matter at all, unless I manage to fix F12)
+2. Run
+3. Open a Markdown file containing a C# code block:
+   
+   ``````
+   ```C#
+   int x = x = 0;
+   ```
+   ``````
+4. Set Break on unhandled exceptions
+5. Select any identifier defined in the code block and press F12
+6. Roslyn will throw an ArgumentException (the buffer is somehow getting a StaticTextContainer; I'll file that issue after I manage to debug it)
+7. Load symbols for the top two stack frames (EditorFeatures.Text &amp; VS.LangServices) from DotPeek
+8. Launch a third copy of VS, set Break On Exceptions, and attach to the original (debugger) copy
+9. Open either of the top two stack frames
+10. The debugger will crash with a null reference in vsdebugeng.manimpl.dll
+11. Close the exception dialog in the third copy
+12. Watch it crash too
+</Description>
+        <CreatedDate>19/01/2015</CreatedDate>
+        <ClosedDate>11/02/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5182</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/CommandLine/CSharpCompiler.cs</File>
+      <File>src/Compilers/CSharp/Test/CommandLine/CommandLineScriptTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/CSharpCompilationOptionsTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/CompilationAPITests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/ReferenceManagerTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/CompilationCreationTests.cs</File>
+      <File>src/Compilers/Core/CodeAnalysisTest/FileSystem/RelativePathResolverTests.cs</File>
+      <File>src/Compilers/Core/CodeAnalysisTest/MetadataFileReferenceResolverTests.cs</File>
+      <File>src/Compilers/Core/CodeAnalysisTest/TextLineSpanTest.cs</File>
+      <File>src/Compilers/Core/Portable/AssemblyReferenceResolver.cs</File>
+      <File>src/Compilers/Core/Portable/CommandLine/CommonCommandLineArguments.cs</File>
+      <File>src/Compilers/Core/Portable/CommandLine/CommonCompiler.ExistingReferencesResolver.cs</File>
+      <File>src/Compilers/Core/Portable/CommandLine/CommonCompiler.LoggingMetadataFileReferenceResolver.cs</File>
+      <File>src/Compilers/Core/Portable/CommandLine/CommonCompiler.LoggingMetadataFileResolver.cs</File>
+      <File>src/Compilers/Core/Portable/CommandLine/CommonCompiler.LoggingSourceFileResolver.cs</File>
+      <File>src/Compilers/Core/Portable/CommandLine/CommonCompiler.LoggingStrongNameProvider.cs</File>
+      <File>src/Compilers/Core/Portable/CommandLine/CommonCompiler.LoggingXmlFileResolver.cs</File>
+      <File>src/Compilers/Core/Portable/CommandLine/CommonCompiler.cs</File>
+      <File>src/Compilers/Core/Portable/FileSystem/RelativePathResolver.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataFileReferenceResolver.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataReference/MetadataFileReferenceProvider.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataReference/UnresolvedMetadataReference.cs</File>
+      <File>src/Compilers/Core/Portable/RelativePathReferenceResolver.cs</File>
+      <File>src/Compilers/Core/VBCSCompiler/CSharpCompilerServer.cs</File>
+      <File>src/Compilers/Core/VBCSCompiler/CompilerRequestHandler.cs</File>
+      <File>src/Compilers/Core/VBCSCompiler/MetadataCache.cs</File>
+      <File>src/Compilers/Core/VBCSCompiler/VisualBasicCompilerServer.cs</File>
+      <File>src/Compilers/Helpers/GlobalAssemblyCacheHelpers/GacFileResolver.cs</File>
+      <File>src/EditorFeatures/CSharp/Completion/FileSystem/LoadDirectiveCompletionProvider.cs</File>
+      <File>src/EditorFeatures/CSharp/Completion/FileSystem/ReferenceDirectiveCompletionProvider.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/AddUsing/AddUsingTests.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/FileSystem/CurrentWorkingDirectoryDiscoveryService.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/FileSystem/FileSystemCompletionHelper.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/FileSystem/ICurrentWorkingDirectoryDiscoveryService.cs</File>
+      <File>src/EditorFeatures/Test/Workspaces/TestWorkspaceFactory_XmlConsumption.cs</File>
+      <File>src/Interactive/EditorFeatures/CSharp/Interactive/CSharpInteractiveEvaluator.cs</File>
+      <File>src/Interactive/EditorFeatures/Core/Extensibility/Interactive/InteractiveEvaluator.cs</File>
+      <File>src/Interactive/EditorFeatures/Core/Extensibility/Interactive/NuGetPackageResolverImpl.cs</File>
+      <File>src/Interactive/Features/Interactive/Core/HostObject/SynchronizedVersionedList.cs</File>
+      <File>src/Interactive/Features/Interactive/Core/InteractiveHost.Service.cs</File>
+      <File>src/Interactive/Features/Interactive/Core/InteractiveHost.cs</File>
+      <File>src/Interactive/Features/Interactive/Core/RemoteExecutionResult.cs</File>
+      <File>src/Interactive/HostTest/InteractiveHostTests.cs</File>
+      <File>src/Interactive/csi/Csi.cs</File>
+      <File>src/Scripting/CSharp/CSharpScript.cs</File>
+      <File>src/Scripting/CSharp/CSharpScriptCompiler.cs</File>
+      <File>src/Scripting/CSharpTest.Desktop/InteractiveSessionTests.cs</File>
+      <File>src/Scripting/CSharpTest/InteractiveSessionTests.cs</File>
+      <File>src/Scripting/CSharpTest/ScriptTests.cs</File>
+      <File>src/Scripting/Core/DesktopMetadataReferenceResolver.cs</File>
+      <File>src/Scripting/Core/MetadataFileReferenceResolver.cs</File>
+      <File>src/Scripting/Core/Resolvers/NuGetPackageResolver.cs</File>
+      <File>src/Scripting/Core/Resolvers/RuntimeMetadataReferenceResolver.cs</File>
+      <File>src/Scripting/Core/Script.cs</File>
+      <File>src/Scripting/Core/ScriptOptions.cs</File>
+      <File>src/Scripting/Core/ScriptingResources.Designer.cs</File>
+      <File>src/Scripting/CoreTest.Desktop/GlobalAssemblyCacheTests.cs</File>
+      <File>src/Scripting/CoreTest/ScriptOptionsTests.cs</File>
+      <File>src/Test/Utilities/Shared/Mocks/TestDocumentationCommentProvider.cs</File>
+      <File>src/Test/Utilities/Shared/Mocks/TestMetadataReferenceResolver.cs</File>
+      <File>src/Test/Utilities/Shared/Mocks/VirtualizedRelativePathResolver.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/ProjectSystemShim/CSharpProjectShim.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/ProjectSystemShim/TempPECompilerService.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/ProjectSystem/AbstractProject.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/ProjectSystem/MetadataReferences/VisualStudioMetadataReferenceProviderServiceFactory.cs</File>
+      <File>src/VisualStudio/InteractiveServices/Interactive/ResetInteractive.cs</File>
+      <File>src/Workspaces/Core/Desktop/Workspace/CommandLineProject.cs</File>
+      <File>src/Workspaces/Core/Desktop/Workspace/MSBuild/MSBuildProjectLoader.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Host/Metadata/IMetadataService.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Host/Metadata/MetadataServiceFactory.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Host/Metadata/WorkspaceMetadataFileReferenceResolver.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5145</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>[iOS] fix accessibility of Picker</Title>
+    <Description>### Description of Change ###
+
+Pickers reads like a Button. This is part of PR #3955
+
+### Issues Resolved ### 
+
+- partially fixes #3454
+
+### API Changes ###
+ 
+ None
+
+### Platforms Affected ### 
+
+- iOS
+
+### Behavioral/Visual Changes ###
+
+None
+
+### Before/After Screenshots ### 
+
+Before
+![screenshot_20](https://user-images.githubusercontent.com/27482193/52339356-e96a8080-2a1d-11e9-8f8b-f5356b01814b.png)
+
+After
+![screenshot_19](https://user-images.githubusercontent.com/27482193/52338214-cee2d800-2a1a-11e9-8abd-f3d235538a40.png)
+
+
+### Testing Procedure ###
+
+- start `PickerGallery - Legacy` in ControlGallery
+- run `Accessibility Inspector` or `VoiceOver`
+- picker type should be like a button
+
+
+### PR Checklist ###
+
+- [ ] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [x] Rebased on top of the target branch at time of PR
+- [x] Changes adhere to coding standard
+</Description>
+    <CreatedDate>06/02/2019</CreatedDate>
+    <ClosedDate>22/08/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5145</PullRequestID>
+        <IssueID>3955</IssueID>
+        <Title>Several refactorings to rework the internal Completion List API</Title>
+        <Description>- Convert the `ICompletionProvider` interface to a `CompletionListProvider` abstract class.
+- Rename `CompletionItemGroup` to `CompletionList`
+- Introduce a `CompletionListContext` type to be used by providers to specify the contents and
+  details of CompletionLists with a `RegisterCompletionListAsync()` method.
+- Change `GetGroupsAsync()` method to `GetCompletionListAsync()`, which returns `Task&lt;CompletionList&gt;` rather
+  than `Task&lt;IEnumerable&lt;CompletionList&gt;&gt;`.
+- Move code that merges, de-dupes and sorts completion lists from the controller into the
+  completion service. This affected a few VB spell check unit tests which now change their ordering
+  slightly.
+</Description>
+        <CreatedDate>14/07/2015</CreatedDate>
+        <ClosedDate>16/07/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5145</PullRequestID>
+        <IssueID>3454</IssueID>
+        <Title>MSBuildWorkspace unable to load compiler task</Title>
+        <Description>Now that we removed `Microsoft.Build.Tasks.CodeAnalysis.dll` from the GAC, standalone apps that try to use `MSBuildWorkspace` need a way to find and load it.
+</Description>
+        <CreatedDate>11/06/2015</CreatedDate>
+        <ClosedDate>17/06/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5145</PullRequestID>
+      <File>src/Interactive/EditorFeatures/Core/Extensibility/Interactive/InteractiveEvaluator.cs</File>
+      <File>src/Interactive/Features/Interactive/Core/InteractiveHost.LazyRemoteService.cs</File>
+      <File>src/Interactive/Features/Interactive/Core/InteractiveHost.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5086</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>[XamlC] Resolve complex property type</Title>
+    <Description>### Description of Change ###
+
+`Xamarin.Forms.Build.Tasks.PropertyDefinitionExtensions` couldn't resolve complex property types covered by #4061 and #4776 for `Xamarin.Forms.Build.Tasks.TypeReferenceExtensions.ResolveGenericParameters`. By contrast, `ResolveGenericParameters` cannot resolve a generic parameter given as an argument while `PropertyDefinitionExtensions`. It is actually not clear whether any caller gives `ResolveGenericParameters` such an argument or not.
+
+This change lets `ResolveGenericParameters` consider about the case, and replaces the uses of `PropertyDefinitionExtensions` with `ResolveGenericParameters`.
+
+### Issues Resolved ### 
+&lt;!-- Please use the format "fixes #xxxx" for each issue this PR addresses --&gt;
+
+None
+
+### API Changes ###
+&lt;!-- List all API changes here (or just put None), example:
+
+Added:
+ - string ListView.GroupName { get; set; } //Bindable Property
+ - int ListView.GroupId { get; set; } // Bindable Property
+ - void ListView.Clear ();
+
+Changed:
+ - object ListView.SelectedItem =&gt; Cell ListView.SelectedItem
+ 
+ Removed:
+ - object ListView.SelectedItem =&gt; Cell ListView.SelectedItem
+ 
+ --&gt;
+ 
+ None
+
+### Platforms Affected ### 
+&lt;!-- Please list all platforms affected by these changes --&gt;
+
+- Core/XAML (all platforms)
+
+### Behavioral/Visual Changes ###
+&lt;!-- Describe any changes that may change how a user's app behaves or appears when upgrading to this version of the codebase. --&gt;
+
+None
+
+### Before/After Screenshots ### 
+&lt;!-- If possible, take a screenshot of your test case before these changes were made and another screenshot after the changes were made to show possible visual changes. --&gt;
+
+Not applicable
+
+### Testing Procedure ###
+&lt;!-- Please list the steps that should be taken to properly test these changes on each relevant platform. If you were unable to test these changes yourself on any or all platforms, please let us know. Also, if you are able to attach a video of your test run, you will be our personal hero. --&gt;
+
+### PR Checklist ###
+
+- [X] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [X] Rebased on top of the target branch at time of PR
+- [X] Changes adhere to coding standard
+</Description>
+    <CreatedDate>29/01/2019</CreatedDate>
+    <ClosedDate>15/03/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5086</PullRequestID>
+        <IssueID>4061</IssueID>
+        <Title>Syntax Visualizer VSIX package link is broken</Title>
+        <Description>Link in wiki on [Syntax-Visualizer](https://github.com/dotnet/roslyn/wiki/Syntax-Visualizer#syntax-visualizers) needs to be fixed to point to the [.NET Compiler Platform SDK](https://visualstudiogallery.msdn.microsoft.com/2ddb7240-5249-4c8c-969e-5d05823bcb89) extension which contains the Syntax Visualizer (or some better alternative).
+</Description>
+        <CreatedDate>22/07/2015</CreatedDate>
+        <ClosedDate>22/07/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5086</PullRequestID>
+        <IssueID>4776</IssueID>
+        <Title>On a blank line at the end of a submission, ctrl-a selects only that line</Title>
+        <Description>```
+&gt; 
+. 
+. 
+```
+
+On the last line, hit `ctrl-a`.
+
+Expected: The whole submission is selected.
+Actual: The last line is selected.
+</Description>
+        <CreatedDate>25/08/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5086</PullRequestID>
+      <File>src/InteractiveWindow/VisualStudio/InteractiveWindowPackage.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>4915</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>Unify the image handling</Title>
+    <Description>### Description of Change ###
+
+This is now a big PR that changes everything to use `ImageSource` instead of strings, files or other image-y types.
+
+**NOTE: This is a set of breaking changes as the property types have changed!** 
+__NOTE: The changes to the public API can be reverted temporarily as it is going down a level. As a result, all the code will still be valid.__
+
+### Issues Resolved ### 
+
+ - Fixes the inconsistency with image source types.
+ - Fixes #3207 
+- Fixes #4689
+
+### Known Issues ###
+https://github.com/xamarin/Xamarin.Forms/issues/6004
+https://github.com/xamarin/Xamarin.Forms/issues/6010
+regresses #4597 on API 19 (#6061)
+
+### API Changes ###
+
+Added:
+
+```
+class ImageSource {
+    // Returns true if this image source is actually not going to return anything
+    // It is not going to determine if the result will actually have a valid image, but 
+    // rather it will indicate if there is no file path, or if the stream is null, or if 
+    / the uri is empty
+    public virtual bool IsEmpty { get; }
+}
+```
+
+Changed the property types to `ImageSource` for the following properties:
+
+```csharp
+Button.Image // from FileImageSource
+MenuItem.Icon // from FileImageSource
+NavigationPage.TitleIcon // from FileImageSource (this also had the static getter/setter method for the attached property)
+Page.BackgroundImage // from string
+Page.Icon // from FileImageSource
+Slider.ThumbImage // from FileImageSource
+```
+
+As a result of things changing, I also changed the name of `ImageElement.FileImageProperty` to `ImageProperty`. This should not affect anyone as it was internal.
+
+### Platforms Affected ### 
+
+All the platforms. Everything.
+
+### Behavioral/Visual Changes ###
+
+None.
+
+### Before/After Screenshots ### 
+
+Not applicable
+
+### Testing Procedure ###
+
+Enable the `SetMainPage(new ImageSourcesGallery());` in the gallery app and make sure all the buttons do what they are supposed to do.
+
+### PR Checklist ###
+
+- [ ] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [ ] Rebased on top of the target branch at time of PR
+- [ ] Changes adhere to coding standard</Description>
+    <CreatedDate>07/01/2019</CreatedDate>
+    <ClosedDate>26/04/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>4915</PullRequestID>
+        <IssueID>3207</IssueID>
+        <Title>Consider making EffectiveTypeNoUseSiteDiagnostics public </Title>
+        <Description>The [EffectiveTypeNoUseSiteDiagnostics](http://source.roslyn.codeplex.com/#Microsoft.CodeAnalysis.CSharp/Symbols/TypeSymbol.cs,246) property on the [TypeSymbol](http://source.roslyn.codeplex.com/#Microsoft.CodeAnalysis.CSharp/Symbols/TypeSymbol.cs#21) class seems like an incredibly useful, powerful and already existing thing to have when dealing with type parameters, since there is no real other non-internal way to obtain the effective/constrained underlying type of a symbol. I know that I found myself more that once in need of having that information, especially when dealing with generic methods. It just looks to me like there would be only benefits to exposing this property publicly. 
+</Description>
+        <CreatedDate>31/05/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>4915</PullRequestID>
+        <IssueID>4689</IssueID>
+        <Title>Don't show "Reset C# Interactive from Project" command for now...</Title>
+        <Description>We're not targeting this scenario for Milestone 1.1, so we should disable the command for now (also, it doesn't work well in current builds...you cannot type after the reset...).
+</Description>
+        <CreatedDate>20/08/2015</CreatedDate>
+        <ClosedDate>14/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>4915</PullRequestID>
+        <IssueID>4597</IssueID>
+        <Title>Xml doc comment for ManagedCompiler.GenerateResponseFileCommands is wrong</Title>
+        <Description>From [ManagedCompiler.cs](https://github.com/dotnet/roslyn/blob/cedbe7b83c22ec64c872cd0622d8fe2b359c5ae1/src/Compilers/Core/MSBuildTask/ManagedCompiler.cs#L510):
+
+``` csharp
+/// &lt;summary&gt; 
+/// Returns the command line switch used by the tool executable to specify the response file 
+/// Will only be called if the task returned a non empty string from GetResponseFileCommands 
+/// Called after ValidateParameters, SkipTaskExecution and GetResponseFileCommands 
+/// &lt;/summary&gt; 
+protected override string GenerateResponseFileCommands() 
+{ 
+    CommandLineBuilderExtension commandLineBuilder = new CommandLineBuilderExtension(); 
+    AddResponseFileCommands(commandLineBuilder); 
+    return commandLineBuilder.ToString(); 
+} 
+```
+
+The summary comment claims the method returns the command line switch used to introduce a response file. But in fact it seems to return the contents of the response file. 
+It also mentions a `GetResponseFileCommands` method that doesn't appear to be defined anywhere.
+</Description>
+        <CreatedDate>17/08/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>4915</PullRequestID>
+        <IssueID>6061</IssueID>
+        <Title>Show valid attribute locations for warning C0658</Title>
+        <Description>Warning C0657 shows valid attribute locations when a recognized but invalid location is used.
+
+Warning C0658 should also show valid attribute locations 
+
+Repro: 
+
+```
+using System;
+
+[AttributeUsage(AttributeTargets.All)] 
+public class All : Attribute {}
+
+public class C {
+    [field : All]
+    [foo : All]
+    public void M() {}
+}
+```
+
+Following warnings are reported:
+
+```
+(6,5,6,10): Warning CS0657: 'field' is not a valid attribute location for this declaration. Valid attribute locations for this declaration are 'method, return'. All attributes in this block will be ignored.
+(7,5,7,8): Warning CS0658: 'foo' is not a recognized attribute location. All attributes in this block will be ignored.
+```
+</Description>
+        <CreatedDate>16/10/2015</CreatedDate>
+        <ClosedDate>21/11/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>4915</PullRequestID>
+      <File>src/VisualStudio/Core/Impl/RoslynVisualStudioWorkspace.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>4911</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>[AND] Fix opening of multiple Picker dialogs</Title>
+    <Description>### Description of Change ###
+
+As described in #4909, when the end-user is fast enough, it is possible to open multiple Picker dialogs. This PR fixes that.
+
+### Issues Resolved ### 
+&lt;!-- Please use the format "fixes #xxxx" for each issue this PR addresses --&gt;
+
+- fixes #4909
+
+### API Changes ###
+&lt;!-- List all API changes here (or just put None), example:
+
+Added:
+ - string ListView.GroupName { get; set; } //Bindable Property
+ - int ListView.GroupId { get; set; } // Bindable Property
+ - void ListView.Clear ();
+
+Changed:
+ - object ListView.SelectedItem =&gt; Cell ListView.SelectedItem
+ 
+ Removed:
+ - object ListView.SelectedItem =&gt; Cell ListView.SelectedItem
+ 
+ --&gt;
+ 
+ None
+
+### Platforms Affected ### 
+&lt;!-- Please list all platforms affected by these changes --&gt;
+
+- Android
+
+### Behavioral/Visual Changes ###
+&lt;!-- Describe any changes that may change how a user's app behaves or appears when upgrading to this version of the codebase. --&gt;
+
+None
+
+### Before/After Screenshots ### 
+&lt;!-- If possible, take a screenshot of your test case before these changes were made and another screenshot after the changes were made to show possible visual changes. --&gt;
+
+Not applicable
+
+### Testing Procedure ###
+&lt;!-- Please list the steps that should be taken to properly test these changes on each relevant platform. If you were unable to test these changes yourself on any or all platforms, please let us know. Also, if you are able to attach a video of your test run, you will be our personal hero. --&gt;
+
+### PR Checklist ###
+
+- [ ] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [x] Rebased on top of the target branch at time of PR
+- [x] Changes adhere to coding standard
+</Description>
+    <CreatedDate>07/01/2019</CreatedDate>
+    <ClosedDate>12/02/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>4911</PullRequestID>
+        <IssueID>4909</IssueID>
+        <Title>Move remaining InteractiveWindow behavior to the UI thread</Title>
+        <Description>Fixes #4044.
+</Description>
+        <CreatedDate>01/09/2015</CreatedDate>
+        <ClosedDate>01/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>4911</PullRequestID>
+        <IssueID>4909</IssueID>
+        <Title>Move remaining InteractiveWindow behavior to the UI thread</Title>
+        <Description>Fixes #4044.
+</Description>
+        <CreatedDate>01/09/2015</CreatedDate>
+        <ClosedDate>01/09/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>4911</PullRequestID>
+      <File>src/InteractiveWindow/Editor/History.cs</File>
+      <File>src/InteractiveWindow/Editor/InteractiveWindow_UIThread.cs</File>
+      <File>src/InteractiveWindow/EditorTest/InteractiveWindowTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>4865</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>[iOS] CollectionView item replacement on iOS</Title>
+    <Description>### Description of Change ###
+
+Replace items on iOS
+
+### Issues Resolved ### 
+
+- implements item replacement from #3172
+
+### API Changes ###
+
+ None
+
+### Platforms Affected ### 
+
+- iOS
+
+### Before/After Screenshots ### 
+
+![2018-12-26_12-46-22 1](https://user-images.githubusercontent.com/538025/50455665-d6d43600-090c-11e9-884f-4134c56b381a.gif)
+
+### Testing Procedure ###
+
+Automated tests will be available once #4697 is merged.
+
+### PR Checklist ###
+
+- [ ] Has automated tests 
+- [x] Rebased on top of the target branch at time of PR
+- [x] Changes adhere to coding standard
+</Description>
+    <CreatedDate>26/12/2018</CreatedDate>
+    <ClosedDate>16/01/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>4865</PullRequestID>
+        <IssueID>3172</IssueID>
+        <Title>guard from bad extension where it returns null for async method.</Title>
+        <Description>
+        </Description>
+        <CreatedDate>29/05/2015</CreatedDate>
+        <ClosedDate>29/05/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>4865</PullRequestID>
+        <IssueID>4697</IssueID>
+        <Title>Using await in an object initializer within an async lambda crashes the compiler.</Title>
+        <Description>Description: We're experiencing a compiler crash, "error MSB6006: "csc.exe" exited with code -2146232797." when we await a task inside of an object initializer within an async lambda. 
+
+The minimal code for reproducing is below:
+
+``` cs
+using System;
+using System.Threading.Tasks;
+
+namespace CompilerCrashRepro2
+{
+    public class Item&lt;T&gt;
+    {
+        public T Value { get; set; }
+    }
+
+    public class Crasher
+    {
+
+public static Func&lt;Task&lt;Item&lt;T&gt;&gt;&gt; Build&lt;T&gt;()
+{
+    return async () =&gt; new Item&lt;T&gt;()
+    {
+        Value = await GetValue&lt;T&gt;()
+    };
+}
+
+        public static Task&lt;T&gt; GetValue&lt;T&gt;()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
+```
+
+Migrated from TFS/DevDiv 1210325
+</Description>
+        <CreatedDate>20/08/2015</CreatedDate>
+        <ClosedDate>15/09/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>4865</PullRequestID>
+      <File>src/EditorFeatures/Core/Extensibility/Composition/OrderableLanguageAndRoleMetadata.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/AsyncCompletionService.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Controller.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Controller_TypeChar.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/QuickInfo/Controller.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/SignatureHelp/Controller.cs</File>
+      <File>src/EditorFeatures/Core/Shared/Extensions/HostWorkspaceServicesExtensions.cs</File>
+      <File>src/EditorFeatures/Test/AbstractCommandHandlerTestState.cs</File>
+      <File>src/Interactive/EditorFeatures/CSharp/Completion/CompletionProviders/ReplCommandCompletionProvider.cs</File>
+      <File>src/InteractiveWindow/Editor/Commands/CommandClassifierProvider.cs</File>
+      <File>src/InteractiveWindow/Editor/Output/OutputClassifierProvider.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>4863</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>[iOS] Implement item move on iOS CollectionView</Title>
+    <Description>### Description of Change ###
+
+&lt;!-- Describe your changes here. --&gt;
+
+### Issues Resolved ### 
+&lt;!-- Please use the format "fixes #xxxx" for each issue this PR addresses --&gt;
+
+- implements item movement in observable collection for #3172
+
+### API Changes ###
+
+ None
+
+### Platforms Affected ### 
+
+- iOS
+
+### Behavioral/Visual Changes ###
+
+![2018-12-26_11-46-00 2](https://user-images.githubusercontent.com/538025/50454364-43970280-0904-11e9-9d5d-a8c096ca0a1b.gif)
+
+### Testing Procedure ###
+
+Automated tests will be available once #4697 is merged.
+
+### PR Checklist ###
+
+- [ ] Has automated tests 
+- [x] Rebased on top of the target branch at time of PR
+- [x] Changes adhere to coding standard
+</Description>
+    <CreatedDate>26/12/2018</CreatedDate>
+    <ClosedDate>07/01/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>4863</PullRequestID>
+        <IssueID>3172</IssueID>
+        <Title>guard from bad extension where it returns null for async method.</Title>
+        <Description>
+        </Description>
+        <CreatedDate>29/05/2015</CreatedDate>
+        <ClosedDate>29/05/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>4863</PullRequestID>
+        <IssueID>4697</IssueID>
+        <Title>Using await in an object initializer within an async lambda crashes the compiler.</Title>
+        <Description>Description: We're experiencing a compiler crash, "error MSB6006: "csc.exe" exited with code -2146232797." when we await a task inside of an object initializer within an async lambda. 
+
+The minimal code for reproducing is below:
+
+``` cs
+using System;
+using System.Threading.Tasks;
+
+namespace CompilerCrashRepro2
+{
+    public class Item&lt;T&gt;
+    {
+        public T Value { get; set; }
+    }
+
+    public class Crasher
+    {
+
+public static Func&lt;Task&lt;Item&lt;T&gt;&gt;&gt; Build&lt;T&gt;()
+{
+    return async () =&gt; new Item&lt;T&gt;()
+    {
+        Value = await GetValue&lt;T&gt;()
+    };
+}
+
+        public static Task&lt;T&gt; GetValue&lt;T&gt;()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
+```
+
+Migrated from TFS/DevDiv 1210325
+</Description>
+        <CreatedDate>20/08/2015</CreatedDate>
+        <ClosedDate>15/09/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>4863</PullRequestID>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb.Tests/MethodMapTests.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb.Tests/SymBinderTests.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb.Tests/TestHelpers/AssertEx.cs</File>
+      <File>src/Debugging/Microsoft.DiaSymReader.PortablePdb/SymBinder.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>4850</IssueID>
+    <RepoID>xamarinforms</RepoID>
+    <Title>Changed Span default binding to OneWay</Title>
+    <Description>### Description of Change ###
+
+Many have been bitten, including the undersigned, because of Span's default binding to OneTime:
+See #2177, but also https://github.com/xamarin/Xamarin.Forms/issues/4451#issuecomment-449577935
+
+A very good and lengthy description is in #3167
+
+&lt;!-- Describe your changes here. --&gt;
+
+### Issues Resolved ### 
+&lt;!-- Please use the format "fixes #xxxx" for each issue this PR addresses --&gt;
+
+- fixes #3167
+
+### API Changes ###
+Changed TextProperty default binding mode from OneTime to OneWay.
+
+### Platforms Affected ### 
+&lt;!-- Please list all platforms affected by these changes --&gt;
+
+- Core/XAML (all platforms)
+
+### Behavioral/Visual Changes ###
+&lt;!-- Describe any changes that may change how a user's app behaves or appears when upgrading to this version of the codebase. --&gt;
+
+None
+
+### Before/After Screenshots ### 
+&lt;!-- If possible, take a screenshot of your test case before these changes were made and another screenshot after the changes were made to show possible visual changes. --&gt;
+
+Not applicable
+
+### Testing Procedure ###
+&lt;!-- Please list the steps that should be taken to properly test these changes on each relevant platform. If you were unable to test these changes yourself on any or all platforms, please let us know. Also, if you are able to attach a video of your test run, you will be our personal hero. --&gt;
+
+### PR Checklist ###
+
+- [ ] Has automated tests &lt;!-- (if tests are omitted or manual, state reason in description) --&gt;
+- [x] Rebased on top of the target branch at time of PR
+- [x] Changes adhere to coding standard
+</Description>
+    <CreatedDate>23/12/2018</CreatedDate>
+    <ClosedDate>18/01/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>4850</PullRequestID>
+        <IssueID>2177</IssueID>
+        <Title>Please let "stackalloc" be safe code and allow initialization to follow it</Title>
+        <Description>For example:
+int a[]=stackalloc int[]{0,1,2,3};//a[0]=0,a[1]=1,a[2]=2,a[3]=3
+</Description>
+        <CreatedDate>22/04/2015</CreatedDate>
+        <ClosedDate>30/06/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>4850</PullRequestID>
+        <IssueID>3167</IssueID>
+        <Title>StackOverflowException in AbstractTypeParameterChecker</Title>
+        <Description>...while checking EmbeddedTypesManagers TEmbeddedTypesManager type parameter (which is constrained to EmbeddedTypesManager).
+
+http://source.roslyn.io/#Microsoft.CodeAnalysis/Emit/NoPia/EmbeddedTypesManager.cs,59199726cf1d929b
+
+Impact is limited since we (effectively) only check type parameters in asserts (i.e. Release builds are unaffected).
+</Description>
+        <CreatedDate>29/05/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>4850</PullRequestID>
+        <IssueID>3167</IssueID>
+        <Title>StackOverflowException in AbstractTypeParameterChecker</Title>
+        <Description>...while checking EmbeddedTypesManagers TEmbeddedTypesManager type parameter (which is constrained to EmbeddedTypesManager).
+
+http://source.roslyn.io/#Microsoft.CodeAnalysis/Emit/NoPia/EmbeddedTypesManager.cs,59199726cf1d929b
+
+Impact is limited since we (effectively) only check type parameters in asserts (i.e. Release builds are unaffected).
+</Description>
+        <CreatedDate>29/05/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>4850</PullRequestID>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalysisState.PerAnalyzerState.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalysisState.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalyzerDriver.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/HostAnalyzerManager.cs</File>
+    </Files>
+  </PullRequest>
+</PullRequests>

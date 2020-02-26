@@ -1,0 +1,797 @@
+<PullRequests>
+  <PullRequest>
+    <IssueID>18451</IssueID>
+    <RepoID>aspnetcore</RepoID>
+    <Title>Added Write/WriteLine ReadOnlySpan/ReadOnlyMemory overrides to HttpResponseStreamWriter</Title>
+    <Description>Fixes #2895
+
+Based on #18445. Will rebase and mark ready for review once that one is merged.
+</Description>
+    <CreatedDate>19/01/2020</CreatedDate>
+    <ClosedDate>09/02/2020</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>18451</PullRequestID>
+        <IssueID>2895</IssueID>
+        <Title>Fix nulls in AnalyzerDependencyChecker</Title>
+        <Description>Currently we use a `Task.FromResult(null)` as a sentinel task before a
+real dependency check has been queued up. This works fine until we try
+to access the results of this task, and things blow up.
+
+Instead, we should create an AnalyzerDependecyResults.Empty singleton,
+and create a task from that.
+
+Also, this change catches all exceptions coming out of
+`AnalyzerDependencyChecker`, to avoid bringing down VS.
+
+@heejaechang @srivatsn @mavasani @ManishJayaswal @jmarolf @shyamnamboodiripad Could you take a look, please?
+</Description>
+        <CreatedDate>19/05/2015</CreatedDate>
+        <ClosedDate>19/05/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>18451</PullRequestID>
+        <IssueID>18445</IssueID>
+        <Title>More work organizing code related to finding symbols.</Title>
+        <Description>
+        </Description>
+        <CreatedDate>05/04/2017</CreatedDate>
+        <ClosedDate>05/04/2017</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>18451</PullRequestID>
+      <File>src/Workspaces/Core/Portable/FindSymbols/SymbolFinder_FindLiteralReferences.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/SymbolFinder_FindReferences_Current.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/SymbolFinder_Remote.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>18450</IssueID>
+    <RepoID>aspnetcore</RepoID>
+    <Title>Remove Unsafe from ChunkWriter</Title>
+    <Description>Uses dotnet/runtime#1644 (not merged) to eliminate the bounds checks
+
+Contributes to #4720
+
+/cc @EgorBo @davidfowl </Description>
+    <CreatedDate>19/01/2020</CreatedDate>
+    <ClosedDate>22/01/2020</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>18450</PullRequestID>
+        <IssueID>1644</IssueID>
+        <Title>make workspace event to be fired from background thread</Title>
+        <Description>currently, it fires events using synchronizationcontext where workspace is first created, in VS case, it is always UI thread.
+
+we should just make the event to be fired from background thread (TaskScheulder.Default) and make each listener to have its own queue, so that events are fired concurrently for each listener but sequentially per listener. 
+</Description>
+        <CreatedDate>27/03/2015</CreatedDate>
+        <ClosedDate>03/11/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>18450</PullRequestID>
+        <IssueID>4720</IssueID>
+        <Title>C# auto-formats property getter on new line instead of leaving it on a single line</Title>
+        <Description>**Steps to Reproduce**
+1.  Type the following:
+
+``` csharp
+        public Int32 PaymentMethodID
+        {
+            [System.Diagnostics.DebuggerStepThrough]
+            get { return 10; }
+        }
+```
+1. Press Ctrl + K, D
+
+**Expected**
+It remains the same.
+**Actual**
+There is a new line added after get and the open brace { which did not happen in VS 2013.
+
+``` csharp
+        public Int32 PaymentMethodID
+        {
+            [System.Diagnostics.DebuggerStepThrough]
+            get
+            { return 10; }
+        }
+```
+</Description>
+        <CreatedDate>21/08/2015</CreatedDate>
+        <ClosedDate>23/10/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>18450</PullRequestID>
+      <File>src/Workspaces/Core/Portable/FindSymbols/SymbolFinder_Declarations_CustomQueries.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/SymbolFinder_Declarations_SourceDeclarations.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>10924</IssueID>
+    <RepoID>aspnetcore</RepoID>
+    <Title>Cleanup in Identity tests</Title>
+    <Description>Fixes #10671 by using updated EF API
+Fixes #5812 so tests are re-enabled for PRs
+Also part of #10668 since one of the changed EF queries is now working
+
+Finally, I removed all remaining platform skips since with SQLite these tests should now run anywhere.
+</Description>
+    <CreatedDate>05/06/2019</CreatedDate>
+    <ClosedDate>05/06/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>10924</PullRequestID>
+        <IssueID>10671</IssueID>
+        <Title>Add check for empty submission in C#/VB interactive evaluator</Title>
+        <Description>With change in #9894, now it is possible to have an empty string (including whitespace characters) to be passed to evaluator for execution. We need to add a check to no-op empty submissions for C#/VB evaluator.
+</Description>
+        <CreatedDate>19/04/2016</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>10924</PullRequestID>
+        <IssueID>5812</IssueID>
+        <Title>Updating System.Reflection.Metadata to 1.1.0-alpha-0015 and System.Co…</Title>
+        <Description>…llections.Immutable to 1.1.37.0
+</Description>
+        <CreatedDate>09/10/2015</CreatedDate>
+        <ClosedDate>09/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>10924</PullRequestID>
+        <IssueID>10668</IssueID>
+        <Title>Build failure on mac with Unable to load DLL 'System.Security.Cryptography.Native'</Title>
+        <Description>**Version Used**: 332810056e84bd520821a177f7bd7cb7520d1435
+
+**Steps to Reproduce**:
+1. On mac OSX El Capitan 10.11.4
+2. git clone https://github.com/dotnet/roslyn.git
+3. cd roslyn; make
+
+**Expected Behavior**: successful build
+
+**Actual Behavior**:
+
+Restoring toolset packages
+log  : Restoring packages for /Users/kashyap/Documents/dev/MS-CLR/roslyn/build/ToolsetPackages/project.json...
+error: Unable to load the service index for source https://www.myget.org/F/dotnet-coreclr/api/v3/index.json.
+error:   The type initializer for 'Crypto' threw an exception.
+error:   Unable to load DLL 'System.Security.Cryptography.Native': The specified module could not be found.
+error:    (Exception from HRESULT: 0x8007007E)
+Restore CrossPlatform.sln
+error: Unable to load the service index for source https://www.myget.org/F/dotnet-coreclr/api/v3/index.json.
+error:   The type initializer for 'Crypto' threw an exception.
+error:   Unable to load DLL 'System.Security.Cryptography.Native': The specified module could not be found.
+error:    (Exception from HRESULT: 0x8007007E)
+Restore failed
+make: **\* [/Users/kashyap/Documents/dev/MS-CLR/roslyn/Binaries/toolset/restore.semaphore] Error 255
+</Description>
+        <CreatedDate>18/04/2016</CreatedDate>
+        <ClosedDate>16/05/2016</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>10924</PullRequestID>
+      <File>build/MSBuildToolset/Program.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder_Await.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder_Constraints.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder_Symbols.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/ImportChain.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Imports.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/PatternVariableFinder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Semantics/Operators/BinaryOperatorOverloadResolution.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Semantics/OverloadResolution/MethodTypeInference.cs</File>
+      <File>src/Compilers/CSharp/Portable/CSharpParseOptions.cs</File>
+      <File>src/Compilers/CSharp/Portable/CSharpResources.Designer.cs</File>
+      <File>src/Compilers/CSharp/Portable/CodeGen/CodeGenerator.cs</File>
+      <File>src/Compilers/CSharp/Portable/CodeGen/EmitAddress.cs</File>
+      <File>src/Compilers/CSharp/Portable/CodeGen/EmitArrayInitializer.cs</File>
+      <File>src/Compilers/CSharp/Portable/CodeGen/EmitConversion.cs</File>
+      <File>src/Compilers/CSharp/Portable/CodeGen/EmitExpression.cs</File>
+      <File>src/Compilers/CSharp/Portable/CodeGen/EmitOperators.cs</File>
+      <File>src/Compilers/CSharp/Portable/Compilation/CSharpCompilation.cs</File>
+      <File>src/Compilers/CSharp/Portable/Compilation/MemberSemanticModel.cs</File>
+      <File>src/Compilers/CSharp/Portable/Declarations/MergedNamespaceDeclaration.cs</File>
+      <File>src/Compilers/CSharp/Portable/Emitter/EditAndContinue/CSharpSymbolMatcher.cs</File>
+      <File>src/Compilers/CSharp/Portable/Emitter/Model/NamedTypeSymbolAdapter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Emitter/Model/PEModuleBuilder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/AsyncRewriter/AsyncRewriter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/IteratorRewriter/IteratorRewriter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/LambdaRewriter/LambdaCapturedVariable.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/StateMachineRewriter/StateMachineFieldSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Parser/DocumentationCommentParser.cs</File>
+      <File>src/Compilers/CSharp/Portable/Parser/LanguageParser.cs</File>
+      <File>src/Compilers/CSharp/Portable/Parser/QuickScanner.cs</File>
+      <File>src/Compilers/CSharp/Portable/SymbolDisplay/ObjectDisplay.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Compilation_WellKnownMembers.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/ConstraintsHelper.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/LabelSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/MergedNamespaceSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Metadata/PE/PEEventSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Metadata/PE/PENamedTypeSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Metadata/PE/PENamespaceSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/NamedTypeSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/NamespaceSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceAssemblySymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceEventSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceLabelSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceMemberContainerSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceNamespaceSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Synthesized/GeneratedLabelSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Synthesized/SynthesizedBackingFieldSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Synthesized/SynthesizedEnumValueFieldSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Synthesized/SynthesizedFieldSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Synthesized/SynthesizedFieldSymbolBase.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Synthesized/SynthesizedImplementationMethod.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Synthesized/SynthesizedLambdaCacheFieldSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Synthesized/SynthesizedParameterSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/CSharpSyntaxNode.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/SyntaxExtensions.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_Dynamic.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_Synthesized.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_WellKnownAttributes.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/EmitTestStrongNameProvider.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenAsyncTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenCheckedTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenDynamicTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenExprLambdaTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenIterators.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenMscorlib.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenOperators.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenOverridingAndHiding.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenShortCircuitOperatorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/DestructorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/CompilationEmitTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/DeterministicTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EditAndContinue/EditAndContinueTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EmitMetadata.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/PDB/PDBTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/PDB/PDBUsingTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Performance/CalibrationBenchmarks.cs</File>
+      <File>src/Compilers/CSharp/Test/Performance/CompilationBenchmarks.cs</File>
+      <File>src/Compilers/CSharp/Test/Performance/SyntaxBenchmarks.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Diagnostics/GetDiagnosticsTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/FlowAnalysis/RegionAnalysisTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/AwaitExpressionTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/BindingAsyncTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/ColorColorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/ConstantTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/InteractiveUsingTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/LocalFunctionTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/OperatorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/PatternMatchingTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/TryCatchTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/CustomModifiersTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/LoadingFields.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/EventTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/LexicalAndXml/XmlDocCommentTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Parsing/DeclarationParsingTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Parsing/LocalFunctionParsingTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Parsing/ParsingTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Syntax/SyntaxFactoryTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Syntax/SyntaxNodeTests.cs</File>
+      <File>src/Compilers/Core/CodeAnalysisTest/Diagnostics/AnalysisContextInfoTests.cs</File>
+      <File>src/Compilers/Core/CommandLine/BuildProtocol.cs</File>
+      <File>src/Compilers/Core/MSBuildTask/Portable/BuildClientShim.cs</File>
+      <File>src/Compilers/Core/Portable/CodeAnalysisResources.Designer.cs</File>
+      <File>src/Compilers/Core/Portable/CodeGen/MethodBody.cs</File>
+      <File>src/Compilers/Core/Portable/CodeGen/SequencePointList.cs</File>
+      <File>src/Compilers/Core/Portable/Collections/ImmutableArrayExtensions.cs</File>
+      <File>src/Compilers/Core/Portable/Collections/SmallDictionary.cs</File>
+      <File>src/Compilers/Core/Portable/CommandLine/CommonCompiler.cs</File>
+      <File>src/Compilers/Core/Portable/Compilation/Compilation.cs</File>
+      <File>src/Compilers/Core/Portable/Compilation/SemanticModel.cs</File>
+      <File>src/Compilers/Core/Portable/Diagnostic/NoLocation.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalysisResult.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalysisResultBuilder.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalysisScope.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalysisState.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalyzerDriver.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/CompilationWithAnalyzers.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/DiagnosticAnalyzer.cs</File>
+      <File>src/Compilers/Core/Portable/DocumentationComments/DocumentationProvider.NullDocumentationProvider.cs</File>
+      <File>src/Compilers/Core/Portable/Emit/NoPia/CommonEmbeddedMethod.cs</File>
+      <File>src/Compilers/Core/Portable/InternalUtilities/EmptyComparer.cs</File>
+      <File>src/Compilers/Core/Portable/InternalUtilities/EnumerableExtensions.cs</File>
+      <File>src/Compilers/Core/Portable/InternalUtilities/JsonWriter.cs</File>
+      <File>src/Compilers/Core/Portable/InternalUtilities/ReferenceEqualityComparer.cs</File>
+      <File>src/Compilers/Core/Portable/InternalUtilities/StringOrdinalComparer.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataReader/MetadataDecoder.cs</File>
+      <File>src/Compilers/Core/Portable/NativePdbWriter/PdbWriter.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/CustomDebugInfoWriter.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/IImportScope.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/Members.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/MetadataWriter.PortablePdb.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/PeWriter.cs</File>
+      <File>src/Compilers/Core/Portable/Syntax/SyntaxNode.cs</File>
+      <File>src/Compilers/Core/SharedCollections/ArrayBuilder.cs</File>
+      <File>src/Compilers/Extension/CompilerPackage.cs</File>
+      <File>src/Compilers/Server/PortableServer/PortableBuildServerController.cs</File>
+      <File>src/Compilers/Server/PortableServer/Program.cs</File>
+      <File>src/Compilers/Server/PortableServer/TcpClientConnection.cs</File>
+      <File>src/Compilers/Server/ServerShared/BuildServerController.cs</File>
+      <File>src/Compilers/Server/ServerShared/Connection.cs</File>
+      <File>src/Compilers/Server/ServerShared/ServerDispatcher.cs</File>
+      <File>src/Compilers/Server/VBCSCompiler/DesktopBuildServerController.cs</File>
+      <File>src/Compilers/Server/VBCSCompiler/VBCSCompiler.cs</File>
+      <File>src/Compilers/Server/VBCSCompilerTests/CompilerServerApiTest.cs</File>
+      <File>src/Compilers/Server/VBCSCompilerTests/CompilerServerTests.cs</File>
+      <File>src/Compilers/Server/VBCSCompilerTests/DesktopBuildClientTests.cs</File>
+      <File>src/Compilers/Server/VBCSCompilerTests/ServerUtil.cs</File>
+      <File>src/Compilers/Server/VBCSCompilerTests/VBCSCompilerServerTests.cs</File>
+      <File>src/Compilers/Shared/CoreClrBuildClient.cs</File>
+      <File>src/Compilers/Shared/DesktopBuildClient.cs</File>
+      <File>src/Compilers/Test/Utilities/CSharp.Desktop/TestOptions.cs</File>
+      <File>src/Compilers/Test/Utilities/CSharp/CSharpTestBase.cs</File>
+      <File>src/Compilers/Test/Utilities/CSharp/TestOptions.cs</File>
+      <File>src/EditorFeatures/CSharpTest/ChangeSignature/ReorderParametersTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Classification/SyntacticTaggerTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Completion/CompletionProviders/OverrideCompletionProviderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/AddUsing/AddUsingTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/DiagnosticAnalyzerDriver/DiagnosticAnalyzerDriverTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/GenerateConstructor/GenerateConstructorTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/GenerateMethod/GenerateMethodTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/GenerateVariable/GenerateVariableTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/RemoveUnnecessaryCast/RemoveUnnecessaryCastTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/SimplifyTypeNames/SimplifyTypeNamesTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/SpellCheck/SpellCheckTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/UseImplicitOrExplicitType/UseExplicitTypeTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/UseImplicitOrExplicitType/UseExplicitTypeTests_FixAllTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/UseImplicitOrExplicitType/UseImplicitTypeTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/UseImplicitOrExplicitType/UseImplicitTypeTests_FixAllTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Formatting/FormattingEngineTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/GoToAdjacentMember/CSharpGoToAdjacentMemberTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/NavigateTo/NavigateToTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Organizing/OrganizeUsingsTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/PopulateSwitch/PopulateSwitchTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/PopulateSwitch/PopulateSwitchTests_FixAllTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Semantics/SpeculationAnalyzerTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/TypeInferrer/TypeInferrerTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/AbstractKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ClassKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ConstKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/DelegateKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/EnumKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/EventKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/InterfaceKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/InternalKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/NewKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/OverrideKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/PartialKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/PrivateKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/PublicKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/ReadOnlyKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/SealedKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/StaticKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/StructKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/UnsafeKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/UsingKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/VoidKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest2/Recommendations/VolatileKeywordRecommenderTests.cs</File>
+      <File>src/EditorFeatures/Core/CommandHandlers/GoToAdjacentMemberCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Extensibility/Completion/CompletionItemFilterStateChangedEventArgs.cs</File>
+      <File>src/EditorFeatures/Core/Extensibility/Completion/ICompletionPresenterSession.cs</File>
+      <File>src/EditorFeatures/Core/Extensibility/Navigation/NavigableItemFactory.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Classification/SyntacticClassificationTaggerProvider.TagComputer.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Diagnostics/AbstractDiagnosticsTaggerProvider.AggregatingTagger.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Diagnostics/AbstractDiagnosticsTaggerProvider.TaggerProvider.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/ForegroundNotification/ForegroundNotificationService.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/GoToDefinition/GoToDefinitionHelpers.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/AsyncCompletionService.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/BraceCompletionMetadata.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/CompletionProviders/AbstractMemberInsertingCompletionProvider.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/CompletionProviders/AbstractOverrideCompletionProvider.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/CompletionProviders/AbstractPartialCompletionProvider.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Controller.Session.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Controller.Session_FilterModel.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Controller.Session_SetModelSelectedItem.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Controller.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Controller_CaretPositionChanged.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Controller_Commit.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Controller_InvokeCompletionList.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Controller_TypeChar.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/DescriptionModifyingCompletionItem.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Model.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Presentation/CompletionPresenterSession.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Presentation/CompletionSet2.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Presentation/CompletionSet3.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Presentation/IntellisenseFilter2.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Temporary/IIntellisenseFilter.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Temporary/IntellisenseFilter.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/SignatureHelp/Controller_TypeChar.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/NavigateTo/NavigateToSymbolFinder.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Workspaces/ProjectCacheService.SimpleMRUCache.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Workspaces/ProjectCacheService.cs</File>
+      <File>src/EditorFeatures/Core/Shared/Extensions/GlyphExtensions.cs</File>
+      <File>src/EditorFeatures/Core/Shared/Options/InternalFeatureOnOffOptions.cs</File>
+      <File>src/EditorFeatures/Core/Shared/Utilities/BrushToColorConverter.cs</File>
+      <File>src/EditorFeatures/Test/CommentSelection/CommentUncommentSelectionCommandHandlerTests.cs</File>
+      <File>src/EditorFeatures/Test/Diagnostics/DiagnosticDataSerializerTests.cs</File>
+      <File>src/EditorFeatures/Test/Diagnostics/DiagnosticsSquiggleTaggerProviderTests.cs</File>
+      <File>src/EditorFeatures/Test/Diagnostics/TestDiagnosticAnalyzerService.cs</File>
+      <File>src/EditorFeatures/Test/Threading/ForegroundNotificationServiceTests.cs</File>
+      <File>src/EditorFeatures/Test/Utilities/PatternMatcherTests.cs</File>
+      <File>src/EditorFeatures/Test/Workspaces/ProjectCacheHostServiceFactoryTests.cs</File>
+      <File>src/EditorFeatures/Test/Workspaces/TestWorkspace_Create.cs</File>
+      <File>src/EditorFeatures/Test/Workspaces/TestWorkspace_XmlConsumption.cs</File>
+      <File>src/EditorFeatures/TestUtilities/Async/Checkpoint.cs</File>
+      <File>src/EditorFeatures/TestUtilities/Traits.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/DynamicTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/ExpressionCompilerTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ResultProvider/DebuggerBrowsableAttributeTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ResultProvider/DebuggerDisplayAttributeTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ResultProvider/DynamicViewTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ResultProvider/ExpansionTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ResultProvider/ResultsViewTests.cs</File>
+      <File>src/ExpressionEvaluator/Core/Test/ResultProvider/Debugger/Engine/DkmClrValue.cs</File>
+      <File>src/ExpressionEvaluator/Core/Test/ResultProvider/ResultProviderTestBase.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/AddImport/CSharpAddImportCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/GenerateConstructor/GenerateConstructorCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/GenerateEnumMember/GenerateEnumMemberCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/GenerateMethod/GenerateConversionCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/GenerateMethod/GenerateMethodCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/GenerateType/GenerateTypeCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/GenerateVariable/GenerateVariableCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/ImplementAbstractClass/ImplementAbstractClassCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/RemoveUnnecessaryCast/RemoveUnnecessaryCastCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/RemoveUnnecessaryUsings/RemoveUnnecessaryUsingsCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/SpellCheck/CSharpSpellcheckCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/TypeStyle/UseExplicitTypeCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/TypeStyle/UseImplicitTypeCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/UseImplicitTyping/UseExplicitTypingCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/UseImplicitTyping/UseImplicitTypingCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeStyle/TypeStyle/TypeStyle.cs</File>
+      <File>src/Features/CSharp/Portable/CodeStyle/TypeStyle/TypeStyleHelper.cs</File>
+      <File>src/Features/CSharp/Portable/Completion/CSharpCompletionService.cs</File>
+      <File>src/Features/CSharp/Portable/Completion/CompletionProviders/EnumAndCompletionListTagCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Portable/Diagnostics/Analyzers/CSharpTypeStyleDiagnosticAnalyzerBase.State.cs</File>
+      <File>src/Features/CSharp/Portable/Diagnostics/Analyzers/CSharpTypeStyleDiagnosticAnalyzerBase.cs</File>
+      <File>src/Features/CSharp/Portable/Diagnostics/Analyzers/CSharpTypingStyleDiagnosticAnalyzerBase.State.cs</File>
+      <File>src/Features/CSharp/Portable/Diagnostics/Analyzers/CSharpTypingStyleDiagnosticAnalyzerBase.cs</File>
+      <File>src/Features/CSharp/Portable/Diagnostics/Analyzers/CSharpUseExplicitTypeDiagnosticAnalyzer.cs</File>
+      <File>src/Features/CSharp/Portable/Diagnostics/Analyzers/CSharpUseExplicitTypingDiagnosticAnalyzer.cs</File>
+      <File>src/Features/CSharp/Portable/Diagnostics/Analyzers/CSharpUseImplicitTypeDiagnosticAnalyzer.cs</File>
+      <File>src/Features/CSharp/Portable/Diagnostics/Analyzers/CSharpUseImplicitTypingDiagnosticAnalyzer.cs</File>
+      <File>src/Features/CSharp/Portable/InvokeDelegateWithConditionalAccess/InvokeDelegateWithConditionalAccessAnalyzer.cs</File>
+      <File>src/Features/CSharp/Portable/InvokeDelegateWithConditionalAccess/InvokeDelegateWithConditionalAccessCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/PopulateSwitch/CSharpPopulateSwitchCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/PopulateSwitch/CSharpPopulateSwitchDiagnosticAnalyzer.cs</File>
+      <File>src/Features/CSharp/Portable/PopulateSwitch/CSharpPopulateSwitchHelpers.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/AddImport/AbstractAddImportCodeFixProvider.SearchScope.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/AddImport/AbstractAddImportCodeFixProvider.SymbolReferenceFinder.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/GenerateMember/AbstractGenerateMemberCodeFixProvider.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/PredefinedCodeFixProviderNames.cs</File>
+      <File>src/Features/Core/Portable/CodeStyle/SimpleCodeStyleOption.cs</File>
+      <File>src/Features/Core/Portable/Completion/CompletionFilterReason.cs</File>
+      <File>src/Features/Core/Portable/Completion/CompletionItem.cs</File>
+      <File>src/Features/Core/Portable/Completion/CompletionItemFilter.cs</File>
+      <File>src/Features/Core/Portable/Completion/CompletionRules.cs</File>
+      <File>src/Features/Core/Portable/Completion/ICompletionService.cs</File>
+      <File>src/Features/Core/Portable/Completion/Providers/SymbolCompletionItem.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/Analyzers/IDEDiagnosticIds.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/Analyzers/IDocumentDiagnosticAnalyzer.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/Analyzers/IProjectDiagnosticAnalyzer.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/BaseDiagnosticIncrementalAnalyzer.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/DiagnosticAnalyzerCategory.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/DiagnosticAnalyzerService_BuildSynchronization.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/DiagnosticAnalyzerService_IncrementalAnalyzer.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/DiagnosticAnalyzerService_UpdateSource.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/DiagnosticService.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV1/DiagnosticAnalyzerDriver.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer.AnalyzerExecutor.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer.NestedTypes.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer.StateManager.ProjectStates.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer.StateManager.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer_BuildSynchronization.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer_GetDiagnostics.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer_GetLatestDiagnosticsForSpan.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/AnalysisResult.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/CompilerDiagnosticExecutor.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticDataSerializer.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer.ActiveFileState.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer.AnalysisData.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer.AnalysisKind.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer.CompilationManager.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer.Executor.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer.InMemoryStorage.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer.ProjectAnalyzerReferenceChangedEventArgs.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer.ProjectState.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer.StateManager.HostStates.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer.StateManager.ProjectStates.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer.StateManager.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer.StateSet.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer_BuildSynchronization.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer_GetDiagnostics.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer_GetDiagnosticsForSpan.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV2/DiagnosticIncrementalAnalyzer_IncrementalAnalyzer.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/HostAnalyzerManager.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/LiveDiagnosticUpdateArgsId.cs</File>
+      <File>src/Features/Core/Portable/FeaturesResources.Designer.cs</File>
+      <File>src/Features/Core/Portable/GenerateMember/GenerateVariable/AbstractGenerateVariableService.cs</File>
+      <File>src/Features/Core/Portable/MakeMethodSynchronous/AbstractMakeMethodSynchronousCodeFixProvider.cs</File>
+      <File>src/Features/Core/Portable/PopulateSwitch/AbstractPopulateSwitchCodeFixProvider.cs</File>
+      <File>src/Features/Core/Portable/PopulateSwitch/AbstractPopulateSwitchDiagnosticAnalyzer.cs</File>
+      <File>src/Features/Core/Portable/Shared/Utilities/PatternMatch.cs</File>
+      <File>src/Features/Core/Portable/Shared/Utilities/PatternMatcher.cs</File>
+      <File>src/Features/Core/Portable/SolutionCrawler/WorkCoordinator.IncrementalAnalyzerProcessor.cs</File>
+      <File>src/Features/Core/Portable/UseAutoProperty/AbstractUseAutoPropertyCodeFixProvider.cs</File>
+      <File>src/Interactive/CsiCore/Csi.cs</File>
+      <File>src/Interactive/HostTest/InteractiveHostTests.cs</File>
+      <File>src/InteractiveWindow/Editor/InteractiveWindow.UIThreadOnly.cs</File>
+      <File>src/InteractiveWindow/EditorTest/InteractiveWindowHistoryTests.cs</File>
+      <File>src/InteractiveWindow/EditorTest/InteractiveWindowTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.CSharp.UnitTests/ProjectSystem/Designers/PropertiesFolderProjectTreeModifierTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.CSharp.VS.UnitTests/ProjectSystem/CSharpProjectGuidProviderTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.CSharp.VS.UnitTests/ProjectSystem/Designers/CSharpProjectDesignerPageProviderTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.CSharp.VS.UnitTests/ProjectSystem/Designers/Imaging/CSharpProjectImageProviderTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.CSharp.VS.UnitTests/ProjectSystem/LanguageServices/CSharpCodeDomProviderTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.CSharp.VS/ProjectSystem/CSharpProjectGuidProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.CSharp.VS/ProjectSystem/Designers/CSharpProjectDesignerPage.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.CSharp.VS/ProjectSystem/Designers/CSharpProjectDesignerPageProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.CSharp.VS/ProjectSystem/Designers/Imaging/CSharpProjectImageProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.CSharp.VS/ProjectSystem/LanguageServices/CSharpCodeDomProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.CSharp.VS/ProjectSystem/LanguageServices/CSharpLanguageFeaturesProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.CSharp.VS/ProjectSystem/LanguageServices/CSharpLanguageServiceHost.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.CSharp/ProjectSystem/Capabilities/CSharpProjectXmlProjectCapabilityProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.CSharp/ProjectSystem/Designers/PropertiesFolderProjectTreeModifier.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/FuncWithOut.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Mocks/IActiveConfiguredProjectFactory.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Mocks/IOrderPrecedenceMetadataViewFactory.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Mocks/IProjectDesignerServiceFactory.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Mocks/IProjectImageProviderFactory.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Mocks/IProjectTreeProviderFactory.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Mocks/IThreadHandlingFactory.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Mocks/IUnconfiguredProjectCommonServicesFactory.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Mocks/IUnconfiguredProjectFactory.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Mocks/ProjectPropertiesFactory.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Mocks/PropertyPageData.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Moq/ReturnsExtensions.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/OrderPrecedenceImportCollectionExtensions.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/ProjectSystem/Designers/Imaging/ProjectImageProviderAggregatorTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/ProjectSystem/Designers/ProjectRootImageProjectTreeModifierTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/ProjectSystem/UnconfiguredProjectCommonServicesTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/ProjectSystemTraitAttribute.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Properties/AssemblyAttributes.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/ResolveDependenciesLocallyTestFramework.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Testing/ProjectSystemTraitDiscover.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Testing/ProjectTreeParser/Delimiters.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Testing/ProjectTreeParser/ProjectTreeFormatError.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Testing/ProjectTreeParser/ProjectTreeFormatException.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Testing/ProjectTreeParser/ProjectTreeParser.MutableProjectTree.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Testing/ProjectTreeParser/ProjectTreeParser.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Testing/ProjectTreeParser/ProjectTreeParserTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Testing/ProjectTreeParser/StringReader.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Testing/ProjectTreeParser/Tokenizer.IdentifierParseOptions.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Testing/ProjectTreeParser/Tokenizer.Token.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Testing/ProjectTreeParser/Tokenizer.TokenType.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Testing/ProjectTreeParser/Tokenizer.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Testing/ProjectTreeWriter.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Testing/ProjectTreeWriterOptions.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.UnitTests/Trait.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS.UnitTests/Mocks/IUnconfiguredProjectVsServicesFactory.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS.UnitTests/Mocks/IVsHierarchyFactory.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS.UnitTests/Mocks/IVsProjectFactory.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS.UnitTests/Mocks/IVsWindowFrameFactory.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS.UnitTests/ProjectSystem/Designers/Input/Commands/AbstractOpenProjectDesignerCommandTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS.UnitTests/ProjectSystem/Designers/Input/Commands/OpenProjectDesignerCommandTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS.UnitTests/ProjectSystem/Designers/Input/Commands/OpenProjectDesignerOnDefaultActionCommandTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS.UnitTests/ProjectSystem/Designers/ProjectDesignerPageMetadataTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS.UnitTests/ProjectSystem/Designers/ProjectDesignerServiceTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS.UnitTests/ProjectSystem/UnconfiguredProjectVsServicesTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/Input/CommandGroup.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/Input/UIHierarchyWindowCommandId.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/Input/VisualStudioStandard97CommandId.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/ProjectSystem/Designers/Input/Commands/AbstractOpenProjectDesignerCommand.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/ProjectSystem/Designers/Input/Commands/OpenProjectDesignerCommand.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/ProjectSystem/Designers/Input/Commands/OpenProjectDesignerOnDefaultActionCommand.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/ProjectSystem/Designers/ProjectDesignerPageMetadata.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/ProjectSystem/Designers/ProjectDesignerService.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/ProjectSystem/IAddItemTemplatesGuidProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/ProjectSystem/IItemTypeGuidProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/ProjectSystem/IUnconfiguredProjectVsServices.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/ProjectSystem/LanguageServices/AbstractLanguageServiceHost.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/ProjectSystem/UnconfiguredProjectVsServices.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/Shell/HierarchyId.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/Shell/Interop/VsHierarchyExtensions.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed.VS/Shell/Interop/VsProjectExtensions.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/Designers/AbstractAppDesignerFolderProjectTreeModifier.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/Designers/AbstractProjectTreeModifier.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/Designers/AbstractSpecialItemProjectTreeModifier.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/Designers/IProjectDesignerService.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/Designers/Imaging/IProjectImageProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/Designers/Imaging/ProjectImageKey.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/Designers/Imaging/ProjectImageProviderAggregator.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/Designers/Input/AbstractProjectCommand.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/Designers/Input/AbstractSingleNodeProjectCommand.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/Designers/Input/GetCommandStatusResult.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/Designers/Input/ProjectCommandAttribute.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/Designers/ProjectRootImageProjectTreeModifier.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/Designers/ProjectTreeExtensions.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/IUnconfiguredProjectCommonServices.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/ProjectCapability.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/Rules/ProjectProperties.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/ProjectSystem/UnconfiguredProjectCommonServices.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/StringComparers.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.Managed/Threading/Tasks/TaskResult.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.VisualBasic.UnitTests/ProjectSystem/Designers/MyProjectFolderProjectTreeModifierTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.VisualBasic.VS.UnitTests/ProjectSystem/Designers/Imaging/VisualBasicProjectImageProviderTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.VisualBasic.VS.UnitTests/ProjectSystem/Designers/VisualBasicProjectDesignerPageProviderTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.VisualBasic.VS.UnitTests/ProjectSystem/LanguageServices/VisualBasicCodeDomProviderTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.VisualBasic.VS.UnitTests/ProjectSystem/VisualBasicProjectGuidProviderTests.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.VisualBasic.VS/ProjectSystem/Designers/Imaging/VisualBasicProjectImageProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.VisualBasic.VS/ProjectSystem/Designers/VisualBasicProjectDesignerPage.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.VisualBasic.VS/ProjectSystem/Designers/VisualBasicProjectDesignerPageProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.VisualBasic.VS/ProjectSystem/LanguageServices/VisualBasicCodeDomProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.VisualBasic.VS/ProjectSystem/LanguageServices/VisualBasicLanguageServiceHost.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.VisualBasic.VS/ProjectSystem/VisualBasicProjectGuidProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.VisualBasic/ProjectSystem/Capabilities/VisualBasicProjectEvalProjectCapabilityProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.VisualBasic/ProjectSystem/Capabilities/VisualBasicProjectXmlProjectCapabilityProvider.cs</File>
+      <File>src/ProjectSystem/Microsoft.VisualStudio.ProjectSystem.VisualBasic/ProjectSystem/Designers/MyProjectFolderProjectTreeModifier.cs</File>
+      <File>src/Scripting/CSharp/Hosting/CommandLine/Csi.cs</File>
+      <File>src/Scripting/CSharpTest.Desktop/CsiTests.cs</File>
+      <File>src/Scripting/CSharpTest.Desktop/InteractiveSessionTests.cs</File>
+      <File>src/Scripting/CSharpTest/CommandLineRunnerTests.cs</File>
+      <File>src/Test/PdbUtilities/Metadata/MetadataVisualizer.cs</File>
+      <File>src/Test/Perf/HelloWorld.cs</File>
+      <File>src/Test/Perf/tests/helloworld/HelloWorld.cs</File>
+      <File>src/Test/Shared/EventListenerGuard.cs</File>
+      <File>src/Test/Utilities/Desktop/CommonTestBase.CompilationVerifier.cs</File>
+      <File>src/Test/Utilities/Desktop/CompilerTraitAttribute.cs</File>
+      <File>src/Test/Utilities/Desktop/Exceptions.cs</File>
+      <File>src/Test/Utilities/Desktop/HostedRuntimeEnvironment.cs</File>
+      <File>src/Test/Utilities/Desktop/MetadataSignatureUnitTestHelper.cs</File>
+      <File>src/Test/Utilities/Desktop/ProcessUtilities.cs</File>
+      <File>src/Test/Utilities/Desktop/RuntimeAssemblyManager.cs</File>
+      <File>src/Test/Utilities/Portable/CompilerTraitAttribute.cs</File>
+      <File>src/Test/Utilities/Portable/CoreCLRRuntimeEnvironment.cs</File>
+      <File>src/Test/Utilities/Portable/Exceptions.cs</File>
+      <File>src/Test/Utilities/Shared/Assert/AssertEx.cs</File>
+      <File>src/Test/Utilities/Shared/Assert/ConditionalFactAttribute.cs</File>
+      <File>src/Test/Utilities/Shared/Compilation/IRuntimeEnvironment.cs</File>
+      <File>src/Test/Utilities/Shared/Diagnostics/DiagnosticExtensions.cs</File>
+      <File>src/Test/Utilities/Shared/ExceptionHelper.cs</File>
+      <File>src/Test/Utilities/Shared/Metadata/ILBuilderVisualizer.cs</File>
+      <File>src/Test/Utilities/Shared/Pe/BrokenStream.cs</File>
+      <File>src/Test/Utilities/Shared/Traits/ComilerTraitDiscoverer.cs</File>
+      <File>src/Test/Utilities/Shared/Traits/CompilerFeature.cs</File>
+      <File>src/Tools/BuildUtil/BuildUtil/Properties/AssemblyInfo.cs</File>
+      <File>src/Tools/BuildUtil/BuildUtil/WriteCodeFragmentEx.cs</File>
+      <File>src/Tools/CommonCoreClrRuntime/Class1.cs</File>
+      <File>src/Tools/Github/GitMergeBot/Program.cs</File>
+      <File>src/Tools/ProcessWatchdog/ConsoleUtils.cs</File>
+      <File>src/Tools/ProcessWatchdog/ErrorCode.cs</File>
+      <File>src/Tools/ProcessWatchdog/Options.cs</File>
+      <File>src/Tools/ProcessWatchdog/ProcDump.cs</File>
+      <File>src/Tools/ProcessWatchdog/ProcessTracker.cs</File>
+      <File>src/Tools/ProcessWatchdog/Program.cs</File>
+      <File>src/Tools/ProcessWatchdog/Resources.Designer.cs</File>
+      <File>src/Tools/ProcessWatchdog/ScreenShotSaver.cs</File>
+      <File>src/Tools/ProcessWatchdog/UniqueProcess.cs</File>
+      <File>src/Tools/Source/CompilerGeneratorTools/DeployCompilerGeneratorToolsRuntime/Class1.cs</File>
+      <File>src/Tools/Source/CompilerGeneratorTools/Source/BoundTreeGenerator/BoundNodeClassWriter.cs</File>
+      <File>src/Tools/Source/CompilerGeneratorTools/Source/BoundTreeGenerator/Program.cs</File>
+      <File>src/Tools/Source/CompilerGeneratorTools/Source/CSharpErrorFactsGenerator/Program.cs</File>
+      <File>src/Tools/Source/CompilerGeneratorTools/Source/CSharpSyntaxGenerator/Program.cs</File>
+      <File>src/Tools/Source/RunTests/AssemblyScheduler.cs</File>
+      <File>src/Tools/Source/RunTests/Cache/CachingTestExecutor.cs</File>
+      <File>src/Tools/Source/RunTests/Cache/ContentFile.cs</File>
+      <File>src/Tools/Source/RunTests/Cache/ContentUtil.cs</File>
+      <File>src/Tools/Source/RunTests/Cache/EmptyDataStorage.cs</File>
+      <File>src/Tools/Source/RunTests/Cache/IDataStorage.cs</File>
+      <File>src/Tools/Source/RunTests/Cache/LocalDataStorage.cs</File>
+      <File>src/Tools/Source/RunTests/Cache/WebDataStorage.cs</File>
+      <File>src/Tools/Source/RunTests/Constants.cs</File>
+      <File>src/Tools/Source/RunTests/CrashDumps.cs</File>
+      <File>src/Tools/Source/RunTests/ITestExecutor.cs</File>
+      <File>src/Tools/Source/RunTests/Logger.cs</File>
+      <File>src/Tools/Source/RunTests/Options.cs</File>
+      <File>src/Tools/Source/RunTests/ProcessRunner.cs</File>
+      <File>src/Tools/Source/RunTests/ProcessTestExecutor.cs</File>
+      <File>src/Tools/Source/RunTests/Program.cs</File>
+      <File>src/Tools/Source/RunTests/TestRunner.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/CSharpVSResources.Designer.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/CodeModel/CSharpCodeModelService.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/Options/AutomationObject.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/Options/CSharpSettingsManagerOptionSerializer.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/Options/Formatting/StyleViewModel.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Snippets/AbstractSnippetInfoService.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/TableDataSource/AbstractRoslynTableDataSource.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/TableDataSource/OpenDocumentTracker.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/TableDataSource/VisualStudioBaseDiagnosticListTable.LiveTableDataSource.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/TableDataSource/VisualStudioBaseDiagnosticListTable.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/TableDataSource/VisualStudioBaseTodoListTable.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/TaskList/ExternalErrorDiagnosticUpdateSource.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/VirtualMemoryNotificationListener.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/AbstractCodeModelService.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/ExternalElements/ExternalCodeProperty.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/ICodeModelService.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/InternalElements/CodeParameter.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/Interop/IParameterKind.cs</File>
+      <File>src/VisualStudio/Core/Impl/Options/AbstractOptionPreviewViewModel.cs</File>
+      <File>src/VisualStudio/Core/Impl/Options/GridOptionPreviewControl.xaml.cs</File>
+      <File>src/VisualStudio/Setup/AssemblyRedirects.cs</File>
+      <File>src/VisualStudio/Setup/ProvideRoslynBindingRedirection.cs</File>
+      <File>src/Workspaces/CSharp/Portable/CodeGeneration/CSharpSyntaxGenerator.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Formatting/Rules/BaseFormattingRule.cs</File>
+      <File>src/Workspaces/CSharp/Portable/LanguageServices/CSharpTypeInferenceService.TypeInferrer.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Simplification/CSharpSimplificationService.Expander.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Utilities/SpeculationAnalyzer.cs</File>
+      <File>src/Workspaces/CSharpTest/CodeGeneration/SyntaxGeneratorTests.cs</File>
+      <File>src/Workspaces/Core/Portable/Editing/SyntaxGenerator.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/SyntaxTree/SyntaxTreeInfo.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/ICodeDefinitionFactoryExtensions.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/ISolutionExtensions.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/ITypeInferenceServiceExtensions.cs</File>
+      <File>src/Workspaces/Core/Portable/Utilities/AsyncLazy`1.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Solution/Document.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Solution/MetadataOnlyImage.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Solution/MetadataOnlyReference.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Solution/Solution.CompilationTracker.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Solution/Solution.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Workspace.cs</File>
+      <File>src/Workspaces/Core/Portable/WorkspacesResources.Designer.cs</File>
+      <File>src/Workspaces/CoreTest/AssemblyAttributes.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5955</IssueID>
+    <RepoID>aspnetcore</RepoID>
+    <Title>Add more timeouts to Http2TestBase</Title>
+    <Description>There are some Kestrel HTTP/2 tests that are hanging. The hangs should be fixed once we take a runtime that includes dotnet/corefx#34014. In the meantime, this PR makes the hanging tests fail after a 30 second timeout.
+
+Addresses aspnet/AspNetCore-Internal#1529
+</Description>
+    <CreatedDate>19/12/2018</CreatedDate>
+    <ClosedDate>19/12/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5955</PullRequestID>
+        <IssueID>34014</IssueID>
+        <Title>Nullable state is not updated for receiver if conditional access expression is a method call</Title>
+        <Description>A warning is reported for `c.F().ToString()`:
+```C#
+#nullable enable
+
+class C
+{
+    internal object? F() =&gt; null;
+}
+
+class Program
+{
+    static void F(C? c)
+    {
+        if (c?.F() != null)
+            c.F().ToString(); // warning: may be null
+    }
+}
+```</Description>
+        <CreatedDate>11/03/2019</CreatedDate>
+        <ClosedDate>11/03/2019</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5955</PullRequestID>
+        <IssueID>1529</IssueID>
+        <Title>Report code fix exceptions to the user.</Title>
+        <Description>Updating the extension manager to report code-fix exceptions to the user. In Visual Studio this will cause an infobar to appear giving the user the option to either re-enable the crashing code-fix or re-enable it and ignore future crashes for that session of Visual Studio.
+</Description>
+        <CreatedDate>24/03/2015</CreatedDate>
+        <ClosedDate>31/03/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5955</PullRequestID>
+      <File>src/Compilers/Core/MSBuildTask/InteractiveCompiler.cs</File>
+      <File>src/Compilers/Core/MSBuildTaskTests/CsiTests.cs</File>
+    </Files>
+  </PullRequest>
+</PullRequests>

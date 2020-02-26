@@ -1,152 +1,326 @@
 <PullRequests>
   <PullRequest>
-    <IssueID>3412</IssueID>
-    <Title>Update Microsoft.NET.HostModel version</Title>
-    <Description>This is for dotnet/core-setup#7173
+    <IssueID>2646</IssueID>
+    <RepoID>sdk</RepoID>
+    <Title>Implement copy-local of package dependencies for 3.0 targeted projects. </Title>
+    <Description>This PR implements some of the unification of the `dotnet build` and
+`dotnet publish` experiences.
 
-Same change as #3411, but for Preview 7</Description>
-    <CreatedDate>12/07/2019</CreatedDate>
-    <ClosedDate>12/07/2019</ClosedDate>
+For 3.0 targeted projects, `dotnet build` will now copy the package
+dependencies locally into the output directory instead of relying on the NuGet
+cache.  It behaves the same as `dotnet publish`, only copying what is not
+provided by the shared frameworks.
+
+Additionally, `dotnet publish` will now copy the build outputs rather than
+regenerating a deps file or resolving package dependencies, provided there are
+no package references excluded from publishing or packages are coming from a
+runtime store.
+
+The `CopyLocalLockFileAssemblies` property can be set to `false` to revert to
+the previous behavior for `dotnet build`.
+
+Fixes dotnet/cli#10061.
+Fixes #933.
+
+</Description>
+    <CreatedDate>06/11/2018</CreatedDate>
+    <ClosedDate>13/11/2018</ClosedDate>
     <Issues>
       <Issue>
-        <IssueID>7173</IssueID>
-        <Title>Visual Studio 2015 Update 1 crashing with Code Cracker</Title>
-        <Description>Originally reported by @Cybermaxs on https://github.com/code-cracker/code-cracker/issues/610#issuecomment-160966346.
+        <PullRequestID>2646</PullRequestID>
+        <IssueID>10061</IssueID>
+        <Title>Project System: Should be able to copy and paste files between VS instances</Title>
+        <Description>Today we don't let you copy and paste files between VS instances, we should allow that.
 
-Here is the stack trace from his event logs:
+https://twitter.com/davkean/status/636761909614608384
 
-```
-Message : System.ArgumentException: SyntaxTree ' {{CsCodeRemovedForClarity}}'
-not found to remove
-Parameter name: syntaxTree
-   at Microsoft.CodeAnalysis.CSharp.CSharpCompilation.GetSemanticModel(SyntaxTree syntaxTree, Boolean ignoreAccessibility)
-   at Microsoft.CodeAnalysis.CSharp.CSharpCompilation.CommonGetSemanticModel(SyntaxTree syntaxTree, Boolean ignoreAccessibility)
-   at Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.IsDiagnosticSuppressed(String id, Location location, SuppressMessageInfo&amp; info)
-   at Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.ApplySourceSuppressions(Diagnostic diagnostic, Compilation compilation, ISymbol symbolOpt)
-   at Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver.FilterDiagnosticsSuppressedInSource(ImmutableArray`1 diagnostics, Compilation compilation)
-   at Microsoft.CodeAnalysis.Diagnostics.AnalysisResult.StoreAnalysisResult(AnalysisScope analysisScope, AnalyzerDriver driver, Compilation compilation)
-   at Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers.&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54.MoveNext()
-Pile :
-   à System.Environment.FailFast(System.String, System.Exception)
-   à Microsoft.CodeAnalysis.FailFast.OnFatalException(System.Exception)
-   à Microsoft.CodeAnalysis.FatalError.Report(System.Exception, System.Action`1&lt;System.Exception&gt;)
-   à Microsoft.CodeAnalysis.FatalError.ReportUnlessCanceled(System.Exception)
-   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54.MoveNext()
-   à Microsoft.CodeAnalysis.CSharp.CSharpCompilation.GetSemanticModel(Microsoft.CodeAnalysis.SyntaxTree, Boolean)
-   à Microsoft.CodeAnalysis.CSharp.CSharpCompilation.CommonGetSemanticModel(Microsoft.CodeAnalysis.SyntaxTree, Boolean)
-   à Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.IsDiagnosticSuppressed(System.String, Microsoft.CodeAnalysis.Location, Microsoft.CodeAnalysis.Diagnostics.SuppressMessageInfo ByRef)
-   à Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.ApplySourceSuppressions(Microsoft.CodeAnalysis.Diagnostic, Microsoft.CodeAnalysis.Compilation, Microsoft.CodeAnalysis.ISymbol)
-   à Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver.FilterDiagnosticsSuppressedInSource(System.Collections.Immutable.ImmutableArray`1&lt;Microsoft.CodeAnalysis.Diagnostic&gt;, Microsoft.CodeAnalysis.Compilation)
-   à Microsoft.CodeAnalysis.Diagnostics.AnalysisResult.StoreAnalysisResult(Microsoft.CodeAnalysis.Diagnostics.AnalysisScope, Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver, Microsoft.CodeAnalysis.Compilation)
-   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54.MoveNext()
-   à System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[[Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54, Microsoft.CodeAnalysis, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35]](&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54 ByRef)
-   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers.ComputeAnalyzerDiagnosticsCoreAsync(Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver, Microsoft.CodeAnalysis.Diagnostics.AsyncQueue`1&lt;Microsoft.CodeAnalysis.Diagnostics.CompilationEvent&gt;, Microsoft.CodeAnalysis.Diagnostics.AnalysisScope, System.Threading.CancellationToken)
-   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;&gt;c__DisplayClass51_2+&lt;&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1&gt;d.MoveNext()
-   à System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[[Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;&gt;c__DisplayClass51_2+&lt;&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1&gt;d, Microsoft.CodeAnalysis, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35]](&lt;&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1&gt;d ByRef)
-   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;&gt;c__DisplayClass51_2.&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1()
-   à System.Threading.Tasks.Task`1[[System.__Canon, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]].InnerInvoke()
-   à System.Threading.Tasks.Task.Execute()
-   à System.Threading.Tasks.Task.ExecutionContextCallback(System.Object)
-   à System.Threading.ExecutionContext.RunInternal(System.Threading.ExecutionContext, System.Threading.ContextCallback, System.Object, Boolean)
-   à System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext, System.Threading.ContextCallback, System.Object, Boolean)
-   à System.Threading.Tasks.Task.ExecuteWithThreadLocal(System.Threading.Tasks.Task ByRef)
-   à System.Threading.Tasks.Task.ExecuteEntry(Boolean)
-   à System.Threading.Tasks.Task.System.Threading.IThreadPoolWorkItem.ExecuteWorkItem()
-   à System.Threading.ThreadPoolWorkQueue.Dispatch()
-   à System.Threading._ThreadPoolWaitCallback.PerformWaitCallback()
-```
+File properties should flow with it.
 </Description>
-        <CreatedDate>02/12/2015</CreatedDate>
-        <ClosedDate>09/12/2015</ClosedDate>
+        <CreatedDate>24/03/2016</CreatedDate>
+        <ClosedDate>13/05/2016</ClosedDate>
       </Issue>
       <Issue>
-        <IssueID>3411</IssueID>
-        <Title>EE: "Internal Error evaluating expression" when instruction does not map to IL offset</Title>
-        <Description>
-        </Description>
-        <CreatedDate>10/06/2015</CreatedDate>
-        <ClosedDate>10/06/2015</ClosedDate>
+        <PullRequestID>2646</PullRequestID>
+        <IssueID>933</IssueID>
+        <Title>Code formatter run</Title>
+        <Description>Been almost a month since the code formatter was run so this change was
+a bit larger than would be expected for a normal (weekly) update.  Diffs
+mostly around:
+- Whitespace changes
+- Missing copyright headers
+- Missing visibility modifiers
+</Description>
+        <CreatedDate>27/02/2015</CreatedDate>
+        <ClosedDate>27/02/2015</ClosedDate>
       </Issue>
     </Issues>
     <Files>
-      <File>src/Workspaces/Core/Desktop/Workspace/MSBuild/ProjectFile/ProjectFile.cs</File>
+      <PullRequestID>2646</PullRequestID>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/InstructionDecoderTests.cs</File>
+      <File>src/ExpressionEvaluator/Core/Source/ExpressionCompiler/InstructionDecoder.cs</File>
     </Files>
   </PullRequest>
   <PullRequest>
-    <IssueID>3412</IssueID>
-    <Title>Update Microsoft.NET.HostModel version</Title>
-    <Description>This is for dotnet/core-setup#7173
+    <IssueID>2625</IssueID>
+    <RepoID>sdk</RepoID>
+    <Title>Fix NuGet.config casing</Title>
+    <Description>Should fix Ubuntu failures in #2615
 
-Same change as #3411, but for Preview 7</Description>
-    <CreatedDate>12/07/2019</CreatedDate>
-    <ClosedDate>12/07/2019</ClosedDate>
+Sending a new version of #2619 and #2622, hopefully with #2623 merged everything well work now!</Description>
+    <CreatedDate>26/10/2018</CreatedDate>
+    <ClosedDate>26/10/2018</ClosedDate>
     <Issues>
       <Issue>
-        <IssueID>7173</IssueID>
-        <Title>Visual Studio 2015 Update 1 crashing with Code Cracker</Title>
-        <Description>Originally reported by @Cybermaxs on https://github.com/code-cracker/code-cracker/issues/610#issuecomment-160966346.
+        <PullRequestID>2625</PullRequestID>
+        <IssueID>2615</IssueID>
+        <Title>Improve error reporting around lambdas and multiple overloads in VB</Title>
+        <Description>Fixes #2604.
 
-Here is the stack trace from his event logs:
-
-```
-Message : System.ArgumentException: SyntaxTree ' {{CsCodeRemovedForClarity}}'
-not found to remove
-Parameter name: syntaxTree
-   at Microsoft.CodeAnalysis.CSharp.CSharpCompilation.GetSemanticModel(SyntaxTree syntaxTree, Boolean ignoreAccessibility)
-   at Microsoft.CodeAnalysis.CSharp.CSharpCompilation.CommonGetSemanticModel(SyntaxTree syntaxTree, Boolean ignoreAccessibility)
-   at Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.IsDiagnosticSuppressed(String id, Location location, SuppressMessageInfo&amp; info)
-   at Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.ApplySourceSuppressions(Diagnostic diagnostic, Compilation compilation, ISymbol symbolOpt)
-   at Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver.FilterDiagnosticsSuppressedInSource(ImmutableArray`1 diagnostics, Compilation compilation)
-   at Microsoft.CodeAnalysis.Diagnostics.AnalysisResult.StoreAnalysisResult(AnalysisScope analysisScope, AnalyzerDriver driver, Compilation compilation)
-   at Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers.&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54.MoveNext()
-Pile :
-   à System.Environment.FailFast(System.String, System.Exception)
-   à Microsoft.CodeAnalysis.FailFast.OnFatalException(System.Exception)
-   à Microsoft.CodeAnalysis.FatalError.Report(System.Exception, System.Action`1&lt;System.Exception&gt;)
-   à Microsoft.CodeAnalysis.FatalError.ReportUnlessCanceled(System.Exception)
-   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54.MoveNext()
-   à Microsoft.CodeAnalysis.CSharp.CSharpCompilation.GetSemanticModel(Microsoft.CodeAnalysis.SyntaxTree, Boolean)
-   à Microsoft.CodeAnalysis.CSharp.CSharpCompilation.CommonGetSemanticModel(Microsoft.CodeAnalysis.SyntaxTree, Boolean)
-   à Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.IsDiagnosticSuppressed(System.String, Microsoft.CodeAnalysis.Location, Microsoft.CodeAnalysis.Diagnostics.SuppressMessageInfo ByRef)
-   à Microsoft.CodeAnalysis.Diagnostics.SuppressMessageAttributeState.ApplySourceSuppressions(Microsoft.CodeAnalysis.Diagnostic, Microsoft.CodeAnalysis.Compilation, Microsoft.CodeAnalysis.ISymbol)
-   à Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver.FilterDiagnosticsSuppressedInSource(System.Collections.Immutable.ImmutableArray`1&lt;Microsoft.CodeAnalysis.Diagnostic&gt;, Microsoft.CodeAnalysis.Compilation)
-   à Microsoft.CodeAnalysis.Diagnostics.AnalysisResult.StoreAnalysisResult(Microsoft.CodeAnalysis.Diagnostics.AnalysisScope, Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver, Microsoft.CodeAnalysis.Compilation)
-   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54.MoveNext()
-   à System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[[Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54, Microsoft.CodeAnalysis, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35]](&lt;ComputeAnalyzerDiagnosticsCoreAsync&gt;d__54 ByRef)
-   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers.ComputeAnalyzerDiagnosticsCoreAsync(Microsoft.CodeAnalysis.Diagnostics.AnalyzerDriver, Microsoft.CodeAnalysis.Diagnostics.AsyncQueue`1&lt;Microsoft.CodeAnalysis.Diagnostics.CompilationEvent&gt;, Microsoft.CodeAnalysis.Diagnostics.AnalysisScope, System.Threading.CancellationToken)
-   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;&gt;c__DisplayClass51_2+&lt;&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1&gt;d.MoveNext()
-   à System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[[Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;&gt;c__DisplayClass51_2+&lt;&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1&gt;d, Microsoft.CodeAnalysis, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35]](&lt;&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1&gt;d ByRef)
-   à Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers+&lt;&gt;c__DisplayClass51_2.&lt;ComputeAnalyzerDiagnosticsAsync&gt;b__1()
-   à System.Threading.Tasks.Task`1[[System.__Canon, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]].InnerInvoke()
-   à System.Threading.Tasks.Task.Execute()
-   à System.Threading.Tasks.Task.ExecutionContextCallback(System.Object)
-   à System.Threading.ExecutionContext.RunInternal(System.Threading.ExecutionContext, System.Threading.ContextCallback, System.Object, Boolean)
-   à System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext, System.Threading.ContextCallback, System.Object, Boolean)
-   à System.Threading.Tasks.Task.ExecuteWithThreadLocal(System.Threading.Tasks.Task ByRef)
-   à System.Threading.Tasks.Task.ExecuteEntry(Boolean)
-   à System.Threading.Tasks.Task.System.Threading.IThreadPoolWorkItem.ExecuteWorkItem()
-   à System.Threading.ThreadPoolWorkQueue.Dispatch()
-   à System.Threading._ThreadPoolWaitCallback.PerformWaitCallback()
-```
+@VSadov, @gafter, @jaredpar Please review.  
 </Description>
-        <CreatedDate>02/12/2015</CreatedDate>
-        <ClosedDate>09/12/2015</ClosedDate>
+        <CreatedDate>08/05/2015</CreatedDate>
+        <ClosedDate>12/05/2015</ClosedDate>
       </Issue>
       <Issue>
-        <IssueID>3411</IssueID>
-        <Title>EE: "Internal Error evaluating expression" when instruction does not map to IL offset</Title>
-        <Description>
-        </Description>
-        <CreatedDate>10/06/2015</CreatedDate>
-        <ClosedDate>10/06/2015</ClosedDate>
+        <PullRequestID>2625</PullRequestID>
+        <IssueID>2619</IssueID>
+        <Title>Trigger dialog integration tests on IsVisibleChanged</Title>
+        <Description>Fixes internal bug #1168460.
+</Description>
+        <CreatedDate>09/05/2015</CreatedDate>
+        <ClosedDate>11/05/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2625</PullRequestID>
+        <IssueID>2622</IssueID>
+        <Title>Expand/Reduce in expression-bodied members and lambdas</Title>
+        <Description>Fixes #1053
+
+Update CSharpRenameRewriterLanguageService.GetExpansionTarget to locate
+good expansion target nodes for 1) expression-bodied members and 2)
+lambdas that are not contained within a StatementSyntax and that have
+ExpressionSyntax bodies. This allows all sub-expressions within these
+nodes to be properly expanded &amp; reduced during rename.
+
+Possible Reviewers: @Pilchie @jasonmalinowski @balajikris @rchande @brettfo @jmarolf
+</Description>
+        <CreatedDate>09/05/2015</CreatedDate>
+        <ClosedDate>11/05/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2625</PullRequestID>
+        <IssueID>2623</IssueID>
+        <Title>VS crash on editing nested VB Try/Catch blocks</Title>
+        <Description>Copy/paste VB code and follow the directions in the comment. Found while dogfooding.
+
+``` VB
+Class C
+    Sub M()
+        Try
+        Catch
+            Try ' Type an 'E' on the next line
+
+                Throw
+            End Try
+    End Sub
+End Class
+```
+
+There are ArgumentOutOfRangeExceptions in the FinallyKeywordRecommender and eventually an ExecutionEngineException that brings down VS, but I haven't been able to figure out where that one comes from due to debugger issues.
+
+```
+System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values.
+   at Microsoft.CodeAnalysis.SyntaxList`1.get_Item(Int32 index) in C:\Roslyn\Main\Open\src\Compilers\Core\Portable\Syntax\SyntaxList`1.cs:line 68
+   at Microsoft.CodeAnalysis.SyntaxList`1.Last() in C:\Roslyn\Main\Open\src\Compilers\Core\Portable\Syntax\SyntaxList`1.cs:line 323
+   at Microsoft.CodeAnalysis.VisualBasic.Completion.KeywordRecommenders.Statements.FinallyKeywordRecommender.RecommendKeywords(VisualBasicSyntaxContext context, CancellationToken cancellationToken) in C:\Roslyn\Main\Open\src\Features\VisualBasic\Completion\KeywordRecommenders\Statements\FinallyKeywordRecommender.vb:line 37
+   at Microsoft.CodeAnalysis.VisualBasic.Completion.KeywordRecommenders.AbstractKeywordRecommender.RecommendKeywords(Int32 position, VisualBasicSyntaxContext context, CancellationToken cancellationToken) in C:\Roslyn\Main\Open\src\Features\VisualBasic\Completion\KeywordRecommenders\AbstractKeywordRecommender.vb:line 17
+   at Microsoft.CodeAnalysis.Completion.Providers.AbstractKeywordCompletionProvider`1.&lt;RecommendKeywordsAsync&gt;d__9.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Completion\Providers\AbstractKeywordCompletionProvider.cs:line 113
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Completion.Providers.AbstractKeywordCompletionProvider`1.&lt;&gt;c__DisplayClass6_0.&lt;&lt;GetItemsWorkerAsync&gt;b__0&gt;d.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Completion\Providers\AbstractKeywordCompletionProvider.cs:line 60
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Shared.Extensions.DocumentExtensions.&lt;GetUnionResultsFromDocumentAndLinks&gt;d__3`1.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Shared\Extensions\DocumentExtensions.cs:line 46
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Completion.Providers.AbstractKeywordCompletionProvider`1.&lt;GetItemsWorkerAsync&gt;d__6.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Completion\Providers\AbstractKeywordCompletionProvider.cs:line 60
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Completion.Providers.AbstractCompletionProvider.&lt;GetItemsAsync&gt;d__7.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Completion\Providers\AbstractCompletionProvider.cs:line 64
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Completion.Providers.AbstractCompletionProvider.&lt;GetGroupAsync&gt;d__4.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Completion\Providers\AbstractCompletionProvider.cs:line 22
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Completion.AbstractCompletionService.&lt;GetGroupsAsync&gt;d__13.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Completion\AbstractCompletionService.cs:line 136
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Completion.AbstractCompletionService.&lt;GetGroupsAsync&gt;d__10.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Completion\AbstractCompletionService.cs:line 84
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Editor.Implementation.IntelliSense.Completion.Controller.Session.ModelComputer.&lt;GetGroupsAsync&gt;d__16.MoveNext() in C:\Roslyn\Main\Open\src\EditorFeatures\Core\Implementation\Intellisense\Completion\Controller.Session_ComputeModel.cs:line 146
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Editor.Implementation.IntelliSense.Completion.Controller.Session.ModelComputer.&lt;DoInBackgroundAsync&gt;d__15.MoveNext() in C:\Roslyn\Main\Open\src\EditorFeatures\Core\Implementation\Intellisense\Completion\Controller.Session_ComputeModel.cs:line 106
+5/9/2015 7:42:39 PM
+Source: First chance exception: First chance exception: First chance exception: First chance exception: First chance exception: First chance exception: First chance exception: First chance exception: First chance exception: First chance exception: Microsoft.CodeAnalysis
+StackTrace:    at Microsoft.CodeAnalysis.SyntaxList`1.get_Item(Int32 index) in C:\Roslyn\Main\Open\src\Compilers\Core\Portable\Syntax\SyntaxList`1.cs:line 68
+   at Microsoft.CodeAnalysis.SyntaxList`1.Last() in C:\Roslyn\Main\Open\src\Compilers\Core\Portable\Syntax\SyntaxList`1.cs:line 323
+   at Microsoft.CodeAnalysis.VisualBasic.Completion.KeywordRecommenders.Statements.FinallyKeywordRecommender.RecommendKeywords(VisualBasicSyntaxContext context, CancellationToken cancellationToken) in C:\Roslyn\Main\Open\src\Features\VisualBasic\Completion\KeywordRecommenders\Statements\FinallyKeywordRecommender.vb:line 37
+   at Microsoft.CodeAnalysis.VisualBasic.Completion.KeywordRecommenders.AbstractKeywordRecommender.RecommendKeywords(Int32 position, VisualBasicSyntaxContext context, CancellationToken cancellationToken) in C:\Roslyn\Main\Open\src\Features\VisualBasic\Completion\KeywordRecommenders\AbstractKeywordRecommender.vb:line 17
+   at Microsoft.CodeAnalysis.Completion.Providers.AbstractKeywordCompletionProvider`1.&lt;RecommendKeywordsAsync&gt;d__9.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Completion\Providers\AbstractKeywordCompletionProvider.cs:line 113
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Completion.Providers.AbstractKeywordCompletionProvider`1.&lt;&gt;c__DisplayClass6_0.&lt;&lt;GetItemsWorkerAsync&gt;b__0&gt;d.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Completion\Providers\AbstractKeywordCompletionProvider.cs:line 60
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Shared.Extensions.DocumentExtensions.&lt;GetUnionResultsFromDocumentAndLinks&gt;d__3`1.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Shared\Extensions\DocumentExtensions.cs:line 46
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Completion.Providers.AbstractKeywordCompletionProvider`1.&lt;GetItemsWorkerAsync&gt;d__6.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Completion\Providers\AbstractKeywordCompletionProvider.cs:line 60
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Completion.Providers.AbstractCompletionProvider.&lt;GetItemsAsync&gt;d__7.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Completion\Providers\AbstractCompletionProvider.cs:line 64
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Completion.Providers.AbstractCompletionProvider.&lt;GetGroupAsync&gt;d__4.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Completion\Providers\AbstractCompletionProvider.cs:line 22
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Completion.AbstractCompletionService.&lt;GetGroupsAsync&gt;d__13.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Completion\AbstractCompletionService.cs:line 136
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Completion.AbstractCompletionService.&lt;GetGroupsAsync&gt;d__10.MoveNext() in C:\Roslyn\Main\Open\src\Features\Core\Completion\AbstractCompletionService.cs:line 84
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Editor.Implementation.IntelliSense.Completion.Controller.Session.ModelComputer.&lt;GetGroupsAsync&gt;d__16.MoveNext() in C:\Roslyn\Main\Open\src\EditorFeatures\Core\Implementation\Intellisense\Completion\Controller.Session_ComputeModel.cs:line 146
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+   at Microsoft.CodeAnalysis.Editor.Implementation.IntelliSense.Completion.Controller.Session.ModelComputer.&lt;DoInBackgroundAsync&gt;d__15.MoveNext() in C:\Roslyn\Main\Open\src\EditorFeatures\Core\Implementation\Intellisense\Completion\Controller.Session_ComputeModel.cs:line 106
+```
+</Description>
+        <CreatedDate>10/05/2015</CreatedDate>
+        <ClosedDate>13/05/2015</ClosedDate>
       </Issue>
     </Issues>
     <Files>
-      <File>src/Workspaces/Core/Desktop/Workspace/MSBuild/ProjectFile/ProjectFile.cs</File>
+      <PullRequestID>2625</PullRequestID>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/CommandHandlers/RenameCommandHandler_LineStartEndHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/CommandHandlers/RenameCommandHandler_RenameHandler.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>2382</IssueID>
+    <RepoID>sdk</RepoID>
+    <Title>Don't include non-CopyLocal direct references of referenced projects in deps.json</Title>
+    <Description>Fixes aspnet/Home#3132
+
+Fixes regression introduced with #2090.  That change will also include Framework references, which under some circumstances will cause a runtime failure with ASP.NET Core 1.x running on .NET Framework.</Description>
+    <CreatedDate>03/07/2018</CreatedDate>
+    <ClosedDate>09/07/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>2382</PullRequestID>
+        <IssueID>3132</IssueID>
+        <Title>Handle out parameters in cross-language scenarios</Title>
+        <Description>Ignore the difference between `ref` and `out` in `SymbolKey` and `SymbolEquivalenceComparer` since two overloads cannot differ by only RefKind.  This prevents VB FAR and GTD from being too discerning and missing matching references.
+
+That is, without this fix, if you attempt to find all references to a C# method with an out parameter, no VB references will be reported.
+
+Caveat: Switching between `ref` and `out` is still a rude edit, so EnC sets a switch to force consideration of the difference.
+
+Fixes #599.
+</Description>
+        <CreatedDate>27/05/2015</CreatedDate>
+        <ClosedDate>28/05/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2382</PullRequestID>
+        <IssueID>2090</IssueID>
+        <Title>Incorrect behavior of Edit.OpenLineAbove in XML documentation comment</Title>
+        <Description>**Repro Steps:**
+- Add the following method to a class. Position the caret at the location of the `|`.
+
+``` C#
+        /// &lt;summary&gt;
+        /// stuff|
+        /// &lt;/summary&gt;
+        public void Foo() { }
+```
+- Press Ctrl+Enter.
+
+**Expected Result:**
+
+The following text is the result, with the position of the caret indicated by `|`.
+
+``` C#
+    /// &lt;summary&gt;
+    /// |
+    /// stuff
+    /// &lt;/summary&gt;
+    public void Foo() { }
+```
+
+**Actual Result:**
+
+``` C#
+    /// &lt;summary&gt;
+    |
+    /// stuff
+    /// &lt;/summary&gt;
+    public void Foo() { }
+```
+</Description>
+        <CreatedDate>17/04/2015</CreatedDate>
+        <ClosedDate>26/08/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>2382</PullRequestID>
+      <File>src/EditorFeatures/Core/Implementation/Suggestions/FixAllGetFixesService.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Suggestions/PreviewChangesCodeAction.cs</File>
+      <File>src/Features/Core/CodeFixes/FixAllOccurrences/FixAllCodeAction.cs</File>
+      <File>src/Workspaces/Core/Portable/CodeFixes/FixAllOccurrences/BatchFixAllProvider.cs</File>
     </Files>
   </PullRequest>
   <PullRequest>
     <IssueID>2085</IssueID>
+    <RepoID>sdk</RepoID>
     <Title>Roll forward self-contained apps to latest patch version</Title>
     <Description>- Bring back behavior where self-contained apps will roll-forward to the latest patch the SDK knows about
   - We had reverted this in #1574
@@ -161,6 +335,7 @@ Related: #1570
     <ClosedDate>28/03/2018</ClosedDate>
     <Issues>
       <Issue>
+        <PullRequestID>2085</PullRequestID>
         <IssueID>1574</IssueID>
         <Title>'Open Active Rule Set' doesn't work if I have ruleset file already opened</Title>
         <Description>1. Create a solution with multiple projects (I used one with a C# console app and a VB console app)
@@ -175,6 +350,7 @@ New rule set should be displayed after step 4 above (or if the rule set file is 
         </ClosedDate>
       </Issue>
       <Issue>
+        <PullRequestID>2085</PullRequestID>
         <IssueID>1570</IssueID>
         <Title>[VB/EnC] Disallow an edit of methods containing static locals.</Title>
         <Description>
@@ -184,11 +360,13 @@ New rule set should be displayed after step 4 above (or if the rule set file is 
       </Issue>
     </Issues>
     <Files>
+      <PullRequestID>2085</PullRequestID>
       <File>src/EditorFeatures/Core/Implementation/ReferenceHighlighting/AbstractDocumentHighlightsService.cs</File>
     </Files>
   </PullRequest>
   <PullRequest>
     <IssueID>2008</IssueID>
+    <RepoID>sdk</RepoID>
     <Title>Re-enable a few tests</Title>
     <Description>Fixes #1077
 Fixes #1293</Description>
@@ -196,6 +374,7 @@ Fixes #1293</Description>
     <ClosedDate>15/03/2018</ClosedDate>
     <Issues>
       <Issue>
+        <PullRequestID>2008</PullRequestID>
         <IssueID>1077</IssueID>
         <Title>Upgrade BCL nuget packages to RC releases</Title>
         <Description>There are 3 parts:
@@ -209,6 +388,7 @@ cc @tmat @jaredpar @theoy @joshfree
         <ClosedDate>06/03/2015</ClosedDate>
       </Issue>
       <Issue>
+        <PullRequestID>2008</PullRequestID>
         <IssueID>1293</IssueID>
         <Title>Completion not triggered on . in With after numeric literal</Title>
         <Description>``` VB
@@ -231,6 +411,7 @@ Completion should be triggered at $$, but isn't.
       </Issue>
     </Issues>
     <Files>
+      <PullRequestID>2008</PullRequestID>
       <File>src/Compilers/CSharp/Portable/Lowering/LambdaRewriter/ExpressionLambdaRewriter.cs</File>
       <File>src/Compilers/CSharp/Portable/Lowering/LambdaRewriter/LambdaRewriter.cs</File>
       <File>src/Compilers/CSharp/Portable/Lowering/SyntheticBoundNodeFactory.cs</File>
@@ -238,46 +419,157 @@ Completion should be triggered at $$, but isn't.
     </Files>
   </PullRequest>
   <PullRequest>
-    <IssueID>1442</IssueID>
-    <Title>Fix #1435 - calculation of ResolvedPath for project references</Title>
-    <Description>See #479 and #1435 for error description and analysis of the problem. In short:
+    <IssueID>1274</IssueID>
+    <RepoID>sdk</RepoID>
+    <Title>Use a better error message when TargetFramework property has a semicolon in it</Title>
+    <Description>Fixes #385
 
-The old implementation combined the relative `&lt;ProjectReference Include="..." /&gt;` path with the directory of the `ProjectAssetFile`.
-Corrected this to combine the relative project reference with the current's project path.
+For checking for a TargetFramework value with a semicolon in it, this reuses the existing check that TargetFrameworkIdentifier or TargetFrameworkVersion couldn't be inferred, but uses a different error message:
 
-Questions:
- - Is it actually the desired outcome that ResolvedPath points to the csproj file? Or should it point to the output directory of that project?
- - Is ProjectPath always passed in as full path? (otherwise it needs to be enclosed by a `Path.GetFullPath`)</Description>
-    <CreatedDate>22/07/2017</CreatedDate>
-    <ClosedDate>30/10/2017</ClosedDate>
+&gt; The TargetFramework value 'netcoreapp2.0;net46' is not valid. To multi-target, use the 'TargetFrameworks' property instead.
+
+Fixes #1015 
+
+Updates the error message in the case where there isn't a semicolon in `TargetFramework` to:
+
+&gt; The TargetFramework value 'foo45' was not recognized. It may be misspelled. If not, then the TargetFrameworkIdentifier and/or TargetFrameworkVersion properties must be specified explicitly.
+
+This PR also updates the `_CheckForUnsupportedTargetFramework` target to run before Restore, since a valid target framework is necessary in order to restore.</Description>
+    <CreatedDate>31/05/2017</CreatedDate>
+    <ClosedDate>03/06/2017</ClosedDate>
     <Issues>
       <Issue>
-        <IssueID>479</IssueID>
-        <Title>Replace Task.WaitAll with Task.WhenAll in async method.</Title>
-        <Description>Task.WaitAll has an overload that accepts a CancellationToken whereas the Task.WhenAll method does not. So I've added some useful extension methods that enable the same pattern you had before, but doing so in an async fashion rather than blocking a thread.
+        <PullRequestID>1274</PullRequestID>
+        <IssueID>385</IssueID>
+        <Title>[Proposal] Roslyn Team Kanban Stages and Meanings</Title>
+        <Description>A few of us have been trying out Kanban methods for example, using [HuBoard](http://huboard.com), a popular tool for presenting a KanBan-style interface over GitHub isues.
 
-Fix #478 
+For a view of all of Roslyn, the HuBoard view is available at https://huboard.com/dotnet/roslyn
+
+To see an example for how some of us have been trying this out for the compiler, a filtered view is here:
+
+https://huboard.com/dotnet/roslyn/#/?label=%5B%22Area-Compilers%22%5D
+
+Here are some working definitions for the associated labels:
+
+**0 - Backlog** All work items are allowed to at least start out in this stage.
+**1 - Planning** Actively working to flesh out details for this work item. For bugs, the difference between Backlog and Planning is not significant, except for that this state may reflect that the bug has been seen and/or is pending decision. For Features/Enhancements, this is more meaningful because someone is actively planning to flesh out details, or to take this up for consideration/approval.
+**2 - Ready** The work item has clear definitions and approvals, ready for engineering
+**3 - Working** Actively engineering (or executing) in the work item
+**4 - In Review** Code change out for code review/pull request
+
+Credit to @gafter, @srivatsn, @ManishJayaswal to help vet these definitions.
 </Description>
-        <CreatedDate>13/02/2015</CreatedDate>
-        <ClosedDate>16/02/2015</ClosedDate>
+        <CreatedDate>10/02/2015</CreatedDate>
+        <ClosedDate>13/09/2015</ClosedDate>
       </Issue>
       <Issue>
-        <IssueID>1435</IssueID>
-        <Title>Update Microsoft.DiaSymReader to v1.0.3-rc2</Title>
-        <Description>
-        </Description>
-        <CreatedDate>20/03/2015</CreatedDate>
-        <ClosedDate>20/03/2015</ClosedDate>
+        <PullRequestID>1274</PullRequestID>
+        <IssueID>1015</IssueID>
+        <Title>Debugger IntellIiSense and linked files</Title>
+        <Description>Since we did the shared project work, completion computes results for
+every related document. Since debugger intellisense only replaced the
+Text of the context document and not its related documents, completion
+in a linked file in debugger intellisense could easily query invalid
+caret positions and crash with ArgumentOutOfRange.
+
+To fix this, we replace the text for all the related documents of the
+context document. I believe this is consistent with normal handling of
+linked files where we ensure that linked files always have the same
+TextContainer.
+</Description>
+        <CreatedDate>04/03/2015</CreatedDate>
+        <ClosedDate>05/03/2015</ClosedDate>
       </Issue>
     </Issues>
     <Files>
-      <File>src/EditorFeatures/CSharpTest/Completion/CompletionProviders/SymbolCompletionProviderTests.cs</File>
-      <File>src/Workspaces/CSharp/Portable/Extensions/SyntaxNodeExtensions.cs</File>
-      <File>src/Workspaces/CSharp/Portable/Recommendations/CSharpRecommendationService.cs</File>
+      <PullRequestID>1274</PullRequestID>
+      <File>src/EditorFeatures/CSharpTest/Squiggles/ErrorSquiggleProducerTests.cs</File>
+      <File>src/EditorFeatures/Test/Squiggles/AbstractSquiggleProducerTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>1257</IssueID>
+    <RepoID>sdk</RepoID>
+    <Title>Don't generate deps or runtimeconfig files when build has failed but _CleanRecordFileWrites is being run</Title>
+    <Description>Fixes #1234
+
+The `GenerateBuildRuntimeConfigurationFiles` runs before `_CheckForCompileOutputs`, so that the `FileWrites` items it adds will be picked up by `_CleanGetCurrentAndPriorFileWrites`, and incremental builds and cleans will work correctly.  (See some discussion of this on #381)
+
+However, the `CoreBuild` target invokes the `_CleanRecordFileWrites` target [when it errors](https://github.com/Microsoft/msbuild/blob/a8a025b9751461feaedc0a78cd28c226f5872bdf/src/Tasks/Microsoft.Common.CurrentVersion.targets#L838):
+
+```xml
+  &lt;Target
+      Name="CoreBuild"
+      DependsOnTargets="$(CoreBuildDependsOn)"&gt;
+
+    &lt;OnError ExecuteTargets="_TimeStampAfterCompile;PostBuildEvent" Condition="'$(RunPostBuildEvent)'=='Always' or '$(RunPostBuildEvent)'=='OnOutputUpdated'"/&gt;
+    &lt;OnError ExecuteTargets="_CleanRecordFileWrites"/&gt;
+
+  &lt;/Target&gt;
+```
+
+This means that even if there is a previous build error, we are trying to generate the runtime config files.  In the case of #1234, the output path where we would write them hasn't been created, so the task throws an exception.
+
+This PR adds a condition to only run the task if the folder it's going to write to exists.  This feels like a band-aid solution though.  Is there a better way to structure this which would add the correct `FileWrites` items when needed, but not even run the target if `GetReferenceAssemblyPaths` or some other target before-hand has failed?
+
+@rainersigwald @AndyGerlicher @nguerrera</Description>
+    <CreatedDate>26/05/2017</CreatedDate>
+    <ClosedDate>26/05/2017</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>1257</PullRequestID>
+        <IssueID>1234</IssueID>
+        <Title>null check a token's parent to prevent a NullReferenceException</Title>
+        <Description>This enables us to remove a try/catch block that was specifically added to find this NRE.
+
+Fixes #1187.
+</Description>
+        <CreatedDate>12/03/2015</CreatedDate>
+        <ClosedDate>19/03/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>1257</PullRequestID>
+        <IssueID>381</IssueID>
+        <Title>properly handle VB Global namespace in DeclaredSymbolInfo</Title>
+        <Description>When walking the syntax trees to find DeclaredSymbolInfos, I missed a case where VB can have "Namespace Global".  Functionally this is no different than hitting the default case of the Select where I also Return Nothing, but it's a lot nicer to not have asserts :smile:.
+</Description>
+        <CreatedDate>10/02/2015</CreatedDate>
+        <ClosedDate>11/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>1257</PullRequestID>
+        <IssueID>1234</IssueID>
+        <Title>null check a token's parent to prevent a NullReferenceException</Title>
+        <Description>This enables us to remove a try/catch block that was specifically added to find this NRE.
+
+Fixes #1187.
+</Description>
+        <CreatedDate>12/03/2015</CreatedDate>
+        <ClosedDate>19/03/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>1257</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Emitter/Model/PEModuleBuilder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceModuleSymbol.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenForEachTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/IndexerTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/SwitchTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/CompilationEmitTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EditAndContinue/EditAndContinueTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/PDB/PDBTests.cs</File>
+      <File>src/Compilers/CSharp/Test/WinRT/CodeGen/WinRTCollectionTests.cs</File>
+      <File>src/Compilers/Core/Portable/CodeGen/PrivateImplementationDetails.cs</File>
+      <File>src/Compilers/Core/Portable/Emit/CommonPEModuleBuilder.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Source/ExpressionCompiler/CompilationExtensions.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/ExpressionCompilerTests.cs</File>
     </Files>
   </PullRequest>
   <PullRequest>
     <IssueID>806</IssueID>
+    <RepoID>sdk</RepoID>
     <Title>Update property name for exclude pattern in project folder to match where it's consumed</Title>
     <Description>Fixes #631 
 
@@ -312,6 +604,7 @@ This was introduced in #630, where I accidentally renamed a property where it wa
     <ClosedDate>03/02/2017</ClosedDate>
     <Issues>
       <Issue>
+        <PullRequestID>806</PullRequestID>
         <IssueID>631</IssueID>
         <Title>The Kind extension members have no documentation</Title>
         <Description>Repro:
@@ -328,6 +621,7 @@ I said possible above because I don't know if `Kind` is the direct equivalent of
         <ClosedDate>13/12/2019</ClosedDate>
       </Issue>
       <Issue>
+        <PullRequestID>806</PullRequestID>
         <IssueID>631</IssueID>
         <Title>The Kind extension members have no documentation</Title>
         <Description>Repro:
@@ -344,6 +638,7 @@ I said possible above because I don't know if `Kind` is the direct equivalent of
         <ClosedDate>13/12/2019</ClosedDate>
       </Issue>
       <Issue>
+        <PullRequestID>806</PullRequestID>
         <IssueID>630</IssueID>
         <Title>Obsolete messages could be more helpful</Title>
         <Description>The upgrade from beta1 to rc1 NuGet packages introduced a number of `Obsolete` members.  The messages though are not very helpful:
@@ -368,12 +663,14 @@ public ClassStatementSyntax Begin { get; }
       </Issue>
     </Issues>
     <Files>
+      <PullRequestID>806</PullRequestID>
       <File>src/VisualStudio/Setup/IRoslynTelemetrySetup.cs</File>
       <File>src/VisualStudio/Setup/RoslynPackage.cs</File>
     </Files>
   </PullRequest>
   <PullRequest>
     <IssueID>539</IssueID>
+    <RepoID>sdk</RepoID>
     <Title>Import common targets if LanguageTargets property isn't set.</Title>
     <Description>This will allow restore to succeed.  Fixes #448. Fixes #373 
 
@@ -384,6 +681,7 @@ Rather than generating an error (as specified in #448), this PR imports the comm
     <ClosedDate>28/12/2016</ClosedDate>
     <Issues>
       <Issue>
+        <PullRequestID>539</PullRequestID>
         <IssueID>448</IssueID>
         <Title>Bug: The new managed Expression Evaluator ignores DEBUGPROP_INFO_NOFUNCEVAL</Title>
         <Description>In _VS2010 and VS2012_, a consumer could call the debugger API's `IDebugProperty3.EnumChildren` passing in only the `DEBUGPROP_INFO_NAME` flag, to obtain only the names of the expressions,  without incurring the performance cost of the EE actually evaluating their values and performing func-evals. We've built a lot of functionality around this ability. 
@@ -402,6 +700,7 @@ To reproduce:
         <ClosedDate>18/02/2015</ClosedDate>
       </Issue>
       <Issue>
+        <PullRequestID>539</PullRequestID>
         <IssueID>373</IssueID>
         <Title>Make a built-in symbol for the nameof() operator</Title>
         <Description>The compiler already provides symbols for built-in operators such as +(int,int). I think this would be one of those built-in operators, probably something like
@@ -425,6 +724,7 @@ This would (only) be visible through the `SemanticModel` API.
         </ClosedDate>
       </Issue>
       <Issue>
+        <PullRequestID>539</PullRequestID>
         <IssueID>448</IssueID>
         <Title>Bug: The new managed Expression Evaluator ignores DEBUGPROP_INFO_NOFUNCEVAL</Title>
         <Description>In _VS2010 and VS2012_, a consumer could call the debugger API's `IDebugProperty3.EnumChildren` passing in only the `DEBUGPROP_INFO_NAME` flag, to obtain only the names of the expressions,  without incurring the performance cost of the EE actually evaluating their values and performing func-evals. We've built a lot of functionality around this ability. 
@@ -444,12 +744,14 @@ To reproduce:
       </Issue>
     </Issues>
     <Files>
+      <PullRequestID>539</PullRequestID>
       <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/ExpressionCompilerTests.cs</File>
       <File>src/ExpressionEvaluator/CSharp/Test/ResultProvider/ResultsViewTests.cs</File>
     </Files>
   </PullRequest>
   <PullRequest>
     <IssueID>457</IssueID>
+    <RepoID>sdk</RepoID>
     <Title>Skip ResolvePackageDependencies task during design-time builds where restore hasn't occured</Title>
     <Description>Fixes #453 
 
@@ -474,6 +776,7 @@ How was the bug found? - Internal testing.
     <ClosedDate>05/12/2016</ClosedDate>
     <Issues>
       <Issue>
+        <PullRequestID>457</PullRequestID>
         <IssueID>453</IssueID>
         <Title>Enable 64 bit test runs</Title>
         <Description>This change allows provides the option of running our tests in 64 bit
@@ -493,6 +796,7 @@ will at least give us protection against regressions.
         <ClosedDate>13/02/2015</ClosedDate>
       </Issue>
       <Issue>
+        <PullRequestID>457</PullRequestID>
         <IssueID>453</IssueID>
         <Title>Enable 64 bit test runs</Title>
         <Description>This change allows provides the option of running our tests in 64 bit
@@ -513,7 +817,129 @@ will at least give us protection against regressions.
       </Issue>
     </Issues>
     <Files>
+      <PullRequestID>457</PullRequestID>
       <File>src/Compilers/CSharp/Test/Syntax/Syntax/SyntaxDiffingTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>10</IssueID>
+    <RepoID>sdk</RepoID>
+    <Title>Add Package Dependency Resolution Task</Title>
+    <Description>Task and targets for raising project.lock.json's contents to MSBuild Items, and computing references, copy locals etc. in down stream targets. This decoupling will allow these targets to be overridden by different project types.
+
+Here are workitems for outstanding work based on feedback:
+- #24 Improve Path Resolution in Package Dependency Resolution task 
+- #25 Unify Package Dependency Version numbers to version number under Package Definitions 
+- #26 Provide Diagnostic Items as part of Package Dependency Resolution task 
+- #27 Add Type metadata to all Definition items in Package Dependency Resolution task 
+- #28 Add Unit Tests for Package Dependency Resolution Task (dependent on making unit tests runnable against .NetStandard 1.3 project
+</Description>
+    <CreatedDate>04/08/2016</CreatedDate>
+    <ClosedDate>10/08/2016</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>10</PullRequestID>
+        <IssueID>24</IssueID>
+        <Title>Allow C# to use anonymous iterators.</Title>
+        <Description>VB.net allows you to have a lambda return an iterator, it should hopefully be possible to use such functionality in c#. E.g.
+
+``` csharp
+Func&lt;IEnumerable&lt;int&gt;&gt; f = ()=&gt;yield return 3;
+```
+
+While that's a terrible example it hopefully can demonstrate the point.
+</Description>
+        <CreatedDate>17/01/2015</CreatedDate>
+        <ClosedDate>15/08/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>10</PullRequestID>
+        <IssueID>25</IssueID>
+        <Title>Throw an ObjectDisposedException instead of an AccessViolationException ...</Title>
+        <Description>In the following code, Roslyn throws an AccessViolationException on the last line. 
+
+``` c#
+var md = AssemblyMetadata.CreateFromFile(typeof(object).Assembly.Location);
+var compilation = CSharpCompilation.Create("test", references: new[] { md.GetReference() });
+
+// Use the Compilation once to force lazy initialization of the underlying MetadataReader
+compilation.GetTypeByMetadataName("System.Version").GetMembers();
+
+md.Dispose();
+
+compilation.GetTypeByMetadataName("System.Exception").GetMembers(); // &lt;-- AccessViolationException is thrown here
+```
+
+This code shows an improper use of the Compilation API where the consumer attempts to (indirectly) use an AssemblyMetadata instance after it has already been disposed. Therefore, an exception should indeed be thrown, but it should be an ObjectDisposedException and not an AccessViolationException. 
+
+It should not be permissible for Roslyn to throw an AccessViolationException, because AVE's cannot be caught by user code and usually cause the process to terminate immediately (unless legacyCorruptedStateExceptionsPolicy or HandleProcessCorruptedStateExceptionAttribute is used - see http://msdn.microsoft.com/en-us/magazine/dd419661.aspx#id0070035 for reference). 
+
+&lt;!---
+@huboard:{"order":8.5}
+--&gt;
+</Description>
+        <CreatedDate>18/01/2015</CreatedDate>
+        <ClosedDate>18/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>10</PullRequestID>
+        <IssueID>26</IssueID>
+        <Title>Added “SemanticModel.WithSuppressAccessChecks” extension method.</Title>
+        <Description>The `WithSupressAccessChecks` method creates a SemanticModel that ignores accessibility rules when answering semantic questions.
+
+This allows consumers to ask semantic questions using the same semantic rules as the ones used in debugger’s Expression Evaluator, where accessibility rules do not matter. This API is an absolute necessity for 3rd parties (such as OzCode) who want to create debugger-related productivity tools on top of Roslyn.
+
+Added unit tests for C# and VB.NET to cover both regular and speculative analysis.
+
+fixes #378
+
+&lt;!---
+@huboard:{"order":514.0,"milestone_order":26,"custom_state":""}
+--&gt;
+</Description>
+        <CreatedDate>18/01/2015</CreatedDate>
+        <ClosedDate>19/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>10</PullRequestID>
+        <IssueID>27</IssueID>
+        <Title>Method Declaration in Script code shows completions for class</Title>
+        <Description>Source: (in a `Script` document)
+
+``` C#
+public static bool HasAtLeast&lt;T&gt;(this IEnumerable&lt;T&gt;
+```
+
+Pressing Ctrl+Space on the `bool` shows just `class`, `partial`, and `unsafe`.
+
+![image](https://cloud.githubusercontent.com/assets/313894/5792904/31847b84-9efc-11e4-9cf2-84d50988d082.png)
+</Description>
+        <CreatedDate>18/01/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>10</PullRequestID>
+        <IssueID>28</IssueID>
+        <Title>Duplicate diagnostic reports in unit tests</Title>
+        <Description>We are observing multiple cases in the StyleCopAnalyzers project where the unit tests are producing multiple reports for the same diagnostic. The behavior is reproducible (100% observed consistency for Beta 1 and Beta 2), but we have diagnostics where only _particular_ inputs result in the behavior, suggesting that the problem is not within the diagnostic implementation itself. We believe the problem lies either in the unit test framework or in Roslyn itself.
+
+This behavior is currently affecting the following diagnostics:
+- [SA1121 Use built-in type alias](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/9d1d078dafef149fa3f578ffcd589b585f2dd775/StyleCop.Analyzers/StyleCop.Analyzers.Test/ReadabilityRules/SA1121UnitTests.cs#L949-L960)
+- [SA1304 Non-private readonly fields must begin with upper-case letter](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/9d1d078dafef149fa3f578ffcd589b585f2dd775/StyleCop.Analyzers/StyleCop.Analyzers.Test/NamingRules/SA1304UnitTests.cs#L45-L56)
+- [SA1600 Elements must be documented](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/9d1d078dafef149fa3f578ffcd589b585f2dd775/StyleCop.Analyzers/StyleCop.Analyzers.Test/DocumentationRules/SA1600UnitTests.cs#L368-L379)
+
+The unit test framework we use is the one provided with a new Roslyn diagnostic project (created with Visual Studio 2015 Preview), converted to use `async` methods instead of synchronous methods.
+
+It would be enormously helpful if someone could help track down the cause of this issue.
+</Description>
+        <CreatedDate>18/01/2015</CreatedDate>
+        <ClosedDate>29/01/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>10</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Syntax/InternalSyntax/SyntaxVisitor.cs</File>
     </Files>
   </PullRequest>
 </PullRequests>

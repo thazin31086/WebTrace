@@ -1,0 +1,2901 @@
+<PullRequests>
+  <PullRequest>
+    <IssueID>7954</IssueID>
+    <RepoID>xamarinmacios</RepoID>
+    <Title>[appkit] Fix `NSApplication` with custom initialization</Title>
+    <Description>Custom initialization of Xamarin.Mac is tricky. You can easily start
+using ObjC features before everything is ready / loaded into memory.
+
+In contrast a _normal_ XM application, from an app bundle, already has a
+lot of things loaded into memory when it starts to initialize.
+
+This means that some things can work _by chance_ due to timing and that
+semi-related (and correct) changes could affect your _lucky_ timings.
+
+Such a semi-related change was https://github.com/xamarin/xamarin-macios/commit/a239fa9ebd5071d9e72b1d3b72633e5b2864425e#diff-4aa19167162888aec0ccc2261a7ddbd3
+
+In #7932 the attached code
+```csharp
+NSApplication.IgnoreMissingAssembliesDuringRegistration = false;
+```
+triggers the `.cctor` which means that `class_ptr` is initialized.
+
+Note: That's not fully correct/safe since `Init` is not been called
+but that's a different issue...
+
+Anyway the dual calls that existed before was enough to hide the first
+(which failed but triggered the rest of the native initialization).
+That extra call made older XM version works (with attached code).
+
+So in this (#7932) case our generated code
+```csharp
+static readonly IntPtr class_ptr = Class.GetHandle ("NSApplication");
+```
+happens too early. Now that cannot be changed because
+
+* it's how .net `readonly` works
+* existing/correct code depends on this
+* it depends on native side (being loaded/initialized/ready)
+
+but we can **add** to this and make `Init` safer to use by duplicating
+the call _only if_ the original call had failed.
+
+Of course the generated code has the `class_ptr` field as `readonly`...
+```
+error CS0198: A static readonly field cannot be assigned to (except in a static constructor or a variable initializer)
+```
+so we need to use reflection to achieve this (but that cost will occur
+if the original initialization failed)
+
+Fix https://github.com/xamarin/xamarin-macios/issues/7932</Description>
+    <CreatedDate>21/02/2020</CreatedDate>
+    <ClosedDate>21/02/2020</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>7954</PullRequestID>
+        <IssueID>7932</IssueID>
+        <Title>Extension methods not offered for autocompletion in the owner class</Title>
+        <Description>``` C#
+public static class Test
+{
+    static void TestB()
+    {     
+        Te|
+    }
+    static void TestA(this string s) { }
+}
+```
+
+Inside `TestB`, `TestA` should be offered in the autocompletion list as one starts typing it, but it is not.
+</Description>
+        <CreatedDate>13/01/2016</CreatedDate>
+        <ClosedDate>22/01/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7954</PullRequestID>
+        <IssueID>7932</IssueID>
+        <Title>Extension methods not offered for autocompletion in the owner class</Title>
+        <Description>``` C#
+public static class Test
+{
+    static void TestB()
+    {     
+        Te|
+    }
+    static void TestA(this string s) { }
+}
+```
+
+Inside `TestB`, `TestA` should be offered in the autocompletion list as one starts typing it, but it is not.
+</Description>
+        <CreatedDate>13/01/2016</CreatedDate>
+        <ClosedDate>22/01/2016</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>7954</PullRequestID>
+      <File>src/Compilers/Core/Portable/CommandLine/CommonCommandLineArguments.cs</File>
+      <File>src/Compilers/Core/Portable/Desktop/DesktopAssemblyIdentityComparer.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/ProjectSystemShim/TempPECompilerService.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>7942</IssueID>
+    <RepoID>xamarinmacios</RepoID>
+    <Title>[mono] Bump mono to match android</Title>
+    <Description>New commits in mono/mono:
+
+* mono/mono@c0c5c78e2bd Bump bockbuild to bring in Gtk# regression fix (#18912)
+* mono/mono@a644983ae82 [2019-10] Make MonoWebRequestHandler linker friendly (#18835)
+* mono/mono@85f47fae28e Move HttpClientHandlerTests.Android.cs to nunit (#18888)
+* mono/mono@26afa2d5bb7 [2019-10] Bump msbuild to track mono-2019-10 (#18861)
+* mono/mono@e5f0d5d928a [2019-10] [merp] Increase buffer size for state dump (#18838)
+* mono/mono@e60eabc7670 Move offsets-tool into mono/tools (#18783) (#18831)
+* mono/mono@7a59bf3ea51 [2019-10] Bump msbuild to track mono-2019-10 (#18791)
+* mono/mono@47bb780c8d7 [2019-10] Allow users to switch to MonoWebRequestHandler on Android via UI (#18787)
+* mono/mono@d6f592717e1 Bump bockbuild to get GTK NSPasteboardType change.
+* mono/mono@1ee12f86258 Update deprecated query parameter to header (#18705)
+* mono/mono@87201428343 [iOS] Replace removed dsymutil `-t` switch with `-num-threads` (#18743)
+* mono/mono@83c161f2766 Skip WebAssembly build in sdks archive build on non-master branches
+* mono/mono@0e18125d711 [merp] Add an exception type for managed exceptions (#18722)
+* mono/mono@82fffe07497 [runtime] Disable lldb backtrace display on osx, it hangs on attaching in lldb.
+
+Diff: https://github.com/mono/mono/compare/1cca0cfebfcbd019c6f2bdd3e5b99f769f1e2e0c..c0c5c78e2bdbdbf7a70ae10b0a698708f1f2edbe</Description>
+    <CreatedDate>19/02/2020</CreatedDate>
+    <ClosedDate>20/02/2020</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>7942</PullRequestID>
+        <IssueID>18912</IssueID>
+        <Title>Only offer the 'add named parameter' refactoring when on the start of the argument being passed in.</Title>
+        <Description>Fixes https://github.com/dotnet/roslyn/issues/18848
+
+</Description>
+        <CreatedDate>22/04/2017</CreatedDate>
+        <ClosedDate>25/04/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7942</PullRequestID>
+        <IssueID>18835</IssueID>
+        <Title>VS crashes when it tries to open a solution with WPF project after enabling LSL if only C++ workflow is installed</Title>
+        <Description>**Version Used**: 
+VS: vsuvscore 26418.04
+MS.VS.LanguageServices.Implementation: 2.3.0-beta1-61515-02
+
+**Steps to Reproduce**:
+
+1.  On a machine where VS is installed with only C++ workflow, open a solution with a WPF project
+2.  Do not accept installing missing frameworks or missing features
+3.  The WPF project will be unloaded, this is expected
+4.  Change the solution property to enable Light Weight Solution load
+5.  Save the solution and close it
+6.  Open the solution in the same VS session
+
+**Expected Behavior**:
+VS does not crash
+
+**Actual Behavior**:
+VS crashes
+
+**Call Stack**
+```
+Application: devenv.exe
+Framework Version: v4.0.30319
+Description: The process was terminated due to an unhandled exception.
+Exception Info: System.NullReferenceException
+   at Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.VisualStudioProjectTracker+&lt;PopulateWorkspaceFromDeferredProjectInfoAsync&gt;d__60.MoveNext()
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(System.Threading.Tasks.Task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(System.Threading.Tasks.Task)
+   at Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.VisualStudioProjectTracker+&lt;LoadSolutionFromMSBuildAsync&gt;d__58.MoveNext()
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(System.Threading.Tasks.Task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(System.Threading.Tasks.Task)
+   at Roslyn.Utilities.TaskExtensions+&lt;FireAndForget&gt;d__0.MoveNext()
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore+&lt;&gt;c.&lt;ThrowAsync&gt;b__6_0(System.Object)
+   at Microsoft.VisualStudio.Threading.JoinableTaskFactory+SingleExecuteProtector.TryExecute()
+   at Microsoft.VisualStudio.Threading.JoinableTaskFactory+SingleExecuteProtector+&lt;&gt;c.&lt;.cctor&gt;b__20_0(System.Object)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(System.Delegate, System.Object, Int32)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(System.Object, System.Delegate, System.Object, Int32, System.Delegate)
+   at System.Windows.Threading.DispatcherOperation.InvokeImpl()
+   at System.Windows.Threading.DispatcherOperation.InvokeInSecurityContext(System.Object)
+   at MS.Internal.CulturePreservingExecutionContext.CallbackWrapper(System.Object)
+   at System.Threading.ExecutionContext.RunInternal(System.Threading.ExecutionContext, System.Threading.ContextCallback, System.Object, Boolean)
+   at System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext, System.Threading.ContextCallback, System.Object, Boolean)
+   at System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext, System.Threading.ContextCallback, System.Object)
+   at MS.Internal.CulturePreservingExecutionContext.Run(MS.Internal.CulturePreservingExecutionContext, System.Threading.ContextCallback, System.Object)
+   at System.Windows.Threading.DispatcherOperation.Invoke()
+   at System.Windows.Threading.Dispatcher.ProcessQueue()
+   at System.Windows.Threading.Dispatcher.WndProcHook(IntPtr, Int32, IntPtr, IntPtr, Boolean ByRef)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr, Int32, IntPtr, IntPtr, Boolean ByRef)
+   at MS.Win32.HwndSubclass.DispatcherCallbackOperation(System.Object)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(System.Delegate, System.Object, Int32)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(System.Object, System.Delegate, System.Object, Int32, System.Delegate)
+   at System.Windows.Threading.Dispatcher.LegacyInvokeImpl(System.Windows.Threading.DispatcherPriority, System.TimeSpan, System.Delegate, System.Object, Int32)
+   at MS.Win32.HwndSubclass.SubclassWndProc(IntPtr, Int32, IntPtr, IntPtr)
+```
+</Description>
+        <CreatedDate>19/04/2017</CreatedDate>
+        <ClosedDate>07/06/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7942</PullRequestID>
+        <IssueID>18888</IssueID>
+        <Title>Show diagnostic nodes in Solution Explorer for CPS-based projects</Title>
+        <Description>**Customer scenario**
+
+![image](https://cloud.githubusercontent.com/assets/10506730/25294633/f6af9a84-2694-11e7-85ae-c2a8c66396ca.png)
+
+In the old project system the user could see individual diagnostics listed under analyzers in the Solution Explorer. This change refactors and extends our code to provide this functionality in CPS-based projects as well.
+
+**Bugs this fixes:**
+
+https://github.com/dotnet/project-system/issues/88
+
+**Workarounds, if any**
+
+None.
+
+**Risk**
+
+Low.
+
+**Performance impact**
+
+Low. The feature is designed such that most of the work is done on-demand while the user expands the tree in Solution Explorer.
+
+**Is this a regression from a previous update?**
+
+This brings us close to parity with the experience we have in non-CPS-based projects.
+
+**Root cause analysis:**
+
+N/A
+
+**How was the bug found?**
+
+N/A
+</Description>
+        <CreatedDate>21/04/2017</CreatedDate>
+        <ClosedDate>27/04/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7942</PullRequestID>
+        <IssueID>18861</IssueID>
+        <Title>Feature Request: Add syntax support for returning a default value from a method if an exception is thrown</Title>
+        <Description>**Version Used**: 
+C#7
+
+**Steps to Reproduce**:
+n/a
+
+**Expected Behavior**:
+n/a
+
+**Actual Behavior**:
+n/a
+
+Consider this code:
+
+    string value;
+    try
+    {
+        value = GetValue();
+    }
+    catch(Exception ex)
+    {
+        Console.WriteLine("Exception thrown!");
+        value = null;
+    }
+    Console.WriteLine(value);
+
+It would be nice if we could reduce the footprint with some syntax sugar, similar to how null coalescing operators work. Something like:
+
+    var value = GetValue() ?? null : ex =&gt; Console.WriteLine("Exception thrown!");
+    Console.WriteLine(value);
+</Description>
+        <CreatedDate>20/04/2017</CreatedDate>
+        <ClosedDate>20/04/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7942</PullRequestID>
+        <IssueID>18838</IssueID>
+        <Title>Move all expensive FAR work into the FAR engine, and remove from teh FAR window.</Title>
+        <Description>We can use this for FindRefs to compute the 'classified text' we produce for the display in the OOP
+server so that we don't have to go back to semantic-models back on hte client side when we get the
+results.</Description>
+        <CreatedDate>19/04/2017</CreatedDate>
+        <ClosedDate>24/04/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7942</PullRequestID>
+        <IssueID>18783</IssueID>
+        <Title>[Umbrella] Improving compiler adoption and dogfooding story</Title>
+        <Description>See the various sections below for adopting [new versions](https://github.com/dotnet/roslyn/wiki/NuGet-packages) of the compiler (including nightlies) in various contexts (VS, ASP.NET, etc). This is still work-in-progress.
+
+As we shift to point release model, it is increasingly important that we make it easy for customers (external and internal to Microsoft) to adopt new versions of the compiler, including previews.
+
+| Host | Users can upgrade? | Upgraded by default? | Allows dogfooding | Plan |
+| ------|-----------------------|-------------------------|-----------------------|------|
+| VS | Yes, install VSIX. But un-install problem | Yes. Default is “default” (not “latest”). Lighbulb helps upgrade existing projects | Somewhat (but no channel for Roslyn/master yet). Roslyn insider extension currently broken. |  Fix SDK un-install issue. Could we get a channel with Roslyn/master? |
+| asp.net | Manually (update compiler nuget and fix web.config). | Yes (new projects in VS2017 use C# 7.0). No for existing projects.  | |  Maybe we could offer lightbulb too? Upgrade the default package [reference to 2.0](https://github.com/aspnet/RoslynCodeDomProvider/issues/1)? The template was recently updated to use "default". |
+| asp.net Core | Manually (update compiler nuget, fix web.config and configure Razor). (https://github.com/aspnet/Razor/issues/1046) | Yes (new projects in VS2017 use C# 7.0). No for existing projects.  | |  Maybe we could offer lightbulb too? (filed https://github.com/dotnet/roslyn/issues/20614)  |
+| CLI | Yes (see below) | Not sure. | No. | Use package integration. .Net Core 2.0 should offer C# 7.0. Not sure about 7.1. Matt Whilden updated the package recently to 2.3 preview. Jared is tracking an issue to improve the integration. |
+| corext | | |  | Moving to package dependency. See steps below (still being validated) |
+| Mono | No. Mono still using own compiler | | | Mono planning to adopt Roslyn compiler for Mono 5.0. Upgrading from there has [package issue](https://github.com/dotnet/roslyn/issues/15378). |
+| VS for Mac| Not sure | Yes. [Latest preview](https://blogs.msdn.microsoft.com/visualstudio/2017/04/12/visual-studio-for-mac-to-the-cloud-and-beyond/) includes C# 7.0 | Not sure | Same [package issue](https://github.com/dotnet/roslyn/issues/15378) as Mono. |
+| Unity | They depend on mono using Roslyn first | | |
+| Azure functions |  | Consumes nuget package. Likely uses "default" language version. | | Fabio will update to C# 7.0 package. After that we should discuss using "latest". |
+| Powershell | I don't think so | | |
+| Linqpad | Not sure | Yes (Linqpad seems to pick up new compiler quickly) | No |
+| RoslynPad | | | |
+| OzCode | | | |
+| VS Code| No, new features require some integration work (syntax highlighting). But Omnisharp and VS Code pick up new compiler regularly. | | | Talk with Dustin |
+| Orleans | | | | |
+| VSTS| | | | Jared mentioned there are two scenarios: CI images and some code analysis services |
+
+Then there's also internal adoption and dogfooding: building VS code itself, building corefx, building corefxlab, dogfooding with .NET Native, etc
+
+There is also the `Microsoft.CodeDom.Providers.DotNetCompilerPlatform` package, which has some relationship to ASP.NET.</Description>
+        <CreatedDate>18/04/2017</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7942</PullRequestID>
+        <IssueID>18831</IssueID>
+        <Title>Crash when switching branches for a solution with lightweight solution load enabled</Title>
+        <Description>**Version Used**: 
+Dev15RTW
+
+**Steps to Reproduce**:
+See [DevDiv 400136](https://devdiv.visualstudio.com/DevDiv/_workitems/edit/400136)
+
+In VS with Lightweight Solution Load enabled,
+1. In console, git checkout branch_A
+2. Open a solution
+3. In console, git checkout branch_B
+4. Click the reload button
+
+**Expected Behavior**:
+VS does not crash
+
+**Actual Behavior**:
+Intermittently VS crashes
+
+**Call Stack**
+Application: devenv.exe
+Framework Version: v4.0.30319
+Description: The process was terminated due to an unhandled exception.
+Exception Info: System.NullReferenceException
+```
+   at Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.VisualStudioProjectTracker.ContainsProject(Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.AbstractProject)
+   at Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.VisualStudioProjectTracker+WorkspaceHostState.AddToPushListIfNeeded(Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.AbstractProject, System.Collections.Generic.List`1&lt;Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.AbstractProject&gt;, System.Collections.Generic.HashSet`1&lt;Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.AbstractProject&gt;)
+   at Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.VisualStudioProjectTracker+WorkspaceHostState.AddToPushListIfNeeded(Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.AbstractProject, System.Collections.Generic.List`1&lt;Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.AbstractProject&gt;, System.Collections.Generic.HashSet`1&lt;Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.AbstractProject&gt;)
+   at Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.VisualStudioProjectTracker+WorkspaceHostState.StartPushingToWorkspaceAndNotifyOfOpenDocuments(System.Collections.Generic.IEnumerable`1&lt;Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.AbstractProject&gt;)
+   at Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.VisualStudioProjectTracker.StartPushingToWorkspaceAndNotifyOfOpenDocuments(System.Collections.Generic.IEnumerable`1&lt;Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.AbstractProject&gt;)
+   at Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.VisualStudioProjectTracker.FinishLoad()
+   at Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.VisualStudioProjectTracker+&lt;PopulateWorkspaceFromDeferredProjectInfoAsync&gt;d__60.MoveNext()
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(System.Threading.Tasks.Task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(System.Threading.Tasks.Task)
+   at Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem.VisualStudioProjectTracker+&lt;LoadSolutionFromMSBuildAsync&gt;d__58.MoveNext()
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(System.Threading.Tasks.Task)
+   at ...
+```</Description>
+        <CreatedDate>19/04/2017</CreatedDate>
+        <ClosedDate>01/06/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7942</PullRequestID>
+        <IssueID>18791</IssueID>
+        <Title>Add a /timeout option to RunTests </Title>
+        <Description>Currently it's hard to diagnose hang in unit tests on Jenkins.
+
+RunTests could save crash dump of running processes after given timeout to help with diagnostics.
+</Description>
+        <CreatedDate>18/04/2017</CreatedDate>
+        <ClosedDate>19/04/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7942</PullRequestID>
+        <IssueID>18787</IssueID>
+        <Title>&lt;completionlist&gt; completion triggered after .</Title>
+        <Description>```VB
+Public Class Program
+    Private Shared field1 As Integer
+
+    ''' &lt;summary&gt;
+    ''' &lt;/summary&gt;
+    ''' &lt;completionList cref="Program"&gt;&lt;/completionList&gt;
+    Public Class Program2
+        Public Async Function TestM() As Task
+            Dim obj As Program2 = Program.$$
+            End Sub
+    End Class
+End Class
+```
+Observe that Program.Field1 is suggested at the $$. It should not be.
+</Description>
+        <CreatedDate>18/04/2017</CreatedDate>
+        <ClosedDate>19/05/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7942</PullRequestID>
+        <IssueID>18705</IssueID>
+        <Title>[Failing test] Roslyn.VisualStudio.IntegrationTests.Basic.BasicReferenceHighlighting.Highlighting</Title>
+        <Description>https://ci.dot.net/job/dotnet_roslyn/view/Official%20Builds/job/master/job/windows_release_vs-integration/760/
+https://ci.dot.net/job/dotnet_roslyn/view/Official%20Builds/job/master/job/windows_debug_vs-integration/768/
+
+```
+    Roslyn.VisualStudio.IntegrationTests.Basic.BasicReferenceHighlighting.Highlighting
+      
+      Expected:
+      [77..80)
+      Actual:
+      [77..80)
+      [91..94)
+      Differences:
+          [77..80)
+      ++&gt; [91..94)
+      
+      Expected: True
+      Actual:   False
+      Stack Trace:
+           at Roslyn.Test.Utilities.AssertEx.SetEqual[T](IEnumerable`1 expected, IEnumerable`1 actual, IEqualityComparer`1 comparer, String message, String itemSeparator)
+        q:\roslyn\src\VisualStudio\IntegrationTest\IntegrationTests\VisualBasic\BasicReferenceHighlighting.cs(54,0): at Roslyn.VisualStudio.IntegrationTests.Basic.BasicReferenceHighlighting.Verify(String marker, IDictionary`2 spans)
+        q:\roslyn\src\VisualStudio\IntegrationTest\IntegrationTests\VisualBasic\BasicReferenceHighlighting.cs(39,0): at Roslyn.VisualStudio.IntegrationTests.Basic.BasicReferenceHighlighting.Highlighting()
+```
+
+![image](https://cloud.githubusercontent.com/assets/2371880/25050929/edd8593c-20fe-11e7-8377-1a91ced0b324.png)</Description>
+        <CreatedDate>14/04/2017</CreatedDate>
+        <ClosedDate>13/09/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7942</PullRequestID>
+        <IssueID>18743</IssueID>
+        <Title>Merge dev15.2.x to master</Title>
+        <Description>
+This is an automatically generated pull request from dev15.2.x into master.
+
+``` bash
+git fetch --all
+git checkout merges/dev15.2.x-to-master-20170417-070005
+git reset --hard upstream/master
+git merge upstream/dev15.2.x
+# Fix merge conflicts
+git commit
+git push merges/dev15.2.x-to-master-20170417-070005 --force
+```
+
+Once all conflicts are resolved and all the tests pass, you are free to merge the pull request.</Description>
+        <CreatedDate>17/04/2017</CreatedDate>
+        <ClosedDate>17/04/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7942</PullRequestID>
+        <IssueID>18722</IssueID>
+        <Title>Add `IInvalidInvocationExpression` interafce</Title>
+        <Description>Currently in C#, an invalid invocation is represented by an `IInvocationExpression` operation, but it might violate the contract of `IInvocationExpression`. For example, we can't provide a list of arguments in evaluation order correctly if we have extra arguments that don't match any parameter, or multiple arguments are matching to a single parameter, etc. On the other hand, making an invalid invocation an `IInvalidExpression` would solve the problem but it would be unnecessarily lossy since in many cases compiler does have more details that users might find useful to do further analysis.
+
+The goal would be to expose as much information of a invalid invocation as possible at best effort, without violating the API contract of `IInvocationExpression`, hence the new `IInvalidInvocationExpression` interface.
+
+Here's the notes from our discussion:
+- Will be a sibling of `IInvocationExpression` (child of `IHasArgumentExpression`)
+- Should contain candidate symbols and candidate reason.
+- Has a list `ArgumentValues` of type `IOperation` that were passed to the invocation.
+- And a receiver of type` IOperatoin`
+- We would also like an api/extension `TryGetParameterForArgumentValue`, indicating it's best effort and may fail
+
+@dotnet/analyzer-ioperation </Description>
+        <CreatedDate>15/04/2017</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>7942</PullRequestID>
+      <File>src/EditorFeatures/CSharpTest/Completion/CompletionProviders/SymbolCompletionProviderTests.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Recommendations/CSharpRecommendationService.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5875</IssueID>
+    <RepoID>xamarinmacios</RepoID>
+    <Title>Bump mono.</Title>
+    <Description>New commits in mono/mono:
+
+* mono/mono@bd6801d4022 [merp] Restore non-assertion behavior in debugger-engine.c (#13880)
+* mono/mono@323e32d96b6 [System.Data] Remove unnecessary file from xunit tests (#13935)
+* mono/mono@85d1920b016 Bump bockbuild to get GTK fix (#13912)
+* mono/mono@2458d2d4772 Merge pull request #13867 from monojenkins/backport-pr-13866-to-2018-10
+* mono/mono@da5c20953f1 [2018-10] [merp] Fix image size reported (#13884)
+* mono/mono@0e9b8f7c939 [mono-dl] Don't do thread state transitions in mono_dl_fallback_register
+* mono/mono@91442419612 [MacSDK] Bump bockbuild for fix to #13804
+* mono/mono@fc775d0b9fd [2018-10] Fix transition offset logic (#13800)
+
+Diff: https://github.com/mono/mono/compare/15d050a79274d3ad80fb273b38affff000da37e5..bd6801d40222b69966b7c17e4f1674214c435962</Description>
+    <CreatedDate>09/04/2019</CreatedDate>
+    <ClosedDate>10/04/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5875</PullRequestID>
+        <IssueID>2492</IssueID>
+        <Title>Proposal: Brace type initializers</Title>
+        <Description># I guess it would be nice if **new** operator could be optionally avoided (when possible) in favour of object initialization in the c++ 11/14 style, something like..
+
+``` cs
+  SomeType r1 {15, "something", 0 };  //brace initializer (1)
+
+  SomeType r2(12, "hello") ;          //inline initializer (2)
+```
+
+http://www.stroustrup.com/C++11FAQ.html#uniform-init
+
+[msdn initialization](https://msdn.microsoft.com/en-us/library/dn387583.aspx)
+
+[c++ initialization](http://en.cppreference.com/w/cpp/language/initialization)
+
+is this doable or any useful at all, what do you think?
+
+EDIT: 
+- **brace initializer (1)** is used for collections already, though it could be extended to other types too (like C++ does, in favour of less typing),
+- **inline initializer (2)** could be used for records types (immutable pocos)
+
+**EDIT 2 (for better clarity)**:
+
+let's start with an immutable type (sealed poco class with only get methods)
+
+``` cs
+public sealed class Name {
+
+    public string FirstName { get; }
+    public string LastName { get; }
+
+    public Name(string first, string last) {
+            FirstName = first;
+            LastName = last;
+    }
+
+}
+```
+
+proposed changes would make possible to turn this **"old" one** (just an example class, sorry if it's not too clear) ...
+
+``` cs
+public class Kitty {
+
+    private readonly Name _kitty;
+    public IEnumerable&lt;Name&gt; Childs {get; } 
+    public string[] Meows {"meow","meowwww","miao"} { get; } //privately mutable
+    public string Color { get; }
+
+    public Kitty(Name kitty, string color = null) {
+           _kitty = kitty;
+           Childs = new List&lt;Name&gt;();
+           Color = color??"white";
+    }
+
+   public Kitty Make(Name kitty){
+         Childs.Add(kitty);
+         return new Kitty(kitty);
+   }
+
+}
+```
+
+into this **"new one"**...
+please notice the use of [**member initializer list** ](https://msdn.microsoft.com/en-us/library/s16xw1a8.aspx) which is now made possible 
+
+``` cs
+public class Kitty {
+
+    private readonly Name _kitty;
+    public  List&lt;Name&gt; Childs{ } { get; } //privately mutable 
+    public string[] Meows {"meow","meowwww","miao"} { get; } //privately mutable
+    public string Color { get; }
+
+    public Kitty(Name kitty, string color = null) :
+         _kitty(kitty), Color(color??"white") {  } //Name is immutable, and also Color is immutable!(is a string)
+
+   public Kitty Make(Name kitty){
+         Childs.Add(kitty);
+         return Kitty{kitty}; //no need for new (Kitty is mutable, not sealed, plus Make is not thread safe.)
+   }
+
+}
+```
+
+How does it feel?
+</Description>
+        <CreatedDate>17/09/2016</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5875</PullRequestID>
+        <IssueID>13935</IssueID>
+        <Title>Remove code that doesn’t have any observable side-effects.</Title>
+        <Description>Fixes #13830.
+
+@dotnet/roslyn-compiler Please review.
+</Description>
+        <CreatedDate>20/09/2016</CreatedDate>
+        <ClosedDate>21/09/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5875</PullRequestID>
+        <IssueID>13912</IssueID>
+        <Title>Eliminate Debug vs. Release behavior difference in tests.</Title>
+        <Description>Fixes #13901.
+Related to #13900, which tracks the root product issue.
+
+@dotnet/roslyn-compiler Please review a fix for an Urgency-Now bug.
+</Description>
+        <CreatedDate>19/09/2016</CreatedDate>
+        <ClosedDate>19/09/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5875</PullRequestID>
+        <IssueID>13867</IssueID>
+        <Title>Release build Issue with await and lots of locals</Title>
+        <Description>With Visual Studio 2015 Update 3 (Version 14.0.25425.1): 
+The following code crashes with a null reference exception when building release.  The debug build does not crash.  It seems like a local is not being preserved across the await Task.Yield().
+
+``` csharp
+using System;
+using System.Threading.Tasks;
+class P
+{
+    static void Main(string[] args) =&gt; Task.Run(new P().F).Wait();
+    private async Task F()
+    {
+        string s1, s2, s3, s4, s5, s6, s7, s8, s9, s10;
+        string s11, s12, s13, s14, s15, s16, s17, s18, s19, s20;
+        string s21, s22, s23, s24, s25, s26, s27, s28, s29, s30;
+        string s31, s32;
+        if (1 &lt; 5)
+        {
+            F1(out s32);
+            await Task.Yield();
+        }
+        else
+        {
+            s32 = "a";
+        }
+        // NRE here:
+        Console.WriteLine(s32.Length);
+    }
+    private void F1(out string s) =&gt; s = "a";
+} 
+```
+</Description>
+        <CreatedDate>16/09/2016</CreatedDate>
+        <ClosedDate>19/09/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5875</PullRequestID>
+        <IssueID>13884</IssueID>
+        <Title>Crash in DecisionTreeComputer</Title>
+        <Description>**Version Used**: 
+
+**Steps to Reproduce**:
+1. Open Roslyn.sln with Full Solution Analysis enabled and wait. 
+   **Result** 
+   Crash below.  Dump with heap available internally.
+
+**Exception**
+
+&gt; System.ArgumentNullException: Value cannot be null.
+&gt; Parameter name: key
+&gt;    at System.Collections.Generic.Dictionary`2.FindEntry(TKey key)
+&gt;    at System.Collections.Generic.Dictionary`2.TryGetValue(TKey key, TValue&amp; value)
+&gt;    at Microsoft.CodeAnalysis.CSharp.DecisionTreeComputer.AddByValue(ByValue byValue, BoundExpression value, DecisionMaker makeDecision, Boolean hasErrors)
+&gt;    at Microsoft.CodeAnalysis.CSharp.DecisionTreeComputer.AddByValue(DecisionTree decision, BoundExpression value, DecisionMaker makeDecision, Boolean hasErrors)
+&gt;    at Microsoft.CodeAnalysis.CSharp.DecisionTreeComputer.AddByValue(ByType byType, BoundExpression value, DecisionMaker makeDecision, Boolean hasErrors)
+&gt;    at Microsoft.CodeAnalysis.CSharp.DecisionTreeComputer.AddByValue(DecisionTree decision, BoundExpression value, DecisionMaker makeDecision, Boolean hasErrors)
+&gt;    at Microsoft.CodeAnalysis.CSharp.DecisionTreeComputer.AddToDecisionTree(DecisionTree decisionTree, BoundPatternSwitchLabel label)
+&gt;    at Microsoft.CodeAnalysis.CSharp.DecisionTreeComputer.ComputeDecisionTree()
+&gt;    at Microsoft.CodeAnalysis.CSharp.BoundPatternSwitchStatement.ComputeDecisionTree(DiagnosticBag diagnostics)
+&gt;    at Microsoft.CodeAnalysis.CSharp.BoundPatternSwitchStatement.EnsureDecisionTree()
+&gt;    at Microsoft.CodeAnalysis.CSharp.BoundPatternSwitchStatement.get_DecisionTreeDiagnostics()
+&gt;    at Microsoft.CodeAnalysis.CSharp.ControlFlowPass.VisitPatternSwitchStatement(BoundPatternSwitchStatement node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.BoundPatternSwitchStatement.Accept(BoundTreeVisitor visitor)
+&gt;    at Microsoft.CodeAnalysis.CSharp.BoundTreeVisitor.Visit(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.VisitWithStackGuard(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.VisitAlways(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.Visit(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.ControlFlowPass.Visit(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.VisitStatement(BoundStatement statement)
+&gt;    at Microsoft.CodeAnalysis.CSharp.ControlFlowPass.VisitStatement(BoundStatement statement)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.VisitBlock(BoundBlock node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.BoundBlock.Accept(BoundTreeVisitor visitor)
+&gt;    at Microsoft.CodeAnalysis.CSharp.BoundTreeVisitor.Visit(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.VisitWithStackGuard(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.VisitAlways(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.Visit(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.ControlFlowPass.Visit(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.VisitStatement(BoundStatement statement)
+&gt;    at Microsoft.CodeAnalysis.CSharp.ControlFlowPass.VisitStatement(BoundStatement statement)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.VisitWhileStatement(BoundWhileStatement node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.BoundWhileStatement.Accept(BoundTreeVisitor visitor)
+&gt;    at Microsoft.CodeAnalysis.CSharp.BoundTreeVisitor.Visit(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.VisitWithStackGuard(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.VisitAlways(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.Visit(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.ControlFlowPass.Visit(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.VisitStatement(BoundStatement statement)
+&gt;    at Microsoft.CodeAnalysis.CSharp.ControlFlowPass.VisitStatement(BoundStatement statement)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.VisitBlock(BoundBlock node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.BoundBlock.Accept(BoundTreeVisitor visitor)
+&gt;    at Microsoft.CodeAnalysis.CSharp.BoundTreeVisitor.Visit(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.VisitWithStackGuard(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.VisitAlways(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.Visit(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.ControlFlowPass.Visit(BoundNode node)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.Scan(Boolean&amp; badRegion)
+&gt;    at Microsoft.CodeAnalysis.CSharp.ControlFlowPass.Scan(Boolean&amp; badRegion)
+&gt;    at Microsoft.CodeAnalysis.CSharp.PreciseAbstractFlowPass`1.Analyze(Boolean&amp; badRegion)
+&gt;    at Microsoft.CodeAnalysis.CSharp.ControlFlowPass.Analyze(Boolean&amp; badRegion, DiagnosticBag diagnostics)
+&gt;    at Microsoft.CodeAnalysis.CSharp.ControlFlowPass.Analyze(CSharpCompilation compilation, Symbol member, BoundBlock block, DiagnosticBag diagnostics)
+&gt;    at Microsoft.CodeAnalysis.CSharp.FlowAnalysisPass.Analyze(CSharpCompilation compilation, MethodSymbol method, BoundBlock block, DiagnosticBag diagnostics)
+&gt;    at Microsoft.CodeAnalysis.CSharp.FlowAnalysisPass.Rewrite(MethodSymbol method, BoundBlock block, DiagnosticBag diagnostics, Boolean hasTrailingExpression, Boolean originalBodyNested)
+&gt;    at Microsoft.CodeAnalysis.CSharp.MethodCompiler.CompileMethod(MethodSymbol methodSymbol, Int32 methodOrdinal, ProcessedFieldInitializers&amp; processedInitializers, SynthesizedSubmissionFields previousSubmissionFields, TypeCompilationState compilationState)
+&gt;    at Microsoft.CodeAnalysis.CSharp.MethodCompiler.CompileNamedType(NamedTypeSymbol containingType)
+&gt;    at Microsoft.CodeAnalysis.CSharp.MethodCompiler.VisitNamedType(NamedTypeSymbol symbol, TypeCompilationState arg)
+&gt;    at Microsoft.CodeAnalysis.CSharp.Symbols.NamedTypeSymbol.Accept[TArgument,TResult](CSharpSymbolVisitor`2 visitor, TArgument argument)
+&gt;    at Microsoft.CodeAnalysis.CSharp.MethodCompiler.CompileNamespace(NamespaceSymbol symbol)
+&gt;    at Microsoft.CodeAnalysis.CSharp.MethodCompiler.VisitNamespace(NamespaceSymbol symbol, TypeCompilationState arg)
+&gt;    at Microsoft.CodeAnalysis.CSharp.Symbols.NamespaceSymbol.Accept[TArgument,TResult](CSharpSymbolVisitor`2 visitor, TArgument argument)
+&gt;    at Microsoft.CodeAnalysis.CSharp.MethodCompiler.CompileNamespace(NamespaceSymbol symbol)
+&gt;    at Microsoft.CodeAnalysis.CSharp.MethodCompiler.VisitNamespace(NamespaceSymbol symbol, TypeCompilationState arg)
+&gt;    at Microsoft.CodeAnalysis.CSharp.Symbols.NamespaceSymbol.Accept[TArgument,TResult](CSharpSymbolVisitor`2 visitor, TArgument argument)
+&gt;    at Microsoft.CodeAnalysis.CSharp.MethodCompiler.CompileNamespace(NamespaceSymbol symbol)
+&gt;    at Microsoft.CodeAnalysis.CSharp.MethodCompiler.VisitNamespace(NamespaceSymbol symbol, TypeCompilationState arg)
+&gt;    at Microsoft.CodeAnalysis.CSharp.Symbols.NamespaceSymbol.Accept[TArgument,TResult](CSharpSymbolVisitor`2 visitor, TArgument argument)
+&gt;    at Microsoft.CodeAnalysis.CSharp.MethodCompiler.CompileNamespace(NamespaceSymbol symbol)
+&gt;    at Microsoft.CodeAnalysis.CSharp.MethodCompiler.CompileMethodBodies(CSharpCompilation compilation, PEModuleBuilder moduleBeingBuiltOpt, Boolean generateDebugInfo, Boolean hasDeclarationErrors, DiagnosticBag diagnostics, Predicate`1 filterOpt, CancellationToken cancellationToken)
+&gt;    at Microsoft.CodeAnalysis.CSharp.CSharpCompilation.GetDiagnosticsForAllMethodBodies(DiagnosticBag diagnostics, CancellationToken cancellationToken)
+&gt;    at Microsoft.CodeAnalysis.CSharp.CSharpCompilation.GetDiagnostics(CompilationStage stage, Boolean includeEarlierStages, CancellationToken cancellationToken)
+&gt;    at Microsoft.CodeAnalysis.CSharp.CSharpCompilation.GetDiagnostics(CancellationToken cancellationToken)
+&gt;    at Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers.&lt;ComputeAnalyzerDiagnosticsWithoutStateTrackingAsync&gt;d__48.MoveNext()
+&gt; --- End of stack trace from previous location where exception was thrown ---
+&gt;    at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+&gt;    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+&gt;    at System.Runtime.CompilerServices.ConfiguredTaskAwaitable.ConfiguredTaskAwaiter.GetResult()
+&gt;    at Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers.&lt;GetAnalysisResultWithoutStateTrackingAsync&gt;d__46.MoveNext()
+&gt; --- End of stack trace from previous location where exception was thrown ---
+&gt;    at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+&gt;    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+&gt;    at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+&gt;    at Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers.&lt;GetAnalysisResultAsync&gt;d__39.MoveNext()
+&gt; --- End of stack trace from previous location where exception was thrown ---
+&gt;    at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+&gt;    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+&gt;    at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+&gt;    at Microsoft.CodeAnalysis.Diagnostics.EngineV2.InProcCodeAnalysisDiagnosticAnalyzerExecutor.AnalyzerExecutor.&lt;AnalyzeAsync&gt;d__0.MoveNext()
+&gt; --- End of stack trace from previous location where exception was thrown ---
+&gt;    at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+&gt;    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+&gt;    at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+&gt;    at Microsoft.VisualStudio.LanguageServices.Implementation.Diagnostics.VisualStudioDiagnosticAnalyzerExecutor.&lt;AnalyzeAsync&gt;d__0.MoveNext()
+&gt; --- End of stack trace from previous location where exception was thrown ---
+&gt;    at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+&gt;    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+&gt;    at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+&gt;    at Microsoft.CodeAnalysis.Diagnostics.EngineV2.DiagnosticIncrementalAnalyzer.Executor.&lt;AnalyzeAsync&gt;d__19.MoveNext()
+&gt; --- End of stack trace from previous location where exception was thrown ---
+&gt;    at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+&gt;    at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+&gt;    at System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter.GetResult()
+&gt;    at Microsoft.CodeAnalysis.Diagnostics.EngineV2.DiagnosticIncrementalAnalyzer.Executor.&lt;ComputeDiagnosticsAsync&gt;d__6.MoveNext()
+</Description>
+        <CreatedDate>18/09/2016</CreatedDate>
+        <ClosedDate>22/09/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5875</PullRequestID>
+        <IssueID>13804</IssueID>
+        <Title>Fix a bug in lambda type inference for `delegate {...}`.</Title>
+        <Description>The bug is that, as an optimization, we use 'null' as the delegate type for
+a parameterless `delegate` lambda, but code elsewhere in the compiler
+assumes that a null delegate type occurs only in error recovery situations.
+Fixes #13797 
+
+@dotnet/roslyn-compiler Please review.
+</Description>
+        <CreatedDate>14/09/2016</CreatedDate>
+        <ClosedDate>14/09/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5875</PullRequestID>
+        <IssueID>13800</IssueID>
+        <Title>Allow unexpected custom type info for instances of generic types</Title>
+        <Description>Fixes assert failure in DEBUG builds inspecting generic types.
+
+Fixes #13715.
+</Description>
+        <CreatedDate>14/09/2016</CreatedDate>
+        <ClosedDate>14/09/2016</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5875</PullRequestID>
+      <File>src/Workspaces/CSharp/Portable/Formatting/Engine/Trivia/TriviaDataFactory.Analyzer.cs</File>
+      <File>src/Workspaces/CSharpTest/Formatting/FormattingTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5742</IssueID>
+    <RepoID>xamarinmacios</RepoID>
+    <Title>Bump mono.</Title>
+    <Description>Commit list for mono/mono:
+
+* mono/mono@204d95cec15 [2018-10][configure.ac] Fix configure checks for Mono.Native (#13351)
+* mono/mono@52927930394 [corlib] Disable ThreadPoolTest.GetAvailableThreads () on machines with many cores
+* mono/mono@229d6a0222b [crash] Detect when 0 attached threads, fix hang/double-fault. (#13337)
+* mono/mono@c1cf332539c [2018-10] Bump bockbuild to get GTK fix
+* mono/mono@a76ca3c0638 Bump API snapshot submodule
+* mono/mono@cdad7378ae3 Make `System.dll` internals visible to `Mono.Android`.
+* mono/mono@bf1b7f19511 Ensure that the module cctor is run before the entry point is executed (#13242)
+* mono/mono@78e155f252d [2018-10] Fix mono conc hashtable lookup endless loop (#13293)
+* mono/mono@af19147d0bb [Android] Fix runtime loading of DSOs for 64-bit processes
+* mono/mono@e752907c5b8 [2018-10] [interp] mixed mode fixes for delegates (#13260)
+* mono/mono@68fb0e0c9ca [mini] Inline Selector.GetHandle for tvOS and watchOS assemblies as well. (#13255)
+* mono/mono@1f81468bd5d Update csproj file for System.Drawing.Common facade
+* mono/mono@74cfbd2bb47 [sdks] Use throttle() instead of lock()
+* mono/mono@f08a9ab1d28 Revert "[sdks] Make sure to run only one build per type per node"
+
+Diff: https://github.com/mono/mono/compare/3151b5cea836320600662420b4f70554ab11278f...204d95cec1578ca7291408f23273790cb24287f9</Description>
+    <CreatedDate>08/03/2019</CreatedDate>
+    <ClosedDate>18/03/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5742</PullRequestID>
+        <IssueID>13351</IssueID>
+        <Title>Update the project guids for the PooledObjects.shproj in slns</Title>
+        <Description>/cc @jaredpar @tannergooding @dotnet/roslyn 
+</Description>
+        <CreatedDate>24/08/2016</CreatedDate>
+        <ClosedDate>24/08/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5742</PullRequestID>
+        <IssueID>13337</IssueID>
+        <Title>Add new packages to RedistPackageNames list...</Title>
+        <Description>It is not sufficient to list a package in PreReleaseOnlyPackages.  It must
+also be listed in the "master" list.  I've updated the comment to reflect
+that fact.
+</Description>
+        <CreatedDate>23/08/2016</CreatedDate>
+        <ClosedDate>23/08/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5742</PullRequestID>
+        <IssueID>13242</IssueID>
+        <Title>fixed race in analyzer driver</Title>
+        <Description>http://source.roslyn.io/#Microsoft.CodeAnalysis/DiagnosticAnalyzer/AnalyzerDriver.cs,1699
+
+var declarationAnalysisData = compilationData.GetOrComputeDeclarationAnalysisData(
+decl,
+allocateData =&gt; ComputeDeclarationAnalysisData(symbol, decl, semanticModel, shouldExecuteSyntaxNodeActions, analysisScope, allocateData, cancellationToken),
+cacheAnalysisData);
+
+GetOrComputeDeclarationAnalysisData caches declarationAnalysisData only based on declaration, but the data it caches (DeclarationAnalysisData) depends on more context than declaration node. such as analysisScope. more specifically FilterSpanOpt or executeSyntaxNodeActions flag.
+
+due to that, it now has a race where depends on what analyzer are loaded to VS first, some syntax node action works, or some other one doesn't.
+
+the fix I made here is removing one of those context when caching the result
+</Description>
+        <CreatedDate>18/08/2016</CreatedDate>
+        <ClosedDate>18/08/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5742</PullRequestID>
+        <IssueID>13293</IssueID>
+        <Title>Add note for Preview 4 Usage</Title>
+        <Description>(Doc Only Change)
+
+Update the instructions for building and debugging on Windows with a note about Preview 4 usage
+
+/cc @ManishJayaswal @MattGertz 
+</Description>
+        <CreatedDate>22/08/2016</CreatedDate>
+        <ClosedDate>22/08/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5742</PullRequestID>
+        <IssueID>13260</IssueID>
+        <Title>diagnostic analyzer tagger needs to listen to WorkspaceRegistration.WorkspaceChanged event</Title>
+        <Description>for this particular case which cache data based on workspace/projectid/documentid that it got from ITextBuffer should consider that workspace ITextBuffer is associated to can be changed over time.
+
+for example, when a user add/open/close/remove document, its associated ITextBuffer will move between misc workspace and host workspace.
+
+diagnostic analyzer tagger should clear and refresh tags when WorkspaceChanged events are raised.
+
+...
+- NOTE \* there could be more tagger or service than diagnostic analyzer tagger that needs to listen to this event. we might need to audit our code base that is working on top of ITextBuffer
+</Description>
+        <CreatedDate>18/08/2016</CreatedDate>
+        <ClosedDate>18/10/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5742</PullRequestID>
+        <IssueID>13255</IssueID>
+        <Title>Proposal: target typing for "default" in C#</Title>
+        <Description>The `default` keyword currently requires an explicit type.
+For instance, one has to write `default(ImmutableArray&lt;string&gt;)`. 
+But the type could be omitted in most cases, resulting in simpler code: `default`.
+
+You would be allowed to write:
+1. `M(default);`,
+2. `x = default;`, where `x` is known to have type `ImmutableArray&lt;string&gt;`.
+
+Note this feature is already available in VB, as you can use the `Nothing` keyword for the default value (both for class and struct types). 
+If we wanted to follow the VB approach, the proposal could extend to allowing `null` as default value for value types as well, such as `ImmutableArray&lt;string&gt; x = null;`.
+
+FYI @dotnet/roslyn-compiler 
+
+Update: As @svick pointed out, proposal #35 to allow type inference in constructions (`new ()`), but @gafter clarified this would have different meaning.
+
+Update: We should allow:
+1. `const int x = default;` (using target-typed `default` for constant)
+2. `object x = default;` (using target-typed `default` for reference type)
+</Description>
+        <CreatedDate>18/08/2016</CreatedDate>
+        <ClosedDate>01/09/2016</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5742</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Compiler/MethodCompiler.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalyzerDriver.CompilationData.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>3560</IssueID>
+    <RepoID>xamarinmacios</RepoID>
+    <Title>Bump mono &amp; Touch.Unit</Title>
+    <Description>Commit list for mono/mono:
+
+* mono/mono@4adf8229e88 bump nunit-lite (#7139)
+* mono/mono@de4729fae29 [mono-api-html] Expand "ignore" functionality (#7154)
+* mono/mono@721462c4a15 [2017-12] [corlib] Fix RuntimeFeatureTest.NoNewFeaturesAdded on mobile (#7152)
+
+Diff: https://github.com/mono/mono/compare/177997b0632b3b2391ed62a5c2eb2ce6dc4bf9f0...4adf8229e88ffeed60a9b63d402e9d074323f13b
+
+
+
+
+
+Commit list for spouliot/Touch.Unit:
+
+* spouliot/Touch.Unit@4ac4e32 [TouchRunner] do not use FinallyDelegate in Runner, because it requires remoting API to be available (#49)
+
+Diff: https://github.com/spouliot/Touch.Unit/compare/b5b227e80b7ceeb04ab3e6b85b0853784438f129...4ac4e325001e97a4f1874d38183eddf78d4ca334</Description>
+    <CreatedDate>21/02/2018</CreatedDate>
+    <ClosedDate>22/02/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>3560</PullRequestID>
+        <IssueID>7139</IssueID>
+        <Title>Move unix infrastructure to CoreCLR</Title>
+        <Description>Work remaining to get our Linux / Mac infrastructure ported to fully use CoreCLR
+- [x] Public Sign support #6915
+- [x] Make build tools run on CoreCLR #7136
+- [x] Port compiler tests to portable profile #7137
+- [x] Move unix unit tests to run under CoreCLR xunit #7138
+- [x] Move to netcore MSBuild #7755
+</Description>
+        <CreatedDate>01/12/2015</CreatedDate>
+        <ClosedDate>17/03/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3560</PullRequestID>
+        <IssueID>7154</IssueID>
+        <Title>[TEST DO NOT MERGE] Merge of master into future 12 1 2015</Title>
+        <Description>
+        </Description>
+        <CreatedDate>01/12/2015</CreatedDate>
+        <ClosedDate>03/12/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3560</PullRequestID>
+        <IssueID>7152</IssueID>
+        <Title>Add missing ERRID to HasDuplicateTypesOrAssemblies...</Title>
+        <Description>Duplicate references between weak named assemblies have a different error code in VB.
+
+Fixes https://connect.microsoft.com/VisualStudio/feedback/details/1419986/project-already-has-a-reference-to-assembly-when-try-to-view-variable-value
+</Description>
+        <CreatedDate>01/12/2015</CreatedDate>
+        <ClosedDate>01/12/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3560</PullRequestID>
+        <IssueID>49</IssueID>
+        <Title>Allow local variables to be static and/or readonly (deeper scoping)</Title>
+        <Description># Proposal
+
+Allow local variables (within method blocks) to be marked as **`static`**, **`readonly`**, or **`static readonly`**.
+## Purpose
+
+This would allow a developer to have the advantage of static and readonly fields, but limit their usage to a fine-grained scope.
+
+**Example:**
+
+```
+class Foo
+{
+    public void Method()
+    {
+        static readonly var codes = new[] { 1, 7, 10 };
+    }
+}
+```
+
+This would help alleviate situations such as reallocating a new array (and assigning the value to _fibonaccis_) upon each execution of _Method()_:
+
+```
+class Foo
+{
+    public void Method()
+    {
+        // This should be static readonly, but only accessible in this method.
+        var fibonaccis = new int[] { 0, 1, 2, 5, 8, 13, ...,  701408733 };
+
+        ...
+    }
+}
+```
+
+Or, it could help avoid potential issues with static field being accessible outside of its intended scope, purposefully or accidentally:
+
+```
+class Foo
+{
+    // This variable should only be used in Method().
+    // Please do not change its value on me somewhere else!
+    private static int _methodCount = 0;
+
+    public void Method()
+    {
+        var count = ++_methodCount;
+
+        ...
+    }
+}
+```
+## Implementation
+
+The Roslyn compiler could recognize the syntax and generate the necessary IL code, just as it does for automatic properties, async/await, foreach, etc.
+
+Originally, the [discussion from codeplex](http://roslyn.codeplex.com/discussions/551813) talked about the potential issues and confusion, and the final thought I had was to lift the local variable as a `Lazy&lt;T&gt;` and for this feature to be purely syntactic sugar. After researching how VB.NET implements local static variables, the compiler does a bit more work to generate the correct IL code. See this article: http://weblogs.asp.net/psteele/7717. I think the same thought should be put into C#.
+
+While the article only talks about static local variables, I think that there would be real value to also allow the **readonly** keyword to be used as well. The complexity would grow, of course, because we have four possible situations (instead of just two):
+- static without initialization (already supported by VB.NET).
+- static with initialization (already supported by VB.NET).
+- readonly with initialization (not supported by any language).
+- static readonly with initialization (not supported by any language).
+</Description>
+        <CreatedDate>21/01/2015</CreatedDate>
+        <ClosedDate>15/08/2016</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>3560</PullRequestID>
+      <File>src/VisualStudio/Core/Def/Implementation/Workspace/VisualStudioProjectCacheHostServiceFactory.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>3536</IssueID>
+    <RepoID>xamarinmacios</RepoID>
+    <Title>[mtouch/mmp] Fix tracking of whether the static registrar should run again or not. Fixes #641. (#3534)</Title>
+    <Description>* [tests] Improve debug spew for the RebuildTest_WithExtensions test.
+
+* [mtouch/mmp] Store/load if the dynamic registrar is removed or not into the cached link results.
+
+Store/load if the dynamic registrar is removed or not into the cached link
+results, so that we generate the correct main.m even if cached linker results
+are used.
+
+* [mtouch/mmp] The static registrar must not execute if we're loading cached results from the linker.
+
+The static registrar must not execute if we're loading cached results from the
+linker, because the static registrar needs information from the linker that's
+not restored from the cache.
+
+* [mtouch/mmp] Share Touch code.
+
+* [mtouch/mmp] Make it possible to touch inexistent files (to create them).
+
+* [mtouch/mmp] Fix tracking of whether the static registrar should run again or not.
+
+The recent changes to support optimizing away the dynamic registrar caused the
+Xamarin.MTouch.RebuildTest_WithExtensions test to regress.
+
+The problem
+-----------
+
+* The linker now collects and stores information the static registrar needs.
+* This information is not restored from disk when the linker realizes that it
+  can reload previously linked assemblies instead of executing again.
+* The static registrar runs again (for another reason).
+* The information the static registrar needs isn't available, and incorrect
+  output follows.
+
+So fix 1: show an error if the static registrar runs when the linker loaded
+cached results.
+
+The exact scenario the test ran into is this:
+
+* 1st build: everything is new and everything is built.
+* 2nd build: contents of .exe changes, the linker runs again, the static
+  registrar runs again, but sees that the generated output didn't change, so
+  it doesn't write the new content to disk (this is an optimization to avoid
+  compiling the registrar.m file again unless needed).
+* 3rd build: only the .exe timestamp changes, the linker sees nothing changes
+  in the contents of the .exe and loads the previously linked assemblies from
+  disk, the static registrar sees that the .exe's timestamp is newer than
+  registrar.m's timestamp and run again, but doesn't produce the right result
+  because it doesn't have the information it needs.
+
+Considered solutions
+--------------------
+
+1. Only track timestamps, not file contents. This is not ideal, since it will
+   result in more work done: in particular for the case above, it would add a
+   registrar.m compilation in build #2, and linker rerun + static registrar
+   rerun + registrar.m compilation + final native link in build #3.
+2. Always write the output of the static registrar, even if it hasn't changed.
+   This is not ideal either, since it will also result in more work done: for
+   the case above, it would add a registrar.m compilation + final native link
+   in build #3.
+3. Always write the output of the static registrar, but track if it changed or
+   not, and if it didn't, just touch registrar.o instead of recompiling it.
+   This only means the final native link in build #3 is added (see #5 for why
+   this is worse than it sounds).
+4. Always write the output of the static registrar, but track it it changed or
+   not, and if it didn't, just touch registrar.o instead of recompiling it,
+   and track that too, so that the final native link in build #3 isn't needed
+   anymore. Unfortunately this may result in incorrect behavior, because now
+   the msbuild tasks will detect that the executable has changed, and may run
+   dsymutil + strip again. The executable didn't actually change, which means
+   it would be the previously stripped executable, and thus we'd end up with
+   an empty .dSYM because we ran dsymtil on an already stripped executable.
+5. Idea #4, but write the output of the final link into a temporary directory
+   instead of the .app, so that we could track whether we should update the
+   executable in the .app or not. This is not optimal either, because
+   executables can be *big* (I've seen multi-GB tvOS bitcode executables), and
+   extra copies of such files should not be taken lightly.
+6. Idea #4, but tell the MSBuild tasks that dsymutil/strip doesn't need to be
+   rerun even if the timestamp of the executable changed. This might actually
+   work, but now the solution's become quite complex.
+
+Implemented solution
+--------------------
+
+Use stamp files to detect whether a file is up-to-date or not.
+
+In particular:
+
+* When we don't write to a file because the new contents are identical to the
+  old contents, we now touch a .stamp file. This stamp file means "the
+  accompanying file was determined to be up-to-date when the stamp was
+  touched."
+* When checking whether a file is up-to-date, also check for the presence of a
+  .stamp file, and if it exists, use the highest timestamp between the stamp
+  file and the actual file.
+
+Now the test scenario becomes:
+
+* 1st build: everything is new and everything is built.
+* 2nd build: contents of .exe changes, the linker runs again, the static
+  registrar runs again, but sees that the generated output didn't change, so
+  it doesn't write the new content to disk, but it creates a registrar.m.stamp
+  file to indicate the point in time when registrar.m was considered up-to-
+  date.
+* 3rd build: only the .exe timestamp changes, the linker sees nothing changes
+  in the contents of the .exe and loads the previously linked assemblies from
+  disk, the static registrar sees that the .exe's timestamp is *older* than
+  registrar.m.stamp's timestamp and doesn't run again.
+
+We only use the stamp file for source code (registrar.[m|h], main.[m|h],
+pinvokes.[m|h]), since using it every time has too much potential for running
+into other problems (for instance we should never create .stamp files inside
+the .app).
+
+Fixes these test failures:
+
+    1) Failed : Xamarin.MTouch.RebuildTest_WithExtensions("single","",False,System.String[])
+      single
+      Expected: &lt;empty&gt;
+      But was:  &lt; "/Users/builder/data/lanes/5746/4123bf7e/source/xamarin-macios/tests/mtouch/bin/Debug/tmp-test-dir/Xamarin.Tests.BundlerTool.CreateTemporaryDirectory371/testApp.app/testApp is modified, timestamp: 2/15/2018 3:04:11 PM &gt; 2/15/2018 3:04:09 PM" &gt;
+
+    2) Failed : Xamarin.MTouch.RebuildTest_WithExtensions("dual","armv7,arm64",False,System.String[])
+      dual
+      Expected: &lt;empty&gt;
+      But was:  &lt; "/Users/builder/data/lanes/5746/4123bf7e/source/xamarin-macios/tests/mtouch/bin/Debug/tmp-test-dir/Xamarin.Tests.BundlerTool.CreateTemporaryDirectory375/testApp.app/testApp is modified, timestamp: 2/15/2018 3:06:03 PM &gt; 2/15/2018 3:06:00 PM" &gt;
+
+    3) Failed : Xamarin.MTouch.RebuildTest_WithExtensions("llvm","armv7+llvm",False,System.String[])
+      llvm
+      Expected: &lt;empty&gt;
+      But was:  &lt; "/Users/builder/data/lanes/5746/4123bf7e/source/xamarin-macios/tests/mtouch/bin/Debug/tmp-test-dir/Xamarin.Tests.BundlerTool.CreateTemporaryDirectory379/testApp.app/testApp is modified, timestamp: 2/15/2018 3:07:14 PM &gt; 2/15/2018 3:07:12 PM" &gt;
+
+    4) Failed : Xamarin.MTouch.RebuildTest_WithExtensions("debug","",True,System.String[])
+      debug
+      Expected: &lt;empty&gt;
+      But was:  &lt; "/Users/builder/data/lanes/5746/4123bf7e/source/xamarin-macios/tests/mtouch/bin/Debug/tmp-test-dir/Xamarin.Tests.BundlerTool.CreateTemporaryDirectory383/testApp.app/testApp is modified, timestamp: 2/15/2018 3:08:16 PM &gt; 2/15/2018 3:08:13 PM" &gt;
+
+    5) Failed : Xamarin.MTouch.RebuildTest_WithExtensions("single-framework","",False,System.String[])
+      single-framework
+      Expected: &lt;empty&gt;
+      But was:  &lt; "/Users/builder/data/lanes/5746/4123bf7e/source/xamarin-macios/tests/mtouch/bin/Debug/tmp-test-dir/Xamarin.Tests.BundlerTool.CreateTemporaryDirectory387/testApp.app/testApp is modified, timestamp: 2/15/2018 3:09:18 PM &gt; 2/15/2018 3:09:16 PM" &gt;
+
+Fixes https://github.com/xamarin/maccore/issues/641</Description>
+    <CreatedDate>19/02/2018</CreatedDate>
+    <ClosedDate>20/02/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>3536</PullRequestID>
+        <IssueID>2</IssueID>
+        <Title>Update links in README.md with ported wiki content</Title>
+        <Description>
+        </Description>
+        <CreatedDate>14/01/2015</CreatedDate>
+        <ClosedDate>14/01/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3536</PullRequestID>
+        <IssueID>3</IssueID>
+        <Title>Add symbol files(.pdb/source) to NuGet packages</Title>
+        <Description>It would be nice to be able to step inside Roslyn code when using NuGet packages.
+
+This is nice guide on how to do this:
+http://blog.davidebbo.com/2011/04/easy-way-to-publish-nuget-packages-with.html
+
+&lt;!---
+@huboard:{"order":6.0}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>08/11/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3536</PullRequestID>
+        <IssueID>3</IssueID>
+        <Title>Add symbol files(.pdb/source) to NuGet packages</Title>
+        <Description>It would be nice to be able to step inside Roslyn code when using NuGet packages.
+
+This is nice guide on how to do this:
+http://blog.davidebbo.com/2011/04/easy-way-to-publish-nuget-packages-with.html
+
+&lt;!---
+@huboard:{"order":6.0}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>08/11/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3536</PullRequestID>
+        <IssueID>3</IssueID>
+        <Title>Add symbol files(.pdb/source) to NuGet packages</Title>
+        <Description>It would be nice to be able to step inside Roslyn code when using NuGet packages.
+
+This is nice guide on how to do this:
+http://blog.davidebbo.com/2011/04/easy-way-to-publish-nuget-packages-with.html
+
+&lt;!---
+@huboard:{"order":6.0}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>08/11/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3536</PullRequestID>
+        <IssueID>5</IssueID>
+        <Title>Intellisense Tooltip get too long in case of many generic parameters</Title>
+        <Description>Hi, I hope to be in the right place, if not feel free to close this.
+
+I noticed that Intellisense tool-tips become too long in case of many generic parameters with constraint, see image below.
+![intellisense tooltip](https://cloud.githubusercontent.com/assets/3263338/5750517/652bead8-9c56-11e4-833e-932db4075c0a.png)
+
+What I would like to see, if there are more than 1 generic constraints is to split every constraint in a new line (as you can see in generic constraint declaration on the class itself) to avoid creating a very long tool-tip and to gain readability
+
+M.
+
+&lt;!---
+@huboard:{"order":6.5}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3536</PullRequestID>
+        <IssueID>3</IssueID>
+        <Title>Add symbol files(.pdb/source) to NuGet packages</Title>
+        <Description>It would be nice to be able to step inside Roslyn code when using NuGet packages.
+
+This is nice guide on how to do this:
+http://blog.davidebbo.com/2011/04/easy-way-to-publish-nuget-packages-with.html
+
+&lt;!---
+@huboard:{"order":6.0}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>08/11/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3536</PullRequestID>
+        <IssueID>4</IssueID>
+        <Title>added a space to experience e2e getting sources, making change, and subm...</Title>
+        <Description>...itting pull request
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>15/01/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3536</PullRequestID>
+        <IssueID>4</IssueID>
+        <Title>added a space to experience e2e getting sources, making change, and subm...</Title>
+        <Description>...itting pull request
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>15/01/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>3536</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Parser/LanguageParser_InterpolatedString.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Parsing/ParserErrorMessageTests.cs</File>
+      <File>src/Compilers/Core/Portable/PortableShim.cs</File>
+      <File>src/EditorFeatures/CSharpTest/EditAndContinue/ActiveStatementTests.cs</File>
+      <File>src/EditorFeatures/Test/EditAndContinue/RudeEditDiagnosticTests.cs</File>
+      <File>src/EditorFeatures/Test/MinimalTestExportProvider.cs</File>
+      <File>src/Features/Core/EditAndContinue/AbstractEditAndContinueAnalyzer.cs</File>
+      <File>src/Features/Core/EditAndContinue/RudeEditDiagnosticDescriptors.cs</File>
+      <File>src/Features/Core/EditAndContinue/RudeEditKind.cs</File>
+      <File>src/VisualStudio/Core/Def/RoslynPackage.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>3534</IssueID>
+    <RepoID>xamarinmacios</RepoID>
+    <Title>[mtouch/mmp] Fix tracking of whether the static registrar should run again or not. Fixes #641.</Title>
+    <Description>The recent changes to support optimizing away the dynamic registrar caused the
+Xamarin.MTouch.RebuildTest_WithExtensions test to regress.
+
+The problem
+-----------
+
+* The linker now collects and stores information the static registrar needs.
+* This information is not restored from disk when the linker realizes that it
+  can reload previously linked assemblies instead of executing again.
+* The static registrar runs again (for another reason).
+* The information the static registrar needs isn't available, and incorrect
+  output follows.
+
+So fix 1: show an error if the static registrar runs when the linker loaded
+cached results.
+
+The exact scenario the test ran into is this:
+
+* 1st build: everything is new and everything is built.
+* 2nd build: contents of .exe changes, the linker runs again, the static
+  registrar runs again, but sees that the generated output didn't change, so
+  it doesn't write the new content to disk (this is an optimization to avoid
+  compiling the registrar.m file again unless needed).
+* 3rd build: only the .exe timestamp changes, the linker sees nothing changes
+  in the contents of the .exe and loads the previously linked assemblies from
+  disk, the static registrar sees that the .exe's timestamp is newer than
+  registrar.m's timestamp and run again, but doesn't produce the right result
+  because it doesn't have the information it needs.
+
+Considered solutions
+--------------------
+
+1. Only track timestamps, not file contents. This is not ideal, since it will
+   result in more work done: in particular for the case above, it would add a
+   registrar.m compilation in build #2, and linker rerun + static registrar
+   rerun + registrar.m compilation + final native link in build #3.
+2. Always write the output of the static registrar, even if it hasn't changed.
+   This is not ideal either, since it will also result in more work done: for
+   the case above, it would add a registrar.m compilation + final native link
+   in build #3.
+3. Always write the output of the static registrar, but track if it changed or
+   not, and if it didn't, just touch registrar.o instead of recompiling it.
+   This only means the final native link in build #3 is added (see #5 for why
+   this is worse than it sounds).
+4. Always write the output of the static registrar, but track it it changed or
+   not, and if it didn't, just touch registrar.o instead of recompiling it,
+   and track that too, so that the final native link in build #3 isn't needed
+   anymore. Unfortunately this may result in incorrect behavior, because now
+   the msbuild tasks will detect that the executable has changed, and may run
+   dsymutil + strip again. The executable didn't actually change, which means
+   it would be the previously stripped executable, and thus we'd end up with
+   an empty .dSYM because we ran dsymtil on an already stripped executable.
+5. Idea #4, but write the output of the final link into a temporary directory
+   instead of the .app, so that we could track whether we should update the
+   executable in the .app or not. This is not optimal either, because
+   executables can be *big* (I've seen multi-GB tvOS bitcode executables), and
+   extra copies of such files should not be taken lightly.
+6. Idea #4, but tell the MSBuild tasks that dsymutil/strip doesn't need to be
+   rerun even if the timestamp of the executable changed. This might actually
+   work, but now the solution's become quite complex.
+
+Implemented solution
+--------------------
+
+Use stamp files to detect whether a file is up-to-date or not.
+
+In particular:
+
+* When we don't write to a file because the new contents are identical to the
+  old contents, we now touch a .stamp file. This stamp file means "the
+  accompanying file was determined to be up-to-date when the stamp was
+  touched."
+* When checking whether a file is up-to-date, also check for the presence of a
+  .stamp file, and if it exists, use the highest timestamp between the stamp
+  file and the actual file.
+
+Now the test scenario becomes:
+
+* 1st build: everything is new and everything is built.
+* 2nd build: contents of .exe changes, the linker runs again, the static
+  registrar runs again, but sees that the generated output didn't change, so
+  it doesn't write the new content to disk, but it creates a registrar.m.stamp
+  file to indicate the point in time when registrar.m was considered up-to-
+  date.
+* 3rd build: only the .exe timestamp changes, the linker sees nothing changes
+  in the contents of the .exe and loads the previously linked assemblies from
+  disk, the static registrar sees that the .exe's timestamp is *older* than
+  registrar.m.stamp's timestamp and doesn't run again.
+
+We only use the stamp file for source code (registrar.[m|h], main.[m|h],
+pinvokes.[m|h]), since using it every time has too much potential for running
+into other problems (for instance we should never create .stamp files inside
+the .app).
+
+Fixes these test failures:
+
+    1) Failed : Xamarin.MTouch.RebuildTest_WithExtensions("single","",False,System.String[])
+      single
+      Expected: &lt;empty&gt;
+      But was:  &lt; "/Users/builder/data/lanes/5746/4123bf7e/source/xamarin-macios/tests/mtouch/bin/Debug/tmp-test-dir/Xamarin.Tests.BundlerTool.CreateTemporaryDirectory371/testApp.app/testApp is modified, timestamp: 2/15/2018 3:04:11 PM &gt; 2/15/2018 3:04:09 PM" &gt;
+
+    2) Failed : Xamarin.MTouch.RebuildTest_WithExtensions("dual","armv7,arm64",False,System.String[])
+      dual
+      Expected: &lt;empty&gt;
+      But was:  &lt; "/Users/builder/data/lanes/5746/4123bf7e/source/xamarin-macios/tests/mtouch/bin/Debug/tmp-test-dir/Xamarin.Tests.BundlerTool.CreateTemporaryDirectory375/testApp.app/testApp is modified, timestamp: 2/15/2018 3:06:03 PM &gt; 2/15/2018 3:06:00 PM" &gt;
+
+    3) Failed : Xamarin.MTouch.RebuildTest_WithExtensions("llvm","armv7+llvm",False,System.String[])
+      llvm
+      Expected: &lt;empty&gt;
+      But was:  &lt; "/Users/builder/data/lanes/5746/4123bf7e/source/xamarin-macios/tests/mtouch/bin/Debug/tmp-test-dir/Xamarin.Tests.BundlerTool.CreateTemporaryDirectory379/testApp.app/testApp is modified, timestamp: 2/15/2018 3:07:14 PM &gt; 2/15/2018 3:07:12 PM" &gt;
+
+    4) Failed : Xamarin.MTouch.RebuildTest_WithExtensions("debug","",True,System.String[])
+      debug
+      Expected: &lt;empty&gt;
+      But was:  &lt; "/Users/builder/data/lanes/5746/4123bf7e/source/xamarin-macios/tests/mtouch/bin/Debug/tmp-test-dir/Xamarin.Tests.BundlerTool.CreateTemporaryDirectory383/testApp.app/testApp is modified, timestamp: 2/15/2018 3:08:16 PM &gt; 2/15/2018 3:08:13 PM" &gt;
+
+    5) Failed : Xamarin.MTouch.RebuildTest_WithExtensions("single-framework","",False,System.String[])
+      single-framework
+      Expected: &lt;empty&gt;
+      But was:  &lt; "/Users/builder/data/lanes/5746/4123bf7e/source/xamarin-macios/tests/mtouch/bin/Debug/tmp-test-dir/Xamarin.Tests.BundlerTool.CreateTemporaryDirectory387/testApp.app/testApp is modified, timestamp: 2/15/2018 3:09:18 PM &gt; 2/15/2018 3:09:16 PM" &gt;
+
+Fixes https://github.com/xamarin/maccore/issues/641</Description>
+    <CreatedDate>19/02/2018</CreatedDate>
+    <ClosedDate>19/02/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>3534</PullRequestID>
+        <IssueID>2</IssueID>
+        <Title>Update links in README.md with ported wiki content</Title>
+        <Description>
+        </Description>
+        <CreatedDate>14/01/2015</CreatedDate>
+        <ClosedDate>14/01/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3534</PullRequestID>
+        <IssueID>3</IssueID>
+        <Title>Add symbol files(.pdb/source) to NuGet packages</Title>
+        <Description>It would be nice to be able to step inside Roslyn code when using NuGet packages.
+
+This is nice guide on how to do this:
+http://blog.davidebbo.com/2011/04/easy-way-to-publish-nuget-packages-with.html
+
+&lt;!---
+@huboard:{"order":6.0}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>08/11/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3534</PullRequestID>
+        <IssueID>3</IssueID>
+        <Title>Add symbol files(.pdb/source) to NuGet packages</Title>
+        <Description>It would be nice to be able to step inside Roslyn code when using NuGet packages.
+
+This is nice guide on how to do this:
+http://blog.davidebbo.com/2011/04/easy-way-to-publish-nuget-packages-with.html
+
+&lt;!---
+@huboard:{"order":6.0}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>08/11/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3534</PullRequestID>
+        <IssueID>3</IssueID>
+        <Title>Add symbol files(.pdb/source) to NuGet packages</Title>
+        <Description>It would be nice to be able to step inside Roslyn code when using NuGet packages.
+
+This is nice guide on how to do this:
+http://blog.davidebbo.com/2011/04/easy-way-to-publish-nuget-packages-with.html
+
+&lt;!---
+@huboard:{"order":6.0}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>08/11/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3534</PullRequestID>
+        <IssueID>5</IssueID>
+        <Title>Intellisense Tooltip get too long in case of many generic parameters</Title>
+        <Description>Hi, I hope to be in the right place, if not feel free to close this.
+
+I noticed that Intellisense tool-tips become too long in case of many generic parameters with constraint, see image below.
+![intellisense tooltip](https://cloud.githubusercontent.com/assets/3263338/5750517/652bead8-9c56-11e4-833e-932db4075c0a.png)
+
+What I would like to see, if there are more than 1 generic constraints is to split every constraint in a new line (as you can see in generic constraint declaration on the class itself) to avoid creating a very long tool-tip and to gain readability
+
+M.
+
+&lt;!---
+@huboard:{"order":6.5}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3534</PullRequestID>
+        <IssueID>3</IssueID>
+        <Title>Add symbol files(.pdb/source) to NuGet packages</Title>
+        <Description>It would be nice to be able to step inside Roslyn code when using NuGet packages.
+
+This is nice guide on how to do this:
+http://blog.davidebbo.com/2011/04/easy-way-to-publish-nuget-packages-with.html
+
+&lt;!---
+@huboard:{"order":6.0}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>08/11/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3534</PullRequestID>
+        <IssueID>4</IssueID>
+        <Title>added a space to experience e2e getting sources, making change, and subm...</Title>
+        <Description>...itting pull request
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>15/01/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3534</PullRequestID>
+        <IssueID>4</IssueID>
+        <Title>added a space to experience e2e getting sources, making change, and subm...</Title>
+        <Description>...itting pull request
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>15/01/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>3534</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder_Statements.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder_Symbols.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/InContainerBinder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/LookupResult.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Semantics/Conversions/UserDefinedImplicitConversions.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Semantics/OverloadResolution/OverloadResolution.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Semantics/OverloadResolution/OverloadResolutionResult.cs</File>
+      <File>src/Compilers/CSharp/Portable/BoundTree/UnboundLambda.cs</File>
+      <File>src/Compilers/CSharp/Portable/CSharpResources.Designer.cs</File>
+      <File>src/Compilers/CSharp/Portable/CodeGen/EmitAddress.cs</File>
+      <File>src/Compilers/CSharp/Portable/CodeGen/EmitArrayInitializer.cs</File>
+      <File>src/Compilers/CSharp/Portable/CodeGen/EmitExpression.cs</File>
+      <File>src/Compilers/CSharp/Portable/CodeGen/EmitStatement.cs</File>
+      <File>src/Compilers/CSharp/Portable/CodeGen/Optimizer.cs</File>
+      <File>src/Compilers/CSharp/Portable/Compilation/BuiltInOperators.cs</File>
+      <File>src/Compilers/CSharp/Portable/Compilation/CSharpSemanticModel.cs</File>
+      <File>src/Compilers/CSharp/Portable/Compiler/MethodCompiler.cs</File>
+      <File>src/Compilers/CSharp/Portable/Emitter/EditAndContinue/CSharpDefinitionMap.cs</File>
+      <File>src/Compilers/CSharp/Portable/Emitter/EditAndContinue/CSharpSymbolMatcher.cs</File>
+      <File>src/Compilers/CSharp/Portable/Emitter/EditAndContinue/PEDeltaAssemblyBuilder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Emitter/Model/MethodSymbolAdapter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Errors/ErrorCode.cs</File>
+      <File>src/Compilers/CSharp/Portable/FlowAnalysis/PreciseAbstractFlowPass.cs</File>
+      <File>src/Compilers/CSharp/Portable/FlowAnalysis/RegionReachableWalker.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/AsyncRewriter/AsyncExceptionHandlerRewriter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/AsyncRewriter/AsyncMethodToStateMachineRewriter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/DiagnosticsPass_ExpressionTrees.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/DiagnosticsPass_Warnings.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/LambdaRewriter/LambdaFrame.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/LocalRewriter/LocalRewriter_ConditionalAccess.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/LocalRewriter/LocalRewriter_StringConcat.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/LocalRewriter/LocalRewriter_SwitchStatement.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/LocalRewriter/LocalRewriter_UnaryOperator.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/MethodToClassRewriter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/StateMachineRewriter/MethodToStateMachineRewriter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/StateMachineRewriter/StateMachineRewriter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Parser/LanguageParser.cs</File>
+      <File>src/Compilers/CSharp/Portable/Parser/SlidingTextWindow.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/AnonymousTypes/AnonymousTypeDescriptor.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/AnonymousTypes/AnonymousTypeManager.Templates.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/AnonymousTypes/SynthesizedSymbols/AnonymousType.TemplateSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/LexicalSortKey.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Metadata/PE/DynamicTypeDecoder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/ModuleSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/NoPiaAmbiguousCanonicalTypeSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/NoPiaMissingCanonicalTypeSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/NonMissingModuleSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/OverriddenOrHiddenMembersHelpers.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/ReferenceManager.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/ExplicitInterfaceHelpers.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceClonedParameterSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceDelegateMethodSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceFixedFieldSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceMemberContainerSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceMemberContainerSymbol_ImplementationChecks.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceMemberFieldSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceMemberMethodSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceUserDefinedOperatorSymbolBase.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/TypeUnification.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/CSharpSyntaxNode.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/CSharpSyntaxTree.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/LambdaUtilities.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/SyntaxExtensions.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/SyntaxFactory.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/SyntaxNormalizer.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_CallerInfoAttributes.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_Locations.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_Security.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_WellKnownAttributes.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/BreakingChanges.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenExprLambdaTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenOperators.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenOverridingAndHiding.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenStructsAndEnum.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/FixedSizeBufferTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/SwitchTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/DeterministicTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EditAndContinue/AssemblyReferencesTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EditAndContinue/EditAndContinueClosureTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EditAndContinue/EditAndContinueStateMachineTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EditAndContinue/EditAndContinueTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EditAndContinue/SymbolMatcherTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EntryPointTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/PDB/PDBAsyncTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/PDB/PDBIteratorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/FlowAnalysis/RegionAnalysisTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/BindingTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/InheritanceBindingTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/NameOfTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/NamedAndOptionalTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/OverloadResolutionTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/SemanticErrorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/UserDefinedConversionTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/BadSymbolReference.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/CompilationAPITests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/GetSemanticInfoTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/IndexedProperties_BindingTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/ReferenceManagerTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/SemanticModelAPITests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/SemanticModelGetSemanticInfoTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/DocumentationComments/DocumentationCommentCompilerTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/AccessorOverriddenOrHiddenMembersTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/AnonymousTypesSemanticsTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/AnonymousTypesSymbolTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/CompilationCreationTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/ConversionTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/EnumTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/ExtensionMethodTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/GenericConstraintConversionTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/GenericConstraintTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/IndexedPropertyTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/IndexerTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/InterfaceImplementationTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/MetadataMemberTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/DynamicTransformsTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/LoadingAttributes.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/LoadingIndexers.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/LoadingMethods.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/LoadingNamespacesAndTypes.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/NoPiaInstantiationOfGenericClassAndStruct.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/TypeForwarders.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/OverriddenOrHiddenMembersTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Retargeting/NoPia.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Retargeting/RetargetExplicitInterfaceImplementation.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/CustomModifierCopyTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/EnumTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/EventTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/ExpressionBodiedMethodTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/ExpressionBodiedPropertyTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/PropertyTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/SourcePlusMetadataTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/SymbolErrorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/TypeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/UserDefinedOperatorErrorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Diagnostics/LocationsTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Syntax/SyntaxNormalizerTests.cs</File>
+      <File>src/Compilers/CSharp/Test/WinRT/CodeGen/WinRTCollectionTests.cs</File>
+      <File>src/Compilers/CSharp/Test/WinRT/Metadata/WinMdEventTests.cs</File>
+      <File>src/Compilers/Core/CodeAnalysisTest/AnalyzerFileReferenceTests.cs</File>
+      <File>src/Compilers/Core/CodeAnalysisTest/CommonCommandLineParserTests.cs</File>
+      <File>src/Compilers/Core/CodeAnalysisTest/FileUtilitiesTests.cs</File>
+      <File>src/Compilers/Core/CodeAnalysisTest/MetadataReferences/MetadataReferenceTests.cs</File>
+      <File>src/Compilers/Core/MSBuildTask/CommandLineBuilderExtension.cs</File>
+      <File>src/Compilers/Core/MSBuildTask/ManagedCompiler.cs</File>
+      <File>src/Compilers/Core/MSBuildTask/Vbc.cs</File>
+      <File>src/Compilers/Core/Portable/CaseInsensitiveComparison.cs</File>
+      <File>src/Compilers/Core/Portable/CodeAnalysisResources.Designer.cs</File>
+      <File>src/Compilers/Core/Portable/CodeGen/ArrayMembers.cs</File>
+      <File>src/Compilers/Core/Portable/CodeGen/ILBuilder.cs</File>
+      <File>src/Compilers/Core/Portable/CodeGen/LocalDebugId.cs</File>
+      <File>src/Compilers/Core/Portable/CodeGen/StringTokenMap.cs</File>
+      <File>src/Compilers/Core/Portable/CodeGen/TokenMap.cs</File>
+      <File>src/Compilers/Core/Portable/Collections/BitVector.cs</File>
+      <File>src/Compilers/Core/Portable/Collections/ImmutableArrayExtensions.cs</File>
+      <File>src/Compilers/Core/Portable/Collections/OrderPreservingMultiDictionary.cs</File>
+      <File>src/Compilers/Core/Portable/Collections/SmallConcurrentSetOfInts.cs</File>
+      <File>src/Compilers/Core/Portable/CommandLine/CommonCommandLineParser.cs</File>
+      <File>src/Compilers/Core/Portable/CommandLine/CommonCompiler.cs</File>
+      <File>src/Compilers/Core/Portable/Compilation/Compilation.cs</File>
+      <File>src/Compilers/Core/Portable/CorLightup.cs</File>
+      <File>src/Compilers/Core/Portable/Desktop/AssemblyPortabilityPolicy.cs</File>
+      <File>src/Compilers/Core/Portable/Diagnostic/Diagnostic.cs</File>
+      <File>src/Compilers/Core/Portable/Diagnostic/DiagnosticInfo.cs</File>
+      <File>src/Compilers/Core/Portable/Diagnostic/DiagnosticSeverity.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalyzerFileReference.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/DiagnosticAnalysisContext.cs</File>
+      <File>src/Compilers/Core/Portable/DocumentationCommentId.cs</File>
+      <File>src/Compilers/Core/Portable/Emit/AnonymousTypeKey.cs</File>
+      <File>src/Compilers/Core/Portable/Emit/CommonPEModuleBuilder.cs</File>
+      <File>src/Compilers/Core/Portable/Emit/EditAndContinue/DeltaMetadataWriter.cs</File>
+      <File>src/Compilers/Core/Portable/Emit/EditAndContinue/EmitBaseline.cs</File>
+      <File>src/Compilers/Core/Portable/InternalUtilities/ConcurrentDictionaryExtensions.cs</File>
+      <File>src/Compilers/Core/Portable/InternalUtilities/ConcurrentLruCache.cs</File>
+      <File>src/Compilers/Core/Portable/InternalUtilities/InterlockedOperations.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataReader/MetadataHelpers.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataReference/AssemblyIdentity.DisplayName.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataReference/AssemblyIdentityComparer.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataReference/MetadataReference.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataReference/PortableExecutableReference.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/ExceptionHandlerRegion.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/Members.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/MetadataWriter.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/Miscellaneous.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/Types.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/Units.cs</File>
+      <File>src/Compilers/Core/Portable/PortableShim.cs</File>
+      <File>src/Compilers/Core/Portable/ReferenceManager/AssemblyData.cs</File>
+      <File>src/Compilers/Core/Portable/ReferenceManager/AssemblyDataForAssemblyBeingBuilt.cs</File>
+      <File>src/Compilers/Core/Portable/ReferenceManager/CommonReferenceManager.Resolution.cs</File>
+      <File>src/Compilers/Core/Portable/ReferenceManager/CommonReferenceManager.State.cs</File>
+      <File>src/Compilers/Core/Portable/ReferenceManager/ModuleReferences.cs</File>
+      <File>src/Compilers/Core/Portable/ResourceDescription.cs</File>
+      <File>src/Compilers/Core/Portable/RuleSet/RuleSet.cs</File>
+      <File>src/Compilers/Core/Portable/RuleSet/RuleSetInclude.cs</File>
+      <File>src/Compilers/Core/Portable/SignatureComparer.cs</File>
+      <File>src/Compilers/Core/Portable/SpecialTypes.cs</File>
+      <File>src/Compilers/Core/Portable/SymbolDisplay/SymbolDisplayFormat.cs</File>
+      <File>src/Compilers/Core/Portable/Symbols/Attributes/CommonAttributeData.cs</File>
+      <File>src/Compilers/Core/Portable/Symbols/Attributes/SecurityWellKnownAttributeData.cs</File>
+      <File>src/Compilers/Core/Portable/Symbols/IFieldSymbol.cs</File>
+      <File>src/Compilers/Core/Portable/Syntax/AnnotationExtensions.cs</File>
+      <File>src/Compilers/Core/Portable/Syntax/SyntaxNode.cs</File>
+      <File>src/Compilers/Core/Portable/Syntax/SyntaxNodeExtensions.cs</File>
+      <File>src/Compilers/Core/Portable/Syntax/SyntaxToken.cs</File>
+      <File>src/Compilers/Core/Portable/Syntax/SyntaxTree.cs</File>
+      <File>src/Compilers/Core/Portable/SynthesizedLocalKind.cs</File>
+      <File>src/Compilers/Core/Portable/Text/LinePositionSpan.cs</File>
+      <File>src/Compilers/Core/Portable/Text/TextChangeRange.cs</File>
+      <File>src/Compilers/Core/VBCSCompiler/AnalyzerConsistencyChecker.cs</File>
+      <File>src/Compilers/Core/VBCSCompiler/IClientConnection.cs</File>
+      <File>src/Compilers/Core/VBCSCompiler/NamedPipeClientConnection.cs</File>
+      <File>src/Compilers/Test/Resources/Core/PerfTests/CSPerfTest.cs</File>
+      <File>src/Compilers/Test/Utilities/CSharp/CSharpTestBase.cs</File>
+      <File>src/Diagnostics/CodeAnalysis/Core/CodeAnalysisDiagnosticsResources.Designer.cs</File>
+      <File>src/Diagnostics/FxCop/Core/AnalyzerPowerPackFixersResources.Designer.cs</File>
+      <File>src/Diagnostics/FxCop/Core/AnalyzerPowerPackRulesResources.Designer.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/CSharp/Usage/DisposableFieldsShouldBeDisposed.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Core/Design/DefineAccessorsForAttributeArguments.Fixer.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Core/Design/DefineAccessorsForAttributeArguments.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Test/Design/DefineAccessorsForAttributeArgumentsTests.cs</File>
+      <File>src/Diagnostics/FxCop/Test/Usage/CA2214Tests.cs</File>
+      <File>src/Diagnostics/Roslyn/Core/ApiDesign/DeclarePublicAPIAnalyzer.cs</File>
+      <File>src/Diagnostics/Roslyn/Core/RoslynDiagnosticIds.cs</File>
+      <File>src/Diagnostics/Roslyn/Core/RoslynDiagnosticsResources.Designer.cs</File>
+      <File>src/Diagnostics/Test/Utilities/DiagnosticAnalyzerTestBase.cs</File>
+      <File>src/EditorFeatures/CSharp/BraceMatching/StringLiteralBraceMatcher.cs</File>
+      <File>src/EditorFeatures/CSharp/Completion/CompletionProviders/ReferenceDirectiveCompletionProvider.cs</File>
+      <File>src/EditorFeatures/CSharp/Completion/CompletionProviders/XmlDocCommentCompletion/XmlDocCommentCompletionProvider.cs</File>
+      <File>src/EditorFeatures/CSharp/DocumentationComments/XmlTagCompletionCommandHandler.cs</File>
+      <File>src/EditorFeatures/CSharp/EventHookup/EventHookupCommandHandler_TabKeyCommand.cs</File>
+      <File>src/EditorFeatures/CSharp/EventHookup/EventHookupSessionManager_EventHookupSession.cs</File>
+      <File>src/EditorFeatures/CSharp/Formatting/CSharpEditorFormattingService.cs</File>
+      <File>src/EditorFeatures/CSharp/Formatting/Indentation/CSharpIndentationService.Indenter.cs</File>
+      <File>src/EditorFeatures/CSharp/LineSeparators/CSharpLineSeparatorService.cs</File>
+      <File>src/EditorFeatures/CSharp/ReferenceHighlighting/ReferenceHighlightingAdditionalReferenceProvider.cs</File>
+      <File>src/EditorFeatures/CSharp/SignatureHelp/ConstructorInitializerSignatureHelpProvider.cs</File>
+      <File>src/EditorFeatures/CSharp/SignatureHelp/ElementAccessExpressionSignatureHelpProvider.cs</File>
+      <File>src/EditorFeatures/CSharp/SignatureHelp/InvocationExpressionSignatureHelpProvider_MethodGroup.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Completion/CompletionProviders/AbstractCSharpCompletionProviderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Completion/CompletionProviders/CrefCompletionProviderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Completion/CompletionProviders/ObjectCreationCompletionProviderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Completion/CompletionProviders/SymbolCompletionProviderTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/DiagnosticAnalyzerDriver/DiagnosticAnalyzerDriverTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/GenerateType/GenerateTypeTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/ImplementInterface/ImplementInterfaceTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/Iterator/AddYieldTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/LineSeparators/LineSeparatorTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Organizing/OrganizeTypeDeclarationTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/PerfTests/Sources/CSharpClassesAtEndBase.cs</File>
+      <File>src/EditorFeatures/CSharpTest/PerfTests/Sources/LargeMethod.cs</File>
+      <File>src/EditorFeatures/CSharpTest/PerfTests/Sources/Scrolling.cs</File>
+      <File>src/EditorFeatures/Core/EditorFeaturesResources.Designer.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Classification/IEditorClassificationService.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Classification/SyntacticClassificationTaggerProvider.TagComputer.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/CodeActions/CodeActionEditHandlerService.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/CommentSelection/CommentUncommentSelectionCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Diagnostics/AbstractAggregatedDiagnosticsTagSource.DiagnosticsTagSource.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/DocumentationComments/AbstractDocumentationCommentCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/AbstractEditorInlineRenameService.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/IEditorInlineRenameService.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/InlineRenameSession.OpenTextBufferManager.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/InlineRenameSession.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Controller_TypeChar.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Presentation/CustomCommitCompletion.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/Presentation/ToolTipProvider.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/RenameTracking/RenameTrackingTaggerProvider.StateMachine.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Workspaces/ProjectCacheServiceFactory.ProjectCacheService.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Workspaces/ProjectCacheServiceFactory.SimpleMRUCache.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Workspaces/ProjectCacheServiceFactory.cs</File>
+      <File>src/EditorFeatures/Core/Shared/Extensions/IBufferGraphExtensions.cs</File>
+      <File>src/EditorFeatures/Core/Shared/Extensions/ITextViewExtensions.cs</File>
+      <File>src/EditorFeatures/Core/Shared/Extensions/SymbolDisplayPartExtensions.cs</File>
+      <File>src/EditorFeatures/Core/Shared/Options/FeatureOnOffOptions.cs</File>
+      <File>src/EditorFeatures/Core/Shared/Tagging/AsynchronousTagger.cs</File>
+      <File>src/EditorFeatures/Test/ChangeSignature/AbstractChangeSignatureTests.cs</File>
+      <File>src/EditorFeatures/Test/CodeFixes/CodeFixServiceTests.cs</File>
+      <File>src/EditorFeatures/Test/QuickInfo/AbstractSemanticQuickInfoSourceTests.cs</File>
+      <File>src/EditorFeatures/Test/SolutionCrawler/WorkCoordinatorTests.cs</File>
+      <File>src/EditorFeatures/Test/Workspaces/ProjectCacheHostServiceFactoryTests.cs</File>
+      <File>src/EditorFeatures/Test/Workspaces/TestHostProject.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Source/ExpressionCompiler/CSharpExpressionCompiler.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Source/ExpressionCompiler/EvaluationContext.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Source/ExpressionCompiler/Symbols/ObjectIdLocalSymbol.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Source/ExpressionCompiler/Symbols/PlaceholderLocalSymbol.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/DeclarationTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/ExpressionCompilerTestBase.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/ExpressionCompilerTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/HoistedStateMachineLocalTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/LocalsTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/PseudoVariableTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/ReferencedModulesTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ResultProvider/FormatSpecifierTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ResultProvider/ObjectIdTests.cs</File>
+      <File>src/ExpressionEvaluator/Core/Source/ExpressionCompiler/EvaluationContextBase.cs</File>
+      <File>src/ExpressionEvaluator/Core/Source/ExpressionCompiler/ExpressionCompiler.cs</File>
+      <File>src/ExpressionEvaluator/Core/Source/ExpressionCompiler/MethodContextReuseConstraints.cs</File>
+      <File>src/ExpressionEvaluator/Core/Source/ResultProvider/Helpers/ValueHelpers.cs</File>
+      <File>src/ExpressionEvaluator/Core/Test/ExpressionCompiler/ExpressionCompilerTestHelpers.cs</File>
+      <File>src/Features/CSharp/CodeRefactorings/InlineTemporary/InlineTemporaryCodeRefactoringProvider.cs</File>
+      <File>src/Features/CSharp/CodeRefactorings/InvertIf/InvertIfCodeRefactoringProvider.cs</File>
+      <File>src/Features/CSharp/CodeRefactorings/MoveDeclarationNearReference/MoveDeclarationNearReferenceCodeRefactoringProvider.cs</File>
+      <File>src/Features/CSharp/Completion/CompletionProviders/AttributeNamedParameterCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Completion/CompletionProviders/CrefCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Completion/CompletionProviders/ExplicitInterfaceCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Completion/CompletionProviders/ExternAliasCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Completion/CompletionProviders/KeywordCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Completion/CompletionProviders/NamedParameterCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Completion/CompletionProviders/ObjectCreationCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Completion/CompletionProviders/ObjectInitializerCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Completion/CompletionProviders/SnippetCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Completion/CompletionProviders/SpeculativeTCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Completion/CompletionProviders/SuggestionModeCompletionProvider.cs</File>
+      <File>src/Features/CSharp/Completion/CompletionProviders/SymbolCompletionProvider.cs</File>
+      <File>src/Features/CSharp/EditAndContinue/BreakpointSpans.cs</File>
+      <File>src/Features/CSharp/EncapsulateField/CSharpEncapsulateFieldService.cs</File>
+      <File>src/Features/CSharp/ExtractInterface/CSharpExtractInterfaceService.cs</File>
+      <File>src/Features/CSharp/ExtractMethod/CSharpMethodExtractor.CSharpCodeGenerator.ExpressionCodeGenerator.cs</File>
+      <File>src/Features/CSharp/ExtractMethod/CSharpMethodExtractor.CSharpCodeGenerator.MultipleStatementsCodeGenerator.cs</File>
+      <File>src/Features/CSharp/ExtractMethod/CSharpSelectionResult.ExpressionResult.cs</File>
+      <File>src/Features/CSharp/GenerateFromMembers/GenerateFromMembersHelpers.cs</File>
+      <File>src/Features/CSharp/GenerateMember/GenerateParameterizedMember/CSharpGenerateMethodService.cs</File>
+      <File>src/Features/CSharp/Organizing/Organizers/MemberDeclarationsOrganizer.Comparer.cs</File>
+      <File>src/Features/Core/Completion/CompletionItem.cs</File>
+      <File>src/Features/Core/Completion/Providers/SymbolCompletionItem.cs</File>
+      <File>src/Features/Core/Diagnostics/Analyzers/RemoveUnnecessaryImportsDiagnosticAnalyzerBase.cs</File>
+      <File>src/Features/Core/Diagnostics/BaseDiagnosticIncrementalAnalyzer.cs</File>
+      <File>src/Features/Core/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer.StateManager.cs</File>
+      <File>src/Features/Core/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer.cs</File>
+      <File>src/Features/Core/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer_BuildSynchronization.cs</File>
+      <File>src/Features/Core/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer_GetDiagnostics.cs</File>
+      <File>src/Features/Core/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer_GetLatestDiagnosticsForSpan.cs</File>
+      <File>src/Features/Core/Diagnostics/HostAnalyzerManager.cs</File>
+      <File>src/Features/Core/Diagnostics/PredefinedBuildTools.cs</File>
+      <File>src/Features/Core/EditAndContinue/AbstractEditAndContinueAnalyzer.cs</File>
+      <File>src/Features/Core/EditAndContinue/ActiveStatementFlags.cs</File>
+      <File>src/Features/Core/EncapsulateField/AbstractEncapsulateFieldService.cs</File>
+      <File>src/Features/Core/ExtractMethod/Extensions.cs</File>
+      <File>src/Features/Core/ExtractMethod/MethodExtractor.Analyzer.cs</File>
+      <File>src/Features/Core/ExtractMethod/MethodExtractor.VariableInfo.cs</File>
+      <File>src/Features/Core/ExtractMethod/SelectionResult.cs</File>
+      <File>src/Features/Core/FeaturesResources.Designer.cs</File>
+      <File>src/Features/Core/GenerateMember/GenerateConstructor/AbstractGenerateConstructorService.Editor.cs</File>
+      <File>src/Features/Core/GenerateMember/GenerateParameterizedMember/AbstractGenerateMethodService.cs</File>
+      <File>src/Features/Core/GenerateMember/GenerateVariable/AbstractGenerateVariableService.CodeAction.cs</File>
+      <File>src/Features/Core/SolutionCrawler/IdleProcessor.cs</File>
+      <File>src/Features/Core/SolutionCrawler/SolutionCrawlerLogger.cs</File>
+      <File>src/Features/Core/SolutionCrawler/WorkCoordinator.HighPriorityProcessor.cs</File>
+      <File>src/Features/Core/SolutionCrawler/WorkCoordinator.NormalPriorityProcessor.cs</File>
+      <File>src/Features/Core/SolutionCrawler/WorkCoordinator.cs</File>
+      <File>src/Interactive/EditorFeatures/CSharp/Completion/CompletionProviders/ReplCommandCompletionProvider.cs</File>
+      <File>src/Interactive/HostTest/InteractiveHostTests.cs</File>
+      <File>src/InteractiveWindow/Editor/ReplInput.cs</File>
+      <File>src/InteractiveWindow/VisualStudio/ProvideInteractiveWindowAttribute.cs</File>
+      <File>src/InteractiveWindow/VisualStudio/VsInteractiveWindow.cs</File>
+      <File>src/InteractiveWindow/VisualStudio/VsInteractiveWindowCommandFilter.cs</File>
+      <File>src/Samples/CSharp/APISampleUnitTests/Compilations.cs</File>
+      <File>src/Samples/CSharp/APISampleUnitTests/FAQ.cs</File>
+      <File>src/Samples/CSharp/APISampleUnitTests/SymbolsAndSemantics.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers.Test/Helpers/DiagnosticResult.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers.Test/Helpers/DiagnosticVerifier.Helper.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers.Test/Properties/AssemblyInfo.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers.Test/Tests/CodeBlockAnalyzerUnitTests.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers.Test/Tests/CodeBlockStartedAnalyzerUnitTests.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers.Test/Tests/CompilationAnalyzerUnitTests.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers.Test/Tests/CompilationStartedAnalyzerUnitTests.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers.Test/Tests/CompilationStartedAnalyzerWithCompilationWideAnalysisUnitTests.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers.Test/Tests/SemanticModelAnalyzerUnitTests.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers.Test/Tests/SymbolAnalyzerUnitTests.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers.Test/Tests/SyntaxNodeAnalyzerUnitTests.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers.Test/Tests/SyntaxTreeAnalyzerUnitTests.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers.Test/Verifiers/DiagnosticVerifier.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers/DiagnosticCategories.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers/DiagnosticIds.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers/Properties/AssemblyInfo.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers/Resources.Designer.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers/StatefulAnalyzers/CodeBlockStartedAnalyzer.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers/StatefulAnalyzers/CompilationStartedAnalyzer.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers/StatefulAnalyzers/CompilationStartedAnalyzerWithCompilationWideAnalysis.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers/StatelessAnalyzers/CodeBlockAnalyzer.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers/StatelessAnalyzers/CompilationAnalyzer.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers/StatelessAnalyzers/SemanticModelAnalyzer.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers/StatelessAnalyzers/SymbolAnalyzer.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers/StatelessAnalyzers/SyntaxNodeAnalyzer.cs</File>
+      <File>src/Samples/CSharp/Analyzers/CSharpAnalyzers/CSharpAnalyzers/StatelessAnalyzers/SyntaxTreeAnalyzer.cs</File>
+      <File>src/Samples/CSharp/AsyncPackage/Test/Backend/DiagnosticVerifier.Helper.cs</File>
+      <File>src/Samples/Shared/UnitTestFramework/CodeActionProviderTestFixture.cs</File>
+      <File>src/Scripting/CSharpTest/InteractiveSessionTests.cs</File>
+      <File>src/Scripting/CSharpTest/ObjectFormatterTests.cs</File>
+      <File>src/Scripting/Core/Emit/CommonCompilationExtensions.cs</File>
+      <File>src/Scripting/Core/Emit/ReflectionEmitter.cs</File>
+      <File>src/Scripting/Core/InteractiveAssemblyLoader.cs</File>
+      <File>src/Scripting/Core/MemberDisplayFormat.cs</File>
+      <File>src/Scripting/Core/MetadataShadowCopyProvider.cs</File>
+      <File>src/Scripting/Core/ObjectFormatter.Formatter.cs</File>
+      <File>src/Scripting/Core/Script.cs</File>
+      <File>src/Scripting/Core/ScriptOptions.cs</File>
+      <File>src/Scripting/Core/ScriptVariables.cs</File>
+      <File>src/Scripting/Core/ScriptingResources.Designer.cs</File>
+      <File>src/Scripting/Test/ScriptEngine.cs</File>
+      <File>src/Test/PdbUtilities/Metadata/ILVisualizer.cs</File>
+      <File>src/Test/Utilities/CommonTestBase.CompilationVerifier.cs</File>
+      <File>src/Test/Utilities/CompilationDifference.cs</File>
+      <File>src/Test/Utilities/DiffUtil.cs</File>
+      <File>src/Test/Utilities/ILBuilderVisualizer.cs</File>
+      <File>src/Test/Utilities/MetadataSignatureHelper.cs</File>
+      <File>src/Test/Utilities/ProcessLauncher.cs</File>
+      <File>src/Test/Utilities/TempDirectory.cs</File>
+      <File>src/Tools/Source/CompilerGeneratorTools/Source/CSharpSyntaxGenerator/SourceWriter.cs</File>
+      <File>src/Tools/Source/Pdb2Xml/PdbToXmlApp.cs</File>
+      <File>src/Tools/Source/SyntaxVisualizer/SyntaxVisualizerControl/SyntaxVisualizerControl.xaml.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/CodeModel/CSharpCodeModelService.CodeModelEventCollector.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/CodeModel/CSharpCodeModelService.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/Debugging/CSharpProximityExpressionsService.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/Debugging/DataTipInfoGetter.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/Debugging/LocationInfoGetter.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/LanguageService/CSharpDebuggerIntelliSenseContext.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/ObjectBrowser/DescriptionBuilder.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/Snippets/SnippetCommandHandler.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/Snippets/SnippetExpansionClient.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/Snippets/SnippetFunctions/SnippetFunctionClassName.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/Snippets/SnippetFunctions/SnippetFunctionGenerateSwitchCases.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/Snippets/SnippetFunctions/SnippetFunctionSimpleTypeName.cs</File>
+      <File>src/VisualStudio/CSharp/Test/Debugging/LocationInfoGetterTests.cs</File>
+      <File>src/VisualStudio/CSharp/Test/Debugging/ProximityExpressionsGetterTests.cs</File>
+      <File>src/VisualStudio/Core/Def/CodeMarkers/ManagedCodeMarkers.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/AnalyzerDependencyChecker.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/AnalyzerDependencyCheckingService.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Diagnostics/MiscellaneousDiagnosticAnalyzerService.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/EditAndContinue/Interop/IDebugEncNotify.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/IIgnorableAssemblyList.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/IgnorableAssemblyIdentityList.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/IgnorableAssemblyNamePrefixList.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/LanguageService/AbstractLanguageService`2.IVsLanguageBlock.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/LanguageService/AbstractLanguageService`2.IVsLanguageTextOps.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Library/ObjectBrowser/AbstractListItemFactory.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Library/ObjectBrowser/AbstractObjectBrowserLibraryManager_NavInfo.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Library/ObjectBrowser/Lists/ProjectListItem.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/ProjectSystem/AbstractProject.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/ProjectSystem/MetadataReferences/VisualStudioMetadataReferenceManager.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/ProjectSystem/ReiteratedVersionSnapshotTracker.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/ProjectSystem/VisualStudioProjectTracker.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/TableDataSource/AbstractTableControlEventProcessorProvider.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/TableDataSource/VisualStudioBaseDiagnosticListTable.LiveTableDataSource.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/TableDataSource/VisualStudioDiagnosticListTable.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Utilities/Exceptions.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Venus/CodeBlockEnumerator.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Watson/ExceptionInfo.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Workspace/PersistentStorageService.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/AbstractCodeModelService.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/Collections/OverloadsCollection.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/Collections/PartialTypeCollection.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/Collections/Snapshot.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/FileCodeModel.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/FileCodeModel_Events.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/ICodeModelService.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/InternalElements/AbstractCodeMember.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/InternalElements/AbstractKeyedCodeElement.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/InternalElements/CodeDelegate.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/InternalElements/CodeEvent.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/InternalElements/CodeFunction.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/InternalElements/CodeParameter.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/InternalElements/CodeProperty.cs</File>
+      <File>src/VisualStudio/Core/Impl/CodeModel/InternalElements/CodeVariable.cs</File>
+      <File>src/VisualStudio/Core/Impl/Options/AbstractOptionPreviewViewModel.cs</File>
+      <File>src/VisualStudio/Core/Impl/Options/AbstractRadioButtonViewModel.cs</File>
+      <File>src/VisualStudio/Core/Impl/Options/AbstractSettingsManagerOptionSerializer.cs</File>
+      <File>src/VisualStudio/Core/Impl/Options/OptionPreviewControl.xaml.cs</File>
+      <File>src/VisualStudio/Core/SolutionExplorerShim/ISolutionExplorerWorkspaceProvider.cs</File>
+      <File>src/Workspaces/CSharp/Portable/CSharpWorkspaceResources.Designer.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Classification/ClassificationHelpers.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Classification/Worker_DocumentationComments.cs</File>
+      <File>src/Workspaces/CSharp/Portable/CodeGeneration/CSharpCodeGenerationService.cs</File>
+      <File>src/Workspaces/CSharp/Portable/CodeGeneration/CSharpSyntaxGenerator.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Extensions/CastExpressionSyntaxExtensions.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Extensions/CompilationUnitSyntaxExtensions.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Extensions/IDocumentExtensions.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Extensions/SemanticModelExtensions.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Extensions/SyntaxNodeExtensions.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Extensions/SyntaxTreeExtensions.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Formatting/CSharpFormattingOptions.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Formatting/Engine/FormattingResult.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Formatting/Engine/Trivia/CSharpTriviaFormatter.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Formatting/FormattingHelpers.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Formatting/Rules/TokenBasedFormattingRule.cs</File>
+      <File>src/Workspaces/CSharp/Portable/LanguageServices/CSharpSyntaxFactsService.cs</File>
+      <File>src/Workspaces/CSharp/Portable/LanguageServices/CSharpTypeInferenceService.TypeInferrer.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Simplification/CSharpSimplificationService.Expander.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Utilities/FormattingRangeHelper.cs</File>
+      <File>src/Workspaces/CSharpTest/CodeGeneration/SyntaxGeneratorTests.cs</File>
+      <File>src/Workspaces/Core/Desktop/Workspace/FileTextLoader.cs</File>
+      <File>src/Workspaces/Core/Desktop/Workspace/Host/TemporaryStorage/TemporaryStorageServiceFactory.MemoryMappedFiles.cs</File>
+      <File>src/Workspaces/Core/Desktop/Workspace/MSBuild/CSharp/CSharpProjectFileLoader.CSharpProjectFile.cs</File>
+      <File>src/Workspaces/Core/Desktop/Workspace/MSBuild/MSBuildWorkspace.cs</File>
+      <File>src/Workspaces/Core/Desktop/Workspace/MSBuild/ProjectFile/ProjectFile.cs</File>
+      <File>src/Workspaces/Core/Desktop/Workspace/MSBuild/VisualBasic/VisualBasicProjectFileLoader.cs</File>
+      <File>src/Workspaces/Core/Portable/CodeActions/CodeActionWithOptions.cs</File>
+      <File>src/Workspaces/Core/Portable/CodeFixes/FixAllOccurrences/WellKnownFixAllProviders.cs</File>
+      <File>src/Workspaces/Core/Portable/CodeGeneration/AbstractCodeGenerationService.cs</File>
+      <File>src/Workspaces/Core/Portable/CodeGeneration/CodeGenerator.cs</File>
+      <File>src/Workspaces/Core/Portable/CodeGeneration/ICodeGenerationService.cs</File>
+      <File>src/Workspaces/Core/Portable/Differencing/LongestCommonSubsequence.cs</File>
+      <File>src/Workspaces/Core/Portable/Editing/DeclarationModifiers.cs</File>
+      <File>src/Workspaces/Core/Portable/Editing/SyntaxGenerator.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/FindReferences/DependentProjectsFinder.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/FindReferences/Finders/AbstractMethodOrPropertyOrEventSymbolReferenceFinder.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/ReferenceLocation.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/SymbolFinder_Declarations.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/SyntaxTree/SyntaxTreeInfo.cs</File>
+      <File>src/Workspaces/Core/Portable/Formatting/BottomUpBaseIndentationFinder.cs</File>
+      <File>src/Workspaces/Core/Portable/Formatting/Formatter.cs</File>
+      <File>src/Workspaces/Core/Portable/Formatting/FormattingOptions.cs</File>
+      <File>src/Workspaces/Core/Portable/Formatting/TriviaEngine/LineColumnRule.cs</File>
+      <File>src/Workspaces/Core/Portable/LanguageServices/SyntaxFactsService/ISyntaxFactsService.cs</File>
+      <File>src/Workspaces/Core/Portable/Log/FunctionId.cs</File>
+      <File>src/Workspaces/Core/Portable/Log/KeyValueLogMessage.cs</File>
+      <File>src/Workspaces/Core/Portable/Options/OptionKey.cs</File>
+      <File>src/Workspaces/Core/Portable/Options/Option`1.cs</File>
+      <File>src/Workspaces/Core/Portable/Options/PerLanguageOption.cs</File>
+      <File>src/Workspaces/Core/Portable/Recommendations/RecommendationOptions.cs</File>
+      <File>src/Workspaces/Core/Portable/Rename/ConflictEngine/ConflictResolver.Session.cs</File>
+      <File>src/Workspaces/Core/Portable/Rename/ConflictEngine/RelatedLocationType.cs</File>
+      <File>src/Workspaces/Core/Portable/Rename/ConflictEngine/RenamedSpansTracker.cs</File>
+      <File>src/Workspaces/Core/Portable/Rename/RenameOptions.cs</File>
+      <File>src/Workspaces/Core/Portable/SemanticModelWorkspaceService/SemanticModelWorkspaceServiceFactory.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/AccessibilityUtilities.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/ISymbolExtensions_Accessibility.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/ITypeSymbolExtensions.MinimalAccessibilityVisitor.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/LocationExtensions.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/MethodKindExtensions.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/SourceTextExtensions.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/SymbolInfoExtensions.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/SyntaxNodeExtensions.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/SyntaxNodeOrTokenExtensions.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/SyntaxTokenExtensions.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/SyntaxTreeExtensions.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Extensions/SyntaxTriviaExtensions.cs</File>
+      <File>src/Workspaces/Core/Portable/Simplification/SimplificationOption.cs</File>
+      <File>src/Workspaces/Core/Portable/Simplification/Simplifier.cs</File>
+      <File>src/Workspaces/Core/Portable/Utilities/AsyncLazy`1.cs</File>
+      <File>src/Workspaces/Core/Portable/Utilities/TopologicalSorter.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Host/Caching/IProjectCacheService.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Solution/Project.EquivalenceResult.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Solution/VersionStamp.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Workspace_Editor.cs</File>
+      <File>src/Workspaces/CoreTest/FindAllDeclarationsTests.TestSolutionsAndProject.cs</File>
+      <File>src/Workspaces/CoreTest/FindAllDeclarationsTests.cs</File>
+      <File>src/Workspaces/CoreTest/WorkspaceTests/MSBuildWorkspaceTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>3530</IssueID>
+    <RepoID>xamarinmacios</RepoID>
+    <Title>Bump mono 2017-12 to head, includes JIT fix for csc optimization blocking PR 3393</Title>
+    <Description>Commit list for mono/mono:
+
+* mono/mono@177997b0632 [sdks] Fix for XA integration (#7108)
+* mono/mono@c8845164ad5 Merge more SDK changes from mono master. (#7090)
+* mono/mono@ac87945049b Revert "Merge more SDK changes from mono master." (#7106)
+* mono/mono@5ef368bb1e3 [sdks] Fix for XA integration (#7092)
+* mono/mono@c67ec408791 Merge more SDK changes from mono master. (#7090)
+* mono/mono@fd1fd05f183 * Generalize commit 0c6932a985175a5cf0cbc59ffd3af4abf3db248e to support LDARG{0|1|2|3}, LDLOC{0|1|2|3}, LDARGS, LDLOCS, LDARG and LDLOC instead of LDLOC and LDLOCS. Improves generated code similar to issue #60945 (#7062)
+* mono/mono@936f7841d74 [ci] Disable monodoc tests on Windows for now
+* mono/mono@9a2f778a913 [coop] Disable failing tests on PR (#6472)
+* mono/mono@96eee2f9012 Disable some PngCodecTest that have trouble on CI right now
+* mono/mono@28e047fd35d [debugger] disable StepOutAsync test because it's flaky
+* mono/mono@0d51a8063be [sdks] Backport changes from master (#7084)
+* mono/mono@b232a3929b0 Bump aot file format version because of 7cac757e60cd61aa070f7e0fffca225364f58c0c. (#7083)
+
+Diff: https://github.com/mono/mono/compare/fbc4f0546d3994984f775b1a7ade5289ae6bfe92...177997b0632b3b2391ed62a5c2eb2ce6dc4bf9f0
+
+https://bugzilla.xamarin.com/show_bug.cgi?id=60945</Description>
+    <CreatedDate>19/02/2018</CreatedDate>
+    <ClosedDate>19/02/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>3530</PullRequestID>
+        <IssueID>7108</IssueID>
+        <Title>Update</Title>
+        <Description>
+        </Description>
+        <CreatedDate>30/11/2015</CreatedDate>
+        <ClosedDate>30/11/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3530</PullRequestID>
+        <IssueID>7090</IssueID>
+        <Title>"Encapsulate fields" refactoring should consider personal code style</Title>
+        <Description>If I have this code:
+
+``` csharp
+public class Test
+{
+    protected readonly bool IsATest;
+}
+```
+
+the refactoring generates the following code.
+
+``` csharp
+public class Test
+{
+    private readonly bool isATest;
+    protected bool IsATest
+    {
+        get
+        {
+            return isATest;
+        }
+    }
+}
+```
+
+Since I have checked "Qualify member access with 'this'" I expect to get following refactoring:
+
+``` csharp
+public class Test
+{
+    private readonly bool isATest;
+    protected bool IsATest
+    {
+        get
+        {
+            return this.isATest;
+        }
+    }
+}
+```
+
+Notice the added `this.`.
+
+![image](https://cloud.githubusercontent.com/assets/8558126/11429724/75333598-947c-11e5-938e-ed170971450b.png)
+
+Thanks to @sharwell for referring to the right project in DotNetAnalyzers/StyleCopAnalyzers#1833
+</Description>
+        <CreatedDate>26/11/2015</CreatedDate>
+        <ClosedDate>12/04/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3530</PullRequestID>
+        <IssueID>7106</IssueID>
+        <Title>Adding existing xaml files to the project</Title>
+        <Description>to add a xaml-file to the project  I use AddDocument-methode of the object "Project". 
+ project.AddDocument("Myfile.xaml", "test", new[] { folder }, xamlPath);
+the Document get added but the extension changes to .cs instead of .xaml
+</Description>
+        <CreatedDate>30/11/2015</CreatedDate>
+        <ClosedDate>22/07/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3530</PullRequestID>
+        <IssueID>7092</IssueID>
+        <Title>Proposal: Collection, Anonymous and Function Types</Title>
+        <Description>## Collection, Anonymous and Function Types
+
+Following other proposals regarding introducing new kind of types, including slices (#120), tuples (#347) and intersection types (#4586), I want to propose language features for some other types mentioned in the following table.
+
+| Type | Denote |
+| --- | --- |
+| Anonymous | `{T M1, U M2}` |
+| Dictionary | `(T: U)` |
+| List | `T{}` |
+| Function | `T(U)` |
+
+Note that these are not the exact proposed syntax and they are meant to be altered based on feedback.
+### Anonymous Records
+
+As it turns out, anonymous types [caused](https://lostechies.com/derickbailey/2010/04/14/anonymous-types-in-c-are-a-crippled-hack/) a [mass](http://stackoverflow.com/questions/6624811/how-to-pass-anonymous-types-as-parameters) [confusion](http://stackoverflow.com/questions/7656630/accessing-properties-of-anonymous-dynamic-types-across-dll-boundaries-gives-runt). I see people try to use `dynamic` and `InternalsVisibleToAttribute` to access anonymous types' members within or across assemblies which is not a good idea IMO. I think intention of anonymous types is not obvious to people coming from other languages like JS and they just carelessly use them for various purposes which are not meant to be used for. Named tuples may address some of these use cases but still, since member names can be altered or erased (e.g. in patterns) they might be not a good option in some other contexts. The lack of ability to pass type-safe anonymous types around, sometimes cause to declaring trivial classes or even using reflection. To keep the best of both worlds, I propose _anonymous records_ which are actually same as anonymous types in a sense, and they behave like tuples or records in the other.
+
+&gt; _anonymous-type:_
+&gt; &amp;emsp;`{` _anonymous-type-members_ `}`
+&gt; 
+&gt; _anonymous-type-members:_
+&gt; &amp;emsp;_anonymous-type-member-declaration_
+&gt; &amp;emsp;_anonymous-type-members_ `,` _anonymous-type-member-declaration_
+&gt; 
+&gt; _anonymous-type-member-declaration:_
+&gt; &amp;emsp;_type_ _identifier_
+
+From now on, _anonymous-object-creation-expression_ returns a _anonymous-type_, for example:
+
+``` cs
+var obj = new { X = 1 };
+// equivalent to
+{ int X } obj = new { X = 1 };
+```
+
+Class generation for these types remains the same for existing anonymous types, with the difference that if an assembly expose an anonymous record type, the generated class will be emitted as `public`. If some other assembly interact with these types, compiler would reuse the generated class and wouldn't generate a new one. For inter-assembly interactions, a new object would be created to be used for the target anonymous type. Since these classes are actually records, they can be used with the `with` expressions and can be deconstructed with a _property-pattern_ without a _type_, for example,
+
+``` cs
+var p = new { X = 1, Y = 1 };
+// translates to
+var p = new $AnonType(1,1);
+
+p = p with { Y = 2 };
+
+switch(p) {
+  case { Y is 2 }: ...
+}
+```
+
+No conversions between various types of anonymous records would be permitted, unless they possibly implement interfaces as proposed in #13.
+### Function Types
+
+The behavior of existing delegates also raised some questions: why it's not possible to cast _identical_ delegates to each other, i.e. `Action&lt;object, EventArg&gt;` is not the same as `EventHandler`, in despite of the fact that they are expected to be. From spec:
+
+&gt; An interesting and useful property of a delegate is that it does not know or care about the class of the object that it references; all that matters is that the referenced method has the same parameters and return type as the delegate.
+
+But still, they do care if you want to cast themselves to each other! It's like a sore spot that never seems to go away.
+
+While `Action&lt;...&gt;` and `Func&lt;...&gt;` delegates can cover almost all use cases, still, they cannot be used with `ref` and `out` parameters, and you have to declare your own delegate types. _Function types_ can address these issues, so you don't have to declare or use a specific delegate type just for these reasons.
+
+Function types would translate to regular delegates but it is proposed that the following can be part of a function type for further compile-time validation and type safety:
+- An empty capture list (#117): To ensure that the function doesn't capture any variables.
+- Method references (#5444): To ensure that the function is a member of a specific type.
+- `ref` returns (#118): To indicate that the function has `ref` return.
+- `ref`/`out` parameters: To indicate that the function has `ref`/`out` parameters.
+#### Syntax
+
+&gt; _function-type:_
+&gt; &amp;emsp;_empty-capture-list_&lt;sub&gt;opt&lt;/sub&gt; _function-type-signature_
+&gt; &amp;emsp;_type_ `::` _function-type-signature_
+&gt; 
+&gt; _empty-capture-list:_
+&gt; &amp;emsp;`[` `]`
+&gt; 
+&gt; _function-type-signature:_
+&gt; &amp;emsp;_return-type_ `(` _function-type-parameter-list_&lt;sub&gt;opt&lt;/sub&gt; `)`
+&gt; 
+&gt; _return-type:_
+&gt; &amp;emsp;`ref`&lt;sub&gt;opt&lt;/sub&gt; _type_
+&gt; 
+&gt; _function-type-parameter-list:_
+&gt; &amp;emsp;_function-type-parameter_
+&gt; &amp;emsp;_function-type-parameter-list_ `,` _function-type-parameter_
+&gt; 
+&gt; _function-type-parameter:_
+&gt; &amp;emsp;_function-type-parameter-modifier_&lt;sub&gt;opt&lt;/sub&gt; _type_
+&gt; 
+&gt; _function-type-parameter-modifier:_
+&gt; &amp;emsp;`ref`
+&gt; &amp;emsp;`out`
+#### Examples
+
+``` cs
+// local variable
+bool(string, out int) parser = int.TryParse;
+
+// accepts only a member of type Foo which returns T and has one parameter
+void F&lt;T&gt;(Foo::T(Foo) f) {}
+
+// equivalent to
+void F&lt;T&gt;([MemberOf(typeof(Foo))] Func&lt;Foo, T&gt; f) {}
+
+// note that Bar is a property and Foo::Bar returns an unbound accessor
+F(Foo::Bar);
+
+// accepts only functions that capture nothing
+void G([]void() f) {}
+
+// equivalent to
+void G([NoClosure] Action f) {}
+
+// usage
+G([]() =&gt; WriteLine("Alright."));
+```
+### List and Dictionary Types
+
+To make #6949 more generally usable, I propose a language feature for list and dictionary initialization which also can be used with other types like `JObject`,
+
+``` cs
+// infers a (int: int)
+var map = { 1 : 2 };
+
+// equivalent to
+Dictionary&lt;int, int&gt; map = new Dictionary&lt;int, int&gt; { { 1, 2 } };
+
+// we can make them invocable so one
+// can use the type to create an empty list
+var list = int{}(); /* or */ {int}();
+
+// existing array initializer
+int[] arr = { 1, 2, 3 };
+var arr = new[] { 1, 2, 3 };
+
+// infers a int{}
+var list = [1, 2, 3];
+
+// equivalent to
+var list = new List&lt;int&gt; { 1, 2, 3 };
+
+// infers a JObject
+JObject json = { "foo" : "bar" };
+var json = new JObject { "foo" : "bar" };
+
+// equivalent to
+var json = new JObject { ["foo"] = "bar" };
+```
+
+In the last example, nested maps will infer the type of the parent, in this case `JObject`. For lists, the target would have an `Add` with the second parameter of a non-abstract type that implements `IEnumerable` like `JArray` to infer.
+
+This has some interactions with #2319 so if you want to create another class you should be able to omit type parameters, like
+
+``` cs
+KeyedCollection&lt;,&gt; collection = { ... };
+SortedList&lt;&gt; list = [ ... ];
+```
+
+If the context already provides type information, such as a function argument or an already typed variable, you can create an empty list or dictionary with `[]` or `{:}` respectively.
+#### Syntax
+
+&gt; _dictionary-expression:_ 
+&gt; &amp;emsp;`{` _dict-elements_ `,`&lt;sub&gt;opt&lt;/sub&gt; `}` 
+&gt; &amp;emsp;`{` `:` `}` 
+&gt; 
+&gt; _dictionary-elements:_
+&gt; &amp;emsp;_dictionary-element_
+&gt; &amp;emsp;_dictionary-elements_ `,` _dictionary-element_
+&gt; 
+&gt; _dictionary-element:_
+&gt; &amp;emsp;_expression_ `:` _expression_
+&gt; 
+&gt; _list-expression:_
+&gt; &amp;emsp;`[` _list-elements_&lt;sub&gt;opt&lt;/sub&gt; `]`
+&gt; 
+&gt; _list-elements:_
+&gt; &amp;emsp;_expression-list_ `,` &lt;sub&gt;opt&lt;/sub&gt;
+</Description>
+        <CreatedDate>27/11/2015</CreatedDate>
+        <ClosedDate>04/12/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3530</PullRequestID>
+        <IssueID>7090</IssueID>
+        <Title>"Encapsulate fields" refactoring should consider personal code style</Title>
+        <Description>If I have this code:
+
+``` csharp
+public class Test
+{
+    protected readonly bool IsATest;
+}
+```
+
+the refactoring generates the following code.
+
+``` csharp
+public class Test
+{
+    private readonly bool isATest;
+    protected bool IsATest
+    {
+        get
+        {
+            return isATest;
+        }
+    }
+}
+```
+
+Since I have checked "Qualify member access with 'this'" I expect to get following refactoring:
+
+``` csharp
+public class Test
+{
+    private readonly bool isATest;
+    protected bool IsATest
+    {
+        get
+        {
+            return this.isATest;
+        }
+    }
+}
+```
+
+Notice the added `this.`.
+
+![image](https://cloud.githubusercontent.com/assets/8558126/11429724/75333598-947c-11e5-938e-ed170971450b.png)
+
+Thanks to @sharwell for referring to the right project in DotNetAnalyzers/StyleCopAnalyzers#1833
+</Description>
+        <CreatedDate>26/11/2015</CreatedDate>
+        <ClosedDate>12/04/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3530</PullRequestID>
+        <IssueID>7062</IssueID>
+        <Title>Code Style: Analyzer + Code fix for use of var</Title>
+        <Description>Should have options for:
+- Use `var` whenever possible
+- Never use `var`
+- Use var if the type appears on the RHS (cast expressions, etc)
+</Description>
+        <CreatedDate>25/11/2015</CreatedDate>
+        <ClosedDate>15/03/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3530</PullRequestID>
+        <IssueID>6472</IssueID>
+        <Title>Improve the user experience when applying code fixes from error list</Title>
+        <Description>We recently added commands in the error list to invoke suppression/remove suppression fixes for selected items. Applying any code fix will cause the diagnostic to become stale, but it takes some time for the fixed diagnostic to disappear/change state - we don't treat the documents with diagnostics being fixed specially, causing the delay.
+
+We should try to improve this experience to refresh the stale diagnostics more quickly.
+</Description>
+        <CreatedDate>30/10/2015</CreatedDate>
+        <ClosedDate>31/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3530</PullRequestID>
+        <IssueID>7084</IssueID>
+        <Title>Linux build failures</Title>
+        <Description>I'm trying to follow the instructions in docs/infrastructure/cross-platform.md on an Ubuntu 14.04 system with Mono 4.2.1.102 installed.
+
+So far, I've downloaded the custom Linux Mono bundle from the Azure storage.  Then:
+
+```
+$ tar xjf Downloads/mono.linux.1.tar.bz2
+$ mv mono.linux.1 /tmp
+$ export PATH=/tmp/mono.linux.1/bin:$PATH
+$ git clone https://github.com/dotnet/roslyn.git
+$ sudo roslyn/builds/linux/setup-certs.sh
+sudo: roslyn/builds/linux/setup-certs.sh: command not found
+$ sudo roslyn/build/linux/setup-certs.sh
+sudo: roslyn/build/linux/setup-certs.sh: command not found
+$ chmod u+x roslyn/build/linux/setup-certs.sh
+$ sudo roslyn/build/linux/setup-certs.sh
+Mozilla Roots Importer - version 4.2.1.0
+Download and import trusted root certificates from Mozilla's MXR.
+Copyright 2002, 2003 Motus Technologies. Copyright 2004-2008 Novell. BSD licensed.
+
+Downloading from 'http://mxr.mozilla.org/seamonkey/source/security/nss/lib/ckfw/builtins/certdata.txt?raw=1'...
+Importing certificates into machine store...
+Import process completed.
+
+Mono Certificate Manager - version 4.2.1.0
+Manage X.509 certificates and CRL from stores.
+Copyright 2002, 2003 Motus Technologies. Copyright 2004-2008 Novell. BSD licensed.
+
+
+X.509 Certificate v3
+   Issued from: C=IE, O=Baltimore, OU=CyberTrust, CN=Baltimore CyberTrust Root
+   Issued to:   C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT SSL SHA2
+   Valid from:  07/05/2014 17:04:09
+   Valid until: 07/05/2018 17:03:30
+   *** WARNING: Certificate signature is INVALID ***
+This certificate is already in the CA store.
+
+X.509 Certificate v3
+   Issued from: C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT SSL SHA2
+   Issued to:   C=US, S=WA, L=Redmond, O=Microsoft Corporation, OU=Microsoft Corporation, CN=go.microsoft.com
+   Valid from:  08/04/2015 20:13:03
+   Valid until: 07/04/2017 20:13:03
+This certificate is already in the AddressBook store.
+
+No certificate were added to the stores.
+Mono Certificate Manager - version 4.2.1.0
+Manage X.509 certificates and CRL from stores.
+Copyright 2002, 2003 Motus Technologies. Copyright 2004-2008 Novell. BSD licensed.
+
+
+X.509 Certificate v3
+   Issued from: C=IE, O=Baltimore, OU=CyberTrust, CN=Baltimore CyberTrust Root
+   Issued to:   C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT SSL SHA2
+   Valid from:  19/12/2013 20:07:32
+   Valid until: 19/12/2017 20:06:55
+   *** WARNING: Certificate signature is INVALID ***
+Import this certificate into the CA store ?
+X.509 Certificate v3
+   Issued from: C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT SSL SHA2
+   Issued to:   CN=*.blob.core.windows.net
+   Valid from:  10/06/2015 01:45:43
+   Valid until: 09/06/2017 01:45:43
+Import this certificate into the AddressBook store ?
+Unhandled Exception:
+System.NullReferenceException: Object reference not set to an instance of an object
+  at Mono.Tools.CertificateManager.Ssl (System.String host, Boolean machine, Boolean verbose) &lt;0x41ef5d90 + 0x006d2&gt; in &lt;filename unknown&gt;:0 
+  at Mono.Tools.CertificateManager.Main (System.String[] args) &lt;0x41ef1d50 + 0x004af&gt; in &lt;filename unknown&gt;:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.NullReferenceException: Object reference not set to an instance of an object
+  at Mono.Tools.CertificateManager.Ssl (System.String host, Boolean machine, Boolean verbose) &lt;0x41ef5d90 + 0x006d2&gt; in &lt;filename unknown&gt;:0 
+  at Mono.Tools.CertificateManager.Main (System.String[] args) &lt;0x41ef1d50 + 0x004af&gt; in &lt;filename unknown&gt;:0 
+Mono Certificate Manager - version 4.2.1.0
+Manage X.509 certificates and CRL from stores.
+Copyright 2002, 2003 Motus Technologies. Copyright 2004-2008 Novell. BSD licensed.
+
+
+X.509 Certificate v3
+   Issued from: C=IE, O=Baltimore, OU=CyberTrust, CN=Baltimore CyberTrust Root
+   Issued to:   C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT SSL SHA2
+   Valid from:  19/12/2013 20:07:32
+   Valid until: 19/12/2017 20:06:55
+   *** WARNING: Certificate signature is INVALID ***
+Import this certificate into the CA store ?
+X.509 Certificate v3
+   Issued from: C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=Microsoft IT, CN=Microsoft IT SSL SHA2
+   Issued to:   CN=nuget.org
+   Valid from:  09/03/2015 20:07:54
+   Valid until: 08/03/2017 20:07:54
+Import this certificate into the AddressBook store ?
+Unhandled Exception:
+System.NullReferenceException: Object reference not set to an instance of an object
+  at Mono.Tools.CertificateManager.Ssl (System.String host, Boolean machine, Boolean verbose) &lt;0x402f6d90 + 0x006d2&gt; in &lt;filename unknown&gt;:0 
+  at Mono.Tools.CertificateManager.Main (System.String[] args) &lt;0x402f2d50 + 0x004af&gt; in &lt;filename unknown&gt;:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.NullReferenceException: Object reference not set to an instance of an object
+  at Mono.Tools.CertificateManager.Ssl (System.String host, Boolean machine, Boolean verbose) &lt;0x402f6d90 + 0x006d2&gt; in &lt;filename unknown&gt;:0 
+  at Mono.Tools.CertificateManager.Main (System.String[] args) &lt;0x402f2d50 + 0x004af&gt; in &lt;filename unknown&gt;:0 
+```
+
+Hmmm, not sure those NullReferenceExceptions are a good thing.
+
+```
+$ cd roslyn
+$ mono src/.nuget/NuGet.exe restore src/Roslyn.sln -packagesdirectory packages
+Cannot open assembly 'src/.nuget/NuGet.exe': No such file or directory.
+$ mono nuget.exe restore src/Roslyn.sln -packagesdirectory packages
+MSBuild auto-detection: using msbuild version '4.0' from '/tmp/mono.linux.1/lib/mono/4.5'.
+Directory '/home/teamcity/roslyn/src/Roslyn.sln' not found.
+$ mono nuget.exe restore Roslyn.sln -packagesdirectory packages
+MSBuild auto-detection: using msbuild version '4.0' from '/tmp/mono.linux.1/lib/mono/4.5'.
+Error parsing solution file at /home/teamcity/roslyn/Roslyn.sln: Could not load type 'Microsoft.Build.Construction.SolutionParser' from assembly ''.
+```
+
+Hmmm, that doesn't look good.
+
+The xbuild run goes predictably badly after all that.
+
+What things are missing from those instructions to get this working?  Or on what Linux distro should I be attempting this?
+</Description>
+        <CreatedDate>26/11/2015</CreatedDate>
+        <ClosedDate>20/01/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3530</PullRequestID>
+        <IssueID>7083</IssueID>
+        <Title>Migrate C# tests to be less sensitive to the precise text of error messages</Title>
+        <Description>Fixes #7081 
+
+Uses `VerifyDiagnostics(...)`
+##### Path: Semantic\Semantics
+- [x] SemanticAnalyzerTests.cs
+- [x] ConstantTests.cs
+- [x] LambdaTests.cs
+- [x] MethodTypeInferenceTests.cs
+- [x] NamedAndOptionalTests.cs
+- [x] OperatorTests.cs
+- [x] OverloadResolutionTests.cs
+- [x] SemanticErrorTests.cs 
+- [x] AccessCheckTests.cs
+- [x] AmbiguousOverrideTests.cs
+##### Path: Symbol\Symbols
+- [x] SymbolErrorTests.cs
+### Others
+- [x] Mark old test methods as obsolete
+
+There are some commented out tests mentioning 'specific for Roslyn' in the original tests which I feel might need to be included as comments too. Update: I think these can be excluded.
+
+Anything else?
+</Description>
+        <CreatedDate>26/11/2015</CreatedDate>
+        <ClosedDate>01/12/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>3530</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Binder/Semantics/OverloadResolution/OverloadResolution.cs</File>
+      <File>src/Compilers/CSharp/Portable/Compilation/CSharpCompilation.cs</File>
+      <File>src/Compilers/CSharp/Portable/Emitter/EditAndContinue/PEDeltaAssemblyBuilder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Emitter/Model/AssemblyReference.cs</File>
+      <File>src/Compilers/CSharp/Portable/Emitter/Model/PEAssemblyBuilder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Emitter/Model/PEModuleBuilder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Emitter/Model/PENetModuleBuilder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Parser/LanguageParser_InterpolatedString.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/DirectiveTriviaSyntax.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_Assembly.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_CallerInfoAttributes.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_Conditional.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_Locations.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_MarshalAs.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_Security.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_StructLayout.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_WellKnownAttributes.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/InternalsVisibleToAndStrongNameTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/BreakingChanges.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenAsyncEHTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenAsyncLocalsTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenAsyncSpillTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenAsyncTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenCheckedTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenClosureLambdaTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenDynamicTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenExprLambdaTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenForEachTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenImplicitImplementationTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenImplicitlyTypeArraysTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenInterfaceImplementation.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenLockTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenMscorlib.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenOperators.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenOverridingAndHiding.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenTypeofTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/DestructorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/GotoTest.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/ObjectAndCollectionInitializerTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/SwitchTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/UnsafeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/CompilationEmitTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/DeterministicTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EmitCustomModifiers.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EmitMetadata.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/NoPiaEmbedTypes.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/OptionalArgumentsTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/PDB/PDBUsingTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Perf.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/AccessCheckTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/InterpolationTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/NamedAndOptionalTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/OperatorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/SemanticErrorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/StructsTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/UnsafeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/UseSiteErrorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/UserDefinedConversionTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/CompilationAPITests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/ReferenceManagerTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/AccessorOverriddenOrHiddenMembersTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/AnonymousTypesSymbolTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/ExtensionMethodTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/GenericConstraintTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/IndexedPropertyTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/IndexerTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/InterfaceImplementationTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/MetadataMemberTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/DynamicTransformsTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/LoadingIndexers.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/LoadingMethods.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/LoadingNamespacesAndTypes.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/TypeForwarders.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/OverriddenOrHiddenMembersTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Retargeting/NoPia.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/CustomModifierCopyTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/PropertyTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/SymbolErrorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/TypeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Parsing/ParserErrorMessageTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Syntax/SyntaxNodeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/WinRT/CodeGen/WinMdEventTests.cs</File>
+      <File>src/Compilers/CSharp/Test/WinRT/CodeGen/WinRTCollectionTests.cs</File>
+      <File>src/Compilers/CSharp/Test/WinRT/Metadata/WinMdEventTests.cs</File>
+      <File>src/Compilers/CSharp/Test/WinRT/Metadata/WinMdMetadataTests.cs</File>
+      <File>src/Compilers/Core/Portable/Compilation/Compilation.cs</File>
+      <File>src/Compilers/Core/Portable/ConstantValue.cs</File>
+      <File>src/Compilers/Core/Portable/Emit/CommonPEModuleBuilder.cs</File>
+      <File>src/Compilers/Core/Portable/Emit/TypeExport.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/MetadataVisitor.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/MetadataWriter.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/ReferenceIndexer.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/ReferenceIndexerBase.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/Types.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/Units.cs</File>
+      <File>src/Compilers/Core/Portable/PortableShim.cs</File>
+      <File>src/Compilers/Test/Utilities/CSharp/BasicCompilationUtils.cs</File>
+      <File>src/Compilers/Test/Utilities/CSharp/CSharpTestBase.cs</File>
+      <File>src/Compilers/Test/Utilities/CSharp/CompilingTestBase.cs</File>
+      <File>src/Diagnostics/FxCop/CSharp/Design/CodeFixes/CA1052CSharpCodeFixProvider.cs</File>
+      <File>src/Diagnostics/FxCop/Core/Design/CA1052DiagnosticAnalyzer.cs</File>
+      <File>src/Diagnostics/FxCop/Core/Design/CA1052DiagnosticProviderBase.cs</File>
+      <File>src/Diagnostics/FxCop/Core/Design/StaticTypeRulesDiagnosticAnalyzer.cs</File>
+      <File>src/Diagnostics/FxCop/Test/Design/CA1052Tests.cs</File>
+      <File>src/Diagnostics/FxCop/Test/Design/CA1053Tests.cs</File>
+      <File>src/Diagnostics/FxCop/Test/Design/CodeFixes/CA1052FixerTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/EditAndContinue/ActiveStatementTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Extensions/SyntaxTreeExtensionsTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Formatting/Indentation/SmartIndenterTests.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Workspaces/ProjectCacheService.SimpleMRUCache.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Workspaces/ProjectCacheService.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Workspaces/ProjectCacheServiceFactory.ProjectCacheService.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Workspaces/ProjectCacheServiceFactory.SimpleMRUCache.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Workspaces/ProjectCacheServiceFactory.cs</File>
+      <File>src/EditorFeatures/Test/EditAndContinue/RudeEditDiagnosticTests.cs</File>
+      <File>src/EditorFeatures/Test/MinimalTestExportProvider.cs</File>
+      <File>src/EditorFeatures/Test/Workspaces/ProjectCacheHostServiceFactoryTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Source/ExpressionCompiler/EEAssemblyBuilder.cs</File>
+      <File>src/Features/Core/EditAndContinue/AbstractEditAndContinueAnalyzer.cs</File>
+      <File>src/Features/Core/EditAndContinue/RudeEditDiagnosticDescriptors.cs</File>
+      <File>src/Features/Core/EditAndContinue/RudeEditKind.cs</File>
+      <File>src/Scripting/CSharpTest/InteractiveSessionTests.cs</File>
+      <File>src/Scripting/Core/Emit/CommonCompilationExtensions.cs</File>
+      <File>src/Scripting/Core/Emit/ReflectionEmitResult.cs</File>
+      <File>src/Scripting/Core/Emit/ReflectionEmitter.Refs.cs</File>
+      <File>src/Scripting/Core/Emit/ReflectionEmitter.cs</File>
+      <File>src/Scripting/Core/ScriptBuilder.cs</File>
+      <File>src/Scripting/Core/ScriptOptions.cs</File>
+      <File>src/Scripting/Test/ScriptEngine.cs</File>
+      <File>src/Scripting/Test/ScriptingTestHelpers.cs</File>
+      <File>src/Test/PdbUtilities/Metadata/MetadataVisualizer.cs</File>
+      <File>src/Test/Utilities/CommonTestBase.cs</File>
+      <File>src/Test/Utilities/EmitOptions.cs</File>
+      <File>src/Test/Utilities/TestBase.cs</File>
+      <File>src/Tools/Source/CompilerGeneratorTools/Source/BoundTreeGenerator/Program.cs</File>
+      <File>src/VisualStudio/CSharp/Test/PersistentStorage/PersistentStorageTests.cs</File>
+      <File>src/VisualStudio/CSharp/Test/PersistentStorage/SolutionSizeTests.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/DebuggerIntelliSense/DebuggerIntellisenseWorkspace.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/SolutionSize/SolutionSizeTracker.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Workspace/VisualStudioProjectCacheHostServiceFactory.cs</File>
+      <File>src/VisualStudio/Core/Def/RoslynPackage.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Extensions/SyntaxNodeExtensions.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Extensions/SyntaxTreeExtensions.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Utilities/FindTokenHelper.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Solution/Document.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Solution/DocumentState.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>3493</IssueID>
+    <RepoID>xamarinmacios</RepoID>
+    <Title>Bump mono to head of 2017-12</Title>
+    <Description>Commit list for mono/mono:
+
+* mono/mono@f12e936ca30 [packaging] Remove FSharp patches that are no longer required
+* mono/mono@39773399400 [packaging] Windows: remove FSharp.Core from GAC (#6345)
+* mono/mono@cb15effa2fc Emit the weak field indexes table using the MONO_AOT_TABLE code, so it works with separate aot data files/bitcode.
+* mono/mono@2ad3f0bf9ed Bug 60088 - Assertion at ../../../../external/mono/mono/mini/debugger-agent.c:4765, condition `array-&gt;len == 1' not met (#7004)
+* mono/mono@899599b951a Bump nunitlite
+* mono/mono@3da56339ece [2017-12] Update F# to 4.1.33 (#7020)
+* mono/mono@a0af42ab186 [corlib] Pass null-terminated string for logging (#6954)
+* mono/mono@aab818fbf3c Revert mkbundle defaulting behavior made in ca8b8bd346
+
+Diff: https://github.com/mono/mono/compare/4b1745401d5b5fb1525a84d7fd47dec2b7e2844c...f12e936ca302312769fc4ab950470ad918f1add5</Description>
+    <CreatedDate>15/02/2018</CreatedDate>
+    <ClosedDate>15/02/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>3493</PullRequestID>
+        <IssueID>6345</IssueID>
+        <Title>[AskMode] Make all operations in Paste a single undo transaction</Title>
+        <Description>Fix Issue https://github.com/dotnet/roslyn/issues/6054
+
+@dotnet/interactive
+
+cc: @jasonmalinowski @dpoeschl for undo history related code
+</Description>
+        <CreatedDate>26/10/2015</CreatedDate>
+        <ClosedDate>28/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3493</PullRequestID>
+        <IssueID>7004</IssueID>
+        <Title>Proposal: Field-targeting attributes on auto-properties</Title>
+        <Description>This was mentioned on [CodePlex](http://roslyn.codeplex.com/discussions/541822) but was not implemented in C# 6.0.
+
+I'm proposing allowing field-targeted attributes on auto-properties.  The compiler would automatically attach that attribute to the generated backing field.
+
+``` cs
+[field: NonSerialized]
+public string Name { get; set; }
+```
+
+equivalent to:
+
+``` cs
+[NonSerialized]
+private string name;
+
+public string Name {
+    get { return this.name; }
+    set { this.name = value; }
+}
+```
+
+This would bring auto-properties into parity with events which have supported this syntax since C# 1.0:
+
+``` cs
+[field: NonSerialized]
+public event EventHandler Foo;
+```
+</Description>
+        <CreatedDate>24/11/2015</CreatedDate>
+        <ClosedDate>05/11/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3493</PullRequestID>
+        <IssueID>7020</IssueID>
+        <Title>[WIP] Marshall back to the calling thread when we open a document.</Title>
+        <Description>Work in progress.  Do not review.  Just doing this to see if this unblocks tests.
+</Description>
+        <CreatedDate>25/11/2015</CreatedDate>
+        <ClosedDate>25/11/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>3493</PullRequestID>
+        <IssueID>6954</IssueID>
+        <Title>Update to nuget.exe 3.3 again</Title>
+        <Description>@dotnet/roslyn-infrastructure @davkean @jasonmalinowski @jaredpar 
+</Description>
+        <CreatedDate>21/11/2015</CreatedDate>
+        <ClosedDate>23/11/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>3493</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder_Statements.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/ReferenceManager.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/SemanticErrorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/ReferenceManagerTests.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataReference/AssemblyIdentityComparer.cs</File>
+      <File>src/Compilers/Core/Portable/ReferenceManager/AssemblyData.cs</File>
+      <File>src/Compilers/Core/Portable/ReferenceManager/AssemblyDataForAssemblyBeingBuilt.cs</File>
+      <File>src/Compilers/Core/Portable/ReferenceManager/CommonReferenceManager.Resolution.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/ProjectSystem/AbstractProject.cs</File>
+    </Files>
+  </PullRequest>
+</PullRequests>

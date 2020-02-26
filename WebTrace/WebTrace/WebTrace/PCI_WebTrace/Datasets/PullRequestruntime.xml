@@ -1,0 +1,1283 @@
+<PullRequests>
+  <PullRequest>
+    <IssueID>2073</IssueID>
+    <RepoID>runtime</RepoID>
+    <Title>[interp] context can be uninitialized for get_resume_state callback</Title>
+    <Description>!! This PR is a copy of mono/mono#18533,  please do not edit or review it in this repo !!&lt;br/&gt;!! Merge the PR only after the original PR is merged !!&lt;br/&gt;&lt;hr/&gt;&lt;br/&gt;`jit_tls-&gt;interp_context` gets initialized lazily, that is, upon the first interpreter execution on a specific thread (e.g. via interp_runtime_invoke). However, with mixed mode the execution can purely happen in AOT code upon the first interaction with the managed debugger.
+
+Stack trace:
+
+```
+  thread #1, name = 'tid_407', queue = 'com.apple.main-thread'
+    frame #0: 0x0000000190aedc94 libsystem_kernel.dylib`__psynch_cvwait + 8
+    frame #1: 0x0000000190a0f094 libsystem_pthread.dylib`_pthread_cond_wait$VARIANT$armv81 + 672
+    frame #2: 0x000000010431318c reloadcontext.iOS`mono_os_cond_wait(cond=0x0000000104b9ba78, mutex=0x0000000104b9ba30) at mono-os-mutex.h:219:8
+    frame #3: 0x0000000104312a68 reloadcontext.iOS`mono_coop_cond_wait(cond=0x0000000104b9ba78, mutex=0x0000000104b9ba30) at mono-coop-mutex.h:91:2
+    frame #4: 0x0000000104312858 reloadcontext.iOS`suspend_current at debugger-agent.c:3021:4
+    frame #5: 0x000000010431be18 reloadcontext.iOS`process_event(event=EVENT_KIND_BREAKPOINT, arg=0x0000000145d09ae8, il_offset=0, ctx=0x0000000149015c20, events=0x0000000000000000, suspend_policy=2) at debugger-agent.c:4058:3
+    frame #6: 0x0000000104310cf4 reloadcontext.iOS`process_breakpoint_events(_evts=0x000000028351a680, method=0x0000000145d09ae8, ctx=0x0000000149015c20, il_offset=0) at debugger-agent.c:4722:3
+    frame #7: 0x000000010432f1c8 reloadcontext.iOS`mono_de_process_breakpoint(void_tls=0x0000000149014e00, from_signal=0) at debugger-engine.c:1141:2
+    frame #8: 0x000000010430f238 reloadcontext.iOS`debugger_agent_breakpoint_from_context(ctx=0x000000016f656790) at debugger-agent.c:4938:2
+    frame #9: 0x00000001011b73a4 reloadcontext.iOS`sdb_breakpoint_trampoline + 148
+    frame #10: 0x00000001008511b4 reloadcontext.iOS`reloadcontext_iOS_Application_Main_string__(args=0x000000010703a030) at Main.cs:14
+    frame #11: 0x00000001010f9730 reloadcontext.iOS`wrapper_runtime_invoke_object_runtime_invoke_dynamic_intptr_intptr_intptr_intptr + 272
+    frame #12: 0x00000001042fd8b8 reloadcontext.iOS`mono_jit_runtime_invoke(method=0x0000000145d09ae8, obj=0x0000000000000000, params=0x000000016f656f20, exc=0x0000000000000000, error=0x000000016f656ff8) at mini-runtime.c:3162:3
+    frame #13: 0x0000000104411950 reloadcontext.iOS`do_runtime_invoke(method=0x0000000145d09ae8, obj=0x0000000000000000, params=0x000000016f656f20, exc=0x0000000000000000, error=0x000000016f656ff8) at object.c:3052:11
+    frame #14: 0x000000010440c4dc reloadcontext.iOS`mono_runtime_invoke_checked(method=0x0000000145d09ae8, obj=0x0000000000000000, params=0x000000016f656f20, error=0x000000016f656ff8) at object.c:3220:9
+    frame #15: 0x0000000104415ae0 reloadcontext.iOS`do_exec_main_checked(method=0x0000000145d09ae8, args=0x000000010703a030, error=0x000000016f656ff8) at object.c:5184:3
+    frame #16: 0x00000001044144ac reloadcontext.iOS`mono_runtime_exec_main_checked(method=0x0000000145d09ae8, args=0x000000010703a030, error=0x000000016f656ff8) at object.c:5281:9
+    frame #17: 0x0000000104414500 reloadcontext.iOS`mono_runtime_run_main_checked(method=0x0000000145d09ae8, argc=1, argv=0x000000016f6570d0, error=0x000000016f656ff8) at object.c:4734:9
+    frame #18: 0x00000001042d3b54 reloadcontext.iOS`mono_jit_exec_internal(domain=0x0000000145f00130, assembly=0x0000000281ba2900, argc=1, argv=0x000000016f6570d0) at driver.c:1320:13
+    frame #19: 0x00000001042d39a4 reloadcontext.iOS`mono_jit_exec(domain=0x0000000145f00130, assembly=0x0000000281ba2900, argc=1, argv=0x000000016f6570d0) at driver.c:1265:7
+    frame #20: 0x0000000104597994 reloadcontext.iOS`::xamarin_main(argc=5, argv=0x000000016f657a80, launch_mode=XamarinLaunchModeApp) at monotouch-main.m:483:8
+    frame #21: 0x00000001008510dc reloadcontext.iOS`main(argc=5, argv=0x000000016f657a80) at main.m:104:11
+    frame #22: 0x0000000190af8360 libdyld.dylib`start + 4
+[...]
+* thread #5, name = 'Debugger agent', stop reason = signal SIGABRT
+  * frame #0: 0x0000000190aedec4 libsystem_kernel.dylib`__pthread_kill + 8
+    frame #1: 0x0000000190a0d724 libsystem_pthread.dylib`pthread_kill$VARIANT$armv81 + 216
+    frame #2: 0x000000019095d844 libsystem_c.dylib`abort + 100
+    frame #3: 0x00000001045871b4 reloadcontext.iOS`log_callback(log_domain=0x0000000000000000, log_level="error", message="* Assertion at ../../../../../mono/mini/interp/interp.c:7176, condition `context' not met\n", fatal=4, user_data=0x0000000000000000) at runtime.m:1213:3
+    frame #4: 0x0000000104544fc8 reloadcontext.iOS`eglib_log_adapter(log_domain=0x0000000000000000, log_level=G_LOG_LEVEL_ERROR, message="* Assertion at ../../../../../mono/mini/interp/interp.c:7176, condition `context' not met\n", user_data=0x0000000000000000) at mono-logger.c:405:2
+    frame #5: 0x000000010456093c reloadcontext.iOS`monoeg_g_logstr(log_domain=0x0000000000000000, log_level=G_LOG_LEVEL_ERROR, msg="* Assertion at ../../../../../mono/mini/interp/interp.c:7176, condition `context' not met\n") at goutput.c:134:2
+    frame #6: 0x0000000104560598 reloadcontext.iOS`monoeg_g_logv_nofree(log_domain=0x0000000000000000, log_level=G_LOG_LEVEL_ERROR, format="* Assertion at %s:%d, condition `%s' not met\n", args="e\x12z\x04\x01") at goutput.c:149:2
+    frame #7: 0x000000010456061c reloadcontext.iOS`monoeg_assertion_message(format="* Assertion at %s:%d, condition `%s' not met\n") at goutput.c:184:22
+    frame #8: 0x0000000104560674 reloadcontext.iOS`mono_assertion_message(file="../../../../../mono/mini/interp/interp.c", line=7176, condition="context") at goutput.c:203:2
+    frame #9: 0x000000010459b570 reloadcontext.iOS`interp_get_resume_state(jit_tls=0x000000014900d000, has_resume_state=0x000000016fc7a9f4, interp_frame=0x000000016fc7a9e8, handler_ip=0x000000016fc7a9e0) at interp.c:7176:2
+    frame #10: 0x0000000104319420 reloadcontext.iOS`compute_frame_info(thread=0x0000000104fe4130, tls=0x0000000149014e00, force_update=1) at debugger-agent.c:3422:3
+    frame #11: 0x0000000104320d40 reloadcontext.iOS`thread_commands(command=1, p="", end="", buf=0x000000016fc7acf8) at debugger-agent.c:9048:3
+    frame #12: 0x000000010431cca0 reloadcontext.iOS`debugger_thread(arg=0x0000000000000000) at debugger-agent.c:10132:10
+    frame #13: 0x000000010447eb04 reloadcontext.iOS`start_wrapper_internal(start_info=0x0000000000000000, stack_ptr=0x000000016fc7b000) at threads.c:1232:3
+    frame #14: 0x000000010447e788 reloadcontext.iOS`start_wrapper(data=0x000000028203ef40) at threads.c:1305:8
+    frame #15: 0x0000000190a11d8c libsystem_pthread.dylib`_pthread_start + 15
+[...]
+```
+
+Thanks to @drasticactions for helping me to reproduce.
+
+Fixes https://devdiv.visualstudio.com/DevDiv/_workitems/edit/1050615
+
+
+
+&lt;!--
+Thank you for your Pull Request!
+
+If you are new to contributing to Mono, please try to do your best at conforming to our coding guidelines http://www.mono-project.com/community/contributing/coding-guidelines/ but don't worry if you get something wrong. One of the project members will help you to get things landed.
+
+Does your pull request fix any of the existing issues? Please use the following format: Fixes #issue-number
+--&gt;
+</Description>
+    <CreatedDate>23/01/2020</CreatedDate>
+    <ClosedDate>23/01/2020</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>18533</IssueID>
+        <Title>Nuget package incompatibility between latest versions of CodeDom.Providers.DotNetCompilerPlatform and .Net.Compilers</Title>
+        <Description>**Version Used**: 
+Latest version of VS2017
+
+**Steps to Reproduce**:
+
+1.  Create a ASP.NET web application with WebAPI
+2.  Upgrade nuget package for Microsoft.Net.Compilers from v1.3.2 (default) to v2.0.1
+3.  Publish (I tested via folder publishing)
+4.  Test API
+
+
+**Expected Behavior**:
+I would expect the API to work without errors.
+
+**Actual Behavior**:
+&gt;Compilation Error
+&gt;
+&gt;Description: An error occurred during the compilation of a resource required to service this request. &gt;Please review the following specific error details and modify your source code appropriately. 
+&gt;
+&gt;Compiler Error Message: The compiler failed with error code -532462766.
+&gt;
+&gt;
+&gt;Show Detailed Compiler Output:
+&gt;
+&gt;
+&gt;Version Information: Microsoft .NET Framework Version:4.0.30319; ASP.NET Version:4.0.30319.36366`
+
+If I downgrade the Microsoft.Net.Compilers package back down to 1.3.2 everything works fine. Dependency for Microsoft.CodeDom.Providers.DotNetCompilerPlatform says it works with &gt;=1.3.2 of .Net.Compilers, but perhaps it's not compatible with v2.0.1.</Description>
+        <CreatedDate>07/04/2017</CreatedDate>
+        <ClosedDate>16/06/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>1</IssueID>
+        <Title>Initial port and addition of README.md</Title>
+        <Description>This is a port of the readme from CodePlex.  Some of the links have been updated to point to locations on GitHub, but many of the links still point back to CodePlex as comparable GitHub locations are currently absent.
+</Description>
+        <CreatedDate>14/01/2015</CreatedDate>
+        <ClosedDate>14/01/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>1</IssueID>
+        <Title>Initial port and addition of README.md</Title>
+        <Description>This is a port of the readme from CodePlex.  Some of the links have been updated to point to locations on GitHub, but many of the links still point back to CodePlex as comparable GitHub locations are currently absent.
+</Description>
+        <CreatedDate>14/01/2015</CreatedDate>
+        <ClosedDate>14/01/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>2</IssueID>
+        <Title>Update links in README.md with ported wiki content</Title>
+        <Description>
+        </Description>
+        <CreatedDate>14/01/2015</CreatedDate>
+        <ClosedDate>14/01/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>3</IssueID>
+        <Title>Add symbol files(.pdb/source) to NuGet packages</Title>
+        <Description>It would be nice to be able to step inside Roslyn code when using NuGet packages.
+
+This is nice guide on how to do this:
+http://blog.davidebbo.com/2011/04/easy-way-to-publish-nuget-packages-with.html
+
+&lt;!---
+@huboard:{"order":6.0}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>08/11/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>4</IssueID>
+        <Title>added a space to experience e2e getting sources, making change, and subm...</Title>
+        <Description>...itting pull request
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>15/01/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>5</IssueID>
+        <Title>Intellisense Tooltip get too long in case of many generic parameters</Title>
+        <Description>Hi, I hope to be in the right place, if not feel free to close this.
+
+I noticed that Intellisense tool-tips become too long in case of many generic parameters with constraint, see image below.
+![intellisense tooltip](https://cloud.githubusercontent.com/assets/3263338/5750517/652bead8-9c56-11e4-833e-932db4075c0a.png)
+
+What I would like to see, if there are more than 1 generic constraints is to split every constraint in a new line (as you can see in generic constraint declaration on the class itself) to avoid creating a very long tool-tip and to gain readability
+
+M.
+
+&lt;!---
+@huboard:{"order":6.5}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>6</IssueID>
+        <Title>Corrected documentation on FullSpan and Span</Title>
+        <Description>As per the [Incorrect Docs on FullSpan/Span properties](http://roslyn.codeplex.com/workitem/260) issue, the documentation was reversed on a few of these pairs.
+
+&lt;!---
+@huboard:{"order":8.0}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>09/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>7</IssueID>
+        <Title>Feature: Parameter Name Aliasing</Title>
+        <Description>The human meaning of parameters may vary from method caller's perspective.
+
+It would be useful if the language provides an ability to assign aliases to the parameters.
+
+``` C#
+[Alias({second: [secondAndHalf, quarterToThree], first: [Initial]})] 
+public static void Member1(string first, string second) { 
+  // Here the user will always use the given names: first and second.
+  // which means the user cannot use the param by its nickname
+  // inside the method scope.
+}
+
+private static void Caller1() {
+  Member1(secondAndHalf: "secondly, this is not a bad idea after all",
+          Initial: "Initially it sounded moot... :)  ");
+}
+
+private static void Caller2() {
+  Member1(first: "1st",
+          quarterToThree: "almost there");
+}
+
+private static void Caller3() {
+  Member1("one", "two");
+}
+```
+
+vs. this current approach:
+
+``` c#
+public static void Member1(string first, string second) {  }
+
+public static void Member1(string first, string secondAndHalf, string devNull = null) { 
+  Member1(first, secondAndHalf);
+}
+```
+
+Note: the parameter `devNull` may violate [CA1026](http://msdn.microsoft.com/en-us/library/ms182135.aspx), in case of `overridden` methods. On the flip side, setting `devNull` as non-default parameter would yield "unused parameter".
+
+Related / Real world example: https://github.com/madskristensen/WebEssentials2013/pull/380#issuecomment-31402391
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>26/08/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>8</IssueID>
+        <Title>Feature request: Async stream generators</Title>
+        <Description>Currenty C# supports pull based sequence generators. 
+As IObservable&amp;lt;T&amp;gt; and IObserver&amp;lt;T&amp;gt; are now in mscorlib and Rx is such a success not only in .NET but in other languages and runtimes  why not to add to C# ability to easily create async push based stream generators.
+
+It could look like this:
+
+``` C#
+private async IObservable&lt;string&gt; GetData()
+{ 
+    var data = await MakeRequest();
+    yield return data;
+    yield return await MakeAnotherRequest();
+}
+```
+
+It would complete language support in the matrix of generators:
+
+|  | sync | async |
+| --- | --- | --- |
+| **single** | T | Task&amp;lt;T&amp;gt; |
+| **multiple** | IEnumerable&amp;lt;T&amp;gt; | IObservable&amp;lt;T&amp;gt; |
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>29/01/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>9</IssueID>
+        <Title>SemanticModel.GetArgumentInfo API needed to retrieve the IParameterSymbol that an ArgumentSyntax binds to</Title>
+        <Description>This is a missing API. Writing a diagnostic that process an argument requires a fair amount of code to determine what parameter the argument binds to -- checking for named or positional arguments.
+
+&lt;!---
+@huboard:{"order":7.1875,"milestone_order":9}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>10</IssueID>
+        <Title>Remove commented out class</Title>
+        <Description>Just a bit of clean-up!
+
+&lt;!---
+@huboard:{"order":326.25,"milestone_order":10,"custom_state":""}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>17/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>11</IssueID>
+        <Title>Unable to compile conditional access expression in context of expression-bodied void method/lambda expression</Title>
+        <Description>Related commit: https://github.com/dotnet/roslyn/commit/dd8f041fdd15503f0fc691d9aff28440a39cb923
+
+&gt; ?. invocation in context of a statement-expression should be allowed even if result type of the invocation cannot be made nullable.
+
+I'm expecting it also to work with void methods in expression-bodied form, as well as void lambda expressions:
+
+``` c#
+using System;
+
+class C&lt;T&gt; {
+    void F1(C&lt;T&gt; c) {
+        c?.M(); // compiles fine
+
+        // error CS0023: Operator '?' cannot be applied to operand of type 'T'
+        Action a = () =&gt; c?.M();
+    }
+
+    // error CS0023: Operator '?' cannot be applied to operand of type 'T'
+    void F2(C&lt;T&gt; c) =&gt; c?.M();
+
+
+    T M() =&gt; default(T);
+}
+```
+
+&lt;!---
+@huboard:{"order":12.0,"milestone_order":11,"custom_state":""}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>23/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>12</IssueID>
+        <Title>Speedup Request::WriteToPipe</Title>
+        <Description>Reserve buffer to avoid reallocations and data copying (not tested)
+
+&lt;!---
+@huboard:{"order":7.375}
+--&gt;
+</Description>
+        <CreatedDate>16/01/2015</CreatedDate>
+        <ClosedDate>05/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>13</IssueID>
+        <Title>Feature request: Anonymous types that implement interfaces</Title>
+        <Description>It would be very useful if C# anonymous types could implement interfaces, including methods. This would make a huge difference when developing using interface driven design. It would also allow for very easy mocking in unit tests.
+
+``` cs
+interface IFooBar {
+    string Foo { get; }
+    int Bar(string s);
+}
+
+void MethodA () {
+    // explicitly typed
+    var myFooBar = new IFooBar {
+        Foo = "xyz",
+        Bar = s =&gt; s.Length
+    };
+
+    MethodB(myFooBar);
+}
+
+IFooBar MethodB(IFooBar fooBar) {
+    // implicit typed
+    return new {
+        Foo = "abc",
+        Bar = fooBar.Bar
+    };
+}
+```
+
+In TypeScript and other dynamic languages, this has proven to be really useful and reduces a lot of boilerplate code. 
+
+It seems that implementing this in C# wouldn't break any rules as anonymous types are already classes internally, and the compiler could just make it implement the interface and use the same rules for checking type.
+
+The only issue I can think right now is the method implementation. How to differ between a method and a property that is a delegate:
+
+``` cs
+interafce IFoo {
+    int Bar(int i);
+    Func&lt;int, int&gt; Baz { get; }
+}
+
+void IFoo GetFoo() {
+    return new {
+        Bar = i =&gt; 1, // ?
+        Baz = i =&gt; 2; // ?
+    }
+}
+```
+
+It seems that from the perspective of the C# consumer it wouldn't make much difference, as both can be called using the same syntax (`obj.Bar()` or `obj.Baz()` ), but the compiler needs to know this.
+
+This could be solved by either adding a new syntax to this implementation:
+
+``` cs
+void IFoo GetFoo() {
+    return new {
+        Bar(int i) =&gt; 1,   // method
+        Baz = i =&gt; 2;  // deletage
+    }
+}
+```
+
+Or by just defaulting to methods unless the interface calls for a property. That would make the first example with the same code valid, and I guess would make the syntax better.
+</Description>
+        <CreatedDate>16/01/2015</CreatedDate>
+        <ClosedDate>21/01/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>14</IssueID>
+        <Title>Feature request: Implicitly typed lambdas</Title>
+        <Description>Currently, it is not possible to do this:
+
+``` cs
+var x = () =&gt; 1;
+```
+
+Instead, you need to declare the type before:
+
+``` cs
+Func&lt;int&gt; x = () =&gt; 1;
+```
+
+C# should just assume these kind of lambdas are either Action or Func and infer the type.
+
+Usually these lambdas are used as helpers for the method implementation, so it really wouldn't matter if a `(string s) =&gt; true`  is a `Func&lt;string, bool&gt;` instead of a `Predicate&lt;string&gt;` as long as the signature matches.
+</Description>
+        <CreatedDate>16/01/2015</CreatedDate>
+        <ClosedDate>12/07/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>15</IssueID>
+        <Title>Feature Request: Recursive Iterators (non-quadratic)</Title>
+        <Description>Current if you want write a recursive based iterator function.
+
+```
+Iterator Function TreeWalk(Of T) ( curr As BinaryNode(Of T)) : IEnumerable(Of BinaryNode(Of T))
+  If curr Is Nothing Then Return Enumerable.Empty(Of BinaryNode(Of T))
+  ForEach node In TreeWalk( curr.Left )
+    Yield node
+  Next
+  Yield curr
+  ForEach node In TreeWalk( curr.Righ )
+    Yield node
+  Next
+End Function
+```
+
+it ends up being Quadratic runtime 
+
+If I could express the Iterator / Yielder as a parameter I could linearise the runtime.
+
+```
+Iteration Function TreeWalk( n : BinaryNode, iterator As ?? ) : IEnumerable(Of T)
+  If n Is Nothing Then Exit Functon
+  If n.Left IsNot Nothing Then TreeWalk(n.Left, Iterator)
+  Yield n.Value on Iterator
+  If n.Righ IsNot Nothing Then TreeWalk(n.Righ, Iterator)
+End Function
+```
+</Description>
+        <CreatedDate>16/01/2015</CreatedDate>
+        <ClosedDate>20/03/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>16</IssueID>
+        <Title>Feature Request : Make internals public</Title>
+        <Description>There are various places in the codebase we'd like to use for OmniSharp but they are marked as internal for example http://source.roslyn.codeplex.com/#Microsoft.CodeAnalysis.CSharp.Workspaces/Extensions/ContextQuery/CSharpSyntaxContext.cs
+
+Could you open most of the classes marked `internal` and `sealed` to `public` please?
+
+![](http://upboat.me/poo/much-/love.jpg)
+</Description>
+        <CreatedDate>16/01/2015</CreatedDate>
+        <ClosedDate>03/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>17</IssueID>
+        <Title>Add more type-inferencing to C#</Title>
+        <Description>For instance, when you have code such as:
+public static int Add( int x, int y )
+{
+    return x + y;
+}
+
+Why do you have to specify "int"?   You can simply say:
+public static Add( x, y )
+{
+    return x + y;
+}
+
+I realize that's what Generics are for, and maybe that's how the above will get implemented.   Note that this is not about dynamic typing.  The above code very much is aware of types, but it works like generics do.   Also, we'll have to have automatic handling of constraints on the implicit type parameters.   You should have to specify a "where" keyword.    For instance, remove the need to say something like: 
+    where T : new()
+when you see the code do a new.
+
+So this type of code:
+    class ItemFactory
+    {
+        public GetNewItem()
+        {
+            return new typeof(return)();
+        }
+    }
+
+changes into this type of code internally:
+    class ItemFactory&lt;T&gt; where T : new()
+    {
+        public T GetNewItem()
+        {
+            return new T();
+        }
+    }
+
+Then specifying a type in code will be mostly when you instantiate it.   The rest of the code attempts to infer it.
+</Description>
+        <CreatedDate>16/01/2015</CreatedDate>
+        <ClosedDate>12/07/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>18</IssueID>
+        <Title>Question: ScriptEngine</Title>
+        <Description>Is there going to be any signs of `ScriptEngine` in the final release of Roslyn as we saw in previous CTP?
+</Description>
+        <CreatedDate>16/01/2015</CreatedDate>
+        <ClosedDate>27/01/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>19</IssueID>
+        <Title>Expose API similar to AnalysisContext within the Workspace API</Title>
+        <Description>I've been developing a few extensions for Visual Studio and have been consuming the `VisualStudioWorkspace.WorkspaceChanged` event. This event doesn't tell me anything more than "Document X has changed". 
+
+The [`AnalysisContext`](http://source.roslyn.codeplex.com/#Microsoft.CodeAnalysis/DiagnosticAnalyzer/DiagnosticAnalysisContext.cs,35971aa0805077f7,references) API looks like a much richer experience. (I haven't actually built any Analyzers myself). It appears to allow analyzers to wait for compilations, semantic models for individual files and more.
+
+Waiting for a background compilation to have completed sounds particularly appealing to me. I don't want my extension to be responsible for triggering unnecessary compilations. I'd be interested to hear from other VS Extension authors who have also used the `VisualStudioWorkspace`.
+</Description>
+        <CreatedDate>16/01/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>20</IssueID>
+        <Title>Lambdas omitting parameters</Title>
+        <Description>I often have the situation of functions taking a lambda-expression as a parameter which take a handful of parameters themselves. Something like this:
+
+``` csharp
+someFunction((foo, bar, thing, another) =&gt; ..);
+```
+
+Of course, delegates with many parameters are often an indicator of bad design, and should be avoided. But it's the same with fewer arguments.
+
+A situation like the above get's quite painful if the lambda-body does not even need all those parameters (or is in extreme always returning the same, constant value). But still, the compiler requests me to find unique names for each of the parameters. This is a problem especially when renaming / adding variables "above" the anonymous function which do then interfere with the unused variables there.
+
+Most of the time what I do today is something like this:
+
+``` csharp
+someFunction((_, foobar) =&gt; ..); //Using '_' as a variable name somewhere around is highly unlikely
+```
+
+``` csharp
+someFunction((a, foobar) =&gt; ..); //Using short variable names elsewhere is highly unlikely
+```
+
+It also helps reading the code, because I can save a few characters (getting more 'good' code into a line) and make it obvious for readers which variables are important to me, making the code more understandable.
+
+Of course this is somewhat limited, because my "placeholders" are really just ordinary names which must not reoccur. This might lead to something like `(_, __, foobar, ___) =&gt; ..` which starts to look ugly again. 
+
+I would like it to have `_` (or just another special character, for backwards-compatibility) not usable for ordinary variable names and forbid it's actual usage inside the lambda-body. Therefore it could be used as a real placeholder, enabling something like this:
+
+``` csharp
+someFunction((_, _, foobar) =&gt; ..);
+```
+
+or even this:
+
+``` csharp
+someFunction((foo, _, bar) =&gt; bar.otherFunction((_) =&gt; foo));
+```
+
+Does this sound like a useful thing to you?
+</Description>
+        <CreatedDate>17/01/2015</CreatedDate>
+        <ClosedDate>20/03/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>21</IssueID>
+        <Title>CCRewrite unhappy with Toolset Compilers 1.0.0-rc1-20150113-03</Title>
+        <Description>After upgrading from to Microsoft.Net.ToolsetCompilers.1.0.0-beta2-20141216-04, CodeContract ccrewrite.exe (latest, v1.7.11202.10) starts to fail during build with:
+error CC1099: Contract extraction failed: Found field &lt;&gt;8__1 in contract that shouldn't be here: In method ns.type.member.
+Exact same code had no issue with Microsoft.Net.ToolsetCompilers.1.0.0-beta2-20141223-03.
+Function exhibiting error is in a static class, along the lines of:
+
+```
+public static IEnumerable&lt;tuple&lt;object, MemberInfo, LinkArity, int, LinkDirection, object, LinkOutput&gt;&gt; BreadthFirstTraversal(
+        object fromObject,
+        Func&lt;object, IEnumerable&lt;Tuple&lt;MemberInfo, LinkArity&gt;&gt;&gt; getSubjectRelations,
+        Func&lt;object, MemberInfo, LinkArity, IEnumerable&lt;Tuple&lt;int, object, LinkOutput&gt;&gt;&gt; getRelatedObjects,
+        IEqualityComparer&lt;object&gt; nodeComparer = null
+        )
+    {
+        Contract.Requires&lt;ArgumentNullException&gt;(getSubjectRelations != null);
+        Contract.Requires&lt;ArgumentNullException&gt;(getRelatedObjects != null);
+    ...
+```
+
+so with only 2 simple preconditions. Function body uses yield return after that.
+Commenting out the contracts removes the build error.
+This only occurs in a few instances overall, the majority of contracts are unaffected, but I haven't identified the exact pattern causing that issue yet.
+In another instance, ccrewrite goes through, but runtime behavior becomes faulty with a precondition asserting systematically.
+
+&lt;!---
+@huboard:{"order":138.0,"milestone_order":21,"custom_state":""}
+--&gt;
+</Description>
+        <CreatedDate>17/01/2015</CreatedDate>
+        <ClosedDate>01/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>22</IssueID>
+        <Title>Build and Unit test failures in 'master' branch</Title>
+        <Description>To carry on the [CodePlex discussion](http://roslyn.codeplex.com/discussions/571919) with @MattGertz  and @KevinRansom, I'm still seeing many unit test failures on the GitHub `master` branch. I assume you are still working on this as part of the move to GitHub but I thought it might be helpful to report the issues I'm seeing right now. 
+
+I created a clean VS2015 CTP5 machine on Azure today, installed the CTP SDK, cloned Roslyn (at the time master's HEAD was 7fed8e8e946c080aa6daf5933effdf1b9e40d15c) and ran `msbuild /m BuildAndTest.proj /p:DeployExtension=false`. 
+
+Here are the problems I saw:
+### Build Failure
+
+```
+C:\Program Files (x86)\MSBuild\Microsoft\VisualStudio\v14.0\VSSDK\Microsoft.VsSDK.targets(760,5):     error : CreatePkgDef : error : FileLoadException: Could not load file or assembly 'OpenSourceDebug,    Version=42.42.42.42, Culture=neutral, PublicKeyToken=31bf3856ad364e35' or one of its    dependencies. Strong name validation failed. (Exception from HRESULT: 0x8013141A)   [c:\dev\roslyn\Src\Tools\Source\OpenSourceDebug\OpenSourceDebug.csproj]
+```
+
+I ran `sn -Vr *,31bf3856ad364e35` to work around this. 
+### Crashes during test run
+
+When the tests run, for every test tries to launch the command line compiler (and there are many),  a crash dialog pops up saying that  "VBCSCompiler has stopped working" or "csc.exe has stopped working". I also got an error saying:
+
+```
+Unhandled Exception: System.IO.FileLoadException: Could not load file or assembly 'csc,Version=42.42.42.42, Culture=neutral, PublicKeyToken=31bf3856ad364e35' or one of its dependencies. Strong name validation failed. (Exception from HRESULT: 0x8013141A) ---
+```
+
+Again, this seems to be related to strong name validations, and this time the fact I `SN -Vr`'ed that same public key didn't help.  To get past the crash dialogs, I manually deleted `Roslyn.Compilers.CompilerServer.UnitTests.dll` `Roslyn.Compilers.CSharp.CommandLine.UnitTests.dll` and `Roslyn.Compilers.VisualBasic.CommandLine.UnitTests.dll`, and then ran:
+ msbuild _/target:test_ /m BuildAndTest.proj /p:DeployExtension=false
+### Remaining unit test failures
+
+Finally, the [resulting UnitTestResults.html file](https://drive.google.com/file/d/0B_DL7JsBKCwiVkpjVFlTQ180ZDg/view?usp=sharing) reported 2 unit test failures, while the command-line window consistently reported 39.
+</Description>
+        <CreatedDate>17/01/2015</CreatedDate>
+        <ClosedDate>11/03/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>5</IssueID>
+        <Title>Intellisense Tooltip get too long in case of many generic parameters</Title>
+        <Description>Hi, I hope to be in the right place, if not feel free to close this.
+
+I noticed that Intellisense tool-tips become too long in case of many generic parameters with constraint, see image below.
+![intellisense tooltip](https://cloud.githubusercontent.com/assets/3263338/5750517/652bead8-9c56-11e4-833e-932db4075c0a.png)
+
+What I would like to see, if there are more than 1 generic constraints is to split every constraint in a new line (as you can see in generic constraint declaration on the class itself) to avoid creating a very long tool-tip and to gain readability
+
+M.
+
+&lt;!---
+@huboard:{"order":6.5}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>1</IssueID>
+        <Title>Initial port and addition of README.md</Title>
+        <Description>This is a port of the readme from CodePlex.  Some of the links have been updated to point to locations on GitHub, but many of the links still point back to CodePlex as comparable GitHub locations are currently absent.
+</Description>
+        <CreatedDate>14/01/2015</CreatedDate>
+        <ClosedDate>14/01/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>2</IssueID>
+        <Title>Update links in README.md with ported wiki content</Title>
+        <Description>
+        </Description>
+        <CreatedDate>14/01/2015</CreatedDate>
+        <ClosedDate>14/01/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>3</IssueID>
+        <Title>Add symbol files(.pdb/source) to NuGet packages</Title>
+        <Description>It would be nice to be able to step inside Roslyn code when using NuGet packages.
+
+This is nice guide on how to do this:
+http://blog.davidebbo.com/2011/04/easy-way-to-publish-nuget-packages-with.html
+
+&lt;!---
+@huboard:{"order":6.0}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>08/11/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>4</IssueID>
+        <Title>added a space to experience e2e getting sources, making change, and subm...</Title>
+        <Description>...itting pull request
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>15/01/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>5</IssueID>
+        <Title>Intellisense Tooltip get too long in case of many generic parameters</Title>
+        <Description>Hi, I hope to be in the right place, if not feel free to close this.
+
+I noticed that Intellisense tool-tips become too long in case of many generic parameters with constraint, see image below.
+![intellisense tooltip](https://cloud.githubusercontent.com/assets/3263338/5750517/652bead8-9c56-11e4-833e-932db4075c0a.png)
+
+What I would like to see, if there are more than 1 generic constraints is to split every constraint in a new line (as you can see in generic constraint declaration on the class itself) to avoid creating a very long tool-tip and to gain readability
+
+M.
+
+&lt;!---
+@huboard:{"order":6.5}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>6</IssueID>
+        <Title>Corrected documentation on FullSpan and Span</Title>
+        <Description>As per the [Incorrect Docs on FullSpan/Span properties](http://roslyn.codeplex.com/workitem/260) issue, the documentation was reversed on a few of these pairs.
+
+&lt;!---
+@huboard:{"order":8.0}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>09/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>7</IssueID>
+        <Title>Feature: Parameter Name Aliasing</Title>
+        <Description>The human meaning of parameters may vary from method caller's perspective.
+
+It would be useful if the language provides an ability to assign aliases to the parameters.
+
+``` C#
+[Alias({second: [secondAndHalf, quarterToThree], first: [Initial]})] 
+public static void Member1(string first, string second) { 
+  // Here the user will always use the given names: first and second.
+  // which means the user cannot use the param by its nickname
+  // inside the method scope.
+}
+
+private static void Caller1() {
+  Member1(secondAndHalf: "secondly, this is not a bad idea after all",
+          Initial: "Initially it sounded moot... :)  ");
+}
+
+private static void Caller2() {
+  Member1(first: "1st",
+          quarterToThree: "almost there");
+}
+
+private static void Caller3() {
+  Member1("one", "two");
+}
+```
+
+vs. this current approach:
+
+``` c#
+public static void Member1(string first, string second) {  }
+
+public static void Member1(string first, string secondAndHalf, string devNull = null) { 
+  Member1(first, secondAndHalf);
+}
+```
+
+Note: the parameter `devNull` may violate [CA1026](http://msdn.microsoft.com/en-us/library/ms182135.aspx), in case of `overridden` methods. On the flip side, setting `devNull` as non-default parameter would yield "unused parameter".
+
+Related / Real world example: https://github.com/madskristensen/WebEssentials2013/pull/380#issuecomment-31402391
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>26/08/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>8</IssueID>
+        <Title>Feature request: Async stream generators</Title>
+        <Description>Currenty C# supports pull based sequence generators. 
+As IObservable&amp;lt;T&amp;gt; and IObserver&amp;lt;T&amp;gt; are now in mscorlib and Rx is such a success not only in .NET but in other languages and runtimes  why not to add to C# ability to easily create async push based stream generators.
+
+It could look like this:
+
+``` C#
+private async IObservable&lt;string&gt; GetData()
+{ 
+    var data = await MakeRequest();
+    yield return data;
+    yield return await MakeAnotherRequest();
+}
+```
+
+It would complete language support in the matrix of generators:
+
+|  | sync | async |
+| --- | --- | --- |
+| **single** | T | Task&amp;lt;T&amp;gt; |
+| **multiple** | IEnumerable&amp;lt;T&amp;gt; | IObservable&amp;lt;T&amp;gt; |
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>29/01/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>9</IssueID>
+        <Title>SemanticModel.GetArgumentInfo API needed to retrieve the IParameterSymbol that an ArgumentSyntax binds to</Title>
+        <Description>This is a missing API. Writing a diagnostic that process an argument requires a fair amount of code to determine what parameter the argument binds to -- checking for named or positional arguments.
+
+&lt;!---
+@huboard:{"order":7.1875,"milestone_order":9}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>10</IssueID>
+        <Title>Remove commented out class</Title>
+        <Description>Just a bit of clean-up!
+
+&lt;!---
+@huboard:{"order":326.25,"milestone_order":10,"custom_state":""}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>17/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>11</IssueID>
+        <Title>Unable to compile conditional access expression in context of expression-bodied void method/lambda expression</Title>
+        <Description>Related commit: https://github.com/dotnet/roslyn/commit/dd8f041fdd15503f0fc691d9aff28440a39cb923
+
+&gt; ?. invocation in context of a statement-expression should be allowed even if result type of the invocation cannot be made nullable.
+
+I'm expecting it also to work with void methods in expression-bodied form, as well as void lambda expressions:
+
+``` c#
+using System;
+
+class C&lt;T&gt; {
+    void F1(C&lt;T&gt; c) {
+        c?.M(); // compiles fine
+
+        // error CS0023: Operator '?' cannot be applied to operand of type 'T'
+        Action a = () =&gt; c?.M();
+    }
+
+    // error CS0023: Operator '?' cannot be applied to operand of type 'T'
+    void F2(C&lt;T&gt; c) =&gt; c?.M();
+
+
+    T M() =&gt; default(T);
+}
+```
+
+&lt;!---
+@huboard:{"order":12.0,"milestone_order":11,"custom_state":""}
+--&gt;
+</Description>
+        <CreatedDate>15/01/2015</CreatedDate>
+        <ClosedDate>23/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>12</IssueID>
+        <Title>Speedup Request::WriteToPipe</Title>
+        <Description>Reserve buffer to avoid reallocations and data copying (not tested)
+
+&lt;!---
+@huboard:{"order":7.375}
+--&gt;
+</Description>
+        <CreatedDate>16/01/2015</CreatedDate>
+        <ClosedDate>05/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>13</IssueID>
+        <Title>Feature request: Anonymous types that implement interfaces</Title>
+        <Description>It would be very useful if C# anonymous types could implement interfaces, including methods. This would make a huge difference when developing using interface driven design. It would also allow for very easy mocking in unit tests.
+
+``` cs
+interface IFooBar {
+    string Foo { get; }
+    int Bar(string s);
+}
+
+void MethodA () {
+    // explicitly typed
+    var myFooBar = new IFooBar {
+        Foo = "xyz",
+        Bar = s =&gt; s.Length
+    };
+
+    MethodB(myFooBar);
+}
+
+IFooBar MethodB(IFooBar fooBar) {
+    // implicit typed
+    return new {
+        Foo = "abc",
+        Bar = fooBar.Bar
+    };
+}
+```
+
+In TypeScript and other dynamic languages, this has proven to be really useful and reduces a lot of boilerplate code. 
+
+It seems that implementing this in C# wouldn't break any rules as anonymous types are already classes internally, and the compiler could just make it implement the interface and use the same rules for checking type.
+
+The only issue I can think right now is the method implementation. How to differ between a method and a property that is a delegate:
+
+``` cs
+interafce IFoo {
+    int Bar(int i);
+    Func&lt;int, int&gt; Baz { get; }
+}
+
+void IFoo GetFoo() {
+    return new {
+        Bar = i =&gt; 1, // ?
+        Baz = i =&gt; 2; // ?
+    }
+}
+```
+
+It seems that from the perspective of the C# consumer it wouldn't make much difference, as both can be called using the same syntax (`obj.Bar()` or `obj.Baz()` ), but the compiler needs to know this.
+
+This could be solved by either adding a new syntax to this implementation:
+
+``` cs
+void IFoo GetFoo() {
+    return new {
+        Bar(int i) =&gt; 1,   // method
+        Baz = i =&gt; 2;  // deletage
+    }
+}
+```
+
+Or by just defaulting to methods unless the interface calls for a property. That would make the first example with the same code valid, and I guess would make the syntax better.
+</Description>
+        <CreatedDate>16/01/2015</CreatedDate>
+        <ClosedDate>21/01/2016</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>14</IssueID>
+        <Title>Feature request: Implicitly typed lambdas</Title>
+        <Description>Currently, it is not possible to do this:
+
+``` cs
+var x = () =&gt; 1;
+```
+
+Instead, you need to declare the type before:
+
+``` cs
+Func&lt;int&gt; x = () =&gt; 1;
+```
+
+C# should just assume these kind of lambdas are either Action or Func and infer the type.
+
+Usually these lambdas are used as helpers for the method implementation, so it really wouldn't matter if a `(string s) =&gt; true`  is a `Func&lt;string, bool&gt;` instead of a `Predicate&lt;string&gt;` as long as the signature matches.
+</Description>
+        <CreatedDate>16/01/2015</CreatedDate>
+        <ClosedDate>12/07/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2073</PullRequestID>
+        <IssueID>15</IssueID>
+        <Title>Feature Request: Recursive Iterators (non-quadratic)</Title>
+        <Description>Current if you want write a recursive based iterator function.
+
+```
+Iterator Function TreeWalk(Of T) ( curr As BinaryNode(Of T)) : IEnumerable(Of BinaryNode(Of T))
+  If curr Is Nothing Then Return Enumerable.Empty(Of BinaryNode(Of T))
+  ForEach node In TreeWalk( curr.Left )
+    Yield node
+  Next
+  Yield curr
+  ForEach node In TreeWalk( curr.Righ )
+    Yield node
+  Next
+End Function
+```
+
+it ends up being Quadratic runtime 
+
+If I could express the Iterator / Yielder as a parameter I could linearise the runtime.
+
+```
+Iteration Function TreeWalk( n : BinaryNode, iterator As ?? ) : IEnumerable(Of T)
+  If n Is Nothing Then Exit Functon
+  If n.Left IsNot Nothing Then TreeWalk(n.Left, Iterator)
+  Yield n.Value on Iterator
+  If n.Righ IsNot Nothing Then TreeWalk(n.Righ, Iterator)
+End Function
+```
+</Description>
+        <CreatedDate>16/01/2015</CreatedDate>
+        <ClosedDate>20/03/2017</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>2073</PullRequestID>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/InlineRenameSession.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/NavigationBar/NavigationBarController.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/NavigationBar/NavigationBarController_ModelComputation.cs</File>
+      <File>src/Features/Core/Workspace/BackgroundCompiler.cs</File>
+      <File>src/Workspaces/Core/Portable/Workspace/Host/TaskScheduler/WorkspaceTaskSchedulerFactory.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>2072</IssueID>
+    <RepoID>runtime</RepoID>
+    <Title>Match blittability rules in crossgen2 with CoreCLR</Title>
+    <Description>Fixes #483. Structs with pointer-typed fields are blittable.
+
+After #1866 we no longer have to worry about the recursion because the code path that recursed into pointed-to types was deleted.
+
+Cc @dotnet/crossgen-contrib </Description>
+    <CreatedDate>23/01/2020</CreatedDate>
+    <ClosedDate>23/01/2020</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>2072</PullRequestID>
+        <IssueID>483</IssueID>
+        <Title>"Tidy invocation" refactorings</Title>
+        <Description>I'd like some refactorings to clean up invocations. Things like
+- Move all parameters to separate lines
+- Move all parameters to same line
+- Remove all (possible) parameter names
+- Add all parameter names
+</Description>
+        <CreatedDate>13/02/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2072</PullRequestID>
+        <IssueID>1866</IssueID>
+        <Title>Fixes EnC function remapping of an active statement containing await expression</Title>
+        <Description>Fixes internal bug 1120376: Unexpected method re-evaluation.
+
+The debugger needs a hidden breakpoint following each await expression in order to perform remapping correctly.
+
+We also need to preserve the value of a local variable that stores the result of an await expression (the awaiter object) during remapping, hence this temp must be long-lived.
+
+The variable is assigned the result of a call to await-expression.GetAwaiter() and subsequently used 
+to check whether the task completed. Eventually the value is stored in an awaiter field.
+
+The value assigned to the variable needs to be preserved when remapping the IL offset from old method body to new method body during EnC. If the awaiter expression is contained in an active statement and the containing MoveNext method changes the debugger finds the next sequence point that follows the await expression and transfers the execution to the new method version. This sequenec point is placed by the compiler at the immediately after the stloc instruction that stores the awaiter object to this variable. The subsequent ldloc then restores it in the new method version.
+</Description>
+        <CreatedDate>08/04/2015</CreatedDate>
+        <ClosedDate>09/04/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>2072</PullRequestID>
+      <File>src/Diagnostics/FxCop/CSharp/Design/CSharpEnumWithFlagsDiagnosticAnalyzer.cs</File>
+      <File>src/Diagnostics/FxCop/CSharp/Design/CodeFixes/EnumWithFlagsCSharpCodeFixProvider.cs</File>
+      <File>src/Diagnostics/FxCop/Core/Design/CodeFixes/EnumWithFlagsCodeFixProviderBase.cs</File>
+      <File>src/Diagnostics/FxCop/Core/FxCopFixersResources.Designer.cs</File>
+      <File>src/Diagnostics/FxCop/Core/FxCopRulesResources.Designer.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Core/Design/EnumWithFlagsAttribute.Fixer.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Core/Design/EnumWithFlagsAttribute.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Core/Shared/DiagnosticHelpers.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Core/SystemRuntimeAnalyzersResources.Designer.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Test/Design/EnumWithFlagsAttributeTests.Fixer.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Test/Design/EnumWithFlagsAttributeTests.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Test/Globalization/UseOrdinalStringComparisonTests.Fixer.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Test/Globalization/UseOrdinalStringComparisonTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>2071</IssueID>
+    <RepoID>runtime</RepoID>
+    <Title>Pass native build args from top-level scripts</Title>
+    <Description>Add ability to pass `--cross`, `--clangx.y`, `--gccx.y` and `--cmakeargs` to native scripts via top-level `build.sh`. e.g.
+
+```sh
+./build.sh --subsetCategory coreclr --clang8 --cross --cmakeargs -DFeatureX=1 --cmakeargs Y='testing'
+./build.sh --subsetCategory installer --gcc5 --cross --cmakeargs -DFeatureX=1 --cmakeargs Y='testing'
+./build.sh --subsetCategory libraries --clang --cross --cmakeargs -DFeatureX=1 --cmakeargs Y='testing'
+```
+
+Also address CR feedback from PRs #1753 and #1602 (in separate commits).</Description>
+    <CreatedDate>23/01/2020</CreatedDate>
+    <ClosedDate>30/01/2020</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>2071</PullRequestID>
+        <IssueID>1753</IssueID>
+        <Title>Microsoft.*.Core.targets files don't capture all inputs</Title>
+        <Description>The Microsoft.CSharp.Core.targets file currently lists the following in the Inputs attribute of the Target element:
+
+```
+$(MSBuildAllProjects);
+@(Compile);
+@(_CoreCompileResourceInputs);
+$(ApplicationIcon);
+$(AssemblyOriginatorKeyFile);
+@(ReferencePath);
+@(CompiledLicenseFile);
+@(LinkResource);
+@(EmbeddedDocumentation);
+$(Win32Resource);
+$(Win32Manifest);
+@(CustomAdditionalCompileInputs);
+$(ResolvedCodeAnalysisRuleSet)
+```
+
+This does not include `@(Analyzer)`, even though these should be considered inputs as well (also `@(AnalyzerDependency)` when that is added).
+
+Microsoft.VisualBasic.Core.targets has the same issue.
+</Description>
+        <CreatedDate>02/04/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2071</PullRequestID>
+        <IssueID>1602</IssueID>
+        <Title>Code cleanup from PR 1434</Title>
+        <Description>
+        </Description>
+        <CreatedDate>26/03/2015</CreatedDate>
+        <ClosedDate>26/03/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>2071</PullRequestID>
+      <File>src/Diagnostics/FxCop/CSharp/Usage/CSharpCA2213DiagnosticAnalyzer.cs</File>
+      <File>src/Diagnostics/FxCop/CSharp/Usage/CodeFixes/CA2213CSharpCodeFixProvider.cs</File>
+      <File>src/Diagnostics/FxCop/Core/FxCopRulesResources.Designer.cs</File>
+      <File>src/Diagnostics/FxCop/Core/Usage/CodeFixes/CA2213CodeFixProviderBase.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/CSharp/Usage/DisposableFieldsShouldBeDisposed.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Core/Shared/INamedTypeSymbolExtensions.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Core/SystemRuntimeAnalyzersResources.Designer.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Core/Usage/DisposableFieldsShouldBeDisposed.Fixer.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Core/Usage/DisposableFieldsShouldBeDisposed.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Test/Usage/DisposableFieldsShouldBeDisposedTests.Fixer.cs</File>
+      <File>src/Diagnostics/FxCop/System.Runtime.Analyzers/Test/Usage/DisposableFieldsShouldBeDisposedTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>2034</IssueID>
+    <RepoID>runtime</RepoID>
+    <Title>[jit] Compute the instance size/alignment correctly for gshared types whose constraint is a generic valuetype.</Title>
+    <Description>This PR is synchronized with mono/mono#18496.&lt;br/&gt;Do not edit this PR, changes here are overwritten when pushing to the other PR.&lt;br/&gt;Please merge both PRs at the same time.&lt;br/&gt;&lt;hr/&gt;&lt;br/&gt;Fixes mono/mono#18455</Description>
+    <CreatedDate>22/01/2020</CreatedDate>
+    <ClosedDate>23/01/2020</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>2034</PullRequestID>
+        <IssueID>18496</IssueID>
+        <Title>Merge master to dev16</Title>
+        <Description>
+This is an automatically generated pull request from master into dev16.
+
+``` bash
+git fetch --all
+git checkout merges/master-to-dev16-20170406-070009
+git reset --hard upstream/dev16
+git merge upstream/master
+# Fix merge conflicts
+git commit
+git push merges/master-to-dev16-20170406-070009 --force
+```
+
+Once all conflicts are resolved and all the tests pass, you are free to merge the pull request.</Description>
+        <CreatedDate>06/04/2017</CreatedDate>
+        <ClosedDate>06/04/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2034</PullRequestID>
+        <IssueID>18455</IssueID>
+        <Title>Fixes #18240 - "Generate class ..." causes inconsistent accessibility</Title>
+        <Description>Fixes #18240.
+
+Currently if nested class is protected then we generate internal class which can cause compilation error if  protected class is under public class.
+This PR also fixes that issue.
+</Description>
+        <CreatedDate>05/04/2017</CreatedDate>
+        <ClosedDate>04/06/2018</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>2034</PullRequestID>
+      <File>src/EditorFeatures/CSharpTest/EditAndContinue/ActiveStatementTests.Methods.cs</File>
+      <File>src/EditorFeatures/CSharpTest/EditAndContinue/ActiveStatementTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/EditAndContinue/LineEditTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/EditAndContinue/RudeEditStatementTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/EditAndContinue/RudeEditTopLevelTests.cs</File>
+      <File>src/Features/CSharp/CSharpFeaturesResources.Designer.cs</File>
+      <File>src/Features/CSharp/EditAndContinue/CSharpEditAndContinueAnalyzer.cs</File>
+      <File>src/Features/Core/FeaturesResources.Designer.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>503</IssueID>
+    <RepoID>runtime</RepoID>
+    <Title>Update Multi-level SharedFX Lookup Doc</Title>
+    <Description>This document was written before .net core 3 was released, and
+refers to certain features in .net core 2.1 and 3 as "proposed features."
+
+This change integrates the sections describing (then) upcoming features
+into the doc's mainstream.
+
+The doc can be improved further to be more cohesive; this change
+addresses the specific issue in #493
+
+Fixes #493</Description>
+    <CreatedDate>04/12/2019</CreatedDate>
+    <ClosedDate>10/12/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>503</PullRequestID>
+        <IssueID>493</IssueID>
+        <Title>Fix malformed XML doc comments</Title>
+        <Description>
+        </Description>
+        <CreatedDate>13/02/2015</CreatedDate>
+        <ClosedDate>13/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>503</PullRequestID>
+        <IssueID>493</IssueID>
+        <Title>Fix malformed XML doc comments</Title>
+        <Description>
+        </Description>
+        <CreatedDate>13/02/2015</CreatedDate>
+        <ClosedDate>13/02/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>503</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder_Expressions.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/NameofBinder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/SourceLocalSymbol.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/NameOfTests.cs</File>
+    </Files>
+  </PullRequest>
+</PullRequests>

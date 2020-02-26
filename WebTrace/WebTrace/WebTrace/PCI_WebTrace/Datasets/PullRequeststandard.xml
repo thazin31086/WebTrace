@@ -1,0 +1,237 @@
+<PullRequests>
+  <PullRequest>
+    <IssueID>1183</IssueID>
+    <RepoID>standard</RepoID>
+    <Title>Seal types that cannot be inherited</Title>
+    <Description>These changes are related to #1176 and address the same problem.
+
+Fixes #1171.</Description>
+    <CreatedDate>09/05/2019</CreatedDate>
+    <ClosedDate>15/05/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>1183</PullRequestID>
+        <IssueID>1176</IssueID>
+        <Title>Introduce FormattingOptions.UseTabOnlyForIndentation with testcases</Title>
+        <Description>With the changes in PR #1166 we have removed the option `FormattingOptions.UseTabOnlyForIndentation`. 
+
+Since we didn't have testcases backing the behavior of the option we have removed this option.
+
+From discussion with the team, there seems to be 2 purposes:
+1. In the case of,
+
+```
+&lt;tab&gt;&lt;tab&gt;void MMM(int i,
+&lt;tab&gt;&lt;tab&gt;&lt;spaces&gt; int j)
+```
+
+the second line is tabbed in the Indentation area and the rest of the string is filled with spaces with the help of this option
+1. In the case of (Keeping Tab),
+
+```
+&lt;Tab&gt;&lt;Tab&gt; var s = 0;&lt;Many tabs&gt; // Single or MultilineComment
+```
+
+On format, the `&lt;Many tabs&gt;` will be expected to  be converted to spaces because Tabs are only for indentation.
+</Description>
+        <CreatedDate>10/03/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>1183</PullRequestID>
+        <IssueID>1171</IssueID>
+        <Title>Implement OSS signing in the compiler when public key is specified in .snk file</Title>
+        <Description>The compiler currently OSS signs the compilation assembly when CryptoPublicKey is set to a valid public key and DelaySign is false  (i.e. sets the "signed" CorFlag bit to true without actually signing the assembly). 
+
+We should enable OSS signing also when a public key is supplied via .snk file. Currently we report ERR_SignButNoPrivateKey error if the file doesn't contain both public and private keys. The proposal is to remove this error and OSS sign the assembly instead.
+
+The benefit would be that without adding any command line compiler options, project system settings etc. we could add the feature of OSS signing into the compiler and get rid of FakeSign tool.
+</Description>
+        <CreatedDate>10/03/2015</CreatedDate>
+        <ClosedDate>30/11/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>1183</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/CSharpResources.Designer.cs</File>
+      <File>src/Compilers/CSharp/Portable/Errors/ErrorCode.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/DiagnosticsPass_ExpressionTrees.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/LocalRewriter/LocalRewriter_ObjectOrCollectionInitializerExpression.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/SemanticErrorTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>827</IssueID>
+    <RepoID>standard</RepoID>
+    <Title>Miscellaneous improvements in System.Net.*</Title>
+    <Description>This also fixes #772 and fixes #852.
+
+@dotnet/nsboard </Description>
+    <CreatedDate>16/07/2018</CreatedDate>
+    <ClosedDate>23/10/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>827</PullRequestID>
+        <IssueID>772</IssueID>
+        <Title>Clean up projects building against FX 2.0</Title>
+        <Description>Clean up warnings reported by msbuild and move common logic to VSL.Settings.targets
+</Description>
+        <CreatedDate>22/02/2015</CreatedDate>
+        <ClosedDate>23/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>827</PullRequestID>
+        <IssueID>852</IssueID>
+        <Title>Dev14CTP6 branch or tag missing</Title>
+        <Description>It would be nice to have commit sha which was used to create rc1 packages, mostly so we can rebuild it locally and debug it(.pdbs).
+</Description>
+        <CreatedDate>25/02/2015</CreatedDate>
+        <ClosedDate>23/03/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>827</PullRequestID>
+      <File>src/Compilers/CSharp/Desktop/CommandLine/CommandLineParser.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder_Symbols.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Synthesized/GeneratedNames.cs</File>
+      <File>src/Compilers/CSharp/Test/CommandLine/CommandLineTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests_Synthesized.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/InternalsVisibleToAndStrongNameTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenAsyncLocalsTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenDynamicTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenExplicitImplementationTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenIterators.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/SwitchTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/CompilationEmitTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EditAndContinue/EditAndContinueTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EditAndContinue/LocalSlotMappingTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Diagnostics/DiagnosticAnalyzerTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/FlowAnalysis/FlowTestBase.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/FlowAnalysis/RegionAnalysisTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/InteractiveSemanticModelTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/LookupPositionTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/LookupTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/OperatorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/OverloadResolutionTestBase.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/QueryTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/GetSemanticInfoBrokenCodeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/GetSemanticInfoTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/GetUnusedImportDirectivesTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/SemanticModelAPITests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/SemanticModelGetDeclaredSymbolAPITests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Compilation/SymbolSearchTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/DocumentationComments/CrefTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/DocumentationComments/ParameterTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/SymbolDisplay/SymbolDisplayTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/AccessorOverriddenOrHiddenMembersTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/AnonymousTypesSemanticsTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/AnonymousTypesSymbolTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/CompilationCreationTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/ConversionTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/ExtensionMethodTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/InterfaceImplementationTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/MetadataMemberTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/LoadingAttributes.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/LoadingEvents.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/LoadingProperties.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/NoPiaInstantiationOfGenericClassAndStruct.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/NoPiaLocalHideAndTypeSubstitutionTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/TypeForwarders.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Retargeting/RetargetCustomAttributes.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Retargeting/RetargetExplicitInterfaceImplementation.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/ClsComplianceTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/DeclaringSyntaxNodeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/EventTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/MethodTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/SymbolErrorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Diagnostics/DiagnosticTest.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Diagnostics/LocationsTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/IncrementalParsing/IncrementalParsingTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/LexicalAndXml/PreprocessorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Syntax/SyntaxDiffingTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Syntax/SyntaxNodeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/TextExtensions.cs</File>
+      <File>src/Compilers/Core/CodeAnalysisTest/CommonCommandLineParserTests.cs</File>
+      <File>src/Compilers/Core/Desktop/CommandLine/CommonCommandLineParser.cs</File>
+      <File>src/Compilers/Core/Desktop/CommandLine/CommonCompiler.cs</File>
+      <File>src/Compilers/Core/Desktop/FileUtilities.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataReader/MetadataReaderExtensions.cs</File>
+      <File>src/Compilers/Test/Utilities/CSharp/CSharpTestBase.cs</File>
+      <File>src/Compilers/Test/Utilities/CSharp/SemanticModelTestBase.cs</File>
+      <File>src/Compilers/Test/Utilities/CSharp/SyntaxTreeExtensions.cs</File>
+      <File>src/Compilers/Test/Utilities/Core2/NodeHelpers.cs</File>
+      <File>src/Diagnostics/FxCop/CSharp/Globalization/CodeFixes/CA1309CSharpCodeFixProvider.cs</File>
+      <File>src/Diagnostics/Test/Utilities/DiagnosticAnalyzerTests.Extensions.cs</File>
+      <File>src/EditorFeatures/CSharp/TodoComment/CSharpTodoCommentIncrementalAnalyzerProvider.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Classification/AbstractCSharpClassifierTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Classification/SyntacticClassifierTests_Preprocessor.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/ImplementInterface/ImplementInterfaceTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/SimplifyTypeNames/SimplifyTypeNamesTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/Suppression/SuppressionAllCodeTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/EditAndContinue/CSharpEditAndContinueAnalyzerTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/TextStructureNavigation/TextStructureNavigatorTests.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/DocumentationComments/AbstractDocumentationCommentCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/ExtractMethod/AbstractExtractMethodCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/AbstractEditorInlineRenameService.SymbolRenameInfo.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/InlineRename/Dashboard/Dashboard.xaml.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/Completion/PathCompletionUtilities.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/TodoComment/TodoCommentTokens.cs</File>
+      <File>src/EditorFeatures/Test/CodeGeneration/CodeGenerationTests.CSharp.cs</File>
+      <File>src/EditorFeatures/Test/CodeGeneration/CodeGenerationTests.VisualBasic.cs</File>
+      <File>src/EditorFeatures/Test/CodeGeneration/CodeGenerationTests.cs</File>
+      <File>src/EditorFeatures/Test/CommentSelection/CommentUncommentSelectionCommandHandlerTests.cs</File>
+      <File>src/EditorFeatures/Test/Diagnostics/AbstractUserDiagnosticTest.cs</File>
+      <File>src/EditorFeatures/Test/EditAndContinue/Extensions.cs</File>
+      <File>src/EditorFeatures/Test/Extensions/IProjectionBufferFactoryServiceExtensionsTests.cs</File>
+      <File>src/EditorFeatures/Test/Workspaces/TestWorkspace.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/NoPIATests.cs</File>
+      <File>src/ExpressionEvaluator/Core/Source/ResultProvider/Helpers/MemberAndDeclarationInfo.cs</File>
+      <File>src/ExpressionEvaluator/Core/Test/ExpressionCompiler/ExpressionCompilerTestHelpers.cs</File>
+      <File>src/Features/CSharp/Completion/CompletionProviders/AttributeNamedParameterCompletionProvider.cs</File>
+      <File>src/Features/Core/GenerateType/AbstractGenerateTypeService.cs</File>
+      <File>src/Interactive/HostTest/CommandLineTests.cs</File>
+      <File>src/Interactive/HostTest/InteractiveHostTests.cs</File>
+      <File>src/Scripting/CSharpTest/InteractiveSessionTests.cs</File>
+      <File>src/Scripting/CSharpTest/ObjectFormatterTests.cs</File>
+      <File>src/Scripting/Test/GlobalAssemblyCacheTests.cs</File>
+      <File>src/Test/Utilities/AssertEx.cs</File>
+      <File>src/Test/Utilities/DiagnosticDescription.cs</File>
+      <File>src/Test/Utilities/EnsureEnglishUICulture.cs</File>
+      <File>src/Test/Utilities/MarkupTestFile.cs</File>
+      <File>src/Test/Utilities/MetadataSignatureHelper.cs</File>
+      <File>src/Test/Utilities/SharedCompilationUtils.cs</File>
+      <File>src/Tools/Source/CompilerGeneratorTools/Source/BoundTreeGenerator/BoundNodeClassWriter.cs</File>
+      <File>src/Tools/Source/CompilerGeneratorTools/Source/BoundTreeGenerator/Program.cs</File>
+      <File>src/Tools/Source/CompilerGeneratorTools/Source/CSharpSyntaxGenerator/AbstractFileWriter.cs</File>
+      <File>src/Tools/Source/CompilerGeneratorTools/Source/CSharpSyntaxGenerator/SourceWriter.cs</File>
+      <File>src/VisualStudio/CSharp/Impl/CodeModel/CSharpCodeModelService.NodeNameGenerator.cs</File>
+      <File>src/VisualStudio/CSharp/Test/CodeModel/FileCodeFunctionTests.cs</File>
+      <File>src/VisualStudio/CSharp/Test/Debugging/ProximityExpressionsGetterTests_Caching.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/GenerateType/GenerateTypeDialogViewModel.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Library/ObjectBrowser/AbstractDescriptionBuilder.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Library/ObjectBrowser/NavInfos/NavInfoList.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Library/ObjectBrowser/ObjectList.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/TaskList/VisualStudioTodoTaskList.TaskItem.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Venus/ContainedDocument.cs</File>
+      <File>src/VisualStudio/Core/Def/Implementation/Venus/ContainedLanguageCodeSupport.cs</File>
+      <File>src/VisualStudio/Core/Impl/Options/AbstractOptionPreviewViewModel.cs</File>
+      <File>src/Workspaces/CSharp/Portable/CodeGeneration/CSharpCodeGenerationHelpers.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Extensions/ExpressionSyntaxExtensions.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Formatting/FormattingHelpers.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Rename/CSharpRenameRewriterLanguageService.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Simplification/CSharpSimplificationService.Expander.cs</File>
+      <File>src/Workspaces/CSharpTest/Formatting/FormattingMultipleSpanTests.cs</File>
+      <File>src/Workspaces/Core/Desktop/Workspace/MSBuild/MSBuildWorkspace.cs</File>
+      <File>src/Workspaces/Core/Desktop/Workspace/MSBuild/SolutionFile/LineScanner.cs</File>
+      <File>src/Workspaces/Core/Desktop/Workspace/MSBuild/SolutionFile/SolutionFile.cs</File>
+      <File>src/Workspaces/Core/Portable/FindSymbols/FindReferences/DependentProjectsFinder.cs</File>
+      <File>src/Workspaces/Core/Portable/Shared/Utilities/NameGenerator.cs</File>
+      <File>src/Workspaces/CoreTest/SyntaxPathTests.cs</File>
+      <File>src/Workspaces/CoreTest/WorkspaceTests/AdhocWorkspaceTests.cs</File>
+      <File>src/Workspaces/CoreTest/WorkspaceTests/FileSet.cs</File>
+      <File>src/Workspaces/CoreTest/WorkspaceTests/MSBuildWorkspaceTests.cs</File>
+    </Files>
+  </PullRequest>
+</PullRequests>

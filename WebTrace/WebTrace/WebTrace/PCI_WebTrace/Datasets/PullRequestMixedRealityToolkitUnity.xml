@@ -1,0 +1,1402 @@
+<PullRequests>
+  <PullRequest>
+    <IssueID>7018</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>Allow input simulation service to work outside of editor</Title>
+    <Description>## Overview
+This change allow for the input simulation service to be used outside of editor play mode such as in standalone builds. 
+
+To enable this, the following was done
+- Moved JSON articulated hand pose data into SImulatedArticulatedHandPoses.cs file as const string to avoid MRTKFiles loading and resouces loading dependencies
+- Moved InputSimulationService and InputPlaybackService from editor asdmef to InputSimulation asmdef
+- Created migration code path in SystemType.cs to handle InputSimulationService reference values stored in MRTK profiles (such as MRTKInputSystemProfile) to new destination (i.e non-editor asmdef)
+- Reserialized all profile assets in MRTK repo
+- "prettied" JSON files with articulated hand poses
+- Added menu item for Reserialize Selection with other similar entries
+- Made InputSimulation.asmdef target all platforms
+
+**NOTE**
+This new feature capability is not enabled by default. The default profiles in MRTK still have the runtime platform setting for input simulation service to not include windows standalone. This is to ensure people aren't broken for those that don't want this as keys and mouse input will route to the simulation service.
+
+![image](https://user-images.githubusercontent.com/25975362/72045028-0e88f400-326a-11ea-8693-44e47266b9b8.png)
+
+
+## Changes
+- Fixes: #3692 #6966 
+
+## Verification
+&gt; As a reviewer, it is possible to check out this change locally by using the following
+&gt; commands (substituting {PR_ID} with the ID of this pull request):
+&gt;
+&gt; git fetch origin pull/{PR_ID}/head:name_of_local_branch
+&gt;
+&gt; git checkout name_of_local_branch
+</Description>
+    <CreatedDate>09/01/2020</CreatedDate>
+    <ClosedDate>17/01/2020</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>7018</PullRequestID>
+        <IssueID>3692</IssueID>
+        <Title>Merge branch 'master' of https://github.com/dotnet/roslyn into portable-pdb</Title>
+        <Description>
+        </Description>
+        <CreatedDate>25/06/2015</CreatedDate>
+        <ClosedDate>25/06/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7018</PullRequestID>
+        <IssueID>6966</IssueID>
+        <Title>Invalid "Remove Unnecessary Cast" code fix for null-initialized implicitly typed array</Title>
+        <Description>I'm creating an implicitly typed array and `null`-initialize it with some values. To have a type for the array, one of the `null`s needs to be cast, but VS insists the cast is invalid, while the code fix already shows the red error squgglies.
+
+![invalidcast](https://cloud.githubusercontent.com/assets/1947968/11333632/7b35974c-91cf-11e5-853c-16bb4f04734f.png)
+</Description>
+        <CreatedDate>23/11/2015</CreatedDate>
+        <ClosedDate>09/12/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>7018</PullRequestID>
+      <File>src/VisualStudio/Core/Def/Implementation/ProjectSystem/AbstractProject_IAnalyzerHost.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>7016</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>PokePointer ignore colliders that are not visible</Title>
+    <Description>## Overview
+Following up from #6870 this change additionally allows the **poke pointer** to ignore colliders that are not in the visual FOV.
+
+Since this is a follow up to #6870 which is going into 2.3, I decided to request this go into stabilization. However, this is a risk that this could regress some touch behavior so I would be open to us moving this back to 2.4. Curious to hear other's opinions. I have verified in HandInteractionExample scene and have added tests.
+
+## Changes
+- Partial fix #6634. There is one more edge case for line pointers.
+- Adds `Camera.IsInFovConeCached` as camera extension to ensure efficient checking of whether colliders are in FOV (as these computations run each frame).
+- Adds field to PokePointer specifying whether to ignore colliders that are not in visual FOV. True by default.
+- Add tests to verify that poke pointers correctly ignore colliders that aren't in FOV.
+
+## Verification
+- Verified that tests pass
+- Tested in HandInteractionExample scene
+
+
+&gt; This optional section is a place where you can detail the specific type of verification 
+&gt; you want from reviewers. For example, if you want reviewers to checkout the PR locally
+&gt; and validate the functionality of specific scenarios, provide instructions
+&gt; on the specific scenarios and what you want verified.
+&gt;
+&gt; If there are specific areas of concern or question feel free to highlight them here so
+&gt; that reviewers can watch out for those issues.
+&gt;
+&gt; As a reviewer, it is possible to check out this change locally by using the following
+&gt; commands (substituting {PR_ID} with the ID of this pull request):
+&gt;
+&gt; git fetch origin pull/{PR_ID}/head:name_of_local_branch
+&gt;
+&gt; git checkout name_of_local_branch
+</Description>
+    <CreatedDate>08/01/2020</CreatedDate>
+    <ClosedDate>22/01/2020</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>7016</PullRequestID>
+        <IssueID>6870</IssueID>
+        <Title>Mitigate OutOfMemory when clearing large output buffers</Title>
+        <Description>We remove all spans from the projection buffer _before_ updating the
+subject buffers so that composite/merged changes to the projection buffer
+don't have to be computed.  This seems to alleviate the problem we were
+having with OOMs when clearing large output buffers (which did not,
+themselves, trigger OOMs).
+
+We conjecture that this will also eliminate the race described in #6600
+because the output buffer deletion should no longer affect the projection
+buffer.  However, if the race was between input and clearing, then it may
+still be an issue (though it's not clear how, since both edit the buffer
+on the UI thread).
+</Description>
+        <CreatedDate>19/11/2015</CreatedDate>
+        <ClosedDate>19/11/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7016</PullRequestID>
+        <IssueID>6870</IssueID>
+        <Title>Mitigate OutOfMemory when clearing large output buffers</Title>
+        <Description>We remove all spans from the projection buffer _before_ updating the
+subject buffers so that composite/merged changes to the projection buffer
+don't have to be computed.  This seems to alleviate the problem we were
+having with OOMs when clearing large output buffers (which did not,
+themselves, trigger OOMs).
+
+We conjecture that this will also eliminate the race described in #6600
+because the output buffer deletion should no longer affect the projection
+buffer.  However, if the race was between input and clearing, then it may
+still be an issue (though it's not clear how, since both edit the buffer
+on the UI thread).
+</Description>
+        <CreatedDate>19/11/2015</CreatedDate>
+        <ClosedDate>19/11/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>7016</PullRequestID>
+        <IssueID>6634</IssueID>
+        <Title>Metadata writer refactoring</Title>
+        <Description>Refactors PeWriter into components independent of Roslyn, so that it can later be moved to System.Reflection.Metadata in CoreFX.
+
+The goal is to provide PE/COFF builder and ECMA-335 metadata builder that can be used broadly to write managed and native PE files. The goal is not to immediately provide the full support for writing all existing sections of the PE/COFF format but rather to enable composing PE/COFF files from section blobs and to provide builders for sections commonly appearing in managed PE files.
+
+More work will follow to polish the public surface of the builders and serializers, as well as provide various ECMA-335 blob writers (to serialize signatures, attribute values, etc.).
+</Description>
+        <CreatedDate>07/11/2015</CreatedDate>
+        <ClosedDate>06/01/2016</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>7016</PullRequestID>
+      <File>src/EditorFeatures/Core/CommandHandlers/InteractivePasteCommandHandler.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>6547</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>Add test for Interactable disabled on start</Title>
+    <Description>## Overview
+Fix for #6508 went into stabilization branch but did not add a test to cover this case for the future. This change does that.
+
+## Changes
+- Fixes: #6508 
+
+## Verification
+&gt; As a reviewer, it is possible to check out this change locally by using the following
+&gt; commands (substituting {PR_ID} with the ID of this pull request):
+&gt;
+&gt; git fetch origin pull/{PR_ID}/head:name_of_local_branch
+&gt;
+&gt; git checkout name_of_local_branch
+</Description>
+    <CreatedDate>11/11/2019</CreatedDate>
+    <ClosedDate>11/11/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>6547</PullRequestID>
+        <IssueID>6508</IssueID>
+        <Title>[Test Failure] MSBuild Error in prtest/lin/dbg/unit32 on PR #6502</Title>
+        <Description>PR: [#6502](https://github.com/dotnet/roslyn/pull/6502) _Cache static method group conversions_ by @diryboy
+Failure: http://dotnet-ci.cloudapp.net/job/roslyn_prtest_lin_dbg_unit32/796/
+
+**Issue 1: MSBuild Error**
+error MSB6006: "csc" exited with code 134. [/mnt/j/workspace/roslyn_prtest_lin_dbg_unit32/src/Compilers/CSharp/Portable/CSharpCodeAnalysis.csproj]
+</Description>
+        <CreatedDate>02/11/2015</CreatedDate>
+        <ClosedDate>11/11/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>6547</PullRequestID>
+        <IssueID>6508</IssueID>
+        <Title>[Test Failure] MSBuild Error in prtest/lin/dbg/unit32 on PR #6502</Title>
+        <Description>PR: [#6502](https://github.com/dotnet/roslyn/pull/6502) _Cache static method group conversions_ by @diryboy
+Failure: http://dotnet-ci.cloudapp.net/job/roslyn_prtest_lin_dbg_unit32/796/
+
+**Issue 1: MSBuild Error**
+error MSB6006: "csc" exited with code 134. [/mnt/j/workspace/roslyn_prtest_lin_dbg_unit32/src/Compilers/CSharp/Portable/CSharpCodeAnalysis.csproj]
+</Description>
+        <CreatedDate>02/11/2015</CreatedDate>
+        <ClosedDate>11/11/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>6547</PullRequestID>
+      <File>src/Compilers/Server/VBCSCompiler/AnalyzerConsistencyChecker.cs</File>
+      <File>src/Compilers/Server/VBCSCompiler/Assembly.cs</File>
+      <File>src/Compilers/Server/VBCSCompiler/CSharpCompilerServer.cs</File>
+      <File>src/Compilers/Server/VBCSCompiler/CompilerRequestHandler.cs</File>
+      <File>src/Compilers/Server/VBCSCompiler/DiagnosticListener.cs</File>
+      <File>src/Compilers/Server/VBCSCompiler/IClientConnection.cs</File>
+      <File>src/Compilers/Server/VBCSCompiler/MetadataCache.cs</File>
+      <File>src/Compilers/Server/VBCSCompiler/NamedPipeClientConnection.cs</File>
+      <File>src/Compilers/Server/VBCSCompiler/ServerDispatcher.Connection.cs</File>
+      <File>src/Compilers/Server/VBCSCompiler/ServerDispatcher.MemoryHelper.cs</File>
+      <File>src/Compilers/Server/VBCSCompiler/ServerDispatcher.cs</File>
+      <File>src/Compilers/Server/VBCSCompiler/VisualBasicCompilerServer.cs</File>
+      <File>src/Compilers/Server/VBCSCompilerTests/AnalyzerConsistencyCheckerTests.cs</File>
+      <File>src/Compilers/Server/VBCSCompilerTests/AssemblyAttributes.cs</File>
+      <File>src/Compilers/Server/VBCSCompilerTests/BuildProtocolTest.cs</File>
+      <File>src/Compilers/Server/VBCSCompilerTests/CompilerServerApiTest.cs</File>
+      <File>src/Compilers/Server/VBCSCompilerTests/CompilerServerTests.cs</File>
+      <File>src/Compilers/Server/VBCSCompilerTests/EndToEndDeterminismTest.cs</File>
+      <File>src/Compilers/Server/VBCSCompilerTests/MockEngine.cs</File>
+      <File>src/Compilers/Server/VBCSCompilerTests/RunKeepAliveTests.cs</File>
+      <File>src/Compilers/Shared/AbstractAnalyzerAssemblyLoader.cs</File>
+      <File>src/Compilers/Shared/AnalyzerAssemblyLoadUtils.cs</File>
+      <File>src/Compilers/Shared/BuildClient.cs</File>
+      <File>src/Compilers/Shared/BuildProtocol.cs</File>
+      <File>src/Compilers/Shared/CompilerServerLogger.cs</File>
+      <File>src/Compilers/Shared/ConsoleUtil.cs</File>
+      <File>src/Compilers/Shared/CoreClrAnalyzerAssemblyLoader.cs</File>
+      <File>src/Compilers/Shared/CoreClrShim.cs</File>
+      <File>src/Compilers/Shared/GlobalAssemblyCacheHelpers/FusionAssemblyIdentity.cs</File>
+      <File>src/Compilers/Shared/GlobalAssemblyCacheHelpers/GacFileResolver.cs</File>
+      <File>src/Compilers/Shared/GlobalAssemblyCacheHelpers/GlobalAssemblyCache.cs</File>
+      <File>src/Compilers/Shared/GlobalAssemblyCacheHelpers/GlobalAssemblyCacheLocation.cs</File>
+      <File>src/Compilers/Shared/NativeMethods.cs</File>
+      <File>src/Compilers/Shared/ShadowCopyAnalyzerAssemblyLoader.cs</File>
+      <File>src/Compilers/Shared/SimpleAnalyzerAssemblyLoader.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>6431</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>Fix and simplify HandConstraint solver tracking</Title>
+    <Description>## Overview
+HandConstraint is simplified to follow properties set in SolverHandler instead of overriding and tracking hands itself. Further, the UnityEvents have been updated to fire properly.
+
+
+- HandConstraint now leverages SolverHandler's ability to track/switch between particular hands. 
+- HandConstraint can choose to ignore the tracked hand if it considers it not valid or request SolverHandler to switch hands (if possible) via PreferredTrackedHandedness
+- Added PreferredTrackedHandedness property which indicates which hand to default to when both are available
+- UnityEvents now allocated by default so easier extension via code
+- OnHandActivate/Deactivate fire whenever a hand is supported or not
+- Created HandednessExtensions to simplify code interaction
+- HandMenu prefab updated to hide onFirstHandFound and onLastHandLost
+
+Related PR: #6311 
+
+## Changes
+- Fixes: #6430
+
+## Verification
+&gt; As a reviewer, it is possible to check out this change locally by using the following
+&gt; commands (substituting {PR_ID} with the ID of this pull request):
+&gt;
+&gt; git fetch origin pull/{PR_ID}/head:name_of_local_branch
+&gt;
+&gt; git checkout name_of_local_branch
+</Description>
+    <CreatedDate>30/10/2019</CreatedDate>
+    <ClosedDate>05/11/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>6431</PullRequestID>
+        <IssueID>6311</IssueID>
+        <Title>C# feature: Add an eval clause to LINQ</Title>
+        <Description>When writing LINQ queries one often wants to evaluate the result immediately (especially in an multithreaded environments) rather than lazily, so quite often one uses a ToList() or a ToArray(): 
+
+``` C#
+    (from i in numbers
+     where i &lt; 0
+     select i*2).ToArray();
+```
+
+Since this requires the use of brackets around the query, the readability advantages of LINQ are reduced and often people drop LINQ and instead use chained extension methods:
+
+``` C#
+     numbers.Where(i =&gt; i &lt; 0).Select(i =&gt; i*2).ToArray();
+```
+
+The same happens with all methods that exit the monad, _e.g._ First/Last/Single, Any/All/Contains, Aggregate, Average/Min/Max/Sum, Count, etc. 
+
+So wouldn’t it be nice to support an extra clause in LINQ that would let one apply any of these methods to the query?
+
+``` C#
+    from i in numbers
+    where i &lt; 0
+    select i*2
+    eval ToArray();
+```
+
+I am using the eval keyword here as it does actually result in the evaluation of the query. 
+
+Similarly for queries on Option/Maybe
+
+``` C#
+    from i in 1.AsOption()
+    from j in -2.AsOption()
+    select Sqrt(i*j)
+    eval Or(0);
+```
+
+More details and a demo are available [here](http://softwaretransactions.com/2014/11/05/exiting-the-monad-with-eval-in-linq/)
+</Description>
+        <CreatedDate>25/10/2015</CreatedDate>
+        <ClosedDate>26/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>6431</PullRequestID>
+        <IssueID>6430</IssueID>
+        <Title>Crash (InvalidOperationException) when hovering/clicking in .cshtml files...</Title>
+        <Description>![capture](https://cloud.githubusercontent.com/assets/6464209/10832246/89a61a36-7e47-11e5-94e7-0467220dac4a.PNG)
+- Create an ASP Web App.
+- Modify an existing .cshtml file to include the code above.
+- Hover/click in the indicated location.
+</Description>
+        <CreatedDate>29/10/2015</CreatedDate>
+        <ClosedDate>05/11/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>6431</PullRequestID>
+      <File>src/VisualStudio/Core/Def/Implementation/Venus/VenusCommandFilter.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5199</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>Updated MRTK Optimize tool and performance/stability/optimization docs</Title>
+    <Description>## Overview
+There has been consistent confusion &amp; ignorance around the necessity &amp; significance of performance for mixed reality as well as how to properly stabilize holograms. There has also been feedback that developers like the idea of this being automated for them but they want control to select what gets changed or at least be better notified of what may change. Thus, modifying everything when MRTK is added or on some "Apply scene settings" would be problematic for many. 
+
+This change improves functionality and UI for the MRTK optimize window tool to help developers set up their environment for success as well the related documentation.
+- Simplify UI to provide all configuration changes up front instead of different tabs
+- Made other tabs dedicated tools
+- Added success/warning indicators and code checks to instruct user when their project is correctly configured
+- Added 16-bit depth format setter
+- Added updated documentation links
+- Fixed issue where lights could be null
+- Fixed issue where mesh filter could be null
+- Added filter for MRTK shipped shaders in material discovery tool
+
+Furthermore, for documentation changes,
+- Added page for optimize window and new utilities section in table of contents
+- added significant amount of content for perfgettingstarted.md to instruct users instead of resourcing out to various links. Emphasizing key configuration settings to get quick perf wins
+- a new hologram-stabilization.md page for details on depth buffer sharing, stabilization plane, and world anchor references as well as how to update content to render depth
+
+## Changes
+- Fixes: #4884 , #4005 , #3158, #1939, #4962 
+
+![OptimizeWindow_Settings](https://user-images.githubusercontent.com/25975362/60629713-a4b7fb00-9dab-11e9-8cc9-b03c402a7922.png)
+
+</Description>
+    <CreatedDate>03/07/2019</CreatedDate>
+    <ClosedDate>15/07/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5199</PullRequestID>
+        <IssueID>4884</IssueID>
+        <Title>Proposal: Improved type aliases </Title>
+        <Description>Currently we can define type aliases as follow
+`using Cache = System.Collections.Generic.Dictionary&lt;string, string&gt;;`
+but it does not support generic types and needs to be written with full namespaces
+`using Cache&lt;T&gt; = Dictionary&lt;string, T&gt;;`
+and also it is only in the file scope.
+
+In the context of DDD, it would be a useful feature to have generic and universal type aliases so we can write methods and extension methods for specific yet simple types like
+`using EmailAddress = string;`
+</Description>
+        <CreatedDate>29/08/2015</CreatedDate>
+        <ClosedDate>08/10/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5199</PullRequestID>
+        <IssueID>4005</IssueID>
+        <Title>catch/finally on using statement for C# and VB</Title>
+        <Description>It would be nice to be able to put a catch/finally blocks directly on the using statement (like it is currently possible on a try block) for VB and C#.
+
+Example C#:
+
+```
+using (var v = new Resource()) 
+{
+
+}
+catch (Exception e)
+{
+
+}
+finally
+{
+
+}
+```
+
+Example VB:
+
+```
+Using r = As new Resource()
+
+Catch Ex as Exception
+
+Finally
+
+End Using
+```
+
+If an exception is though at the end of the Using block (from the Dispose() method) and somewhere between the braces of the using block, the exceptions will be aggregated either by throwing a AggregateException or by placing the exception thrown at the end into a property of the exception thrown between the braces. Secondly either relax the IDisposable contract so that the Dispose() can throw exceptions or create a new interface for that purpose. And this new interface would be treated like the IDisposable interface in a using statement.
+
+This would make it easier to properly code WCF clients, network and file streams where exceptions thrown at the closing of the stream need to be caught and dealt with accordingly.
+</Description>
+        <CreatedDate>19/07/2015</CreatedDate>
+        <ClosedDate>20/03/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5199</PullRequestID>
+        <IssueID>3158</IssueID>
+        <Title>Ensure that FormattableString is preferred by Introduce Explaining Variable and Extract Method</Title>
+        <Description>Fixes Issue #3147
+
+When extracting an interpolated string that is target-typed to FormattableString, the resulting declaration should use FormattableString as the type rather than string. Otherwise, the result is uncompilable code.
+
+Consider the following code:
+
+``` C#
+void M()
+{
+    var s = System.FormattableString.Invariant($"");
+}
+```
+
+If `$""` is selected, Introduce Explaining Variable should produce this:
+
+``` C#
+void M()
+{
+    System.FormattableString v = $"";
+    var s = System.FormattableString.Invariant(v);
+}
+```
+
+...rather than this:
+
+``` C#
+void M()
+{
+    var v = $"";
+    var s = System.FormattableString.Invariant(v);
+}
+```
+
+Added unit tests for both Introduce Explaining Variable and Extract Method in both C# and VB.
+
+Note that this really isn't the _correct_ fix for Introduce Explaining Variable. There should be a simplification step that determines whether a local declaration's type is changed to var (respecting the user's options), but that's not how it was implemented. However, doing that is a larger change that is probably not appropriate for the stabilization branch. So, there are some edge cases that will slip through with this change, but they are not as functionally broken as the case this change fixes.
+</Description>
+        <CreatedDate>28/05/2015</CreatedDate>
+        <ClosedDate>29/05/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5199</PullRequestID>
+        <IssueID>1939</IssueID>
+        <Title>Automatic referencing of mscorlib on coreclr</Title>
+        <Description>Unless the [/nostdlib](https://msdn.microsoft.com/en-us/library/fa13yay7.aspx) option is passed the C# compiler will automatically add a reference to mscorlib for the compilation.  The compiler assumes that mscorlib exist inside [GetCORSystemDirectory](https://msdn.microsoft.com/en-us/library/k0588yw5%28v=vs.110%29.aspx) / [RuntimeEnvironment::GetRuntimeDirectory](https://msdn.microsoft.com/en-us/library/system.runtime.interopservices.runtimeenvironment.getruntimedirectory%28v=vs.90%29.aspx).  No checking is performed on this, it simply assumes the file exists in that location. 
+
+This process doesn't make sense when the compiler is run under coreclr for a couple of reasons:
+- There is no mscorlib in coreclr scenarios.  Instead there are a set of contract assemblies to be referenced. 
+- There is no SDK directory to search for.  The CoreCLR deployments for the compiler will include the runtime assemblies, not the contract assemblies.  
+
+Note that relying to the desktop APIs even when running under coreclr is not really an option.  They won't exist on xcopy installs or cross platform.  
+
+We need to come up with a suitable cross plat / coreclr strategy for this scenario.  
+</Description>
+        <CreatedDate>13/04/2015</CreatedDate>
+        <ClosedDate>19/11/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5199</PullRequestID>
+        <IssueID>4962</IssueID>
+        <Title>Add explanatory comment</Title>
+        <Description>FYI @rchande @dpoeschl 
+</Description>
+        <CreatedDate>02/09/2015</CreatedDate>
+        <ClosedDate>03/09/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5199</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Lowering/LocalRewriter/LocalRewriter_ConditionalAccess.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/ConditionalOperatorTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5180</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>Tooltip example scene updates</Title>
+    <Description>## Overview
+Part of #5164 [GA] Example scene polish
+- Updated label's backplate material to HolographicBackPlate.mat which is also used in the Slate's title bar and Button.
+- Added Billboard script(existing in MRTK) to the Tooltip prefab's label.
+- Added Mars Rover model to demonstrate a practical example of using multiple tooltips for the annotations.
+- Updated screenshots, content in the README file.
+- No code changes.
+
+## Changes
+- Fixes: #5164 
+
+![2019-07-01 14_11_51-Unity 2018 4 2f1 Personal - TooltipExamples unity - MRTK-Public-Microsoft - Univ](https://user-images.githubusercontent.com/13754172/60553869-09128600-9cea-11e9-8153-fa67e8bad8e2.png)
+
+![2019-06-25 18_49_47-Unity 2018 4 2f1 Personal - HandInteractionExamples unity - MRTK-Public-Microsof](https://user-images.githubusercontent.com/13754172/60553879-10d22a80-9cea-11e9-8148-dc3287146c59.png)
+
+![MRTK_Tooltip3](https://user-images.githubusercontent.com/13754172/60468793-a0ef7180-9c0f-11e9-9683-4eb6ff36c3e3.gif)
+</Description>
+    <CreatedDate>02/07/2019</CreatedDate>
+    <ClosedDate>03/07/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5180</PullRequestID>
+        <IssueID>5164</IssueID>
+        <Title>Should the Inheritance be respected for the types injected with "WithGlobalsType"?</Title>
+        <Description>Hi!
+
+I was trying the Interactive Scripting Api and I realized that in the following code, if the Globals class inherits from a _"ParentGlobals"_, the variables defined at _"ParentGlobals"_ won't be considered.
+
+```
+       var script = CSharpScript.Create("X + Y").WithGlobalsType(typeof(Globals));
+        var result = script.Run(new Globals { X = 1, Y = 2 });
+```
+
+This is happening because in the _"Microsoft.CodeAnalysis.Scripting.ScriptVariables"_ class the _AddVariables_ method has the _DeclaredOnly_ binding flag.
+
+Before submit a pull request I want to know if hierarchy should be considered?
+
+Thanks in advance
+</Description>
+        <CreatedDate>11/09/2015</CreatedDate>
+        <ClosedDate>17/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5180</PullRequestID>
+        <IssueID>5164</IssueID>
+        <Title>Should the Inheritance be respected for the types injected with "WithGlobalsType"?</Title>
+        <Description>Hi!
+
+I was trying the Interactive Scripting Api and I realized that in the following code, if the Globals class inherits from a _"ParentGlobals"_, the variables defined at _"ParentGlobals"_ won't be considered.
+
+```
+       var script = CSharpScript.Create("X + Y").WithGlobalsType(typeof(Globals));
+        var result = script.Run(new Globals { X = 1, Y = 2 });
+```
+
+This is happening because in the _"Microsoft.CodeAnalysis.Scripting.ScriptVariables"_ class the _AddVariables_ method has the _DeclaredOnly_ binding flag.
+
+Before submit a pull request I want to know if hierarchy should be considered?
+
+Thanks in advance
+</Description>
+        <CreatedDate>11/09/2015</CreatedDate>
+        <ClosedDate>17/09/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5180</PullRequestID>
+      <File>src/EditorFeatures/Test/CodeFixes/CodeFixServiceTests.cs</File>
+      <File>src/EditorFeatures/Test/CodeFixes/ErrorCases/CodeFixExceptionInFixableDiagnosticIds2.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/CodeFixService.cs</File>
+      <File>src/Workspaces/Core/Portable/WorkspacesResources.Designer.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5152</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>Revert "Revert "Input recording and playback feature (#4775)""</Title>
+    <Description>## Overview
+
+_Note: The input recording feature was merged and reverted because of CI breakage. See #4775 for the initial review._
+
+Adds serialization, services, and tooling for recording hand and camera motion and animating simulated input.
+
+The immediate goal is to allow automated testing of interactions and input systems. Another possible use case is animating objects for educational purposes (see #4569)
+Changes
+
+- InputRecordingService to record input in the background. The recording buffer is time-limited by default and can be exported at any time, creating a "rolling buffer" that can be used for capturing input during interactions.
+- InputPlaybackService can load input animation and re-apply it at runtime using the InputSimulationService.
+- Serialization utilities for exporting recorded animation into a custom binary format.
+</Description>
+    <CreatedDate>01/07/2019</CreatedDate>
+    <ClosedDate>01/07/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5152</PullRequestID>
+        <IssueID>4775</IssueID>
+        <Title>Need a better NuGet validation process</Title>
+        <Description>The bug described in #4774 details a hole in our NuGet validation process.  It is not verifying the packages produced in our build are installable by end users.  Had it been in place this bug could have been avoided.  
+
+Our validation should be updated to ensure all produced NuGets can be installed using only:
+- Packages produced from the build 
+- Packages from nuget.org (and possibly myget).  
+</Description>
+        <CreatedDate>25/08/2015</CreatedDate>
+        <ClosedDate>21/02/2017</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5152</PullRequestID>
+        <IssueID>4569</IssueID>
+        <Title>Suppress code for empty try-catch with /optimize (Release) mode</Title>
+        <Description>Fixes #2443 
+
+@AlekseyTs @VSadov @jaredpar @agocke Please review.
+@tmat This affects an expression evaluator test. Please review.
+</Description>
+        <CreatedDate>14/08/2015</CreatedDate>
+        <ClosedDate>18/08/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5152</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Compilation/CSharpCompilation.cs</File>
+      <File>src/Compilers/CSharp/Portable/Compilation/CSharpDiagnosticFilter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Compilation/SyntaxTreeSemanticModel.cs</File>
+      <File>src/Compilers/CSharp/Portable/Errors/CSDiagnostic.cs</File>
+      <File>src/Compilers/CSharp/Portable/Errors/MessageProvider.cs</File>
+      <File>src/Compilers/CSharp/Test/CommandLine/ErrorLoggerTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Diagnostics/DiagnosticAnalyzerTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/SemanticErrorTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/ClsComplianceTests.cs</File>
+      <File>src/Compilers/Core/Portable/CommandLine/CommonCompiler.cs</File>
+      <File>src/Compilers/Core/Portable/CommandLine/ErrorLogger.Issue.cs</File>
+      <File>src/Compilers/Core/Portable/CommandLine/ErrorLogger.cs</File>
+      <File>src/Compilers/Core/Portable/Compilation/Compilation.cs</File>
+      <File>src/Compilers/Core/Portable/Compilation/SemanticModel.cs</File>
+      <File>src/Compilers/Core/Portable/Diagnostic/Diagnostic.cs</File>
+      <File>src/Compilers/Core/Portable/Diagnostic/DiagnosticWithInfo.cs</File>
+      <File>src/Compilers/Core/Portable/Diagnostic/Diagnostic_SimpleDiagnostic.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalysisResult.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/AnalyzerDriver.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/CompilationWithAnalyzers.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/CompilationWithAnalyzersOptions.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/CompilerDiagnosticAnalyzer.CompilationAnalyzer.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/SuppressMessageAttributeState.cs</File>
+      <File>src/Compilers/Core/Portable/DiagnosticAnalyzer/SuppressMessageInfo.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/Suppression/SuppressionAllCodeTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/Suppression/SuppressionTest_FixAllTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/Suppression/SuppressionTests.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Diagnostics/DiagnosticsSquiggleTaggerProvider.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Suggestions/SuggestedActionsSourceProvider.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/Suggestions/SuppressionSuggestedAction.cs</File>
+      <File>src/EditorFeatures/Test/CodeActions/AbstractCodeActionOrUserDiagnosticTest.cs</File>
+      <File>src/EditorFeatures/Test/Diagnostics/AbstractDiagnosticProviderBasedUserDiagnosticTest.cs</File>
+      <File>src/EditorFeatures/Test/Diagnostics/AbstractSuppressionAllCodeTests.cs</File>
+      <File>src/EditorFeatures/Test/Diagnostics/AbstractSuppressionDiagnosticTest.cs</File>
+      <File>src/EditorFeatures/Test/Diagnostics/AbstractUserDiagnosticTest.cs</File>
+      <File>src/ExpressionEvaluator/Core/Source/ExpressionCompiler/EvaluationContextBase.cs</File>
+      <File>src/Features/CSharp/Portable/CSharpFeaturesResources.Designer.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/Suppression/CSharpSuppressionCodeFixProvider.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/CodeFixService.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/FixAllOccurrences/FixAllCodeActionContext.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/FixAllOccurrences/FixAllProviderInfo.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/Suppression/AbstractSuppressionCodeFixProvider.AbstractGlobalSuppressMessageCodeAction.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/Suppression/AbstractSuppressionCodeFixProvider.AbstractSuppressionCodeAction.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/Suppression/AbstractSuppressionCodeFixProvider.FixAllProvider.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/Suppression/AbstractSuppressionCodeFixProvider.GlobalSuppressMessageCodeAction.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/Suppression/AbstractSuppressionCodeFixProvider.GlobalSuppressMessageFixAllCodeAction.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/Suppression/AbstractSuppressionCodeFixProvider.LocalSuppressMessageCodeAction.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/Suppression/AbstractSuppressionCodeFixProvider.PragmaWarningBatchFixAllProvider.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/Suppression/AbstractSuppressionCodeFixProvider.PragmaWarningCodeAction.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/Suppression/AbstractSuppressionCodeFixProvider.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/Suppression/ISuppressionFixProvider.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/Suppression/NestedSuppressionCodeAction.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/Suppression/SuppressionCodeAction.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/Suppression/WrapperCodeFixProvider.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/DiagnosticData.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer.DiagnosticState.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer.cs</File>
+      <File>src/Features/Core/Portable/Diagnostics/EngineV1/DiagnosticIncrementalAnalyzer_BuildSynchronization.cs</File>
+      <File>src/Features/Core/Portable/FeaturesResources.Designer.cs</File>
+      <File>src/Test/Utilities/Desktop/CommonDiagnosticAnalyzers.cs</File>
+      <File>src/Test/Utilities/Shared/Diagnostics/DiagnosticExtensions.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5136</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>[Docs] Bringing the landing page updates from dev branch to the release branch.</Title>
+    <Description>## Overview
+Bringing the landing page updates from dev branch to the release branch.
+Updated README.md
+Dev branch PR: #4923
+
+- Updated landing page's **Feature Areas** section. Now each feature links to the corresponding page in the documentation portal.
+- Added entry to important features such as **Profiles**, **In-Editor Simulation**, **Multi-Scene Manager(Scene System), and Experimental features**.
+- Added clear entry to the **Getting Started** and **Documentation** portal.
+
+![2019-06-17 15_53_35-cre8ivepark_MixedRealityToolkit-Unity at mrtk_development_DocsUpdates](https://user-images.githubusercontent.com/13754172/59642286-391e2e80-9119-11e9-9f99-4cc36bb5bd20.png)
+
+
+## Changes
+- Fixes: #4916 #4814 #4779 Part of #4792
+</Description>
+    <CreatedDate>29/06/2019</CreatedDate>
+    <ClosedDate>29/07/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5136</PullRequestID>
+        <IssueID>4923</IssueID>
+        <Title>Fatal error on rename in the Interactive window</Title>
+        <Description>Type (but do not submit) `int x = 1;` and then rename `x`.
+
+```
+    Microsoft.CodeAnalysis.Workspaces.dll!Roslyn.Utilities.Contract.ThrowIfFalse(bool condition, string message) Line 86 + 0x9 bytes    C#
+&gt;   Microsoft.VisualStudio.LanguageServices.dll!Microsoft.VisualStudio.LanguageServices.Implementation.InlineRename.VisualStudioInlineRenameUndoManagerServiceFactory.InlineRenameUndoManager.CreateStartRenameUndoTransaction(Microsoft.CodeAnalysis.Workspace workspace, Microsoft.VisualStudio.Text.ITextBuffer subjectBuffer, Microsoft.CodeAnalysis.Editor.Implementation.InlineRename.InlineRenameSession inlineRenameSession) Line 115 + 0x20 bytes  C#
+    Microsoft.CodeAnalysis.EditorFeatures.dll!Microsoft.CodeAnalysis.Editor.Implementation.InlineRename.InlineRenameSession.OpenTextBufferManager.OpenTextBufferManager(Microsoft.CodeAnalysis.Editor.Implementation.InlineRename.InlineRenameSession session, Microsoft.VisualStudio.Text.ITextBuffer subjectBuffer, Microsoft.CodeAnalysis.Workspace workspace, System.Collections.Generic.IEnumerable&lt;Microsoft.CodeAnalysis.Document&gt; documents, Microsoft.VisualStudio.Text.ITextBufferFactoryService textBufferFactoryService) Line 68 + 0x20 bytes   C#
+    Microsoft.CodeAnalysis.EditorFeatures.dll!Microsoft.CodeAnalysis.Editor.Implementation.InlineRename.InlineRenameSession.TryPopulateOpenTextBufferManagerForBuffer(Microsoft.VisualStudio.Text.ITextBuffer buffer, System.Collections.Generic.IEnumerable&lt;Microsoft.CodeAnalysis.Document&gt; documents) Line 200 + 0x34 bytes  C#
+    Microsoft.CodeAnalysis.EditorFeatures.dll!Microsoft.CodeAnalysis.Editor.Implementation.InlineRename.InlineRenameSession.InitializeOpenBuffers(Microsoft.VisualStudio.Text.SnapshotSpan triggerSpan) Line 169 + 0x52 bytes   C#
+    Microsoft.CodeAnalysis.EditorFeatures.dll!Microsoft.CodeAnalysis.Editor.Implementation.InlineRename.InlineRenameSession.InlineRenameSession(Microsoft.CodeAnalysis.Editor.Implementation.InlineRename.InlineRenameService renameService, Microsoft.CodeAnalysis.Workspace workspace, Microsoft.VisualStudio.Text.SnapshotSpan triggerSpan, Microsoft.CodeAnalysis.Editor.IInlineRenameInfo renameInfo, Microsoft.CodeAnalysis.Editor.Host.IWaitIndicator waitIndicator, Microsoft.CodeAnalysis.Editor.ITextBufferAssociatedViewService textBufferAssociatedViewService, Microsoft.VisualStudio.Text.ITextBufferFactoryService textBufferFactoryService, System.Collections.Generic.IEnumerable&lt;Microsoft.CodeAnalysis.Editor.IRefactorNotifyService&gt; refactorNotifyServices, Microsoft.CodeAnalysis.Shared.TestHooks.IAsynchronousOperationListener asyncListener) Line 126 + 0x14 bytes    C#
+    Microsoft.CodeAnalysis.EditorFeatures.dll!Microsoft.CodeAnalysis.Editor.Implementation.InlineRename.InlineRenameService.StartInlineSession(Microsoft.CodeAnalysis.Document document, Microsoft.CodeAnalysis.Text.TextSpan textSpan, System.Threading.CancellationToken cancellationToken) Line 63 + 0xa1 bytes  C#
+    Microsoft.CodeAnalysis.EditorFeatures.dll!Microsoft.CodeAnalysis.Editor.Implementation.InlineRename.RenameCommandHandler.ExecuteRenameWorker(Microsoft.CodeAnalysis.Editor.Commands.RenameCommandArgs args, System.Threading.CancellationToken cancellationToken) Line 113 + 0x89 bytes C#
+    Microsoft.CodeAnalysis.EditorFeatures.dll!Microsoft.CodeAnalysis.Editor.Implementation.InlineRename.RenameCommandHandler.ExecuteCommand.AnonymousMethod__0(Microsoft.CodeAnalysis.Editor.Host.IWaitContext waitContext) Line 56 + 0x2f bytes    C#
+    Microsoft.VisualStudio.LanguageServices.dll!Microsoft.VisualStudio.LanguageServices.Implementation.Utilities.VisualStudioWaitIndicator.Wait(string title, string message, bool allowCancel, System.Action&lt;Microsoft.CodeAnalysis.Editor.Host.IWaitContext&gt; action) Line 38 + 0xe bytes  C#
+    Microsoft.CodeAnalysis.EditorFeatures.dll!Microsoft.CodeAnalysis.Editor.Implementation.InlineRename.RenameCommandHandler.ExecuteCommand(Microsoft.CodeAnalysis.Editor.Commands.RenameCommandArgs args, System.Action nextHandler) Line 50 + 0x4d bytes  C#
+    Microsoft.CodeAnalysis.EditorFeatures.dll!Microsoft.CodeAnalysis.Editor.Implementation.Commands.CommandHandlerService.ExecuteHandlers&lt;Microsoft.CodeAnalysis.Editor.Commands.RenameCommandArgs&gt;(System.Collections.Generic.IList&lt;Microsoft.CodeAnalysis.Editor.ICommandHandler&lt;Microsoft.CodeAnalysis.Editor.Commands.RenameCommandArgs&gt;&gt; commandHandlers, Microsoft.CodeAnalysis.Editor.Commands.RenameCommandArgs args, System.Action lastHandler) Line 97 + 0x5f bytes   C#
+    Microsoft.CodeAnalysis.EditorFeatures.dll!Microsoft.CodeAnalysis.Editor.Implementation.Commands.CommandHandlerService.Microsoft.CodeAnalysis.Editor.ICommandHandlerService.Execute&lt;Microsoft.CodeAnalysis.Editor.Commands.RenameCommandArgs&gt;(Microsoft.VisualStudio.Utilities.IContentType contentType, Microsoft.CodeAnalysis.Editor.Commands.RenameCommandArgs args, System.Action lastHandler) Line 71 + 0x68 bytes  C#
+    Microsoft.VisualStudio.LanguageServices.dll!Microsoft.VisualStudio.LanguageServices.Implementation.AbstractOleCommandTarget.ExecuteRename(Microsoft.VisualStudio.Text.ITextBuffer subjectBuffer, Microsoft.VisualStudio.Utilities.IContentType contentType, System.Action executeNextCommandTarget) Line 613 + 0x5e bytes   C#
+    Microsoft.VisualStudio.LanguageServices.dll!Microsoft.VisualStudio.LanguageServices.Implementation.AbstractOleCommandTarget.ExecuteVisualStudio2000(ref System.Guid pguidCmdGroup, uint commandId, uint executeInformation, System.IntPtr pvaIn, System.IntPtr pvaOut, Microsoft.VisualStudio.Text.ITextBuffer subjectBuffer, Microsoft.VisualStudio.Utilities.IContentType contentType) Line 456 + 0x12 bytes  C#
+    Microsoft.VisualStudio.LanguageServices.dll!Microsoft.VisualStudio.LanguageServices.Implementation.AbstractOleCommandTarget.Exec(ref System.Guid pguidCmdGroup, uint commandId, uint executeInformation, System.IntPtr pvaIn, System.IntPtr pvaOut) Line 45 + 0x26 bytes    C#
+    Microsoft.VisualStudio.VsInteractiveWindow.dll!Microsoft.VisualStudio.InteractiveWindow.Shell.VsInteractiveWindowCommandFilter.PreLanguageCommandFilterExec(ref System.Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, System.IntPtr pvaIn, System.IntPtr pvaOut) Line 418 + 0x18 bytes  C#
+    Microsoft.VisualStudio.VsInteractiveWindow.dll!Microsoft.VisualStudio.InteractiveWindow.Shell.VsInteractiveWindowCommandFilter.CommandFilter.Exec(ref System.Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, System.IntPtr pvaIn, System.IntPtr pvaOut) Line 154 + 0x23 bytes    C#
+    Microsoft.VisualStudio.Editor.Implementation.dll!Microsoft.VisualStudio.Editor.Implementation.CommandChainNode.InnerExec(ref System.Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, System.IntPtr pvaIn, System.IntPtr pvaOut) + 0x2f bytes  
+    Microsoft.VisualStudio.Editor.Implementation.dll!Microsoft.VisualStudio.Editor.Implementation.SimpleTextViewWindow.Exec(ref System.Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, System.IntPtr pvaIn, System.IntPtr pvaOut) + 0x1b9 bytes  
+    Microsoft.VisualStudio.VsInteractiveWindow.dll!Microsoft.VisualStudio.InteractiveWindow.Shell.VsInteractiveWindow.Exec(ref System.Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, System.IntPtr pvaIn, System.IntPtr pvaOut) Line 159 + 0x24 bytes   C#
+    Microsoft.VisualStudio.Platform.WindowManagement.dll!Microsoft.VisualStudio.Platform.WindowManagement.DocumentObjectSite.Exec(ref System.Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, System.IntPtr pvaIn, System.IntPtr pvaOut) + 0x7e bytes 
+    Microsoft.VisualStudio.Platform.WindowManagement.dll!Microsoft.VisualStudio.Platform.WindowManagement.WindowFrame.Exec(ref System.Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, System.IntPtr pvaIn, System.IntPtr pvaOut) + 0x7b bytes    
+```
+</Description>
+        <CreatedDate>01/09/2015</CreatedDate>
+        <ClosedDate>02/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5136</PullRequestID>
+        <IssueID>4916</IssueID>
+        <Title>Outlining doesn't use a waitindicator</Title>
+        <Description>Open Syntax.xml.Generated.vb and hit CTRL-M-O (collapse all). It takes a long time with no option to cancel.
+</Description>
+        <CreatedDate>01/09/2015</CreatedDate>
+        <ClosedDate>02/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5136</PullRequestID>
+        <IssueID>4814</IssueID>
+        <Title>Fix C# completion preselection for enums in expression-bodied members</Title>
+        <Description>Fixes #4310 
+
+Reviewers: @CyrusNajmabadi, @Pilchie, @jasonmalinowski, @rchande, @dpoeschl, @balajikris, @jmarolf, @davkean, @brettfo 
+</Description>
+        <CreatedDate>26/08/2015</CreatedDate>
+        <ClosedDate>26/08/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5136</PullRequestID>
+        <IssueID>4779</IssueID>
+        <Title>IInteractiveEvaluator should have distinct methods for GetPrimaryPrompt, GetSecondaryPrompt, and GetStandardInputPrompt</Title>
+        <Description>Currently IInteractiveEvaluator has a single GetPrompt method, and the implementation uses the line count of the current buffer to determine whether to return the primary or secondary prompt. And the evaluator does not get called for the standard input prompt.
+</Description>
+        <CreatedDate>25/08/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5136</PullRequestID>
+        <IssueID>4792</IssueID>
+        <Title>Undo and redo formatting in Interactive results in invalid syntax</Title>
+        <Description>Enter the following in C# Interactive, then undo all, and redo all.
+&amp;gt; { { int x = 1;
+.     } }
+</Description>
+        <CreatedDate>25/08/2015</CreatedDate>
+        <ClosedDate>26/08/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5136</PullRequestID>
+      <File>src/EditorFeatures/CSharpTest/Diagnostics/Async/AddAwaitTests.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/Async/CSharpAddAwaitCodeFixProvider.cs</File>
+      <File>src/Features/CSharp/Portable/CodeFixes/Async/CSharpConvertToAsyncMethodCodeFixProvider.cs</File>
+      <File>src/Features/Core/Portable/CodeFixes/Async/AbstractAddAsyncAwaitCodeFixProvider.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5036</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>Bounding Box Tests</Title>
+    <Description>## Overview
+Add bounding box tests, a couple more small test utilities, and simulated hand ray not showing up until you move hand a bit.
+
+## Changes
+- Fixes: #4730 by implementing all tests outlined in the bug. The tests actually highlighted bug #5029 which I then fixed thanks to @luis-valverde-ms excellent but description
+- Fixes: #5029 
+- Add couple utility methods to tests
+- Make a couple members in input simulation service set-table to make them easier to test.
+
+Thanks to Lukas for making the input simulation system easy to modify at run time so I can do near and far HoloLens 1 style tests :-)
+
+## Verification
+- PlayMode tests pass individually
+- When I run all the tests, I get a stale scene left over, need to fix still.
+- Getting the following error currently when I run any test (whether it is the tests I added, or not). Possibly existing bug:
+
+```
+NullReferenceException: Object reference not set to an instance of an object
+UnityEditor.TestTools.TestRunner.PlaymodeLauncher+BackgroundWatcher.OnPlayModeStateChanged
+```</Description>
+    <CreatedDate>25/06/2019</CreatedDate>
+    <ClosedDate>26/06/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5036</PullRequestID>
+        <IssueID>4730</IssueID>
+        <Title>Remove the SyntaxVisualizers from OpenSourceDebug</Title>
+        <Description>FYI. @amcasey, @jmarolf, @Pilchie 
+</Description>
+        <CreatedDate>21/08/2015</CreatedDate>
+        <ClosedDate>21/08/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5036</PullRequestID>
+        <IssueID>5029</IssueID>
+        <Title>Don't suggestion removing redundant cast inside string interpolations unless the types of the expression before and after removing the cast are compatible</Title>
+        <Description>Fixes #4037
+
+Reviewers: @balajikris, @brettfo, @CyrusNajmabadi, @davkean, @dpoeschl, @jasonmalinowski, @jmarolf, @Pilchie, @rchande
+</Description>
+        <CreatedDate>04/09/2015</CreatedDate>
+        <ClosedDate>09/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5036</PullRequestID>
+        <IssueID>5029</IssueID>
+        <Title>Don't suggestion removing redundant cast inside string interpolations unless the types of the expression before and after removing the cast are compatible</Title>
+        <Description>Fixes #4037
+
+Reviewers: @balajikris, @brettfo, @CyrusNajmabadi, @davkean, @dpoeschl, @jasonmalinowski, @jmarolf, @Pilchie, @rchande
+</Description>
+        <CreatedDate>04/09/2015</CreatedDate>
+        <ClosedDate>09/09/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5036</PullRequestID>
+      <File>src/Workspaces/Core/Portable/Rename/ConflictEngine/ConflictResolver.Session.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>5026</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>Make solver properties public &amp; minor tweaks</Title>
+    <Description>## Overview
+This change primarily addresses the need to modify solver properties at runtime. Furthermore, this fixes some minor other elements all listed below
+
+Surface Magnetism
+-&gt; Updated tooltip for magnetic Surfaces to understand layermasks more easily (some work to make #4938 more understandable)
+-&gt; Make properties public like other solvers
+-&gt; Re-use raystep instead of copying to functions
+-&gt; remove start()/Onvalidate()
+-&gt; Cleaned up comments
+
+Momentum
+-&gt; Made properties public &amp; runtime editable
+
+ConstantViewSize
+-&gt; Made properties public &amp; runtime editable
+-&gt; Ability to recalculate bounds if size changes
+
+## Changes
+- Fixes: #4650 , #4310 
+Related: #4202 
+
+## Verification
+
+SolverExample scene is quite broken. In particular, SurfaceMagnetism will not work as the right or left hand gameobject is used as tracked object. But in editor this object parent remains at &lt;0,0,0&gt; and all of the children set their world position. There are other components that do not work already when clicked on in the example scene. 
+
+I just tested with my own version
+</Description>
+    <CreatedDate>24/06/2019</CreatedDate>
+    <ClosedDate>04/07/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>5026</PullRequestID>
+        <IssueID>4938</IssueID>
+        <Title>AssemblySymbol.GetTypeByReflectionType method doesn't make a distinction between SZArray and MDArray types</Title>
+        <Description>
+        </Description>
+        <CreatedDate>01/09/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5026</PullRequestID>
+        <IssueID>4650</IssueID>
+        <Title>Add tests for cut and copy</Title>
+        <Description>
+        </Description>
+        <CreatedDate>19/08/2015</CreatedDate>
+        <ClosedDate>19/08/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5026</PullRequestID>
+        <IssueID>4310</IssueID>
+        <Title>No enum/new preselect in expression bodied property</Title>
+        <Description>![nopreselect](https://cloud.githubusercontent.com/assets/4564579/9045715/42afa00e-39da-11e5-8c3c-27899e227f7a.gif)
+
+:crying_cat_face: 
+</Description>
+        <CreatedDate>03/08/2015</CreatedDate>
+        <ClosedDate>26/08/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>5026</PullRequestID>
+        <IssueID>4202</IssueID>
+        <Title>Correct doc comments about custom modifiers.</Title>
+        <Description>@jaredpar @AnthonyDGreen @AlekseyTs @agocke @VSadov Please review.
+</Description>
+        <CreatedDate>29/07/2015</CreatedDate>
+        <ClosedDate>31/07/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>5026</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder_Attributes.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder_Expressions.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Binder_Symbols.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Semantics/Conversions/ConversionsBase.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Semantics/OverloadResolution/MethodTypeInference.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Semantics/OverloadResolution/OverloadResolution.cs</File>
+      <File>src/Compilers/CSharp/Portable/Binder/Semantics/OverloadResolution/OverloadResolutionResult.cs</File>
+      <File>src/Compilers/CSharp/Portable/CodeGen/EmitAddress.cs</File>
+      <File>src/Compilers/CSharp/Portable/CodeGen/EmitExpression.cs</File>
+      <File>src/Compilers/CSharp/Portable/Compilation/CSharpCompilation.cs</File>
+      <File>src/Compilers/CSharp/Portable/DocumentationComments/DocumentationCommentIDVisitor.PartVisitor.cs</File>
+      <File>src/Compilers/CSharp/Portable/Emitter/EditAndContinue/CSharpSymbolMatcher.cs</File>
+      <File>src/Compilers/CSharp/Portable/Emitter/Model/ArrayTypeSymbolAdapter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/DiagnosticsPass_ExpressionTrees.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/LambdaRewriter/ExpressionLambdaRewriter.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/LocalRewriter/LocalRewriter_FixedStatement.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/LocalRewriter/LocalRewriter_ForEachStatement.cs</File>
+      <File>src/Compilers/CSharp/Portable/Lowering/LocalRewriter/LocalRewriter_PropertyAccess.cs</File>
+      <File>src/Compilers/CSharp/Portable/SymbolDisplay/SymbolDisplayVisitor.Types.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/AbstractTypeMap.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/ArrayTypeSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/AssemblySymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Compilation_WellKnownMembers.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Metadata/PE/DynamicTypeDecoder.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Metadata/PE/SymbolFactory.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/MethodSymbol.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Retargeting/RetargetingSymbolTranslator.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/Source/ParameterHelpers.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/TypeSymbolExtensions.cs</File>
+      <File>src/Compilers/CSharp/Portable/Symbols/TypeUnification.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Attributes/AttributeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Emit/Emit/EmitMetadata.cs</File>
+      <File>src/Compilers/CSharp/Test/Semantic/Semantics/MultiDimensionalArrayTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/CompilationCreationTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/ExtensionMethodTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/MetadataTypeTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/DynamicTransformsTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Metadata/PE/NoPiaInstantiationOfGenericClassAndStruct.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/MockSymbolTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/BaseClassTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Symbol/Symbols/Source/ModifierTests.cs</File>
+      <File>src/Compilers/Core/Portable/CodeGen/ILBuilderEmit.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataReader/MetadataDecoder.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataReader/SymbolFactory.cs</File>
+      <File>src/Compilers/Core/Portable/MetadataReader/TypeNameDecoder.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/MetadataWriter.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/TypeNameSerializer.cs</File>
+      <File>src/Compilers/Core/Portable/PEWriter/Types.cs</File>
+      <File>src/Compilers/Core/Portable/SignatureComparer.cs</File>
+      <File>src/EditorFeatures/CSharp/Outlining/CSharpOutliningHelpers.cs</File>
+      <File>src/EditorFeatures/CSharpTest/CommentSelection/CSharpCommentSelectionTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Outlining/AnonymousMethodExpressionTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Outlining/MethodDeclarationOutlinerTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Outlining/ParenthesizedLambdaOutlinerTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Outlining/PropertyDeclarationOutlinerTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/Outlining/SimpleLambdaExpressionOutlinerTests.cs</File>
+      <File>src/EditorFeatures/CSharpTest/QuickInfo/SemanticQuickInfoSourceTests.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/CommentSelection/CommentUncommentSelectionCommandHandler.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/QuickInfo/DeferredContent/QuickInfoDisplayDeferredContent.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/QuickInfo/Providers/AbstractQuickInfoProvider.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/QuickInfo/Providers/AbstractSemanticQuickInfoProvider.cs</File>
+      <File>src/EditorFeatures/Core/Implementation/IntelliSense/QuickInfo/Providers/QuickInfoDisplayPanel.cs</File>
+      <File>src/EditorFeatures/Test/QuickInfo/AbstractSemanticQuickInfoSourceTests.cs</File>
+      <File>src/EditorFeatures/Test/Workspaces/TestWorkspaceFactory_XmlConsumption.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Source/ExpressionCompiler/Rewriters/LocalDeclarationRewriter.cs</File>
+      <File>src/Features/Core/Portable/DocumentationCommentFormatting/AbstractDocumentationCommentFormattingService.cs</File>
+      <File>src/Features/Core/Portable/LanguageServices/SymbolDisplayService/AbstractSymbolDisplayService.AbstractSymbolDescriptionBuilder.cs</File>
+      <File>src/Workspaces/CSharp/Portable/Extensions/SyntaxTriviaListExtensions.cs</File>
+      <File>src/Workspaces/Core/Portable/WorkspacesResources.Designer.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>4991</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>Stop MRTK resets with inspector tab selection &amp; disable MRTK profile inspectors in play mode</Title>
+    <Description>## Overview
+
+MRTK services are not harden to be reliable enough to be destroyed &amp; recreated at runtime atm. There is work to make this better. This change though does two things
+
+1) Ensure changing tabs in the MRTK inspector is not considered as a profile "change" which will call MRTK to reset configuration. 
+
+2) If in play mode, all profile inspector GUI's are disabled from editing
+
+Number 2 was added because
+a) Some MRTK profile changes will cause a reset which will spew errors &amp; problems as in #4944 and #3945
+b) Some MRTK profiles changes will not be consumed when changed at runtime. For example, modifying the MRTK near clip plane value in the camera profile will not modify the actual camera near clip plane at runtime. 
+
+Drawback: if a developer wants to make a profile change even though they are aware it will not take effect to next build/play, they will have to exit play mode to make any edits. 
+
+When MRTK services are more stable, it might be worth re-considering number 2. But then it would still have to be communicated per profile and possibly even per property, that some settings will not take effect immediately. 
+
+## Changes
+- Fixes: #4944 
+Related: #3945
+
+## Verification
+Enter play mode and cannot edit both MRTK inspector when selecting game object and cannot edit profiles when drilldown on their own inspectors
+</Description>
+    <CreatedDate>20/06/2019</CreatedDate>
+    <ClosedDate>21/06/2019</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>4991</PullRequestID>
+        <IssueID>4944</IssueID>
+        <Title>Discussion: pattern matching versus switch statement</Title>
+        <Description>We had really hoped that we could extend the existing `switch` statement to support pattern-matching (#206) in an upward compatible way. Most of the potential semantic mismatches between the existing switch statement and its extension to pattern matching can be erased, in the sense that the pattern-matching version can reasonably be defined to match the existing switch statement syntax and semantics precisely. However there is one issue I’m not sure what to do about.
+
+In a switch statement today
+
+``` cs
+switch (expression) …
+```
+
+the expression is required to be of one of a particular set of types (sbyte, byte, short, ushort, int, uint, long, ulong, bool, char, string, or an enum type) or its corresponding nullable type. Alternately it may be of a user-defined type that can be uniquely converted to one of these types via a user-defined implicit conversion.
+
+If we remove this user-defined conversion condition completely, existing code that relies on the user-defined conversion will break.
+
+If we do not remove this condition, types that have such a conversion won’t really be capable of being the governing expression of a switch statement with any nontrivial pattern-matching semantics, because the expression would immediately be converted to one of these governing types. And it would not be very intuitive that simply adding the conversion to a type breaks your ability to do pattern-matching (via `switch`) on values of that type.
+
+I'm not sure what to do about this, exactly, other than possibly leave the existing `switch` alone and instead invent a new `match` statement just for use with pattern-matching.
+
+/cc @AnthonyDGreen @terrajobst @jaredpar @Pilchie @ljw1004 @MadsTorgersen @mattwar @gafter @stephentoub @vancem @semihokur
+</Description>
+        <CreatedDate>02/09/2015</CreatedDate>
+        <ClosedDate>13/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>4991</PullRequestID>
+        <IssueID>3945</IssueID>
+        <Title>Spelling corrections in C-Sharp compiler</Title>
+        <Description>Another batch of spelling corrections in code comments and strings.
+
+@pharring @cston @VSadov @dpoeschl would you be so kind to review these (or ask other team members)?
+</Description>
+        <CreatedDate>14/07/2015</CreatedDate>
+        <ClosedDate>15/07/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>4991</PullRequestID>
+        <IssueID>4944</IssueID>
+        <Title>Discussion: pattern matching versus switch statement</Title>
+        <Description>We had really hoped that we could extend the existing `switch` statement to support pattern-matching (#206) in an upward compatible way. Most of the potential semantic mismatches between the existing switch statement and its extension to pattern matching can be erased, in the sense that the pattern-matching version can reasonably be defined to match the existing switch statement syntax and semantics precisely. However there is one issue I’m not sure what to do about.
+
+In a switch statement today
+
+``` cs
+switch (expression) …
+```
+
+the expression is required to be of one of a particular set of types (sbyte, byte, short, ushort, int, uint, long, ulong, bool, char, string, or an enum type) or its corresponding nullable type. Alternately it may be of a user-defined type that can be uniquely converted to one of these types via a user-defined implicit conversion.
+
+If we remove this user-defined conversion condition completely, existing code that relies on the user-defined conversion will break.
+
+If we do not remove this condition, types that have such a conversion won’t really be capable of being the governing expression of a switch statement with any nontrivial pattern-matching semantics, because the expression would immediately be converted to one of these governing types. And it would not be very intuitive that simply adding the conversion to a type breaks your ability to do pattern-matching (via `switch`) on values of that type.
+
+I'm not sure what to do about this, exactly, other than possibly leave the existing `switch` alone and instead invent a new `match` statement just for use with pattern-matching.
+
+/cc @AnthonyDGreen @terrajobst @jaredpar @Pilchie @ljw1004 @MadsTorgersen @mattwar @gafter @stephentoub @vancem @semihokur
+</Description>
+        <CreatedDate>02/09/2015</CreatedDate>
+        <ClosedDate>13/09/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>4991</PullRequestID>
+        <IssueID>3945</IssueID>
+        <Title>Spelling corrections in C-Sharp compiler</Title>
+        <Description>Another batch of spelling corrections in code comments and strings.
+
+@pharring @cston @VSadov @dpoeschl would you be so kind to review these (or ask other team members)?
+</Description>
+        <CreatedDate>14/07/2015</CreatedDate>
+        <ClosedDate>15/07/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>4991</PullRequestID>
+      <File>src/EditorFeatures/Test/Workspaces/TestWorkspaceFactory_XmlConsumption.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>2121</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>[Dev] Set KeyboardAtlas as default </Title>
+    <Description>Overview
+---
+Without this, symbols dependent on the spriteatlas don't load:
+![image](https://user-images.githubusercontent.com/3580640/40208945-5537beb6-59f1-11e8-9249-f64454a9ad7a.png)
+
+After:
+![image](https://user-images.githubusercontent.com/3580640/40208970-81c08f12-59f1-11e8-9f38-75940acaa4f3.png)
+
+The atlas was un-defaulted in https://github.com/Microsoft/MixedRealityToolkit-Unity/commit/0033c67f59ca6b5703c892258354c977f2c7ee98.
+
+Pair PR to #2120.
+
+Changes
+---
+- Related to: #1852
+
+This PR also addresses https://github.com/Microsoft/MixedRealityToolkit-Unity/pull/2029#discussion_r189128675</Description>
+    <CreatedDate>17/05/2018</CreatedDate>
+    <ClosedDate>18/05/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>2121</PullRequestID>
+        <IssueID>2120</IssueID>
+        <Title>Cp1252</Title>
+        <Description>Fixes #2081
+@jaredpar FYI (in case you were working on it)
+</Description>
+        <CreatedDate>20/04/2015</CreatedDate>
+        <ClosedDate>20/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2121</PullRequestID>
+        <IssueID>1852</IssueID>
+        <Title>Port CA1309 (Use Ordinal StringComparison) to System.Runtime.Analyzers.</Title>
+        <Description>The fixer for this rule delves into syntax significantly and so cannot be written with just syntaxgenerator. I've refactored the fixer implementation to share some code between the C#\VB fixer.
+</Description>
+        <CreatedDate>07/04/2015</CreatedDate>
+        <ClosedDate>10/04/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>2121</PullRequestID>
+      <File>src/Compilers/CSharp/Portable/Syntax/CSharpSyntaxNode.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/SyntaxExtensions.cs</File>
+      <File>src/Compilers/CSharp/Portable/Syntax/SyntaxNormalizer.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Syntax/SyntaxFactoryTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Syntax/SyntaxFormatterTests.cs</File>
+      <File>src/Compilers/CSharp/Test/Syntax/Syntax/SyntaxNormalizerTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>2120</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>[May18] Set KeyboardAtlas as default</Title>
+    <Description>Overview
+---
+Without this, symbols dependent on the spriteatlas don't load:
+![image](https://user-images.githubusercontent.com/3580640/40208945-5537beb6-59f1-11e8-9249-f64454a9ad7a.png)
+
+After:
+![image](https://user-images.githubusercontent.com/3580640/40208970-81c08f12-59f1-11e8-9f38-75940acaa4f3.png)
+
+The atlas was un-defaulted in https://github.com/Microsoft/MixedRealityToolkit-Unity/commit/0033c67f59ca6b5703c892258354c977f2c7ee98.
+
+Pair PR to #2121.
+
+Changes
+---
+- Fixes: #1852
+</Description>
+    <CreatedDate>17/05/2018</CreatedDate>
+    <ClosedDate>18/05/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>2120</PullRequestID>
+        <IssueID>2121</IssueID>
+        <Title>Fix recursion problem in syntax normalizer</Title>
+        <Description>This is a fix for #1066, #2076
+</Description>
+        <CreatedDate>20/04/2015</CreatedDate>
+        <ClosedDate>20/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2120</PullRequestID>
+        <IssueID>1852</IssueID>
+        <Title>Port CA1309 (Use Ordinal StringComparison) to System.Runtime.Analyzers.</Title>
+        <Description>The fixer for this rule delves into syntax significantly and so cannot be written with just syntaxgenerator. I've refactored the fixer implementation to share some code between the C#\VB fixer.
+</Description>
+        <CreatedDate>07/04/2015</CreatedDate>
+        <ClosedDate>10/04/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>2120</PullRequestID>
+      <File>src/Compilers/Core/CodeAnalysisTest/Text/EncodedStringTextTests.cs</File>
+      <File>src/Compilers/Core/Desktop/CodePage1252Encoding.cs</File>
+      <File>src/Compilers/Core/Desktop/EncodedStringText.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>2101</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>[dev] fix #917 and duplicate kbd backspace issues</Title>
+    <Description>Bring fix (from may18_dev) for not being able to clear the input field when backspacing over the last character.
+
+- Fixes: #917, #1169, #1927, #1979 .
+</Description>
+    <CreatedDate>14/05/2018</CreatedDate>
+    <ClosedDate>15/05/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>2101</PullRequestID>
+        <IssueID>917</IssueID>
+        <Title>Call DkmClrValue.Close more conservatively</Title>
+        <Description>The problem arises when more than one expanion shares the same value - for
+example, those parented by a common AggregateExpansion.  Since this is an
+optimization anyway (the debugger would eventually close them on its own),
+we'll just conservatively focus on member and array expensions, since they
+always "own" the value in aggregate expansions.
+
+Fixes #901.
+</Description>
+        <CreatedDate>26/02/2015</CreatedDate>
+        <ClosedDate>27/02/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2101</PullRequestID>
+        <IssueID>1169</IssueID>
+        <Title>Add the CoreCompile targets for C# &amp; VB to MSBuildTask project</Title>
+        <Description>This extracts the CoreCompile target from the Microsoft.CSharp.CurrentVersion
+and Microsoft.VisualBasic.CurrentVersion targets files and creates two new
+targets files, Microsoft.CSharp.Core and Microsoft.VisualBasic.Core, to contain
+it.
+
+This is necessary because the CoreCompile target contains the actual invocation
+of the Csc/Vbc tasks, which the MSBuildTask assembly contains. Any changes in
+the public surface area of the tasks need to be reflected in the targets. These
+targets should eventually be inserted into the MSBuild install with the task as
+the compiler public entry point.
+
+@jaredpar @gafter @VSadov @VladimirReshetnikov @pharring @AlekseyTs 
+</Description>
+        <CreatedDate>10/03/2015</CreatedDate>
+        <ClosedDate>12/03/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2101</PullRequestID>
+        <IssueID>1927</IssueID>
+        <Title>Update the compiler to match the latest Portable PDB spec</Title>
+        <Description>
+        </Description>
+        <CreatedDate>11/04/2015</CreatedDate>
+        <ClosedDate>11/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2101</PullRequestID>
+        <IssueID>1979</IssueID>
+        <Title>[Scripting] Disable suport for csx compilation in csc for RTM, make scripting specific API internal</Title>
+        <Description>
+        </Description>
+        <CreatedDate>14/04/2015</CreatedDate>
+        <ClosedDate>22/05/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>2101</PullRequestID>
+      <File>src/Compilers/CSharp/Test/Emit/CodeGen/CodeGenShortCircuitOperatorTests.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>2078</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>[May18] Fixes SolverBodyLock potential null ref</Title>
+    <Description>Overview
+---
+If the tracked object isn't present, [line 65](https://github.com/Microsoft/MixedRealityToolkit-Unity/blob/master/Assets/HoloToolkit/Utilities/Scripts/Solvers/SolverBodyLock.cs#L65) null refs when trying to access transformTarget.
+
+![image](https://user-images.githubusercontent.com/3580640/39894547-12a60fac-545c-11e8-94bf-acef382e4fdd.png)
+
+Dev branch PR is #2079
+
+Changes
+---
+- Fixes: #2073
+</Description>
+    <CreatedDate>11/05/2018</CreatedDate>
+    <ClosedDate>11/05/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>2078</PullRequestID>
+        <IssueID>2079</IssueID>
+        <Title>Find All References shows error dialog on alias symbols defined via project property pages</Title>
+        <Description>1. Create a VB Project
+2. Introduce an [Alias -ed User Imported Namespace](https://msdn.microsoft.com/en-us/library/t4ttw1f9.aspx) through the Project Property page
+3. Open a file in the project and reference the Alias.
+4. Invoke Find All references on the alias usage.
+
+**Actual**: an error dialog with message "object instance not set to instance of an object". This also implies that highlight references won't work too.
+**Expected**: Find All Refereces and Highlight References work.
+</Description>
+        <CreatedDate>17/04/2015</CreatedDate>
+        <ClosedDate>
+        </ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2078</PullRequestID>
+        <IssueID>2073</IssueID>
+        <Title>move workspace event to background thread.</Title>
+        <Description>now feature that wants to run things on UI thread, must do so by themselves.
+
+ #1644 
+</Description>
+        <CreatedDate>17/04/2015</CreatedDate>
+        <ClosedDate>07/08/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>2078</PullRequestID>
+      <File>src/Compilers/Core/Portable/ReferenceManager/CommonReferenceManager.Resolution.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/ReferencedModulesTests.cs</File>
+      <File>src/ExpressionEvaluator/CSharp/Test/ExpressionCompiler/WinMdTests.cs</File>
+      <File>src/ExpressionEvaluator/Core/Test/ExpressionCompiler/ExpressionCompilerTestHelpers.cs</File>
+    </Files>
+  </PullRequest>
+  <PullRequest>
+    <IssueID>2036</IssueID>
+    <RepoID>MixedRealityToolkit-Unity</RepoID>
+    <Title>[Dev] Cursor light fix (and other minor fixes)</Title>
+    <Description>Overview
+---
+Some minor updates that were found while updating the Academy courses to the most recent Toolkit release.
+
+Partner PR to #2035.
+
+Changes
+---
+- Fixes: #1983.
+</Description>
+    <CreatedDate>02/05/2018</CreatedDate>
+    <ClosedDate>02/05/2018</ClosedDate>
+    <Issues>
+      <Issue>
+        <PullRequestID>2036</PullRequestID>
+        <IssueID>2035</IssueID>
+        <Title>Use VB core on our build tools</Title>
+        <Description>Currently these build tools takes a dependency on Microsoft.VisualBasic.dll.  There is no good implementation of this DLL on Linux which prevented these tools from running there.  This in turn prevented us from builing VBC on Linux because they are used in the build process.  Change them to instead embed the runtime removing our dependency on Microsoft.VisualBasic.dll.
+</Description>
+        <CreatedDate>15/04/2015</CreatedDate>
+        <ClosedDate>16/04/2015</ClosedDate>
+      </Issue>
+      <Issue>
+        <PullRequestID>2036</PullRequestID>
+        <IssueID>1983</IssueID>
+        <Title>MethodBase.GetCurrentMethod().DeclaringType returns wrong type when used in Lambda</Title>
+        <Description>The following code returns ConsoleApplication6.Program in VS 2013 and ConsoleApplication6.Program+&lt;&gt;c__DisplayClass0 in VS 2015 CTP 
+
+```
+    class Program
+    {
+        static Lazy&lt;string&gt; typeName = new Lazy&lt;string&gt;(() =&gt; MethodBase.GetCurrentMethod().DeclaringType.FullName);
+        static void Main(string[] args)
+        {
+            Console.WriteLine(typeName.Value);
+        }
+    }
+```
+</Description>
+        <CreatedDate>14/04/2015</CreatedDate>
+        <ClosedDate>28/05/2015</ClosedDate>
+      </Issue>
+    </Issues>
+    <Files>
+      <PullRequestID>2036</PullRequestID>
+      <File>src/VisualStudio/Core/Def/Implementation/Diagnostics/VisualStudioWorkspaceDiagnosticAnalyzerProviderService.cs</File>
+    </Files>
+  </PullRequest>
+</PullRequests>
