@@ -1,0 +1,1175 @@
+﻿IssueID,Title,Description,Title_Description,PullRequestID,FixedByID,RepoID
+7943,Implement Windows x86 name mangling,"So far CoreRT only had to deal with platforms that have straightforward mangling for `extern ""C""` symbols (which is what we shoot for in CoreRT).
+
+Windows x86 stdcall calling convention does the weird thing where `@XXX` is appended to symbol names (where XXX is the number of bytes of arguments to the method).
+
+This pull request implements enough of what's needed to get p/invokes up and running.
+
+I'm marking it as draft because we probably want to make a decision on how to mangle our symbol definitions too (right now this only does something for p/invoke references).","Implement Windows x86 name mangling  So far CoreRT only had to deal with platforms that have straightforward mangling for `extern ""C""` symbols (which is what we shoot for in CoreRT).
+
+Windows x86 stdcall calling convention does the weird thing where `@X",7944,MichalStrehovsky,corert
+1451,Merge changes from TFS,"","Merge changes from TFS  ",7944,MichalStrehovsky,corert
+777,Merge changes from TFS,"","Merge changes from TFS  ",7911,MichalStrehovsky,corert
+7906,Fix LockFreeReaderHashtable,"- Communication of the presence of an expanding hashtable was very close to not safe
+  - Changed to aggressively use Interlocked operations instead
+- If there were 3 threads, 1 which was expanding (thread A), 1 which failed an insert and was waiting on an expand(thread B), and a third which did a lookup for the item in process of insert on thread B, the table would find the item in process of insertion
+  - Fixed by moving to a scheme where insertion didn't actually write in the value until it was confirmed that that spot was the right place to insert, and the value would be preserved into an expansion
+  - In order to acquire a sentinel for scenarios without requiring the explicit definition of one, the first item inserted is used as the sentinel. It simply exists outside of the hashtable in a side variable","Fix LockFreeReaderHashtable  - Communication of the presence of an expanding hashtable was very close to not safe
+  - Changed to aggressively use Interlocked operations instead
+- If there were 3 threads, 1 which was expanding (thread A), 1 which failed",7911,MichalStrehovsky,corert
+7893,Wasm: question: boxing to Single,"Hi, in the Wasm backend it loads float32s into float64s and adds the extends/truncs as necessary.  This has worked ok up till now, but there is a problem I think with `FieldInfo.SetValue`.  This takes an object so boxes the float32.  Currently this fails as the address passed to `SetValue` is an address to a float64 and RhBox does not expect that and the value is corrupted (a 64bit float is interpreted as a 32 bit float I think).  In other words the following test fails
+```
+    internal static void TestBoxSingle()
+    {
+        StartTest(""Test box single"");
+        var fi = typeof(ClassWithFloat).GetField(""F"");
+        fi.SetValue(null, 1.1f);
+
+        PrintLine(ClassWithFloat.F.ToString());
+        EndTest(1.1f == ClassWithFloat.F);
+    }
+}
+
+public class ClassWithFloat
+{
+    public static float F;
+}
+``` 
+And it prints -1.0842022E-19.   In the Wasm backend the evaluation stack can have a `StackEntry` type of `FloatConstantEntry`, but this I'm not sure is sufficient to solve this problem as the enum for StackValueKind is 
+```
+    internal enum StackValueKind
+    {
+        /// <summary>An unknow type.</summary>
+        Unknown,
+        /// <summary>Any signed or unsigned integer values that can be represented as a 32-bit entity.</summary>
+        Int32,
+        /// <summary>Any signed or unsigned integer values that can be represented as a 64-bit entity.</summary>
+        Int64,
+        /// <summary>Underlying platform pointer type represented as an integer of the appropriate size.</summary>
+        NativeInt,
+        /// <summary>Any float value.</summary>
+        Float,
+        /// <summary>A managed pointer.</summary>
+        ByRef,
+        /// <summary>An object reference.</summary>
+        ObjRef,
+        /// <summary>A value type which is not any of the primitive one.</summary>
+        ValueType
+    }
+```
+It does not distinguish between 32 and 64 bit floats, so its impossible, I think, to load the constant correctly from
+```
+  IL_0023:  ldc.r4     1.1
+  IL_0028:  box        [System.Runtime]System.Single
+```
+The 1.1 is loaded with the `FloatConstantEntry` and it can't be passed correctly to the box/RhBox as its unknown whether to trunc the float or not.  
+
+My question is, is my thinking correct and I need to add a new `StackEntry` type so that its known if the value was 32 or 64 bits?  This would not be a bad thing presumably from a performance point of view anyway,","Wasm: question: boxing to Single  Hi, in the Wasm backend it loads float32s into float64s and adds the extends/truncs as necessary.  This has worked ok up till now, but there is a problem I think with `FieldInfo.SetValue`.  This takes an object so boxes t",7897,yowl,corert
+7891,Wasm: fix unsigned extend to uint64 and add test,"This widening cast was failing, particular causing a problem in https://github.com/dotnet/corert/blob/8d81b96c2561fe00a0ac95a40e2dd19642971a5a/src/System.Private.CoreLib/shared/System/Number.DiyFp.cs#L77-L103.  
+
+Added a test that failed previously and zext instead of sext for unsigned widening.  There is a parameter that I thought to use, but it is passed false here: https://github.com/dotnet/corert/blob/master/src/Common/src/TypeSystem/IL/ILImporter.cs#L574-L578.  Maybe that is wrong?
+
+Also I updated emscripten, this wasn't necessary to fix this, but I got sidetracked with a build error and upgraded.  Its not a bad idea anyway as they changed the build tooling to allow for either the fastcomp or llvm backend and we will need to upgrade at some point.  If you just `git pull` emscripten you will hit a problem with the current scripts due to these changes.  Changed a bit of documentation to fit today's reality.","Wasm: fix unsigned extend to uint64 and add test  This widening cast was failing, particular causing a problem in https://github.com/dotnet/corert/blob/8d81b96c2561fe00a0ac95a40e2dd19642971a5a/src/System.Private.CoreLib/shared/System/Number.DiyFp.cs#L77-L",7897,yowl,corert
+5013,Base class library size on disk footprint workitems,"I spent some time looking into why an optimized Hello World is 3.8 MB big on Windows. There are two ways to look at this problem: what we do in the compiler to make it this big, and what we do in the class libraries that forces it to be so big. This issue tracks the latter.
+
+With a [set of hacks here](https://github.com/MichalStrehovsky/corert/commit/ba04e683cbb647e42a4f448ffb65457f6a826d6f) Hello World can go down to about 2.4 MB. I was focusing mostly on getting the reflection stack out of the binary.
+
+The problems:
+
+- [ ] Some pieces of the class library have ETW tracing enabled. This heavily relies on reflection to work and brings pretty much everything into the binary.
+- [ ] ResourceManager. This is mostly used to bring localized exception messages. Too bad we don't have any in the framework. ResourceManager parses custom attributes, so custom attribute support, reflection method invocation, reflection field access etc. is all brought in.
+- [ ] Unhandled exception stack trace experience eagerly populates `MethodBase` when initializing `StackFrame`, bringing a lot of MethodInfo support in. This is totally my fault. I asked for this to be implemented similar to CoreCLR, but we have good reasons to make `StackFrame` a bit different.
+- [ ] Enum.ToString. We'll probably want a more low level version of this. There's no way around not generating this. Someone will box an enum and someone will call a `ToString`. We'll need to generate this method. It better be lightweight.
+- [x] ValueType.Equals/GetHashCode. This reflects on fields. We've heard complaints that when we fall back to this implementation, it's super slow. Maybe we want something more low level here (e.g. small NativeFormat data structures describing field offsets and their types, if valuetype). If we build new data structures, we'll also need to teach the type loader to build them. Fixed in #5436.
+- [x] IsByRefLike. This is implemented as a custom attribute search. Maybe we shouldn't be calling it from the codepath where it's being called right now. Fixed in #5439.
+
+There are also some other opportunities I didn't measure yet:
+* There's still a bunch of type loader left in the image. We're not loading new types. It shouldn't be needed.
+* Globalization support. We should look into exposing dummy globalization as a build option.
+* Manifest resources. We're still emitting 160 kB of resource strings even though the resource manager is gone.
+* There's a bunch more reflection stack in there, mostly to support Object.ToString().","Base class library size on disk footprint workitems  I spent some time looking into why an optimized Hello World is 3.8 MB big on Windows. There are two ways to look at this problem: what we do in the compiler to make it this big, and what we do in the cl",7269,MichalStrehovsky,corert
+3801,Enum.GetValues() throws on blocked type.,"Fix https://github.com/dotnet/corert/issues/3797
+
+This prompted a rethink of EnumInfo. This was originally
+done at a time when we...
+
+- Had only one metadata format to support.
+- Far less support (and desire) for caching
+  Reflection data.
+
+Today,
+
+- We have three metadata formats to support:
+
+  * NativeFormat
+  * EcmaFormat
+  * BaloneyFormat (the phony metadata fantasized 
+    by blocked types.)
+
+- We've restored strong caching for various
+  Reflection data and have the infrastructure for
+  it.
+
+Given that, it makes sense now to reimplement
+EnumInfo on top of the Type abstraction so as
+not to require all this inside knowledge. We're
+going to cache the stuff anyway.","Enum.GetValues() throws on blocked type.  Fix https://github.com/dotnet/corert/issues/3797
+
+This prompted a rethink of EnumInfo. This was originally
+done at a time when we...
+
+- Had only one metadata format to support.
+- Far less support (and desire",7269,MichalStrehovsky,corert
+7042,Fix mapping table emission for generic types,"We were only putting methods on instantiated types/fields into the mapping table because when the code was written, shared generics were wonky. We actually only need to emit a single entry for each canonically equivalent method/field though because the type loader can take care of the rest.
+
+This reduces size of the mapping table for fields and methods and helps #6987 to avoid having to instantiate things over `Object`.","Fix mapping table emission for generic types  We were only putting methods on instantiated types/fields into the mapping table because when the code was written, shared generics were wonky. We actually only need to emit a single entry for each canonically",7171,MichalStrehovsky,corert
+7169,SampleWebApi sample crashes with MissingRuntimeArtifactException,"Repro:
+
+```
+cd Samples\WebApi
+dotnet publish -c Release -r win-x64
+bin\x64\Release\netcoreapp2.1\win-x64\publish\SampleWebApi.exe
+```
+
+Result:
+```
+Unhandled Exception: EETypeRva:0x01468718(System.Reflection.MissingRuntimeArtifactException): This object cannot be invoked because it was metadata-enabled for browsing only: 'Microsoft.Extensions.Logging.Configuration.LoggerProviderConfiguration<Microsoft.Extensions.Logging.Console.ConsoleLoggerProvider>..ctor(Microsoft.Extensions.Logging.Configuration.ILoggerProviderConfigurationFactory)' For more information, please visit  http://go.microsoft.com/fwlink/?LinkID=616867
+   at Internal.Reflection.Core.Execution.ExecutionEnvironment.GetMethodInvoker(RuntimeTypeInfo, QMethodDefinition, RuntimeTypeInfo[], MemberInfo) + 0x148
+   at System.Reflection.Runtime.MethodInfos.NativeFormat.NativeFormatMethodCommon.GetUncachedMethodInvoker(RuntimeTypeInfo[], MemberInfo) + 0x50
+   at System.Reflection.Runtime.MethodInfos.RuntimePlainConstructorInfo`1.get_UncachedMethodInvoker() + 0xa1
+   at System.Reflection.Runtime.MethodInfos.RuntimePlainConstructorInfo`1.Invoke(BindingFlags, Binder, Object[], CultureInfo) + 0x65
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite, ServiceProviderEngineScope) + 0x9e
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScoped(ScopedCallSite, ServiceProviderEngineScope) + 0x62
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite, ServiceProviderEngineScope) + 0x6b
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScoped(ScopedCallSite, ServiceProviderEngineScope) + 0x62
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitIEnumerable(IEnumerableCallSite, ServiceProviderEngineScope) + 0x52
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite, ServiceProviderEngineScope) + 0x6b
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitTransient(TransientCallSite, ServiceProviderEngineScope) + 0x16
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite, ServiceProviderEngineScope) + 0x6b
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScoped(ScopedCallSite, ServiceProviderEngineScope) + 0x62
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite, ServiceProviderEngineScope) + 0x6b
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScoped(ScopedCallSite, ServiceProviderEngineScope) + 0x62
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitIEnumerable(IEnumerableCallSite, ServiceProviderEngineScope) + 0x52
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite, ServiceProviderEngineScope) + 0x6b
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScoped(ScopedCallSite, ServiceProviderEngineScope) + 0x62
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite, ServiceProviderEngineScope) + 0x6b
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScoped(ScopedCallSite, ServiceProviderEngineScope) + 0x62
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider, Type) + 0x5e
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider) + 0x29
+   at Microsoft.AspNetCore.Hosting.WebHostBuilder.Build() + 0xd1
+```","SampleWebApi sample crashes with MissingRuntimeArtifactException  Repro:
+
+```
+cd Samples\WebApi
+dotnet publish -c Release -r win-x64
+bin\x64\Release\netcoreapp2.1\win-x64\publish\SampleWebApi.exe
+```
+
+Result:
+```
+Unhandled Exception: EETypeRva:0",7171,MichalStrehovsky,corert
+1,Add GC source files,"All files have been copied from the coreclr repo
+(https://github.com/dotnet/coreclr/tree/master/src/gc) based on the commit
+label 8ff2389204d7c41b17eff0e9536267aea8d6496f.","Add GC source files  All files have been copied from the coreclr repo
+(https://github.com/dotnet/coreclr/tree/master/src/gc) based on the commit
+label 8ff2389204d7c41b17eff0e9536267aea8d6496f.",6895,trylek,corert
+6601,Report CORINFO_FIELD_INTRINSIC_EMPTY_STRING to RyuJIT,"We are not reporting `CORINFO_FIELD_INTRINSIC_EMPTY_STRING` to RyuJIT because it's hitting what appears to be a RyuJIT bug in late devirtualization (see assert in the jitdump). Likely because our string literals are different than string literals RyuJIT normally sees in CoreCLR.
+
+To repro, uncomment the line in CorInfoImpl.cs that references this issue and build a multimodule release System.Private.CoreLib.
+
+[jitdump.txt](https://github.com/dotnet/corert/files/2604999/jitdump.txt)",Report CORINFO_FIELD_INTRINSIC_EMPTY_STRING to RyuJIT  We are not reporting `CORINFO_FIELD_INTRINSIC_EMPTY_STRING` to RyuJIT because it's hitting what appears to be a RyuJIT bug in late devirtualization (see assert in the jitdump). Likely because our stri,6606,MichalStrehovsky,corert
+6580,wasm: NativeCallable function is not used,"I don't know if I'm doing something wrong, or its the wasm compiler.  I have this c#:
+```
+    private static unsafe void ThreadTest()
+    {
+        p_thread pThread;
+        int arg = 0;
+        int join;
+        var t = pthread_create((IntPtr)(&pThread), (IntPtr)(0), System.Runtime.InteropServices.AddrofIntrinsics.AddrOf<ThreadStartFunc>(ThreadStart), (IntPtr)(&arg));
+        join = pthread_join((IntPtr)(&pThread), (IntPtr)0);
+    }
+
+    [NativeCallable(CallingConvention = CallingConvention.StdCall)]
+    private static unsafe void* ThreadStart(void* arg)
+    {
+...
+    }
+```
+So I'm trying to get `pthread_create` to callback into `ThreadStart`.  When I run this it complains:
+```
+Invalid function pointer '6920' called with signature 'ii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this) HelloWasm.js:6610:27
+This pointer might make sense in another type signature: i: 0  iii: _HelloWasm_Program__ThreadStart  iiii: 0  iiiii: 0  iiiiii: 0  iiiiiii: undefined  iiiiiiii: 0  iiiiiiiiii: undefined  vii: 0  di: undefined  vi: 0  viii: 0  v: 0  viiii: 0  viiiii: 0  viiiiii: 0  viiiiiii: 0 
+```
+So you can see that its looking for a method in the function table `ii` whereas the one that its been given, `_HelloWasm_Program__ThreadStart` is in the `iii` table.  Indeed `_HelloWasm_Program__ThreadStart` is the wrong signature, its has the signature for any other method, i.e. the first param is the shadow stack:
+```
+define i8* @HelloWasm_Program__ThreadStart(i8*, i8*) 
+```
+There is another function emitted which looks like the right one:
+```
+define i8* @ThreadStart(i8*) {
+ShadowStackSetupBlock:
+  %ShadowStackPtr = alloca i8*
+  %SavedShadowStack = load i8*, i8** @t_pShadowStackTop
+  store i8* %SavedShadowStack, i8** %ShadowStackPtr
+  %ShadowStackNull = icmp eq i8* %SavedShadowStack, null
+  br i1 %ShadowStackNull, label %allocateShadowStackBlock, label %ManagedCallBlock
+
+allocateShadowStackBlock:                         ; preds = %ShadowStackSetupBlock
+  %NewShadowStack = tail call i8* @malloc(i32 mul (i32 ptrtoint (i8* getelementptr (i8, i8* null, i32 1) to i32), i32 1000000))
+  store i8* %NewShadowStack, i8** %ShadowStackPtr
+  br label %ManagedCallBlock
+
+ManagedCallBlock:                                 ; preds = %allocateShadowStackBlock, %ShadowStackSetupBlock
+  %ReversePInvokeFrame = alloca { i8*, i8* }
+  call void @RhpReversePInvoke2({ i8*, i8* }* %ReversePInvokeFrame)
+  %ShadowStack = load i8*, i8** %ShadowStackPtr
+  %calleeFrame = getelementptr i8, i8* %ShadowStack, i32 4
+  %1 = call i8* @HelloWasm_Program__ThreadStart(i8* %calleeFrame, i8* %0)
+  call void @RhpReversePInvokeReturn2({ i8*, i8* }* %ReversePInvokeFrame)
+  ret i8* %1
+}
+```
+But this does not seem to be used anywhere else in the LLVM file.  I'm not sure what the right question is.  What should the parameters to `InitializeReversePInvokeThunk` be for this?  
+
+
+
+I have these attributes defined:
+```
+namespace System.Runtime.InteropServices
+{
+    /// <summary>
+    /// Any method marked with NativeCallableAttribute can be directly called from
+    /// native code. The function token can be loaded to a local variable using LDFTN
+    /// and passed as a callback to native method.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method)]
+    public sealed class NativeCallableAttribute : Attribute
+    {
+        public NativeCallableAttribute()
+        {
+        }
+
+        /// <summary>
+        /// Optional. If omitted, compiler will choose one for you.
+        /// </summary>
+        public CallingConvention CallingConvention;
+
+        /// <summary>
+        /// Optional. If omitted, then the method is native callable, but no EAT is emitted.
+        /// </summary>
+        public string EntryPoint;
+    }
+
+    [AttributeUsage((System.AttributeTargets.Method | System.AttributeTargets.Class))]
+    internal class McgIntrinsicsAttribute : Attribute
+    {
+    }
+
+    [McgIntrinsics]
+    internal static class AddrofIntrinsics
+    {
+        // This method is implemented elsewhere in the toolchain
+        internal static IntPtr AddrOf<T>(T ftn)
+        {
+            throw new PlatformNotSupportedException();
+        }
+    }
+}
+
+```","wasm: NativeCallable function is not used  I don't know if I'm doing something wrong, or its the wasm compiler.  I have this c#:
+```
+    private static unsafe void ThreadTest()
+    {
+        p_thread pThread;
+        int arg = 0;
+        int join;",6592,yowl,corert
+6525,wasm: undefined function when passing a delegate as a function pointer to an extern,"Add the following code to Program
+```
+    private static unsafe void ThreadTest()
+    {
+        int pThread = 0;
+        int attr = 0;
+        int arg = 0;
+
+        var t = pthread_create((IntPtr)(&pThread), (IntPtr)(&attr), a => ThreadStart(), (IntPtr)(&arg));
+    }
+
+    private static void ThreadStart()
+    {
+    }
+
+    internal unsafe delegate void ThreadStartFunc(void * arg);
+
+    [DllImport(""*"")]
+    private static unsafe extern int pthread_create(IntPtr pThread, IntPtr attr, [MarshalAs(UnmanagedType.FunctionPtr)]ThreadStartFunc thread_start, IntPtr arg);
+```
+
+When it compiles it runs through `DelegateCreationInfo.Create` at https://github.com/dotnet/corert/blob/041f51cca806a68c4de777abe4cecfb845645aa2/src/ILCompiler.Compiler/src/Compiler/DelegateCreationInfo.cs#L276 and https://github.com/dotnet/corert/blob/041f51cca806a68c4de777abe4cecfb845645aa2/src/ILCompiler.Compiler/src/Compiler/DelegateCreationInfo.cs#L280-L283.  A symbol is emitted into the LLVM:
+
+```
+ call void @S_P_CoreLib_System_Delegate__InitializeClosedInstance(i8* %7, i8* bitcast (void (i8*, i8*)* @""<PInvokeDelegateWrapper>HelloWasm_Program_ThreadStartFunc__<ForwardNativeFunctionWrapper>HelloWasm_Program_ThreadStartFunc"" to i8*))
+```
+And this symbol is declared in LLVM as function:
+```
+declare void @""<PInvokeDelegateWrapper>HelloWasm_Program_ThreadStartFunc__<ForwardNativeFunctionWrapper>HelloWasm_Program_ThreadStartFunc""(i8*, i8*)
+```
+But should it not be defined?
+At compile time, for WASM=0, a warning is output:
+```
+warning: undefined symbol: 
+<PInvokeDelegateWrapper>HelloWasm_Program_ThreadStartFunc__<ForwardNativeFunctionWrapper>HelloWasm_Program_ThreadStartFunc
+```","wasm: undefined function when passing a delegate as a function pointer to an extern  Add the following code to Program
+```
+    private static unsafe void ThreadTest()
+    {
+        int pThread = 0;
+        int attr = 0;
+        int arg = 0;
+",6553,yowl,corert
+6415,[CppCodeGen] Delegate marshalling doesn't work,"Following example crashes in cppgen mode:
+```cs
+using System;
+using System.Runtime.InteropServices;
+using System.Collections.Generic;
+
+namespace Hello
+{
+    internal class Program
+    {
+        delegate void Callback();
+
+        [DllImport(""libTest.so"")]
+        static extern int Func(Callback c);
+
+        public static void M()
+        {
+            System.Console.WriteLine(""M"");
+        }
+
+        private static void Main(string[] args)
+        {
+            Callback callback = new Callback(M);
+
+            Func(callback);
+        }
+    }
+}
+```
+```
+Thread 1 ""Hello"" received signal SIGABRT, Aborted.
+0x00007ffff62a3428 in __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:54
+54	../sysdeps/unix/sysv/linux/raise.c: No such file or directory.
+(gdb) bt
+#0  0x00007ffff62a3428 in __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:54
+#1  0x00007ffff62a502a in __GI_abort () at abort.c:89
+#2  0x0000000000f44a0c in Assert (expr=0xf87f94 ""ASSERT_UNCONDITIONALLY"", file=0xf89a8e ""/media/kbaladurin/data/dotnet/forked/corert_1/corert/src/Native/Runtime/portable.cpp"", line_num=445, 
+    message=0xf89ae3 ""NYI"") at /media/kbaladurin/data/dotnet/forked/corert_1/corert/src/Native/Runtime/rhassert.cpp:25
+#3  0x0000000000e6de63 in RhGetCommonStubAddress () at /media/kbaladurin/data/dotnet/forked/corert_1/corert/src/Native/Runtime/portable.cpp:445
+#4  0x00000000009437e9 in System_Private_CoreLib::System::Runtime::RuntimeImports::GetInteropCommonStubAddress ()
+    at /media/kbaladurin/data/dotnet/forked/corert_1/corert/src/System.Private.CoreLib/src/System/Runtime/CompilerServices/ConditionalWeakTable.cs:383
+#5  0x0000000000933558 in System_Private_CoreLib::System::Runtime::InteropServices::PInvokeMarshal::AllocateThunk (del=0x7fffd99e6630)
+    at /media/kbaladurin/data/dotnet/forked/corert_1/corert/src/System.Private.CoreLib/src/System/Runtime/InteropServices/PInvokeMarshal.cs:307
+#6  0x0000000000933809 in System_Private_CoreLib::System::Runtime::CompilerServices::ConditionalWeakTable_2_CreateValueCallback_A__System_Private_CoreLib_System_Delegate___System_Private_CoreLib_System_Runtime_InteropServices_PInvokeMarshal_PInvokeDelegateThunk_V_::InvokeOpenStaticThunk (_a0=0x7fffd99e67b8, _a1=0x7fffd99e6630)
+    at /media/kbaladurin/data/dotnet/forked/corert_1/corert/src/System.Private.CoreLib/src/System/Runtime/InteropServices/PInvokeMarshal.cs:339
+#7  0x0000000000943faf in System_Private_CoreLib::System::Runtime::CompilerServices::ConditionalWeakTable_2_A__System_Private_CoreLib_System_Delegate___System_Private_CoreLib_System_Runtime_InteropServices_PInvokeMarshal_PInvokeDelegateThunk_V_::GetValueLocked (___this=0x7fffd99e6660, key=0x7fffd99e6630, createValueCallback=0x7fffd99e67b8)
+    at /media/kbaladurin/data/dotnet/forked/corert_1/corert/src/System.Private.CoreLib/src/System/Runtime/CompilerServices/ConditionalWeakTable.cs:200
+#8  0x0000000000933958 in System_Private_CoreLib::System::Runtime::CompilerServices::ConditionalWeakTable_2_A__System_Private_CoreLib_System_Delegate___System_Private_CoreLib_System_Runtime_InteropServices_PInvokeMarshal_PInvokeDelegateThunk_V_::GetValue (___this=0x7fffd99e6660, key=0x7fffd99e6630, createValueCallback=0x7fffd99e67b8)
+    at /media/kbaladurin/data/dotnet/forked/corert_1/corert/src/System.Private.CoreLib/src/System/Runtime/CompilerServices/ConditionalWeakTable.cs:192
+#9  0x00000000008dfe5a in System_Private_CoreLib::System::Runtime::InteropServices::PInvokeMarshal::GetFunctionPointerForDelegate (del=0x7fffd99e6630)
+    at /media/kbaladurin/data/dotnet/forked/corert_1/corert/src/System.Private.CoreLib/src/System/Runtime/InteropServices/PInvokeMarshal.cs:210
+#10 0x00000000008d4168 in System_Private_CoreLib::Internal::Runtime::CompilerHelpers::InteropHelpers::GetFunctionPointerForDelegate (del=0x7fffd99e6630)
+    at /media/kbaladurin/data/dotnet/forked/corert_1/corert/src/System.Private.CoreLib/src/Internal/Runtime/CompilerHelpers/InteropHelpers.cs:385
+#11 0x0000000000896176 in Hello::Hello::Program::Func (c=0x7fffd99e6630) at /media/kbaladurin/data/dotnet/forked/corert_1/corert/tests/src/Simple/Hello/Hello.cs:47
+#12 0x000000000088f2c5 in Hello::Hello::Program::Main (args=0x7fffd99e6618) at /media/kbaladurin/data/dotnet/forked/corert_1/corert/tests/src/Simple/Hello/Hello.cs:29
+#13 0x0000000000873a50 in Hello::_Module_::MainMethodWrapper (_a0=0x7fffd99e6618) at /media/kbaladurin/data/dotnet/forked/corert_1/corert/tests/src/Simple/Hello/obj/Debug/x64/native/Hello.cpp:16707566
+#14 0x0000000000873642 in Hello::_Module_::StartupCodeMain (_a0=1, _a1=140737488345784)
+    at /media/kbaladurin/data/dotnet/forked/corert_1/corert/tests/src/Simple/Hello/obj/Debug/x64/native/Hello.cpp:16707566
+#15 0x0000000000873abb in __managed__Main (_a0=1, _a1=140737488345784) at /media/kbaladurin/data/dotnet/forked/corert_1/corert/tests/src/Simple/Hello/obj/Debug/x64/native/Hello.cpp:16707569
+#16 0x0000000000e607af in main (argc=1, argv=0x7fffffffdab8) at /media/kbaladurin/data/dotnet/forked/corert_1/corert/src/Native/Bootstrap/main.cpp:376
+```
+Generated code for `Func`:
+```cpp
+int32_t Hello::Hello::Program::Func(::Hello::Hello::Program_Callback* c)
+{
+        int32_t _l0 = 0;
+        int32_t _l1 = 0;
+        intptr_t _l2 = 0;
+
+_bb0: {
+
+        void* _1 = c;
+        intptr_t _2 = ::System_Private_CoreLib::Internal::Runtime::CompilerHelpers::InteropHelpers::GetFunctionPointerForDelegate((::System_Private_CoreLib::System::Delegate*)_1);
+        _l2 = _2;
+        intptr_t _3 = _l2;
+        PInvokeTransitionFrame __piframe;
+        __pinvoke(&__piframe);
+        int32_t _4 = ::Hello::Hello::Program::_A_rawpinvoke_V_Func(_3);
+        __pinvoke_return(&__piframe);
+        _l1 = _4;
+        int32_t _5 = _l1;
+        _l0 = _5;
+        void* _6 = c;
+        ::System_Private_CoreLib::System::GC::KeepAlive((::System_Private_CoreLib::System::Object*)_6);
+        int32_t _7 = _l0;
+        return _7;
+}
+}
+```
+As far as I understand we shouldn't call `GetFunctionPointerForDelegate` here because it implements general delegate marshalling (for both instance and static methods) and we don't want to support instance ones (https://github.com/dotnet/corert/issues/3294#issuecomment-330319017).","[CppCodeGen] Delegate marshalling doesn't work  Following example crashes in cppgen mode:
+```cs
+using System;
+using System.Runtime.InteropServices;
+using System.Collections.Generic;
+
+namespace Hello
+{
+    internal class Program
+    {
+        del",6553,yowl,corert
+5842,wasm: typeof(T) fails at runtime,"Adding the following to the HelloWasm program.cs:
+
+```
+        var g = new Gen<char>();
+        g.TestTypeOf();
+```
+Where `Gen` is:
+```
+    private class Gen<T>
+    {
+        internal void TestTypeOf()
+        {
+            var t = typeof(T);
+        }
+    }
+```
+Gives the following at runtime
+```
+exception thrown: abort() at jsStackTrace@http://localhost:6931/HelloWasm.js:1008:13
+stackTrace@http://localhost:6931/HelloWasm.js:1025:12
+abort@http://localhost:6931/HelloWasm.js:6860:44
+_abort@http://localhost:6931/HelloWasm.js:5627:7
+__Z6AssertPKcS0_jS0_@http://localhost:6931/HelloWasm.js:10379573:1
+__ZN6Thread22SetupHackPInvokeTunnelEv@http://localhost:6931/HelloWasm.js:11387200:1
+_RhpGetCurrentThreadStackTrace@http://localhost:6931/HelloWasm.js:11419892:1
+_S_P_CoreLib_System_Runtime_RuntimeExports__RhGetCurrentThreadStackTrace@http://localhost:6931/HelloWasm.js:451563:1
+_RhGetCurrentThreadStackTrace@http://localhost:6931/HelloWasm.js:451691:1
+_S_P_CoreLib_System_Diagnostics_StackTrace__InitializeForThreadFrameIndex@http://localhost:6931/HelloWasm.js:802776:1
+_S_P_CoreLib_System_Diagnostics_StackTrace___ctor_2@http://localhost:6931/HelloWasm.js:572896:1
+_S_P_CoreLib_System_Diagnostics_Debug__Assert_1@http://localhost:6931/HelloWasm.js:536725:1
+_S_P_CoreLib_System_Diagnostics_Debug__Assert_0@http://localhost:6931/HelloWasm.js:430748:1
+_S_P_CoreLib_System_Collections_Concurrent_ConcurrentUnifierW_2_IntPtr__S_P_CoreLib_System_Type___GetOrAdd@http://localhost:6931/HelloWasm.js:731304:1
+_S_P_CoreLib_Internal_Reflection_Core_NonPortable_RuntimeTypeUnifier__GetTypeForRuntimeTypeHandle@http://localhost:6931/HelloWasm.js:929688:1
+_S_P_CoreLib_System_Type__GetTypeFromHandle@http://localhost:6931/HelloWasm.js:675007:1
+_S_P_Reflection_Execution_Internal_Reflection_Execution_ReflectionExecutionDomainCallbacksImplementation__GetBetterDiagnosticInfoIfAvailable@http://localhost:6931/HelloWasm.js:5226864:1
+_S_P_CoreLib_System_RuntimeTypeHandle__get_LastResortToString@http://localhost:6931/HelloWasm.js:4230043:1
+_S_P_CoreLib_Internal_Runtime_Augments_RuntimeAugments__GetLastResortString@http://localhost:6931/HelloWasm.js:3576035:1
+_S_P_Reflection_Execution_Internal_Reflection_Execution_ExecutionEnvironmentImplementation__GetLastResortString@http://localhost:6931/HelloWasm.js:3575941:1
+_S_P_Reflection_Core_System_Reflection_Runtime_General_Helpers__LastResortString@http://localhost:6931/HelloWasm.js:2689325:1
+_S_P_Reflection_Core_System_Reflection_Runtime_TypeInfos_RuntimeBlockedTypeInfo__ToString@http://localhost:6931/HelloWasm.js:2693034:1
+_S_P_Reflection_Core_System_Reflection_Runtime_TypeInfos_RuntimeTypeInfo__EstablishDebugName@http://localhost:6931/HelloWasm.js:1851229:1
+_S_P_Reflection_Core_System_Reflection_Runtime_TypeInfos_RuntimeBlockedTypeInfo__GetRuntimeBlockedTypeInfo@http://localhost:6931/HelloWasm.js:1486321:1
+_S_P_Reflection_Core_Internal_Reflection_Core_Execution_ExecutionDomain__GetNamedTypeForHandle@http://localhost:6931/HelloWasm.js:1278549:1
+_S_P_Reflection_Execution_Internal_Reflection_Execution_ReflectionExecutionDomainCallbacksImplementation__GetNamedTypeForHandle@http://localhost:6931/HelloWasm.js:1277546:1
+_S_P_CoreLib_Internal_Reflection_Core_NonPortable_RuntimeTypeUnifier_RuntimeTypeHandleToTypeCache__Factory@http://localhost:6931/HelloWasm.js:1057354:1
+_S_P_CoreLib_System_Collections_Concurrent_ConcurrentUnifierW_2_IntPtr__S_P_CoreLib_System_Type___GetOrAdd@http://localhost:6931/HelloWasm.js:732756:1
+_S_P_CoreLib_Internal_Reflection_Core_NonPortable_RuntimeTypeUnifier__GetTypeForRuntimeTypeHandle@http://localhost:6931/HelloWasm.js:929688:1
+_S_P_CoreLib_System_Type__GetTypeFromHandle@http://localhost:6931/HelloWasm.js:675007:1
+_HelloWasm_Program_Gen_1_Char___TestTypeOf@http://localhost:6931/HelloWasm.js:667059:1
+_HelloWasm_Program__Main@http://localhost:6931/HelloWasm.js:495176:1
+_HelloWasm__Module___MainMethodWrapper@http://localhost:6931/HelloWasm.js:480586:1
+_StartupCodeMain@http://localhost:6931/HelloWasm.js:479278:1
+___managed__Main@http://localhost:6931/HelloWasm.js:10379491:1
+dynCall_iii@http://localhost:6931/HelloWasm.js:11536097:1
+Module.dynCall_iii@http://localhost:6931/HelloWasm.js:6559:10
+invoke_iii@http://localhost:6931/HelloWasm.js:6161:12
+_main@http://localhost:6931/HelloWasm.js:11452521:1
+Module._main@http://localhost:6931/HelloWasm.js:6479:10
+callMain@http://localhost:6931/HelloWasm.js:6729:15
+doRun@http://localhost:6931/HelloWasm.js:6787:42
+run/<@http://localhost:6931/HelloWasm.js:6798:7
+```","wasm: typeof(T) fails at runtime  Adding the following to the HelloWasm program.cs:
+
+```
+        var g = new Gen<char>();
+        g.TestTypeOf();
+```
+Where `Gen` is:
+```
+    private class Gen<T>
+    {
+        internal void TestTypeOf()",6553,yowl,corert
+6400,Add null checks for array operations,"Loading or storing an index in a null array should throw a NullReferenceException (or trap). #6383 introduces a pattern for doing null checks that we should be able to use similarly for array operations. The operations that should do checks are:
+* ldelem (implemented in ```ImportLoadElement```)
+* ldelema (implemented in ```ImportAddressOfElement```)
+* stelem (implemented in ```ImportStoreElement```)
+* ldlen (implemented in ```ImportLoadLength```)",Add null checks for array operations  Loading or storing an index in a null array should throw a NullReferenceException (or trap). #6383 introduces a pattern for doing null checks that we should be able to use similarly for array operations. The operation,6496,hippiehunter,corert
+6399,Add null checks for field load/stores,"Loading or storing a field on a null object should throw a NullReferenceException (or trap). #6383 introduces a pattern for doing null checks that we should be able to use similarly for field operations. The operations that should do checks are:
+* ldfld (implemented in ```ImportLoadField```)
+* ldflda (implemented in ```ImportAddressOfField```)
+* stfld (implemented in ```ImportStoreField```)",Add null checks for field load/stores  Loading or storing a field on a null object should throw a NullReferenceException (or trap). #6383 introduces a pattern for doing null checks that we should be able to use similarly for field operations. The operatio,6496,hippiehunter,corert
+6182,Preliminary Interpreter Support,"This PR includes the preliminary work needed to integrate an interpreter into CoreRT to support runtime code generation scenarios.
+
+To test the current interpreter status:
+
+1. Create a new console project with a main method with the following signature and code
+```csharp
+public static int Main()
+{
+    return 100;
+}
+```
+You can return any arbitrary integer value, the project must be compiled in `Release` mode because the interpreter currently only supports `ldc.i*` and `ret` opcodes and `Debug` mode introduces `ldloc` and `stloc` opcodes. This will cease to be a requirement once the interpreter supports more opcodes. 
+
+2. Create a new CoreRT console project and include the following code in its `Main` method
+```csharp
+static void Main(string[] args)
+{
+    byte[] buffer = File.ReadAllBytes(@""path\to\above\release\mode\assembly.dll"");
+    var assembly = Assembly.Load(buffer);
+    var entryPoint = assembly.EntryPoint;
+    int code = (int)entryPoint.Invoke(null, null);
+    Console.WriteLine(code);
+}
+```
+This code loads the assembly in `(1)`, retrieves its `EntryPoint` and invokes it at runtime all within the CoreRT runtime with the help of the interpreter. Add an `rd.xml` file to the CoreRT project with the following contents:
+```xml
+<Directives>
+  <Application>
+    <Assembly Name=""System.Runtime"" Dynamic=""Required All"" />
+  </Application>
+</Directives>
+```
+Include the `rd.xml` in the build pipeline by adding it to the CoreRT csproj:
+```xml
+<ItemGroup>
+  <RdXmlFile Include=""rd.xml"" />
+</ItemGroup>
+```
+Compile the CoreRT app with the experimental interpreter enabled
+```bash
+dotnet build /t:LinkNative /p:ExperimentalInterpreterSupport=true
+```
+
+Run the resulting native executable. If all goes well, `100` will be printed to the terminal. You can update the return code of the main method in `(1)` for further tests. You won't need to rebuild the CoreRT app, just the assembly that is loaded.
+
+The interpreter work is still in very early stages and I intend to put in further work to add support for all CLR opcodes. Dynamically loading a .NET assembly at runtime is the current scenario being tested, after which the `Reflection.Emit` API can be updated to take advantage of the interpreter functionality.
+
+#5011 
+
+cc @jkotas @MichalStrehovsky","Preliminary Interpreter Support  This PR includes the preliminary work needed to integrate an interpreter into CoreRT to support runtime code generation scenarios.
+
+To test the current interpreter status:
+
+1. Create a new console project with a main m",6327,MichalStrehovsky,corert
+6284,[Interpreter] Load Constants,"This PR adds support for loading constants to the interpreter. The following OpCodes are now supported:
+
+* `ldc.*`
+* `ldnull`
+* `ldstr`
+
+The following method signatures can now be interpreted when compiled in `Release` mode
+
+```csharp
+public static int GetInt()
+{
+    return 100;
+}
+
+public static byte GetByte()
+{
+    return 128;
+}
+
+public static bool GetBool()
+{
+    return false;
+}
+
+public static char GetChar()
+{
+    return 'A';
+}
+
+public static float GetFloat()
+{
+    return 1.5F;
+}
+
+public static double GetDouble()
+{
+    return 3.142;
+}
+
+public static string GetString()
+{
+    return ""Hello World"";
+}
+
+public static object GetNull()
+{
+    return null;
+}
+```
+
+Signed and unsigned variants of numeric constants are also supported. Compilation of interpreted assembly in release mode will no longer be required once I add support for locals in a follow-up PR to this.
+
+#5011","[Interpreter] Load Constants  This PR adds support for loading constants to the interpreter. The following OpCodes are now supported:
+
+* `ldc.*`
+* `ldnull`
+* `ldstr`
+
+The following method signatures can now be interpreted when compiled in `Release`",6286,tonerdo,corert
+5011,Support for IL interpreter in CoreRT,"We should consider porting Mono's .NET interpreter (http://www.mono-project.com/news/2017/11/13/mono-interpreter/) over to CoreRT, to support runtime IL generation and execution within native code","Support for IL interpreter in CoreRT  We should consider porting Mono's .NET interpreter (http://www.mono-project.com/news/2017/11/13/mono-interpreter/) over to CoreRT, to support runtime IL generation and execution within native code",6286,tonerdo,corert
+3291,"Add SafeHandle marshaling support for [In,Out] arguments",Currently we support one or the other; not both.,"Add SafeHandle marshaling support for [In,Out] arguments  Currently we support one or the other; not both.",6074,jkotas,corert
+6071,Linux non-trivial marshalling support,"Any idea when this will be fixed or how I can work around it? I can't make HttpClient requests with the CurlHandler as it always fails with the same exception. If I use the SocketsHttpHandler I run into another marshaling issue for authentication (GSSAPI). I have no issues on Windows.
+
+```
+Unhandled Exception: System.Exception: Method '[System.Net.Http]Interop+Http.RegisterSslCtxCallback(SafeCurlHandle,SslCtxCallback,native int,SafeCallbackHandle&)' requires non-trivial marshalling that is not yet supported by this compiler.
+   at Interop.Http.RegisterSslCtxCallback(Interop.Http.SafeCurlHandle, Interop.Http.SslCtxCallback, IntPtr, Interop.Http.SafeCallbackHandle&) + 0x24
+   at System.Net.Http.CurlHandler.SslProvider.SetSslOptionsForSupportedBackend(CurlHandler.EasyRequest, CurlHandler.ClientCertificateProvider, IntPtr) + 0x2a
+   at System.Net.Http.CurlHandler.SslProvider.SetSslOptions(CurlHandler.EasyRequest, ClientCertificateOption) + 0x157
+   at System.Net.Http.CurlHandler.EasyRequest.InitializeCurl() + 0x188
+   at System.Net.Http.CurlHandler.MultiAgent.ActivateNewRequest(CurlHandler.EasyRequest) + 0x16c
+```
+
+```
+Unhandled Exception: System.ComponentModel.Win32Exception (0x80090020): Method '[System.Net.Http]Interop+NetSecurityNative.InitSecContext(Status&,SafeGssCredHandle,SafeGssContextHandle&,bool,SafeGssNameHandle,uint32,uint8[],int32,GssBuffer&,uint32&,int32&)' requires non-trivial marshalling that is not yet supported by this compiler.
+   at System.Net.NTAuthentication.GetOutgoingBlob(Byte[], Boolean, SecurityStatusPal&) + 0x550
+   at System.Net.NTAuthentication.GetOutgoingBlob(String) + 0x64
+   at System.Net.Http.AuthenticationHelper.<SendWithNtAuthAsync>d__46.MoveNext() + 0x396
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw() + 0x1b
+   at System.Net.Http.HttpConnectionPool.<SendWithRetryAsync>d__39.MoveNext() + 0x3c1
+```",Linux non-trivial marshalling support  Any idea when this will be fixed or how I can work around it? I can't make HttpClient requests with the CurlHandler as it always fails with the same exception. If I use the SocketsHttpHandler I run into another marsh,6074,jkotas,corert
+1685,Add serialization primitives to System.Private.CoreLib,"Usage of these will come separately.  This is the code from CoreFx, which can be deleted from there subsequently.  It needs to be in the core library so that it can be implemented by other types in the core library.
+
+cc: @jkotas, @danmosemsft","Add serialization primitives to System.Private.CoreLib  Usage of these will come separately.  This is the code from CoreFx, which can be deleted from there subsequently.  It needs to be in the core library so that it can be implemented by other types in t",6051,MichalStrehovsky,corert
+6042,Strange null ref in COM call,"After #5587 was fixed, I'm able to get much further with my project. Most everything works, but there's still some issues calling into SharpDX (or so it seems). I get a crash with this stack:
+
+```
+Unhandled Exception: System.NullReferenceException: Object reference not set to an instance of an object.
+   at Veldrid.D3D11.D3D11Swapchain..ctor(Device, SwapchainDescription&) + 0x342
+   at Veldrid.D3D11.D3D11GraphicsDevice..ctor(GraphicsDeviceOptions, Nullable`1) + 0x1e3
+   at Veldrid.GraphicsDevice.CreateD3D11(GraphicsDeviceOptions, IntPtr, UInt32, UInt32) + 0xfb
+   at Veldrid.StartupUtilities.VeldridStartup.CreateDefaultD3D11GraphicsDevice(GraphicsDeviceOptions, Sdl2Window) + 0x6e
+   at Veldrid.StartupUtilities.VeldridStartup.CreateGraphicsDevice(Sdl2Window, GraphicsDeviceOptions, GraphicsBackend) + 0x86
+   at SampleBase.VeldridStartupWindow.Run() + 0x9c
+   at Instancing.Program.Main(String[]) + 0x6d
+   at Instancing.Desktop!<BaseAddress>+0x4ad77a
+   at Instancing.Desktop!<BaseAddress>+0x4ad807
+```
+
+I believe that it's hitting a null ref [on this line](https://github.com/mellinoe/veldrid/blob/master/src/Veldrid/D3D11/D3D11Swapchain.cs#L88). `dxgiDevice` is null when it shouldn't be, and isn't when using CoreCLR. That query function shouldn't return null (it should throw instead), as far as I know.
+
+The problem can be reprod by checking out the `corert-crash` branch of https://github.com/mellinoe/veldrid-samples/tree/corert-crash.
+
+`dotnet publish -r win-x64 src\Instancing\Desktop\Instancing.Desktop.csproj`","Strange null ref in COM call  After #5587 was fixed, I'm able to get much further with my project. Most everything works, but there's still some issues calling into SharpDX (or so it seems). I get a crash with this stack:
+
+```
+Unhandled Exception: Syst",6051,MichalStrehovsky,corert
+6016,Assert in System.Tests.ArrayTests,"`Sort_Array_Array_NonGeneric` fails with an Access Violation.
+Stack trace below:
+```
+
+These were regressed because of a silent failure in CoreFX CI (fixed by #6014)
+
+KERNELBASE!RaiseFailFastException + 0x74
+xunit_console_netcore!S_P_CoreLib_Interop_mincore__PInvoke_RaiseFailFastException + 0x56
+xunit_console_netcore!S_P_CoreLib_Interop_mincore__RaiseFailFastException + 0x102
+xunit_console_netcore!S_P_CoreLib_System_RuntimeExceptionHelpers__FailFast_1 + 0x1a9
+xunit_console_netcore!S_P_CoreLib_System_RuntimeExceptionHelpers__FailFast + 0x27
+xunit_console_netcore!S_P_CoreLib_System_Diagnostics_Debug__ShowDialog + 0xb0
+xunit_console_netcore!S_P_CoreLib_System_Action_4<System___Canon__System___Canon__System___Canon__System___Canon>__InvokeOpenStaticThunk + 0x4d
+xunit_console_netcore!S_P_CoreLib_System_Diagnostics_Debug__Assert_1 + 0xca
+xunit_console_netcore!S_P_CoreLib_System_Diagnostics_Debug__Assert + 0x45
+xunit_console_netcore!S_P_CoreLib_System_Collections_Generic_ArraySortHelper_2<System___Canon__System___Canon>__SwapIfGreaterWithItems + 0x71
+xunit_console_netcore!S_P_CoreLib_System_Collections_Generic_ArraySortHelper_2<System___Canon__System___Canon>__IntroSort + 0x115
+xunit_console_netcore!S_P_CoreLib_System_Collections_Generic_ArraySortHelper_2<System___Canon__System___Canon>__IntrospectiveSort + 0x133
+xunit_console_netcore!S_P_CoreLib_System_Collections_Generic_ArraySortHelper_2<System___Canon__System___Canon>__Sort + 0x12c
+xunit_console_netcore!S_P_CoreLib_System_Array__Sort_15<System___Canon__System___Canon> + 0x1f1
+xunit_console_netcore!S_P_CoreLib_System_Array__SortImpl + 0x138
+xunit_console_netcore!S_P_CoreLib_System_Array__Sort_6 + 0x2a4
+xunit_console_netcore!System_Runtime_Tests_System_Tests_ArrayTests__Sort_Array_Array_NonGeneric + 0x289
+```
+
+The failed assert is this
+https://github.com/dotnet/corert/blob/8e3635626e4b7068d1aaf234b49b5e920721ca67/src/System.Private.CoreLib/shared/System/Collections/Generic/ArraySortHelper.cs#L429","Assert in System.Tests.ArrayTests  `Sort_Array_Array_NonGeneric` fails with an Access Violation.
+Stack trace below:
+```
+
+These were regressed because of a silent failure in CoreFX CI (fixed by #6014)
+
+KERNELBASE!RaiseFailFastException + 0x74
+xunit_",6018,MichalStrehovsky,corert
+6015,Access Violation in System.Tests.TupleTests,"System.Tests.TupleTests.CompareTo and System.Tests.TupleTests.Equals_GetHashCode return a null address during interface dispatch. 
+These were regressed because of a silent failure in CoreFX CI (fixed by #6014) 
+
+Shared stack trace (cut down for brevity)
+```
+xunit_console_netcore!S_P_CoreLib_System_Tuple_1<Int16>__System_Collections_IStructuralComparable_CompareTo + 0x11c
+xunit_console_netcore!System_Runtime_Tests_System_Tests_TupleTests_TupleTestDriver_10___c__DisplayClass20_0<Int16__Int32__Int64__System___Canon__Char__Single__Double__S_P_CoreLib_System_DateTime__System___Canon__S_P_CoreLib_System_TimeSpan>___IStructuralComparable_NullComparer_ThrowsNullReferenceException_b__0 + 0x43
+xunit_console_netcore!xunit_assert_Xunit_Assert__RecordException_0 + 0x4b
+xunit_console_netcore!xunit_assert_Xunit_Assert__Throws_0<System___Canon> + 0x5f
+xunit_console_netcore!System_Runtime_Tests_System_Tests_TupleTests_TupleTestDriver_10<Int16__Int32__Int64__System___Canon__Char__Single__Double__S_P_CoreLib_System_DateTime__System___Canon__S_P_CoreLib_System_TimeSpan>__IStructuralComparable_NullComparer_ThrowsNullReferenceException + 0xa1
+xunit_console_netcore!System_Runtime_Tests_System_Tests_TupleTests_TupleTestDriver_10<Int16__Int32__Int64__System___Canon__Char__Single__Double__S_P_CoreLib_System_DateTime__System___Canon__S_P_CoreLib_System_TimeSpan>__CompareTo + 0xff
+xunit_console_netcore!System_Runtime_Tests_System_Tests_TupleTests__CompareTo + 0x127
+[...]
+```","Access Violation in System.Tests.TupleTests  System.Tests.TupleTests.CompareTo and System.Tests.TupleTests.Equals_GetHashCode return a null address during interface dispatch. 
+These were regressed because of a silent failure in CoreFX CI (fixed by #6014)",6018,MichalStrehovsky,corert
+5674,HttpClient GetAsync with https (on windows) does not work,"Reported by @abydal on gitter. From https://gist.github.com/abydal/e235558bad6f73ed96964697dc0eaec3:
+
+```
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+namespace TestCoreRt
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Run().Wait();
+        }
+
+        static async Task Run(){
+
+            using (var client = new HttpClient())
+            {
+                try
+                {
+                    var url = $""https://www.google.no/search?q=test"";
+
+                    using (var request = await client.GetAsync(new Uri(url)))
+                    {
+                        if(!request.IsSuccessStatusCode){
+                            Console.WriteLine(""Url call to: "" + url +"" failed with ""+request.ReasonPhrase);
+                        }
+
+                        Console.WriteLine(await request.Content.ReadAsStringAsync());
+                    }
+                }
+                catch (Exception e)
+                {
+                    if(e is AggregateException ae)
+                        Console.WriteLine(ae.Flatten().ToString());
+                    else
+                        Console.WriteLine(e.ToString());
+                }
+            }
+        }
+    }
+}
+```","HttpClient GetAsync with https (on windows) does not work  Reported by @abydal on gitter. From https://gist.github.com/abydal/e235558bad6f73ed96964697dc0eaec3:
+
+```
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+namespace TestC",5707,jkotas,corert
+5217,Marshal.Sizeof(new object()) asserts the class library,"We are asking a reference type EEType to compute its valuetype size. There used to be a valuetype check in `int SizeOfHelper(Type t, bool throwIfNotMarshalable)` up until TFS changeset 1168403 when it got removed. Not sure where it's supposed to do the check now.
+
+Now we're left with this:
+
+https://github.com/dotnet/corert/blob/daaed31e3307155b9d1897da64aae485d7db774a/src/System.Private.Interop/src/System/Runtime/InteropServices/Marshal.cs#L157-L175","Marshal.Sizeof(new object()) asserts the class library  We are asking a reference type EEType to compute its valuetype size. There used to be a valuetype check in `int SizeOfHelper(Type t, bool throwIfNotMarshalable)` up until TFS changeset 1168403 when i",5707,jkotas,corert
+5177,How to modernize ObjectWriter package?,"In current master, ObjectWriter is the only project utilizing old-style RIDs (`toolchain.{targetOS_name}.{targetOS_version}-{targetOS_arch}`) and relying on [nuspec files](https://github.com/dotnet/corert/tree/641b32d/src/Native/ObjWriter/.nuget).
+
+In order to bring it to new platforms such as Alpine Linux (#4552) and CentOS (#602), or new architectures such as aarch_32 (#3776) and x86_32 (#4589), it requires us to add file entries either with:
+
+* old RID scheme `toolchain*`
+* or modernize the ObjectWriter package and wire it up with `build.{cmd,sh}` in such a way that it will automajically light up the build for newly introduced RID in CoreRT repo.
+
+IMO, modernizing the package is a better solution mostly for coherency.
+
+If the code owners agree to upgrade this package to new packaging system, would it make sense to:
+
+* create a separate entry under `:/pkg` dir?
+  * or perhaps include it as a dependency on existing `:/pkg/Microsoft.DotNet.ILCompiler/Microsoft.DotNet.ILCompiler.{builds,pkgproj}`?
+* anything else to consider before removing `.nuspec` files?
+
+/cc @jkotas, @A-And","How to modernize ObjectWriter package?  In current master, ObjectWriter is the only project utilizing old-style RIDs (`toolchain.{targetOS_name}.{targetOS_version}-{targetOS_arch}`) and relying on [nuspec files](https://github.com/dotnet/corert/tree/641b3",5688,jkotas,corert
+3278,ObjectWriter should support IMAGE_REL_BASED_RELPTR32 relocs,"We have a workaround in place in ObjectWriter.cs to map `IMAGE_REL_BASED_RELPTR32` into `IMAGE_REL_BASED_REL32` with +4 bytes delta, but we should just emit the right reloc.","ObjectWriter should support IMAGE_REL_BASED_RELPTR32 relocs  We have a workaround in place in ObjectWriter.cs to map `IMAGE_REL_BASED_RELPTR32` into `IMAGE_REL_BASED_REL32` with +4 bytes delta, but we should just emit the right reloc.",5688,jkotas,corert
+5648,"F# HelloWorld fails with ILCompiler.CodeGenerationFailedException: Code generation failed ---> ILCompiler.ScannerFailedException: VTable of type 'Microsoft.FSharp.Core.FSharpFunc`2<Microsoft.FSharp.Core.Unit, System.__Canon>' not computed by the IL scanner.","I have modified the HelloWorld [1] example to F# and tried to compile it with CoreRT. 
+[helloworld.zip](https://github.com/dotnet/corert/files/1873738/helloworld.zip)
+
+
+The ILCompiler fails with the following message:
+
+```
+dotnet publish -c Release -r linux-x64
+Microsoft (R) Build Engine version 15.5.180.51428 for .NET Core
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+  Restoring packages for /tmp/helloworld/helloworld.fsproj...
+  Generating MSBuild file /tmp/helloworld/obj/helloworld.fsproj.nuget.g.props.
+  Restore completed in 1.77 sec for /tmp/helloworld/helloworld.fsproj.
+  helloworld -> /tmp/helloworld/bin/Release/netcoreapp2.0/linux-x64/helloworld.dll
+  /usr/bin/clang-3.9
+  Generating native code
+EXEC : error : Code generation failed [/tmp/helloworld/helloworld.fsproj]
+  ILCompiler.CodeGenerationFailedException: Code generation failed ---> ILCompiler.ScannerFailedException: VTable of type 'Microsoft.FSharp.Core.FSharpFunc`2<Microsoft.FSharp.Core.Unit, System.__Canon>' not computed by the IL scanner. You can work around by running the compilation with scanner disabled.
+     at ILCompiler.ILScanResults.ScannedVTableProvider.GetSlice(TypeDesc type)
+     at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)
+     at ILCompiler.Compilation.HasFixedSlotVTable(TypeDesc type)
+     at Internal.JitInterface.CorInfoImpl.getCallInfo(CORINFO_RESOLVED_TOKEN& pResolvedToken, CORINFO_RESOLVED_TOKEN* pConstrainedResolvedToken, CORINFO_METHOD_STRUCT_* callerHandle, CORINFO_CALLINFO_FLAGS flags, CORINFO_CALL_INFO& pResult)
+     at Internal.JitInterface.CorInfoImpl._getCallInfo(IntPtr thisHandle, IntPtr* ppException, CORINFO_RESOLVED_TOKEN& pResolvedToken, CORINFO_RESOLVED_TOKEN* pConstrainedResolvedToken, CORINFO_METHOD_STRUCT_* callerHandle, CORINFO_CALLINFO_FLAGS flags, CORINFO_CALL_INFO& pResult)
+     --- End of inner exception stack trace ---
+     at Internal.JitInterface.CorInfoImpl.CompileMethod(IMethodCodeNode methodCodeNodeNeedingCode, MethodIL methodIL)
+     at ILCompiler.RyuJitCompilation.ComputeDependencyNodeDependencies(List`1 obj)
+     at ILCompiler.DependencyAnalysisFramework.DependencyAnalyzer`2.ComputeMarkedNodes()
+     at ILCompiler.RyuJitCompilation.CompileInternal(String outputFile, ObjectDumper dumper)
+     at ILCompiler.Compilation.ILCompiler.ICompilation.Compile(String outputFile, ObjectDumper dumper)
+     at ILCompiler.Program.Run(String[] args)
+     at ILCompiler.Program.Main(String[] args)
+/home/zpodlovics/.nuget/packages/microsoft.dotnet.ilcompiler/1.0.0-alpha-26403-02/build/Microsoft.NETCore.Native.targets(171,5): error MSB3073: The command """"/home/zpodlovics/.nuget/packages/runtime.linux-x64.microsoft.dotnet.ilcompiler/1.0.0-alpha-26403-02/tools/ilc"" @""obj/Release/netcoreapp2.0/linux-x64/native/helloworld.ilc.rsp"""" exited with code 1. [/tmp/helloworld/helloworld.fsproj]
+```
+
+Using a more recent version (4.3.*) of F# dependency have the same problem (by modifying the fsproj file):
+```
+<Project Sdk=""Microsoft.NET.Sdk"">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include=""Program.fs"" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include=""FSharp.Core"" Version=""4.3.*"" />
+    <PackageReference Include=""Microsoft.DotNet.ILCompiler"" Version=""1.0.0-alpha-*"" />
+  </ItemGroup>
+
+</Project>
+
+```
+
+The exception seems to raised from here:
+https://github.com/dotnet/corert/blob/master/src/ILCompiler.Compiler/src/Compiler/ILScanner.cs#L155
+
+Environment: Ubuntu 16.04 x86_64
+```
+ii  dotnet-host                                                 2.1.0-preview1-26216-03-1                                   amd64        Microsoft .NET Core Host - 2.1.0 Preview 1
+ii  dotnet-hostfxr-2.0.5                                        2.0.5-1                                                     amd64        Microsoft .NET Core Host FX Resolver - 2.0.5 2.0.5
+ii  dotnet-hostfxr-2.0.6                                        2.0.6-1                                                     amd64        Microsoft .NET Core Host FX Resolver - 2.0.6 2.0.6
+ii  dotnet-runtime-2.0.5                                        2.0.5-1                                                     amd64        Microsoft .NET Core Runtime - 2.0.5 Microsoft.NETCore.App 2.0.5
+ii  dotnet-runtime-2.0.6                                        2.0.6-1                                                     amd64        Microsoft .NET Core Runtime - 2.0.6 Microsoft.NETCore.App 2.0.6
+ii  dotnet-runtime-deps-2.1.0-preview1-26216-03                 2.1.0-preview1-26216-03-1                                   amd64        dotnet-runtime-deps-2.1.0-preview1-26216-03 2.1.0-preview1-26216-03
+ii  dotnet-sdk-2.1.4                                            2.1.4-1                                                     amd64        Microsoft .NET Core SDK - 2.1.4
+```
+
+
+[1] https://github.com/dotnet/corert/tree/master/samples/HelloWorld","F# HelloWorld fails with ILCompiler.CodeGenerationFailedException: Code generation failed ---> ILCompiler.ScannerFailedException: VTable of type 'Microsoft.FSharp.Core.FSharpFunc`2<Microsoft.FSharp.Core.Unit, System.__Canon>' not computed by the IL scanne",5686,MichalStrehovsky,corert
+1683,Tail calls,"Needed for F#.  Must work cross-assembly and cross-platform.  IL2CPP needs to transform code that uses tail calls so that (at least on GCC/Clang) sibling call optimization takes place.  RyuJIT can use an EBP frame and double-compilation of tail-called methods.",Tail calls  Needed for F#.  Must work cross-assembly and cross-platform.  IL2CPP needs to transform code that uses tail calls so that (at least on GCC/Clang) sibling call optimization takes place.  RyuJIT can use an EBP frame and double-compilation of tai,5686,MichalStrehovsky,corert
+5661,Bad codegen in Boolean::TryParse,"`TryParse(ReadOnlySpan<char> value, out bool result)` [accesses two string literals](https://github.com/dotnet/corert/blob/7ce5d362dd49aeacf40071b1623181b2a477583a/src/System.Private.CoreLib/shared/System/Boolean.cs#L202-L235) and makes a Span out of them - ""True"" and ""False"".
+
+RyuJIT with optimizations enabled will reuse the first Span for ""True"" instead of making a new one for ""False"".
+
+To repro, simply compile `Console.WriteLine(Boolean.Parse(""False""));` with optimizations enabled. It will throw an exception because we don't match ""False"" to ""False"", but try to match ""True"" twice.
+
+My guess is there's something wrong with this piece of code in RyuJIT:
+
+https://github.com/dotnet/coreclr/blob/0f0320e58fd006a02cdecf7ae45426f54da333e5/src/jit/gentree.cpp#L6426-L6430","Bad codegen in Boolean::TryParse  `TryParse(ReadOnlySpan<char> value, out bool result)` [accesses two string literals](https://github.com/dotnet/corert/blob/7ce5d362dd49aeacf40071b1623181b2a477583a/src/System.Private.CoreLib/shared/System/Boolean.cs#L202-",5665,MichalStrehovsky,corert
+5180,Enable RyuJIT optimizations around System.Type,"RyuJIT already does these optimizations in CoreCLR. We disable them in CoreRT because our representation of `RuntimeTypeHandle` is different from CoreCLR (in CoreCLR, RTTH just wraps a `RuntimeType` object instance; in CoreRT RTTH wraps an unmanaged pointer to the EEType).
+
+This is needed to let us optimize patterns like:
+* `typeof(T) == typeof(byte)`
+* `foo.GetType() == typeof(Foo)`
+
+These are usually used to optimized high performance code, so having actual reflection in the code path is pretty bad.","Enable RyuJIT optimizations around System.Type  RyuJIT already does these optimizations in CoreCLR. We disable them in CoreRT because our representation of `RuntimeTypeHandle` is different from CoreCLR (in CoreCLR, RTTH just wraps a `RuntimeType` object i",5665,MichalStrehovsky,corert
+5287,[WIP] Enable CoreFX tests on CoreRT,"Work on #5059. Enables running CoreFX tests on CoreRT. A couple of points
+
+- A number of tests have a dependency on the `CoreFX.Private.TestUtilities` assembly. We need a way to distribute this - as either a NuGet package or fetching built assemblies as correlation payloads from build machines. Any suggestions on this would be great.
+
+- No shell script changes - most of this change is cross-plat, but only called on Windows
+
+- Test URL - will change according to whichever version we pick, run and ""freeze"" 
+
+- Some minor points marked with TODOs
+
+cc @MichalStrehovsky @jkotas @sergiy-k ","[WIP] Enable CoreFX tests on CoreRT  Work on #5059. Enables running CoreFX tests on CoreRT. A couple of points
+
+- A number of tests have a dependency on the `CoreFX.Private.TestUtilities` assembly. We need a way to distribute this - as either a NuGet pa",5329,A-And,corert
+5059,Run CoreFX tests on CoreRT,We need scripts to do that easily.,Run CoreFX tests on CoreRT  We need scripts to do that easily.,5329,A-And,corert
+4911,Expect ILVerify error on initonly field outside its constructor,"Found this while testing ILVerify on Roslyn tests.
+
+Compile the program below with C# compiler that ships with Visual Studio 15.5 with `csc /t:library /langversion:7.2 test.cs`. 
+Here's also a zipped copy of `test.dll`: [test.zip](https://github.com/dotnet/corert/files/1463011/test.zip)
+
+PEVerify fails (as expected):
+```
+>peverify test.dll
+Microsoft (R) .NET Framework PE Verifier.  Version  4.0.30319.0
+[IL]: Error: [F:\repos\corert\src\ILVerify\src\bin\Debug\net46\test.dll : Program::Main][offset 0x00000008] Cannot change initonly field outside its .ctor.
+1 Error(s) Verifying test.dll
+```
+
+But ILVerify passes:
+```
+bin\Debug\net46>ilverify test.dll -r C:\WINDOWS\Microsoft.Net\assembly\GAC_32\mscorlib\v4.0_4.0.0.0__b77a5c561934e089\mscorlib.dll
+All Classes and Methods in F:\repos\corert\src\ILVerify\src\bin\Debug\net46\test.dll Verified.
+```
+
+------ 
+
+```c#
+class Program
+{
+    static void Main()
+    {
+        var obj = new C1();
+        System.Console.WriteLine(obj.field.ToString());
+    }
+}
+class C1
+{
+    public readonly S1 field;
+}
+struct S1
+{
+}
+```
+
+Tagging @ArztSamuel @VSadov","Expect ILVerify error on initonly field outside its constructor  Found this while testing ILVerify on Roslyn tests.
+
+Compile the program below with C# compiler that ships with Visual Studio 15.5 with `csc /t:library /langversion:7.2 test.cs`. 
+Here's a",4914,ArztSamuel,corert
+4505,Compile Runtime with Emscripten,"In order to start using any runtime features with WebAssembly, the src/Native/Runtime directory will need to compile with [Emscripten](http://kripken.github.io/emscripten-site/). Hopefully most of the code is architecture and platform independent, but there might be some changes needed. For getting started, it's probably fine to exclude or ifdef out problematic sections.","Compile Runtime with Emscripten  In order to start using any runtime features with WebAssembly, the src/Native/Runtime directory will need to compile with [Emscripten](http://kripken.github.io/emscripten-site/). Hopefully most of the code is architecture",4876,morganbr,corert
+4506,Compile System.Private.CoreLib for WebAssembly,"System.Private.CoreLib needs to be built for WebAssembly to allow calling into many of its APIs. WebAssembly probably looks a lot like the Unix build flavor, but will probably need some WASM-specific files as well. 
+
+This likely involves picking the right files from src/System.Private.CoreLib when there are multiple versions. For example, System/Globalization/CompareInfo has .Unix, .Dummy and .Windows versions. For WASM, we could try either the .Unix or .Dummy versions.","Compile System.Private.CoreLib for WebAssembly  System.Private.CoreLib needs to be built for WebAssembly to allow calling into many of its APIs. WebAssembly probably looks a lot like the Unix build flavor, but will probably need some WASM-specific files a",4876,morganbr,corert
+4507,Compile System.Private.CoreLib.Native for WebAssembly,"Many of the features of System.Private.CoreLib will require compiling Native/System.Private.CoreLib.Native for WebAssembly using [Emscripten](http://kripken.github.io/emscripten-site/). Most of the code appears to just use the C standard library, but some of it may need to be modified or ifdefed out for WebAssembly.",Compile System.Private.CoreLib.Native for WebAssembly  Many of the features of System.Private.CoreLib will require compiling Native/System.Private.CoreLib.Native for WebAssembly using [Emscripten](http://kripken.github.io/emscripten-site/). Most of the co,4876,morganbr,corert
+4551,Implement ldtoken for methods,Implement the ldtoken opcode for methods. Look for ```else if (ldtokenValue is MethodDesc)``` in the [ImportLdToken method](https://github.com/dotnet/corert/blob/e6d0a9398e3d8fc83d047cccda302ed13610f190/src/ILCompiler.WebAssembly/src/CodeGen/ILToWebAssemblyImporter.cs#L934).,Implement ldtoken for methods  Implement the ldtoken opcode for methods. Look for ```else if (ldtokenValue is MethodDesc)``` in the [ImportLdToken method](https://github.com/dotnet/corert/blob/e6d0a9398e3d8fc83d047cccda302ed13610f190/src/ILCompiler.WebAss,4872,hippiehunter,corert
+4539,Implement initobj opcode,"Implement the initobj opcode, with zero-initializes a structure. The method to fill in is:
+https://github.com/dotnet/corert/blob/e6d0a9398e3d8fc83d047cccda302ed13610f190/src/ILCompiler.WebAssembly/src/CodeGen/ILToWebAssemblyImporter.cs#L1076","Implement initobj opcode  Implement the initobj opcode, with zero-initializes a structure. The method to fill in is:
+https://github.com/dotnet/corert/blob/e6d0a9398e3d8fc83d047cccda302ed13610f190/src/ILCompiler.WebAssembly/src/CodeGen/ILToWebAssemblyImpo",4872,hippiehunter,corert
+4863,String.get_Length returns 0,"String.get_Length started returning 0 after #4808 , which breaks printing strings and might indicate other problems. It looks like pinning a string and printing it character-by-character still works, so it could be an issue in the frozen string's length or in reading instance fields.","String.get_Length returns 0  String.get_Length started returning 0 after #4808 , which breaks printing strings and might indicate other problems. It looks like pinning a string and printing it character-by-character still works, so it could be an issue in",4872,hippiehunter,corert
+4512,Implement newobj opcode using malloc,"Implement the newobj opcode, which both allocates memory for a new object and calls its constructor. While we'll eventually need to hook this up to the garbage collector, if we start by using malloc, it will allow much more code to run. Newobj should be added as a new case to
+https://github.com/dotnet/corert/blob/e6d0a9398e3d8fc83d047cccda302ed13610f190/src/ILCompiler.WebAssembly/src/CodeGen/ILToWebAssemblyImporter.cs#L528","Implement newobj opcode using malloc  Implement the newobj opcode, which both allocates memory for a new object and calls its constructor. While we'll eventually need to hook this up to the garbage collector, if we start by using malloc, it will allow muc",4872,hippiehunter,corert
+4537,[ILVerify] Fix invalid branch/fallthrough into catch/finally causing assert,"As discussed in #4497, currently when an invalid IL-code is verified, which performs a branch/fallthrough into a catch/finally block, the process will assert, when starting to verify this catch/finally block in `StartImportingBasicBlock` at `Debug.Assert(basicBlock.EntryStack == null)`.
+
+This could for instance be fixed by first fixing #4536 and then aborting the basic block verification when a branch/fallthrough into a catch/finally block was detected.
+The assert could also be removed, since the error is now reported anyway, but I would prefer to keep this assert.
+
+After fixing this issue, the unit tests ""Branching.FromTryIntoCatch_Invalid_BranchIntoFilter"" and ""Branching.FromTryIntoFinally_Invalid_BranchOutOfTry.BranchIntoHandler"" can be re-enabled.","[ILVerify] Fix invalid branch/fallthrough into catch/finally causing assert  As discussed in #4497, currently when an invalid IL-code is verified, which performs a branch/fallthrough into a catch/finally block, the process will assert, when starting to ve",4636,ArztSamuel,corert
+4039,Enable and Add Tests for the CLR Thread Pool + Starvation Detection,"This PR adds tests for the CLR Thread Pool. It also enables the CLR Thread Pool and the Gate Thread's starvation detection for CoreRT on Unix. It currently does not enable Hill Climbing because we do not currently have any tests for it specifically.
+
+@kouvel @sergiy-k @AntonLapounov",Enable and Add Tests for the CLR Thread Pool + Starvation Detection  This PR adds tests for the CLR Thread Pool. It also enables the CLR Thread Pool and the Gate Thread's starvation detection for CoreRT on Unix. It currently does not enable Hill Climbing,4635,kouvel,corert
+4124,Enable CLR Thread Pool via a MSBuild flag (default enabled on Unix),"This PR adds tests for the CLR Thread Pool. It also adds Windows implementations for the low level primitives used in the CLR Thread Pool.
+
+The thread pool is enabled by setting the MSBuild property `FeaturePortableThreadPool` to `true`, which is the default on Unix.
+
+Supersedes #4039.
+
+@kouvel  @Sergiy-k @AntonLapounov @jkotas 
+
+Note: This is tagged * NO MERGE * because it intermittently exposes a GC crash in root scan during thread setup. That bug is being tracked by #4214.","Enable CLR Thread Pool via a MSBuild flag (default enabled on Unix)  This PR adds tests for the CLR Thread Pool. It also adds Windows implementations for the low level primitives used in the CLR Thread Pool.
+
+The thread pool is enabled by setting the MS",4635,kouvel,corert
+4534,[ILVerify] Fix endless loop when re-verifying blocks after stack merge,"When the stack is merged in `ImportFallthrough` the target block is marked for verification again, by setting the `EndOffset` of this block to `0`. However, if the next block already happens to be the next block in the pending blocks chain, an endless loop is created.
+
+I will take care of this as soon as possible.","[ILVerify] Fix endless loop when re-verifying blocks after stack merge  When the stack is merged in `ImportFallthrough` the target block is marked for verification again, by setting the `EndOffset` of this block to `0`. However, if the next block already",4575,ArztSamuel,corert
+3318,Restore support for delegates to GVMs created from unshared code,"This used to work but it's now failing in the rolling build. It's easy
+enough to restore enough of the functionality to get the tests passing
+again.
+
+The rest of the work (creating the delegate from shared code) is tracked
+in #2796 (uncomment the commented out test line to hit a failure in the
+JIT).","Restore support for delegates to GVMs created from unshared code  This used to work but it's now failing in the rolling build. It's easy
+enough to restore enough of the functionality to get the tests passing
+again.
+
+The rest of the work (creating the",3712,MichalStrehovsky,corert
+2796,Creating delegates to generic virtual methods,"This might have a relationship with #2102 but it might need design work from our side.
+
+Below code will currently crash the compiler because `getCallInfo` didn't bother to populate `pResult.codePointerOrStubLookup.constLookup.addr` but RyuJIT is trying to generate a reloc to it.
+
+```csharp
+using System;
+
+internal class Program
+{
+    interface IFoo
+    {
+        string Frob<T>();
+    }
+
+    class Foo : IFoo
+    {
+        public string Frob<T>()
+        {
+            return ""Hello"";
+        }
+    }
+
+    private static void Main(string[] args)
+    {
+        IFoo o = new Foo();
+        Func<string> f = o.Frob<Foo>;
+        Console.WriteLine(f());
+    }
+}
+```","Creating delegates to generic virtual methods  This might have a relationship with #2102 but it might need design work from our side.
+
+Below code will currently crash the compiler because `getCallInfo` didn't bother to populate `pResult.codePointerOrStu",3712,MichalStrehovsky,corert
+2683,Readonly prefix not respected for multidimensional array address method,See dotnet/coreclr#9414.,Readonly prefix not respected for multidimensional array address method  See dotnet/coreclr#9414.,3443,MichalStrehovsky,corert
+3137,TimeSpan.FromMilliseconds(TimeSpan.MaxValue.TotalMilliseconds) exception,"There is a committed pull request in coreclr: https://github.com/dotnet/coreclr/pull/10352.
+Should I create the corresponding pull request here?","TimeSpan.FromMilliseconds(TimeSpan.MaxValue.TotalMilliseconds) exception  There is a committed pull request in coreclr: https://github.com/dotnet/coreclr/pull/10352.
+Should I create the corresponding pull request here?",3144,ezverev,corert
+1916,Pointer-size-align EEType nodes,"","Pointer-size-align EEType nodes  ",2661,MichalStrehovsky,corert
+2652,Clean up ObjectDataBuilder API,"https://github.com/dotnet/corert/pull/2648 added
+`ObjectDataBuilder.AddSymbol` to avoid exposing ArrayBuilder class.
+Migrate all uses of `ObjectDataBuilder.DefinedSymbols.Add` to
+`AddSymbol`.
+
+Rename the alignment methods to be clearer that they set the overall
+alignment; ie, they don't provide padding between each emission of data
+within the object.
+
+Fixes part of https://github.com/dotnet/corert/issues/2645.","Clean up ObjectDataBuilder API  https://github.com/dotnet/corert/pull/2648 added
+`ObjectDataBuilder.AddSymbol` to avoid exposing ArrayBuilder class.
+Migrate all uses of `ObjectDataBuilder.DefinedSymbols.Add` to
+`AddSymbol`.
+
+Rename the alignment meth",2661,MichalStrehovsky,corert
+2403,P/Invoke inlining in unoptimized builds,"I had a quick look at fixing #383 (generate debuggable code).
+
+The main blocker seems to be RyuJIT's reluctance to do inline P/Invokes in debuggable code. There seems to be a check in `impCanPInvokeInline` that kicks in.","P/Invoke inlining in unoptimized builds  I had a quick look at fixing #383 (generate debuggable code).
+
+The main blocker seems to be RyuJIT's reluctance to do inline P/Invokes in debuggable code. There seems to be a check in `impCanPInvokeInline` that k",2572,MichalStrehovsky,corert
+696,command line flag to enable debug info output,"In addition to an debug/opt decision the tool chain needs to allow the user to emit or drop debug info.
+
+An example would be the -Zi flag for cl.exe","command line flag to enable debug info output  In addition to an debug/opt decision the tool chain needs to allow the user to emit or drop debug info.
+
+An example would be the -Zi flag for cl.exe",2572,MichalStrehovsky,corert
+383,ilc.exe needs /debug command line option,"ilc.exe is hardwired to compile with optimizations on right now. We need a command line option to turn the optimizations on/off.","ilc.exe needs /debug command line option  ilc.exe is hardwired to compile with optimizations on right now. We need a command line option to turn the optimizations on/off.",2572,MichalStrehovsky,corert
+7895,RavenDB : rd.xml editing,"Hello, i'm trying to build a basic application which is basically a custom client for handling requests to RavenDB.
+
+Unfortunately while trying to run the compiled application, i get the following errors:
+
+
+---OLD EXCEPTION---
+ Unhandled Exception: System.AggregateException: Failed to retrieve database topology from all known nodes.
+http://127.0.0.1:8080 -> Could not build json parser for Raven.Client.Http.ServerNode -> MakeGenericMethod() cannot create this generic method instantiation because the instantiation was not metadata-enabled: 'Sparrow.Json.BlittableJsonReaderObject.TryGet<Raven.Client.Http.ServerNode.Role>(System.String,out Raven.Client.Http.ServerNode.Role&)' For more information, please visit http://go.microsoft.com/fwlink/?LinkID=616868 (Could not build json parser for Raven.Client.Http.ServerNode)
+ ---> System.InvalidOperationException: Could not build json parser for Raven.Client.Http.ServerNode
+ ---> EETypeRva:0x01BDCA98(System.Reflection.MissingRuntimeArtifactException): MakeGenericMethod() cannot create this generic method instantiation because the instantiation was not metadata-enabled: 'Sparrow.Json.BlittableJsonReaderObject.TryGet<Raven.Client.Http.ServerNode.Role>(System.String,out Raven.Client.Http.ServerNode.Role&)' For more information, please visit http://go.microsoft.com/fwlink/?LinkID=616868
+   at Internal.Reflection.Core.Execution.ExecutionEnvironment.GetMethodInvoker(RuntimeTypeInfo, QMethodDefinition, RuntimeTypeInfo[], MemberInfo) + 0x273
+   at System.Reflection.Runtime.MethodInfos.NativeFormat.NativeFormatMethodCommon.GetUncachedMethodInvoker(RuntimeTypeInfo[], MemberInfo) + 0xb6
+   at System.Reflection.Runtime.MethodInfos.RuntimeNamedMethodInfo`1.GetUncachedMethodInvoker(RuntimeTypeInfo[], MemberInfo) + 0x37
+   at System.Reflection.Runtime.MethodInfos.RuntimeConstructedGenericMethodInfo.get_UncachedMethodInvoker() + 0x3b
+   at System.Reflection.Runtime.MethodInfos.RuntimeMethodInfo.get_MethodInvoker() + 0x19c
+   at System.Reflection.Runtime.MethodInfos.RuntimeNamedMethodInfo`1.MakeGenericMethod(Type[]) + 0x3ec
+   at System.Linq.Expressions.Expression.ApplyTypeArgs(MethodInfo, Type[]) + 0xc7
+   at System.Linq.Expressions.Expression.FindMethod(Type, String, Type[], Expression[], BindingFlags) + 0xe0
+   at System.Linq.Expressions.Expression.Call(Expression, String, Type[], Expression[]) + 0xb4
+   at Sparrow.Json.JsonDeserializationBase.GetValue(String, Type, ParameterExpression, Dictionary`2) + 0x757
+   at Sparrow.Json.JsonDeserializationBase.GenerateJsonDeserializationRoutine[T]() + 0x7d7
+
+
+
+I tried to mess with rd.xml, but really couldn't understand how to properly configure them. 
+But i'm always getting errors on compiling or runtime
+
+Thank you.","RavenDB : rd.xml editing  Hello, i'm trying to build a basic application which is basically a custom client for handling requests to RavenDB.
+
+Unfortunately while trying to run the compiled application, i get the following errors:
+
+
+---OLD EXCEPTION-",2117,MichalStrehovsky,corert
+2111,Port dotnet/coreclr#7895 to CoreRT,"We should be able to one up the CoreCLR fix and also fix this for `Equals`: We can redirect the constrained call to a generated `ILStubMethod` with a proper type check followed by a an underlying field equality check.
+
+Clickable link: dotnet/coreclr#7895","Port dotnet/coreclr#7895 to CoreRT  We should be able to one up the CoreCLR fix and also fix this for `Equals`: We can redirect the constrained call to a generated `ILStubMethod` with a proper type check followed by a an underlying field equality check.",2117,MichalStrehovsky,corert
+2056,Port https://github.com/dotnet/coreclr/pull/6767 to CoreRT,"@jamesqo  Would you like to take care of this when you get a chance?","Port https://github.com/dotnet/coreclr/pull/6767 to CoreRT  @jamesqo  Would you like to take care of this when you get a chance?",2058,jamesqo,corert
+2067,Port dotnet/coreclr#4654 to corert,"Once the `ArraySegment` hashing is changed in dotnet/coreclr#4654, we should also change it in the corert repo as well.","Port dotnet/coreclr#4654 to corert  Once the `ArraySegment` hashing is changed in dotnet/coreclr#4654, we should also change it in the corert repo as well.",2058,jamesqo,corert
+52,Interface between driver .exe and compiler .dll,"Review/design/refactor interface between driver .exe and compiler .dll. See #51.","Interface between driver .exe and compiler .dll  Review/design/refactor interface between driver .exe and compiler .dll. See #51.",2045,galvesribeiro,orleans
+52,Interface between driver .exe and compiler .dll,"Review/design/refactor interface between driver .exe and compiler .dll. See #51.","Interface between driver .exe and compiler .dll  Review/design/refactor interface between driver .exe and compiler .dll. See #51.",2045,MichalStrehovsky,corert
+875,nolinenumbers command option is overloaded,"Overloaded for both RyuJIT and CPPCodegen. That is not making sense at least for RyuJIT CodeGen -- ""Line Numbers""","nolinenumbers command option is overloaded  Overloaded for both RyuJIT and CPPCodegen. That is not making sense at least for RyuJIT CodeGen -- ""Line Numbers""",2045,galvesribeiro,orleans
+875,nolinenumbers command option is overloaded,"Overloaded for both RyuJIT and CPPCodegen. That is not making sense at least for RyuJIT CodeGen -- ""Line Numbers""","nolinenumbers command option is overloaded  Overloaded for both RyuJIT and CPPCodegen. That is not making sense at least for RyuJIT CodeGen -- ""Line Numbers""",2045,MichalStrehovsky,corert
+6603,Use netcore3.0 CoreCLR for R2R testing,"Replace use of 2.1 runtime with a recent version from master targetting netcoreapp3.0. This version now includes System.Runtime.Intrinsics, which was previously named System.Runtime.Intrinsics.Experimental (and lived in a separate Nuget package) meaning the test drop we used couldn't bind against it.
+
+runtest.cmd /coreclr all /mode readytorun fail rate improved from 489 -> 346 (2001/2347 or 85% pass rate).","Use netcore3.0 CoreCLR for R2R testing  Replace use of 2.1 runtime with a recent version from master targetting netcoreapp3.0. This version now includes System.Runtime.Intrinsics, which was previously named System.Runtime.Intrinsics.Experimental (and live",1741,jamesqo,corert
+6891,Some unexpected behavior using timer with comdlg,"There are some unexpected behavior when use system timer in corert, but it is ok in dotnet core:
+
+```
+        private static System.Timers.Timer timer;
+
+        public static void Test()
+        {
+            timer = new System.Timers.Timer();
+            timer.Interval = 1000;
+            timer.Start();  // It is ok in dotnet core native when comment this line 
+
+            for (int i = 0; i < 100; i++)
+                new FileDialog().RunDialog();
+        }
+```
+
+Here is the full code:  [https://github.com/xiaotie/DotNetNativeTimerBug](https://github.com/xiaotie/DotNetNativeTimerBug)","Some unexpected behavior using timer with comdlg  There are some unexpected behavior when use system timer in corert, but it is ok in dotnet core:
+
+```
+        private static System.Timers.Timer timer;
+
+        public static void Test()
+        {",1741,jamesqo,corert
+88,Make sure multi-dimensional arrays are treated right in the runtime,"Revise things like uses of IsInstanceOfArray to make sure we don't use them with the assumption that the type being looked at is a vector.","Make sure multi-dimensional arrays are treated right in the runtime  Revise things like uses of IsInstanceOfArray to make sure we don't use them with the assumption that the type being looked at is a vector.",1558,MichalStrehovsky,corert
+1192,Generate .IL file with all generated method bodies and map debug info to them,"Introduce a command line switch that generates an `.IL` file with all the generated methods bodies and maps the PDB information to that file. We already have a disassembler, so it shouldn't be that hard. Debugging generated methods on Project N has always been rather annoying and it feels like this might make a difference.","Generate .IL file with all generated method bodies and map debug info to them  Introduce a command line switch that generates an `.IL` file with all the generated methods bodies and maps the PDB information to that file. We already have a disassembler, so",1535,MichalStrehovsky,corert
+1276,Flexible name formatting within the type system,"We need an infrastructure to format type names, member names, and signatures within the type system.
+
+Right now formatting is done with `ToString` overrides but this is not very flexible. Various consumers can be interested in various formats.
+
+Take CCI `TypeNameFormatter` and `STS::Naming` as inspiration.","Flexible name formatting within the type system  We need an infrastructure to format type names, member names, and signatures within the type system.
+
+Right now formatting is done with `ToString` overrides but this is not very flexible. Various consumer",1535,MichalStrehovsky,corert
+373,Implement delegates to value types,"","Implement delegates to value types  ",1029,MichalStrehovsky,corert
+369,Implement delegates to virtual methods,"","Implement delegates to virtual methods  ",1029,MichalStrehovsky,corert
+918,Fix handling of nested TypeReference records,"If we have type X that is nested under type Y and:
+- Y generates full metadata, and
+- X doesn't generate metadata, but we need a TypeReference to it (e.g.
+  to support DeveloperExperience metadata for MissingMetadataExceptions)
+
+The transform was attempting to set the TypeDefinition as the
+ParentNamespaceOrType of the reference. This is not allowed as per the
+metadata format. We need to generate a TypeReference for the owning
+type.","Fix handling of nested TypeReference records  If we have type X that is nested under type Y and:
+- Y generates full metadata, and
+- X doesn't generate metadata, but we need a TypeReference to it (e.g.
+  to support DeveloperExperience metadata for Missi",916,MichalStrehovsky,corert
+917,Workarounds for Reflection.Execution,"We don't support Delegate.Combine yet, or delegates to valuetypes.
+
+I'm not bothering with CORERT-TODOs because Reflection.Execution was
+forked for CoreRT and none of this code is meant to stay around long
+term. The only thing we need to keep track of is blob format changes.","Workarounds for Reflection.Execution  We don't support Delegate.Combine yet, or delegates to valuetypes.
+
+I'm not bothering with CORERT-TODOs because Reflection.Execution was
+forked for CoreRT and none of this code is meant to stay around long
+term. T",916,MichalStrehovsky,corert
+915,Implement support for array interfaces,"``` csharp
+IEnumerable<int> e = new int[5];
+e.GetEnumerator();
+```","Implement support for array interfaces  ``` csharp
+IEnumerable<int> e = new int[5];
+e.GetEnumerator();
+```",916,MichalStrehovsky,corert
+889,Add support for eager static constructors,"This looks like a lot of code just to support a rarely used feature,
+but a lot of this is plumbing that will let me delete some existing code
+in a subsequent commit. Some of this will also be needed to support
+the various preinitialized data attributes/general type preinitialization.
+- Redirecting uses of HasStaticConstructor to go through the TypeInitialization class (exposing higher level APIs ""HasLazyCctor"" and ""HasEagerCctor"")
+- Emitting a new table with an array of eager class constructors
+- Augmenting GC/nonGC/ThreadStatic and Method nodes to depend on an entry in the eager cctor table if the owning type has a cctor
+- Startup code addition to iterate over the list of eager cctors and call them one by one
+
+Reusable code:
+- ArrayOfEmbeddedPointers: we have a buch of places where we just want an array of pointers. This will let us e.g. delete StringIndirectionNode.
+
+Missing features: ordering the eager cctors. I want to think a bit about
+how we parse custom attribute blobs before I implement that.
+
+Fixes #471.","Add support for eager static constructors  This looks like a lot of code just to support a rarely used feature,
+but a lot of this is plumbing that will let me delete some existing code
+in a subsequent commit. Some of this will also be needed to support",893,MichalStrehovsky,corert
+5205,Update BuildTools,"","Update BuildTools  ",893,MichalStrehovsky,corert

@@ -1,0 +1,1483 @@
+﻿IssueID,Title,Description,Title_Description,PullRequestID,FixedByID,RepoID
+4099,GenerateClsidMap failed unexpectedly,"When I try to build a project of mine that sets EnableComHosting=true, I get the following build error:
+
+```
+Error	MSB4018	The ""GenerateClsidMap"" task failed unexpectedly.
+System.InvalidCastException: Specified cast is not valid.
+   at System.Reflection.Throw.InvalidCast()
+   at System.Reflection.Metadata.MemberReferenceHandle.op_Explicit(EntityHandle handle)
+   at Microsoft.NET.Build.Tasks.ClsidMap.GetComVisibleAttribute(MetadataReader reader, CustomAttributeHandleCollection customAttributes)
+   at Microsoft.NET.Build.Tasks.ClsidMap.<IsComVisible>g__IsComVisibleCore|8_0(TypeDefinition typeDefinition, <>c__DisplayClass8_0& )
+   at Microsoft.NET.Build.Tasks.ClsidMap.IsComVisible(MetadataReader metadataReader, TypeDefinition definition, Boolean assemblyComVisible)
+   at Microsoft.NET.Build.Tasks.ClsidMap.Create(MetadataReader metadataReader, String clsidMapPath)
+   at Microsoft.NET.Build.Tasks.GenerateClsidMap.ExecuteCore()
+   at Microsoft.NET.Build.Tasks.TaskBase.Execute()
+   at Microsoft.Build.BackEnd.TaskExecutionHost.Microsoft.Build.BackEnd.ITaskExecutionHost.Execute()
+   at Microsoft.Build.BackEnd.TaskBuilder.<ExecuteInstantiatedTask>d__26.MoveNext()
+```
+
+I don't know what would cause this problem; I believe it started happening after I added a `ComImport` interface to the assembly. The code for the problematic project is available [here](https://github.com/wjk/MSIExtractApp/tree/shell-extension/src/MSIExtract.ShellExtension). This error is currently blocking all progress on this project. Thanks for looking into this for me!
+
+### .NET Core Info
+
+```
+.NET Core SDK (reflecting any global.json):
+ Version:   3.1.100
+ Commit:    cd82f021f4
+
+Runtime Environment:
+ OS Name:     Windows
+ OS Version:  10.0.18363
+ OS Platform: Windows
+ RID:         win10-x64
+ Base Path:   C:\Program Files\dotnet\sdk\3.1.100\
+
+Host (useful for support):
+  Version: 3.1.0
+  Commit:  65f04fb6db
+
+.NET Core SDKs installed:
+  3.0.100 [C:\Program Files\dotnet\sdk]
+  3.1.100 [C:\Program Files\dotnet\sdk]
+
+.NET Core runtimes installed:
+  Microsoft.AspNetCore.All 2.1.14 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.App 2.1.14 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 3.0.0 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 3.1.0 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.NETCore.App 2.1.14 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 3.0.0 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 3.1.0 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.WindowsDesktop.App 3.0.0 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 3.1.0 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+
+To install additional .NET Core runtimes or SDKs:
+  https://aka.ms/dotnet-download
+```","GenerateClsidMap failed unexpectedly  When I try to build a project of mine that sets EnableComHosting=true, I get the following build error:
+
+```
+Error	MSB4018	The ""GenerateClsidMap"" task failed unexpectedly.
+System.InvalidCastException: Specified ca",4121,AaronRobinsonMSFT,sdk
+4112,Fix parsing of metadata when looking for COM related CustomAttributes.,Fixes https://github.com/dotnet/sdk/issues/4099,Fix parsing of metadata when looking for COM related CustomAttributes.  Fixes https://github.com/dotnet/sdk/issues/4099,4121,AaronRobinsonMSFT,sdk
+3857,NullReferenceException in GenerateRuntimeConfigurationFiles.AddFrameworks,"Error occurred building xunit/xunit.analyzers@74f6d366bd5a33f7ed966fd6f1fb7703452dac0d with VS 16.4 Preview 3.
+
+I'm not sure what the issue here is, but it seems possibly related to #3697.
+
+```
+C:\Program Files\dotnet\sdk\3.1.100-preview2-014569\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.targets(255,5): error MSB4018: The ""GenerateRuntimeConfigurationFiles"" task failed unexpectedly. [C:\dev\github\xunit.analyzers\test\xunit.analyzers.tests\xunit.analyzers.tests.csproj]
+C:\Program Files\dotnet\sdk\3.1.100-preview2-014569\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.targets(255,5): error MSB4018: System.NullReferenceException: Object reference not set to an instance of an object. [C:\dev\github\xunit.analyzers\test\xunit.analyzers.tests\xunit.analyzers.tests.csproj]
+C:\Program Files\dotnet\sdk\3.1.100-preview2-014569\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.targets(255,5): error MSB4018:    at Microsoft.NET.Build.Tasks.GenerateRuntimeConfigurationFiles.AddFrameworks(RuntimeOptions runtimeOptions, ProjectContext projectContext) [C:\dev\github\xunit.analyzers\test\xunit.analyzers.tests\xunit.analyzers.tests.csproj]
+C:\Program Files\dotnet\sdk\3.1.100-preview2-014569\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.targets(255,5): error MSB4018:    at Microsoft.NET.Build.Tasks.GenerateRuntimeConfigurationFiles.WriteRuntimeConfig(ProjectContext projectContext) [C:\dev\github\xunit.analyzers\test\xunit.analyzers.tests\xunit.analyzers.tests.csproj]
+C:\Program Files\dotnet\sdk\3.1.100-preview2-014569\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.targets(255,5): error MSB4018:    at Microsoft.NET.Build.Tasks.GenerateRuntimeConfigurationFiles.ExecuteCore() [C:\dev\github\xunit.analyzers\test\xunit.analyzers.tests\xunit.analyzers.tests.csproj]
+C:\Program Files\dotnet\sdk\3.1.100-preview2-014569\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.targets(255,5): error MSB4018:    at Microsoft.NET.Build.Tasks.TaskBase.Execute() [C:\dev\github\xunit.analyzers\test\xunit.analyzers.tests\xunit.analyzers.tests.csproj]
+C:\Program Files\dotnet\sdk\3.1.100-preview2-014569\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.targets(255,5): error MSB4018:    at Microsoft.Build.BackEnd.TaskExecutionHost.Microsoft.Build.BackEnd.ITaskExecutionHost.Execute() [C:\dev\github\xunit.analyzers\test\xunit.analyzers.tests\xunit.analyzers.tests.csproj]
+C:\Program Files\dotnet\sdk\3.1.100-preview2-014569\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.targets(255,5): error MSB4018:    at Microsoft.Build.BackEnd.TaskBuilder.ExecuteInstantiatedTask(ITaskExecutionHost taskExecutionHost, TaskLoggingContext taskLoggingContext, TaskHost taskHost, ItemBucket bucket, TaskExecutionMode howToExecuteTask) [C:\dev\github\xunit.analyzers\test\xunit.analyzers.tests\xunit.analyzers.tests.csproj]
+```","NullReferenceException in GenerateRuntimeConfigurationFiles.AddFrameworks  Error occurred building xunit/xunit.analyzers@74f6d366bd5a33f7ed966fd6f1fb7703452dac0d with VS 16.4 Preview 3.
+
+I'm not sure what the issue here is, but it seems possibly related",3859,vitek-karas,sdk
+3697,Implement writing includedFrameworks references for self-contained apps,"For self-contained apps which are of the right version (to maintain backward compat), write the framework references to a new `includedFrameworks` property in `.runtimeconfig.json`.
+
+When the native hosting APIs are used to load a managed component into a process which is running a .NET Core app, the hosting layer should validate that the new component framework requirements are met by the frameworks loaded into the process already. This is to allow the new component to communicate with the app (same FX types), but also to overcome the fact that we don't want to load frameworks twice ever.
+
+In order to validate the framework references declared by the new component, the host must know what frameworks are loaded into the process. For framework dependent apps this works fine as the host knows which frameworks it resolved during the app startup. But for self-contained apps, the host doesn't know as everything looks like an app to it.
+
+This change adds he new `includedFrameworks` property to the `.runtimeconfig.json` which will be used for self-contained apps (only, it should not occur when `framework` or `frameworks` properties are used). It will contain the list of frameworks which were used to build the self-contained apps. The format is the same as `frameworks` property content.
+
+To maintain strict backward compatibility, this change will only write the new property to projects targeting `netcoreapp3.1` or higher.
+
+As coded this assumes the change will be approved for 3.1. If it's rejected, I will follow up with a change which will make the new property occur only for 5.0 and above.
+
+#3541 - master (5.0) version","Implement writing includedFrameworks references for self-contained apps  For self-contained apps which are of the right version (to maintain backward compat), write the framework references to a new `includedFrameworks` property in `.runtimeconfig.json`.",3859,vitek-karas,sdk
+3406,Supply rid graph to NuGet,Fix #3325,Supply rid graph to NuGet  Fix #3325,3543,dsplaisted,sdk
+3495,Inclusion of runtime graph for all TFMs causes existing .NET Framework projects to turn x86,"So, it seems that giving the runtime graph to nuget for all TFMs is actually a pretty severe breaking change for .NET Framework in some cases.
+
+Roslyn builds with preview 8 (maybe 7, not sure when the rid graph change landed) will switch the .NET Framework csc.exe, vbc.exe, VBCSCompiler.exe to x86 from Any CPU.
+
+This happens because they have a ref to Microsoft.DiasymReader.Native which has runtimes/win-x86 assets. The design for .NET Framework is that when we find RID-specific assets AND there is no explicit AnyCPU and no explicit RID, then we take the win7-x86 assets and use PlatformTarget=x86. 
+
+(I regret this design, but that is the design since 1.0 SDK. It was done so that .NET Framework ASP.NET Core projects could consume libuv without setting a RID or PlatformTarget. Project.json just picked the RID of the current machine, which was worse as you get different apps on different machines. We tried to make it an error and say you had to pick a PlatformTarget or RID on .NET Framework exes, but there was a ton of complaints about it and we landed on the design described above by compromise.)
+
+The thing is that we use win7-x86, but without a RID graph, we/NuGet don't know that win-x86 assets are applicable to win7-x86. Now that we have the RID graph always, we discover these win-x86 assets for the first time and the (regrettable) design actually kicks in.
+
+My suggestion to avoid a breaking change here is to not pass the RID graph by default for TFMs that are not .NET Core 3.0+ or .NET Standard 2.1+. We can put it behind an opt-in for other TFMs.
+
+Separately, roslyn should explicitly set Any CPU defensively so that they are not sensitive to which SDK is used to build them.
+
+cc @jaredpar @dsplaisted","Inclusion of runtime graph for all TFMs causes existing .NET Framework projects to turn x86  So, it seems that giving the runtime graph to nuget for all TFMs is actually a pretty severe breaking change for .NET Framework in some cases.
+
+Roslyn builds wi",3543,dsplaisted,sdk
+3109,Gather appropriate list of managed runtime assemblies for crossen and (eventually) linker,"Today, crossgen (new ReadyToRun feature) operates over all files to publish and filters out what is not IL. We have decided that the compilation set should be restricted by default to the set of files that we deem are runtime managed assets and designate as such in the .deps.json.
+
+As of now, there isn't an exact match for this list that is readily available. _ResolvedCopyLocalPublishAssets + IntermediateAssembly is close.
+
+I suspect that with #3080, this will be easier to do, but I didn't review in detail yet.","Gather appropriate list of managed runtime assemblies for crossen and (eventually) linker  Today, crossgen (new ReadyToRun feature) operates over all files to publish and filters out what is not IL. We have decided that the compilation set should be restr",3539,nguerrera,sdk
+3547,"non-embedded comreference does not show up in deps file, throws FileNotFoundException at runtime","","non-embedded comreference does not show up in deps file, throws FileNotFoundException at runtime  ",3539,nguerrera,sdk
+2660,Deps file includes runtime assets even for project references with Private=false,"`ProjectReference` with `Private=false` will not copy the referenced project's output to the application output folder (the desired behavior with `Private=false`). But it will still include the output as a runtime asset in the generated `.deps.json`. This effectively corrupts the application, such app won't load (fails in host during `.deps.json` processing).
+
+This is also undesirable for producing plugin-like libraries. If I'm building a plugin, which will be loaded to an app at runtime, I don't want to include any assemblies which are provided by the app, but I still need to reference them during build. For `PackageReference` dependencies I can use `<ExcludeAssets>runtime</ExcludeAssets>` and that will produce the desired behavior. But for `ProjectReference` no such option exists (as far as I know).
+
+Related to #1259 which was about adding the assets back to `.deps.json` (so effectively the exact opposite of this issue). My understanding of that issue is that we still want to keep the compile assets in the `.deps.json` if `PreserveCompilationContext` is specified. Exactly just like the `ExcludeAssets=runtime` behaves in case of NuGet packages. But the fix for #1259 was probably too aggressive and it added the runtime assets as well.
+
+@ericstj @eerhardt @livarcocc @nguerrera",Deps file includes runtime assets even for project references with Private=false  `ProjectReference` with `Private=false` will not copy the referenced project's output to the application output folder (the desired behavior with `Private=false`). But it wi,3539,nguerrera,sdk
+3548,"Linker cannot remove user non-framework, non-package references from deps file","","Linker cannot remove user non-framework, non-package references from deps file  ",3539,nguerrera,sdk
+7551,"Provide guidance in VS 2015 about applying ""sdk"": ""version"" in global.json","We should add guidance to help users when a newer .NET CLI is on the path that does not support project.json. I expect that project.json and I will be with us for a long while as not everyone will upgrade overnight.
+
+Clearly, this would require servicing VS 2015 tooling which we likely wouldn't do just for this issue. However, if we *do* choose to service VS 2015 tooling, we should consider doing this at the same time.
+
+
+
+","Provide guidance in VS 2015 about applying ""sdk"": ""version"" in global.json  We should add guidance to help users when a newer .NET CLI is on the path that does not support project.json. I expect that project.json and I will be with us for a long while as",3506,jkoritzinsky,sdk
+7573,"dotnet migrate should fail to migrate projects that have ""shared"" properties in their project.json.","## Steps to reproduce
+- git clone git@github.com:aspnet/Mvc.git
+- git checkout 305748a800bf00573e602905712045cc0bdfd267
+- dotnet migrate
+
+## Expected  behavior
+- Migration should fail due to [some projects](https://github.com/aspnet/Mvc/blob/305748a800bf00573e602905712045cc0bdfd267/test/Microsoft.AspNetCore.Mvc.TestDiagnosticListener.Sources/project.json#L2) relying on the shared: *.cs behavior of `Microsoft.AspNetCore.Mvc.TestDiagnosticListener.Sources`
+
+## Actual behavior
+- Migration succeeds but attempting to build any project that depended on `Microsoft.AspNetCore.Mvc.TestDiagnosticListener.Sources` fails.
+
+A better approach would be to fail at migrate time stating that the property is not supported.
+
+## Environment data
+`dotnet --info` output:
+.NET Command Line Tools (1.0.0-rc4-004553)
+
+Product Information:
+ Version:            1.0.0-rc4-004553
+ Commit SHA-1 hash:  6568113e34
+
+Runtime Environment:
+ OS Name:     Windows
+ OS Version:  10.0.14393
+ OS Platform: Windows
+ RID:         win10-x64
+ Base Path:   C:\Users\nimullen\AppData\Local\Microsoft\dotnet\sdk\1.0.0-rc4-004553
+
+
+
+
+","dotnet migrate should fail to migrate projects that have ""shared"" properties in their project.json.  ## Steps to reproduce
+- git clone git@github.com:aspnet/Mvc.git
+- git checkout 305748a800bf00573e602905712045cc0bdfd267
+- dotnet migrate
+
+## Expected",3506,jkoritzinsky,sdk
+3010,GenerateDepsFile no longer respects FilesToSkip from runtime packs,"- Runtime pack dependencies in deps.json and in the DependencyContext model have a ""runtimepack."" prefix prependend to the nuget package id (see https://github.com/dotnet/sdk/commit/16eddf3d635133c35f42974dcd491c8263066b37#diff-0723634e548f98293eebe3970b71e0ddR328).
+- The heuristic in `GetPackageParts` gets the package id from the name of a nuspec in a parent directory:
+ https://github.com/dotnet/sdk/blob/ab2176b3447e3e7820b5a340408110b6d498f907/src/Tasks/Common/NuGetUtils.cs#L48-L52
+
+`GenerateDepsFile` uses `GetPackageParts` to build the list of packages with dependencies to remove. When it looks for files to trim from the dependency model, it doesn't match any of the dependencies that have the ""runtimepack."" prefix, so those files don't get skipped.
+","GenerateDepsFile no longer respects FilesToSkip from runtime packs  - Runtime pack dependencies in deps.json and in the DependencyContext model have a ""runtimepack."" prefix prependend to the nuget package id (see https://github.com/dotnet/sdk/commit/16edd",3086,dsplaisted,sdk
+361,Use LockFile.PackageFolders instead of NuGetPathContext when it is available,"In `Microsoft.NET.Build.Tasks.NuGetPackageResolver`, use `LockFile.PackageFolders` instead of `NuGetPathContext` when it is available.
+
+From Justin:
+
+> When resolving packages from a project.lock.json or project.assets.json file the folder paths given in the file should be used instead of NuGetPathContext.
+> 
+> ResolvePackageDependencies should pass the paths to FallbackPackagePathResolver here: https://github.com/NuGet/NuGet.Client/blob/dev/src/NuGet.Core/NuGet.Packaging/FallbackPackagePathResolver.cs#L26
+> 
+> Passing NuGetPathContext will re-evaluate the global packages folder path, and that may not match the folder used by restore if it was passed in on the command line to restore. The value in the assets file however will contain exactly what restore used.
+
+When using NuGetPathContext, NuGet finds the paths to the global packages folder and fallback package folders by reading NuGet.Config, including the user wide NuGet.config. This could lead to errors for users running as a service or under a system account which doesn’t have a profile:
+
+> C:\Users\dotnetcoretest2\.nuget\packages\microsoft.net.sdk\1.0.0-alpha-20161029-1\build\Microsoft.PackageDependencyResolution.targets(138,5): error MSB4018: The ""ResolvePackageDependencies"" task failed unexpectedly. 
+> 
+> C:\Users\dotnetcoretest2\.nuget\packages\microsoft.net.sdk\1.0.0-alpha-20161029-1\build\Microsoft.PackageDependencyResolution.targets(138,5): error MSB4018: NuGet.Configuration.NuGetConfigurationException: Failed to read NuGet.Config due to unauthorized access. Path: 'C:\WINDOWS\system32\config\systemprofile\AppData\Roaming\NuGet\NuGet.Config'. ---> System.UnauthorizedAccessException: Access to the path 'C:\WINDOWS\system32\config\systemprofile' is denied. ","Use LockFile.PackageFolders instead of NuGetPathContext when it is available  In `Microsoft.NET.Build.Tasks.NuGetPackageResolver`, use `LockFile.PackageFolders` instead of `NuGetPathContext` when it is available.
+
+From Justin:
+
+> When resolving packag",2929,nguerrera,sdk
+2928,"Possible dead code handling null resolver, which doesn't appear to be possible","We create a resolver here:
+
+https://github.com/dotnet/sdk/blob/f0a1246be1ebe11a88097ac3dd5736f0ad15b855/src/Tasks/Microsoft.NET.Build.Tasks/GetPackageDirectory.cs#L30
+
+Which doesn't look like it can return null:
+
+https://github.com/dotnet/sdk/blob/f0a1246be1ebe11a88097ac3dd5736f0ad15b855/src/Tasks/Microsoft.NET.Build.Tasks/NuGetPackageResolver.cs#L71-L82
+
+But we check for null here:
+
+https://github.com/dotnet/sdk/blob/f0a1246be1ebe11a88097ac3dd5736f0ad15b855/src/Tasks/Microsoft.NET.Build.Tasks/GetPackageDirectory.cs#L43-L45
+
+@dsplaisted What's the origin of this comment. How can this be null in design time builds?
+
+Is there something else we are supposed to be handling?","Possible dead code handling null resolver, which doesn't appear to be possible  We create a resolver here:
+
+https://github.com/dotnet/sdk/blob/f0a1246be1ebe11a88097ac3dd5736f0ad15b855/src/Tasks/Microsoft.NET.Build.Tasks/GetPackageDirectory.cs#L30
+
+Whi",2929,nguerrera,sdk
+10666,Read default language for `dotnet new` from env var,"Read `DOTNET_NEW_PREFERRED_LANG` as default language for `dotnet new`.
+If not set, the default continue to be `C#`
+
+Currently to create F# projects, we need to specify `-lang f#` foreach `dotnet new` invocation.
+It's really annoying, and atm `dotnet new` doesnt yet support set the preference property.
+
+This option can be removed later, when `dotnet new` support set the default language (as normal config)
+
+With this pr
+
+```batch
+set DOTNET_NEW_PREFERRED_LANG=F#
+dotnet new console
+dotnet new lib
+```
+
+/cc @cartermp
+
+ref https://github.com/dotnet/sdk/issues/4224","Read default language for `dotnet new` from env var  Read `DOTNET_NEW_PREFERRED_LANG` as default language for `dotnet new`.
+If not set, the default continue to be `C#`
+
+Currently to create F# projects, we need to specify `-lang f#` foreach `dotnet new`",2887,dsplaisted,sdk
+7342,"CLI does not include satellite assemblies for msbuild, roslyn, fsharp, nuget","We need to figure out how to distribute satellite assemblies for msbuild and Roslyn with CLI in order to get csc and msbuild output translated in addition to messages coming directly from the CLI. I don't know about msbuild yet, but for Roslyn, it appears that to date these satellite assemblies are packaged only in the VS language pack, but not in nuget packages.
+
+## Steps to reproduce
+
+* `dotnet msbuild` on French OS installed with French VS language pack:
+
+## Expected  behavior
+Like desktop msbuild, output is translated:
+
+```
+D:>msbuild /nologo /v:m
+MSBUILD : error MSB1011: Spécifiez le fichier projet ou solution à utiliser car ce dossier en contient plusieurs.
+```
+
+## Actual behavior
+
+Output is not translated:
+```
+D:\Src\sdk>dotnet msbuild /nologo /v:m
+MSBUILD : error MSB1011: Specify which project or solution file to use because this folder contains more than one project or solution file.
+```
+
+## Environment data
+```
+.NET Command Line Tools (1.0.0-preview4-004215)
+
+Product Information:
+ Version:            1.0.0-preview4-004215
+ Commit SHA-1 hash:  7a0d3e255a
+
+Runtime Environment:
+ OS Name:     Windows
+ OS Version:  10.0.14393
+ OS Platform: Windows
+ RID:         win10-x64
+ Base Path:   C:\Program Files\dotnet\sdk\1.0.0-preview4-004215
+```","CLI does not include satellite assemblies for msbuild, roslyn, fsharp, nuget  We need to figure out how to distribute satellite assemblies for msbuild and Roslyn with CLI in order to get csc and msbuild output translated in addition to messages coming dir",2887,dsplaisted,sdk
+2792,RuntimeFrameworkVersion for 3.0 apps,"Filing on behalf of @DamianEdwards @davidfowl 
+
+It appears the RuntimeFrameworkVersion property is no longer honored in netcoreapp3.0 projects. If our recollection is correct, the plan was to use this property so customers could define the versions used by FrameworkReference. 
+
+Open question: how to handle the difference between shared framework versions. After RTM, we should (in theory) always patch all in-box shared frameworks. But during per-release, however, these versions will rarely align. ","RuntimeFrameworkVersion for 3.0 apps  Filing on behalf of @DamianEdwards @davidfowl 
+
+It appears the RuntimeFrameworkVersion property is no longer honored in netcoreapp3.0 projects. If our recollection is correct, the plan was to use this property so cu",2887,dsplaisted,sdk
+1299,Very high memory consumption during build (4GB),"Apologies if this is not the right place. Please redirect me if you want me to put this info somewhere else.
+
+/cc @rainersigwald 
+
+**Repo Steps**:
+
+clone https://github.com/aspnet/Mvc
+run build.cmd
+
+**dotnet --info**
+```
+.NET Command Line Tools (2.0.0-preview2-006215)
+
+Product Information:
+ Version:            2.0.0-preview2-006215
+ Commit SHA-1 hash:  e67962b0de
+
+Runtime Environment:
+ OS Name:     Windows
+ OS Version:  10.0.14393
+ OS Platform: Windows
+ RID:         win10-x64
+ Base Path:   C:\Users\rynowak\.dotnet\x64\sdk\2.0.0-preview2-006215\
+
+Microsoft .NET Core Shared Framework Host
+
+  Version  : 2.0.0-preview1-002111-00
+  Build    : 1ff021936263d492539399688f46fd3827169983
+```
+
+**Here's a dump**
+![image](https://cloud.githubusercontent.com/assets/1430011/26758026/a30a9118-4886-11e7-9406-0818abafcf86.png)
+
+
+[dotnet.zip](https://github.com/dotnet/sdk/files/1050051/dotnet.zip)
+","Very high memory consumption during build (4GB)  Apologies if this is not the right place. Please redirect me if you want me to put this info somewhere else.
+
+/cc @rainersigwald 
+
+**Repo Steps**:
+
+clone https://github.com/aspnet/Mvc
+run build.cmd",2853,drewnoakes,sdk
+3744,[release/3.0.1xx] Update dependencies from dotnet/core-setup,"This pull request updates the following dependencies
+
+[marker]: <> (Begin:ee7760b1-2875-4869-d002-08d7114cdbad)
+## From https://github.com/dotnet/core-setup
+- **Build**: 20191011.02
+- **Date Produced**: 10/11/2019 3:47 PM
+- **Commit**: 19942e71998242599a0b6d4496066eaa38588af5
+- **Branch**: refs/heads/release/3.0
+- **Updates**:
+  - **Microsoft.NET.HostModel** -> 3.0.1
+
+[marker]: <> (End:ee7760b1-2875-4869-d002-08d7114cdbad)
+","[release/3.0.1xx] Update dependencies from dotnet/core-setup  This pull request updates the following dependencies
+
+[marker]: <> (Begin:ee7760b1-2875-4869-d002-08d7114cdbad)
+## From https://github.com/dotnet/core-setup
+- **Build**: 20191011.02
+- **Da",2853,drewnoakes,sdk
+3605,Block publishing in single C++ and building exe,"","Block publishing in single C++ and building exe  ",2853,drewnoakes,sdk
+10124,dotnet build on Azure Function project results in unexpected output in bin folder,"Since a couple of days ago I am running into some problems when trying to build and publish my Azure Function on a buildserver. When I build and publish my function on my local machine, it works fine but on the build server I get a different result. I've tried different versions of the .NET SDK but that does not seem to matter. Any ideas?
+
+## Steps to reproduce
+- Create an Azure Function v2 project in Visual Studio
+- dotnet build -c Release
+- open bin/Release folder
+
+## Expected  behavior
+Folder with bin folder like this (this is the expected result I get on my local machine):
+![functions2](https://user-images.githubusercontent.com/9202734/53008000-aefadd80-3438-11e9-8524-7938eab21906.PNG)
+
+## Actual behavior
+Folder with minimal files like this (this is the output on the build server):
+![functions1](https://user-images.githubusercontent.com/9202734/53008003-b15d3780-3438-11e9-87a5-0016537deb4c.PNG)
+
+## Environment data
+`dotnet --info` output:
+
+ Version:   2.2.103
+ Commit:    8edbc2570a
+
+Runtime Environment:
+ OS Name:     Windows
+ OS Version:  10.0.17134
+ OS Platform: Windows
+ RID:         win10-x64
+ Base Path:   C:\Program Files\dotnet\sdk\2.2.103\
+
+Host (useful for support):
+  Version: 2.2.2
+  Commit:  a4fd7b2c84
+
+.NET Core SDKs installed:
+  1.0.0-preview2-003131 [C:\Program Files\dotnet\sdk]
+  1.0.0-preview2.1-003155 [C:\Program Files\dotnet\sdk]
+  1.0.0 [C:\Program Files\dotnet\sdk]
+  1.1.0 [C:\Program Files\dotnet\sdk]
+  2.0.0 [C:\Program Files\dotnet\sdk]
+  2.1.201 [C:\Program Files\dotnet\sdk]
+  2.1.402 [C:\Program Files\dotnet\sdk]
+  2.2.101 [C:\Program Files\dotnet\sdk]
+  2.2.103 [C:\Program Files\dotnet\sdk]
+
+.NET Core runtimes installed:
+  Microsoft.AspNetCore.All 2.1.4 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.All 2.2.0 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.All 2.2.1 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.All 2.2.2 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.App 2.1.4 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 2.2.0 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 2.2.1 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 2.2.2 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.NETCore.App 1.0.1 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 1.0.4 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 1.0.5 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 1.1.0-preview1-001100-00 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 1.1.1 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 1.1.2 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.0.0 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.0.7 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.1.4 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.2.0 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.2.1 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.2.2 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+
+## Project File
+```
+<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ProjectGuid>27415456-5db4-49ec-91d7-acb9303c6dec</ProjectGuid>
+    <AzureFunctionsVersion>v2</AzureFunctionsVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include=""IdentityModel"" Version=""3.10.1"" />
+    <PackageReference Include=""Microsoft.Azure.WebJobs.Extensions.SignalRService"" Version=""1.0.0-preview1-10002"" />
+    <PackageReference Include=""Microsoft.NET.Sdk.Functions"" Version=""1.0.*"" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update=""host.json"">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update=""local.settings.json"">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+</Project>
+```",dotnet build on Azure Function project results in unexpected output in bin folder  Since a couple of days ago I am running into some problems when trying to build and publish my Azure Function on a buildserver. When I build and publish my function on my l,2738,dsplaisted,sdk
+2527,KnownFrameworkReferences need to be specific to a target framework version,"Right now, we have `KnownFrameworkReference` items that look something like this in Microsoft.NETCoreSdk.BundledVersions.props:
+
+```xml
+    <KnownFrameworkReference Include=""Microsoft.DesktopUI""
+                              RuntimeFrameworkName=""Microsoft.DesktopUI.App""
+                              DefaultRuntimeFrameworkVersion=""3.0.0-alpha-26829-8""
+                              LatestRuntimeFrameworkVersion=""3.0.0-alpha-26829-8""
+                              TargetingPackName=""Microsoft.DesktopUI.App""
+                              TargetingPackVersion=""3.0.0-alpha-26829-8""
+                              />
+
+    <KnownFrameworkReference Include=""Microsoft.AspNetCore""
+                              RuntimeFrameworkName=""Microsoft.AspNetCore.App""
+                              DefaultRuntimeFrameworkVersion=""3.0.0-alpha1-10062""
+                              LatestRuntimeFrameworkVersion=""3.0.0-alpha1-10062""
+                              TargetingPackName=""Microsoft.AspNetCore.App""
+                              TargetingPackVersion=""3.0.0-alpha1-10062""
+                              />
+```
+
+These are not specific to the version of .NET Core targeted.  So if you were targeting .NET Core 2.x, you could still add a `FrameworkReference` to Microsoft.DesktopUI, and we would try to add the package reference to the targeting pack.
+
+The `KnownFrameworkReference` items should include a `TargetFrameworkVersion` on them to which they apply, and the `ResolveFrameworkReferences` task should filter them to only look at the ones that apply to the current target framework version.  (We might also want a nice error message if you have a FrameworkReference to something that's available in a different version of .NET Core).","KnownFrameworkReferences need to be specific to a target framework version  Right now, we have `KnownFrameworkReference` items that look something like this in Microsoft.NETCoreSdk.BundledVersions.props:
+
+```xml
+    <KnownFrameworkReference Include=""Mi",2738,dsplaisted,sdk
+10061,dotnet new angular boilerplate doesn't connect API with client,"## Steps to reproduce
+
+1. `dotnet new angular --name=MyApp`
+2. `cd MyApp`
+3. `dotnet build`
+4. `dotnet run`
+5. Open the url that the terminal displays in the browser, e.g., http://localhost:53000
+6. Click the Fetch Data button in the top nav
+
+## Expected  behavior
+- Data should be displayed  
+- The network tab should show a 200 OK for the endpoint /api/SampleData/WeatherForecasts
+
+## Actual behavior
+- Loading... is displayed indefinitely
+- The network tab returns a 404 NOT FOUND for the endpoint /api/SampleData/WeatherForecasts
+
+![image](https://user-images.githubusercontent.com/13296622/51394398-80b37680-1af7-11e9-9f40-61f00455b299.png)
+
+
+## Environment data
+`dotnet --info` output:
+
+```
+.NET Core SDK (reflecting any global.json):
+ Version:   2.2.103
+ Commit:    8edbc2570a
+
+Runtime Environment:
+ OS Name:     Windows
+ OS Version:  10.0.17763
+ OS Platform: Windows
+ RID:         win10-x64
+ Base Path:   C:\Program Files\dotnet\sdk\2.2.103\
+
+Host (useful for support):
+  Version: 2.2.1
+  Commit:  878dd11e62
+
+.NET Core SDKs installed:
+  2.1.202 [C:\Program Files\dotnet\sdk]
+  2.1.500 [C:\Program Files\dotnet\sdk]
+  2.1.503 [C:\Program Files\dotnet\sdk]
+  2.2.103 [C:\Program Files\dotnet\sdk]
+
+.NET Core runtimes installed:
+  Microsoft.AspNetCore.All 2.1.6 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.All 2.1.7 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.All 2.2.1 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.App 2.1.6 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 2.1.7 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 2.2.1 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.NETCore.App 2.0.9 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.1.6 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.1.7 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.2.1 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+```
+
+
+
+
+
+","dotnet new angular boilerplate doesn't connect API with client  ## Steps to reproduce
+
+1. `dotnet new angular --name=MyApp`
+2. `cd MyApp`
+3. `dotnet build`
+4. `dotnet run`
+5. Open the url that the terminal displays in the browser, e.g., http://local",2646,peterhuene,sdk
+933,Filtering CopyLocalLockFileAssemblies,"When you use CopyLocalLockFileAssemblies with a netcoreapp project, it copies shared framework assets too.
+
+While you can use publish instead to copy without those assemblies, there are circumstances where its more practical and efficient to just have the single build step. In particular pack is driven by build output not publish output. Consider the case where I want to flatten dependencies in a nupkg (e.g. as currently required to package msbuild tasks).
+
+One way to address this would be to just have a flag to apply the same filtering as publish to CopyLocalLockFileAssemblies.
+
+Alternatively, I find myself wishing that I could just slap metadata on my package references to exclude their full closure from CopyLocal. ExcludeAssets=Runtime almost works, but if I have another sibling package that pulls in overlapping assets in its closure, they get re-included.
+
+In the msbuild task scenario, I really want to say ""copy everything that is not in the closure of Microsoft.NETCore.App, Microsoft.Build.Framework, or Microsoft.Build.Utilities.Core""
+
+I managed to get close enough to that with this workaround:
+
+``` XML  
+<PropertyGroup>
+  <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+</PropertyGroup>
+
+<ItemGroup>
+  <PackageReference Include=""Microsoft.Build.Framework"" Version=""15.1.548"" ExcludeAssets=""Runtime"" />
+  <PackageReference Include=""Microsoft.Build.Utilities.Core"" Version=""15.1.548"" ExcludeAssets=""Runtime"" />
+</ItemGroup>
+
+<!-- Remove files from copy local that would not be published as they are provided by the platform package -->
+<Target Name=""FilterCopyLocal"" DependsOnTargets=""RunResolvePublishAssemblies"" BeforeTargets=""ResolveLockFileCopyLocalProjectDeps"">
+  <ItemGroup>
+    <_CopyLocalButNotPublished Include=""@(AllCopyLocalItems)"" Exclude=""@(ResolvedAssembliesToPublish)"" />
+    <AllCopyLocalItems Remove=""@(_CopyLocalButNotPublished)"" />
+  </ItemGroup>
+</Target>
+```","Filtering CopyLocalLockFileAssemblies  When you use CopyLocalLockFileAssemblies with a netcoreapp project, it copies shared framework assets too.
+
+While you can use publish instead to copy without those assemblies, there are circumstances where its more",2646,peterhuene,sdk
+3132,Publish to Single-File,"This change implements support for publishing apps to a [single file](https://github.com/dotnet/designs/blob/master/accepted/single-file/design.md).
+
+* ``dotnet publish /p:PublishSingleFile=true`` causes the contents of the ""original"" publish directory to a single file in the actual publish directory
+* Files marked with the meta-data ``<ExcludeFromSingleFile>false<ExcludeFromSingleFile>`` are left in the publish directory unbundled. This includes PDB files by default
+* PDB files can be bundled into the single file by setting ``/p:IncludeSymbolsInSingleFile=true``
+
+Publishing to a single file requires publishing wrt a RID using an apphost, because the generated file is the platform-specific AppHost executable with embedded dependencies.","Publish to Single-File  This change implements support for publishing apps to a [single file](https://github.com/dotnet/designs/blob/master/accepted/single-file/design.md).
+
+* ``dotnet publish /p:PublishSingleFile=true`` causes the contents of the ""orig",2382,dsplaisted,sdk
+2090,Updating GenerateDepsFile so that direct references of referenced projects appear in the deps.json,"FYI. @dotnet/dotnet-cli, @eerhardt 
+
+Only tested locally so far, will be adding tests shortly. Putting this up for early feedback (in case I did something obviously wrong).
+
+This resolves https://github.com/dotnet/sdk/issues/2041 and https://github.com/dotnet/sdk/issues/1609","Updating GenerateDepsFile so that direct references of referenced projects appear in the deps.json  FYI. @dotnet/dotnet-cli, @eerhardt 
+
+Only tested locally so far, will be adding tests shortly. Putting this up for early feedback (in case I did somethin",2382,dsplaisted,sdk
+1574,Revert self-contained implicit versions to 1.0.5/1.1.2/2.0.0,"NOTE: This just bumps the versions back down with reverting the whole commit because
+
+1. We need a fix in that commit to actually use 2.0.0 instead of the bundled version for framework-dependent apps
+2. There's test cleanup that allows these versions to be changed and test to pass that we should keep.","Revert self-contained implicit versions to 1.0.5/1.1.2/2.0.0  NOTE: This just bumps the versions back down with reverting the whole commit because
+
+1. We need a fix in that commit to actually use 2.0.0 instead of the bundled version for framework-depend",2085,dsplaisted,sdk
+1570,Explicit restore for self-contained app behaves differently than implicit restore,"## Steps to reproduce
+1. mkdir ExplicitRestore
+1. cd ExplicitRestore
+1. dotnet new console --no-restore
+1. dotnet restore -r debian.8-x64
+Inspect the obj/project.assets.json to see what version of Microsoft.NETCore.App is used - Microsoft.NETCore.App/2.0.0
+
+1. mkdir ImplicitRestore
+1. cd ImplicitRestore
+1. dotnet new console --no-restore
+1. dotnet build -r debian.8-x64
+The build step fails - notice the version of Microsoft.NETCore.App being used - 
+'''
+/ImplicitRestore/ImplicitRestore.csproj : error NU1102: Unable to find package Microsoft.NETCore.App with version (>= 2.0.1)
+/ImplicitRestore/ImplicitRestore.csproj : error NU1102:   - Found 14 version(s) in nuget.org [ Nearest version: 2.0.0 ]
+'''
+
+## Expected  behavior
+I was expecting the two scenarios to behave the same.  Specifically I would expect them to be using the same version of Microsoft.NETCore.App - 2.0.1
+
+## Actual behavior
+Explicit restore uses Microsoft.NETCore.App 2.0.0 while the implicit restore uses 2.0.1.
+
+## Environment data
+`dotnet --info` output:
+
+```
+.NET Command Line Tools (2.0.1-servicing-006955)
+
+Product Information:
+ Version:            2.0.1-servicing-006955
+ Commit SHA-1 hash:  6734510020
+
+Runtime Environment:
+ OS Name:     debian
+ OS Version:  8
+ OS Platform: Linux
+ RID:         debian.8-x64
+ Base Path:   /usr/share/dotnet/sdk/2.0.1-servicing-006955/
+
+Microsoft .NET Core Shared Framework Host
+
+  Version  : 2.0.1
+  Build    : 5eb2f9bd659ad2161a8e035ac4bccd8f892caa0a
+```","Explicit restore for self-contained app behaves differently than implicit restore  ## Steps to reproduce
+1. mkdir ExplicitRestore
+1. cd ExplicitRestore
+1. dotnet new console --no-restore
+1. dotnet restore -r debian.8-x64
+Inspect the obj/project.asset",2085,dsplaisted,sdk
+1486,Build locates restore files in BaseIntermediateOutputPath instead of RestoreOutputPath,"Relevant source: https://github.com/dotnet/sdk/blob/98ea6b2a1701ee9e2e3dd8122c77d5a2adcc5bb7/src/Tasks/Microsoft.NET.Build.Tasks/build/Microsoft.PackageDependencyResolution.targets#L28
+
+If a user uses the `RestoreOutputPath` property to change the output path, `dotnet restore` will put the `project.assets.json` in that path. `dotnet build` will fail to find the assets file if `RestoreOutputPath` is does not resolve to the same location as `BaseIntermediateOutputPath`.",Build locates restore files in BaseIntermediateOutputPath instead of RestoreOutputPath  Relevant source: https://github.com/dotnet/sdk/blob/98ea6b2a1701ee9e2e3dd8122c77d5a2adcc5bb7/src/Tasks/Microsoft.NET.Build.Tasks/build/Microsoft.PackageDependencyResol,2010,dsplaisted,sdk
+1438,"Sdk should use $(ProjectAssetsFile) always, never reset it, and never assume it is named project.assets.json","Currently the `project.assets.json` for a project is defaulted to be `$(BaseIntermediateOutputPath)\project.assets.json` (where `$(BaseIntermediateOutputPath)` defaults to `obj`).
+
+This makes it such that two projects can no longer exist in the same folder by default (and will also cause conflicts if the user unwittingly updates `$(BaseIntermediateOutputPath)` to be shared across all projects in the solution, as can be done with `$(BaseOutputPath)`, rather than ensuring that it remains unique per-project).
+
+I propose that the `project.assets.json` file be updated to include either `MSBuildProjectName` or `AssemblyName` (in other places in the SDK, `AssemblyName` seems to be the preferred prefix) by default or for a switch to be added to easily enable this functionality.
+","Sdk should use $(ProjectAssetsFile) always, never reset it, and never assume it is named project.assets.json  Currently the `project.assets.json` for a project is defaulted to be `$(BaseIntermediateOutputPath)\project.assets.json` (where `$(BaseIntermedia",2010,dsplaisted,sdk
+1057,Provide a way to override the output location of the assets.json file,"It seems that right now, the assets.json file is always output into [`$(BaseIntermediateOutputPath)`](https://github.com/dotnet/sdk/blob/b76e22d01bd8ce8ce0b0997a6800e804986bf29c/src/Tasks/Microsoft.NET.Build.Tasks/build/Microsoft.PackageDependencyResolution.targets#L28). NuGet respects a different property, [`$(RestoreOutputPath)`](https://github.com/NuGet/NuGet.Client/blob/68245312b050c5b992120448353eba3e20cdc414/src/NuGet.Core/NuGet.Build.Tasks/NuGet.targets#L422-L429 ).
+
+I would just like a single, well-supported way to override the location.
+
+@eerhardt","Provide a way to override the output location of the assets.json file  It seems that right now, the assets.json file is always output into [`$(BaseIntermediateOutputPath)`](https://github.com/dotnet/sdk/blob/b76e22d01bd8ce8ce0b0997a6800e804986bf29c/src/Ta",2010,dsplaisted,sdk
+1077,"Update VS install on CI machines to a version with the bundled .NET Core / .NET Standard .props, and re-enable tests","In #1052, I'm removing the `RuntimeFrameworkVersion` from test projects that target .NET Core 2.0.  This doesn't work with the version of VS installed on the CI machines yet, so I'm disabling the following tests on full framework:
+
+- Microsoft.NET.Build.Tests.GivenThatWeWantToReferenceAnAssembly.ItRunsAppsDirectlyReferencingAssemblies
+- Microsoft.NET.Build.Tests.GivenThatWeWantToVerifyProjectReferenceCompat.Project_reference_compat (when targeting .NET Core 2.0)
+- Microsoft.NET.Build.Tests.GivenThatWeWantToVerifyNuGetReferenceCompat.Nuget_reference_compat (when targeting .NET Core 2.0 or .NET Standard 2.0)
+- Microsoft.NET.Publish.Tests.GivenThatWeWantToPublishAHelloWorldProject.Conflicts_are_resolved_when_publishing_a_portable_app
+- Microsoft.NET.Publish.Tests.GivenThatWeWantToPublishAHelloWorldProject.Conflicts_are_resolved_when_publishing_a_self_contained_app
+- Microsoft.NET.Publish.Tests.GivenThatWeWantToPublishAHelloWorldProject.Publish_standalone_post_netcoreapp2_app_and_it_should_run
+- Microsoft.NET.Publish.Tests.GivenThatWeWantToPublishAHelloWorldProject.Conflicts_are_resolved_when_publishing_a_portable_app
+
+We need to update the CI machines to a newer version of VS and then re-enable these tests.
+
+See also #1041, we will probably fix both of these together.","Update VS install on CI machines to a version with the bundled .NET Core / .NET Standard .props, and re-enable tests  In #1052, I'm removing the `RuntimeFrameworkVersion` from test projects that target .NET Core 2.0.  This doesn't work with the version of",2008,galvesribeiro,orleans
+1077,"Update VS install on CI machines to a version with the bundled .NET Core / .NET Standard .props, and re-enable tests","In #1052, I'm removing the `RuntimeFrameworkVersion` from test projects that target .NET Core 2.0.  This doesn't work with the version of VS installed on the CI machines yet, so I'm disabling the following tests on full framework:
+
+- Microsoft.NET.Build.Tests.GivenThatWeWantToReferenceAnAssembly.ItRunsAppsDirectlyReferencingAssemblies
+- Microsoft.NET.Build.Tests.GivenThatWeWantToVerifyProjectReferenceCompat.Project_reference_compat (when targeting .NET Core 2.0)
+- Microsoft.NET.Build.Tests.GivenThatWeWantToVerifyNuGetReferenceCompat.Nuget_reference_compat (when targeting .NET Core 2.0 or .NET Standard 2.0)
+- Microsoft.NET.Publish.Tests.GivenThatWeWantToPublishAHelloWorldProject.Conflicts_are_resolved_when_publishing_a_portable_app
+- Microsoft.NET.Publish.Tests.GivenThatWeWantToPublishAHelloWorldProject.Conflicts_are_resolved_when_publishing_a_self_contained_app
+- Microsoft.NET.Publish.Tests.GivenThatWeWantToPublishAHelloWorldProject.Publish_standalone_post_netcoreapp2_app_and_it_should_run
+- Microsoft.NET.Publish.Tests.GivenThatWeWantToPublishAHelloWorldProject.Conflicts_are_resolved_when_publishing_a_portable_app
+
+We need to update the CI machines to a newer version of VS and then re-enable these tests.
+
+See also #1041, we will probably fix both of these together.","Update VS install on CI machines to a version with the bundled .NET Core / .NET Standard .props, and re-enable tests  In #1052, I'm removing the `RuntimeFrameworkVersion` from test projects that target .NET Core 2.0.  This doesn't work with the version of",2008,dsplaisted,sdk
+1293,Tool deps file generation tests fail when run on full Framework MSBuild,"The tests in `GivenThatWeWantToGenerateADepsFileForATool` are failing when running on full Framework MSBuild with the following error:
+
+> C:\git\dotnet-sdk\bin\Debug\Sdks\Microsoft.NET.Sdk\build\GenerateDeps\GenerateDeps.proj(29,5): error MSB4184: The expression ""[System.IO.Path]::GetDirectoryName(""C:\git\dotnet-sdk\packages\.tools\testtool\1.0.0\netcoreapp2.0\project.assets.json"")"" cannot be evaluated. Illegal characters in path.
+
+The scenarios these tests cover aren't applicable to full framework MSBuild, but it is unexpected that they would fail in this way.  We should investigate what is going on.","Tool deps file generation tests fail when run on full Framework MSBuild  The tests in `GivenThatWeWantToGenerateADepsFileForATool` are failing when running on full Framework MSBuild with the following error:
+
+> C:\git\dotnet-sdk\bin\Debug\Sdks\Microsoft",2008,galvesribeiro,orleans
+1293,Tool deps file generation tests fail when run on full Framework MSBuild,"The tests in `GivenThatWeWantToGenerateADepsFileForATool` are failing when running on full Framework MSBuild with the following error:
+
+> C:\git\dotnet-sdk\bin\Debug\Sdks\Microsoft.NET.Sdk\build\GenerateDeps\GenerateDeps.proj(29,5): error MSB4184: The expression ""[System.IO.Path]::GetDirectoryName(""C:\git\dotnet-sdk\packages\.tools\testtool\1.0.0\netcoreapp2.0\project.assets.json"")"" cannot be evaluated. Illegal characters in path.
+
+The scenarios these tests cover aren't applicable to full framework MSBuild, but it is unexpected that they would fail in this way.  We should investigate what is going on.","Tool deps file generation tests fail when run on full Framework MSBuild  The tests in `GivenThatWeWantToGenerateADepsFileForATool` are failing when running on full Framework MSBuild with the following error:
+
+> C:\git\dotnet-sdk\bin\Debug\Sdks\Microsoft",2008,dsplaisted,sdk
+1632,The SDK should not succeed in building netstandard2.1,See PR https://github.com/dotnet/sdk/pull/1603,The SDK should not succeed in building netstandard2.1  See PR https://github.com/dotnet/sdk/pull/1603,1989,dsplaisted,sdk
+1608,NETStandard.Library 2.0.2 should be picked up in SDK servicing,/cc @livarcocc @dsplaisted,NETStandard.Library 2.0.2 should be picked up in SDK servicing  /cc @livarcocc @dsplaisted,1989,dsplaisted,sdk
+479,ResolvePackageDependencies produces incorrect Resolved paths for project references,"ResolvePackageDependencies resolves paths for project references were computed based on the project root, which was originally [based on the location of the project lock file](https://github.com/dotnet/sdk/blob/39b7aba65043f9cb3cb7fce1b7466b5985d3b960/src/Tasks/Microsoft.NET.Build.Tasks/ResolvePackageDependencies.cs#L429). This needs to be updated or removed since the assets file has moved, and the assets file may contain more appropriate root folder information.
+
+The resolved path for project references is not actually used anywhere currently, so this bug does not cause any problems, but should be fixed anyway.","ResolvePackageDependencies produces incorrect Resolved paths for project references  ResolvePackageDependencies resolves paths for project references were computed based on the project root, which was originally [based on the location of the project lock",1442,BrunoJuchli,sdk
+1435,ResolvePackageDependencies produces invalid ResolvedPath for `<ProjectReference .../>`,"Running on latest previews (VS2017.3 Preview 4, .net sdk 2.0.0-preview2-006497) my build fails because the `ResolvePackageDependencies` Task produces invalid results / output. I'm building from within VS.
+
+In short, a path included in `@(PackageDefinitions->'%(ResolvedPath)'` is wrong. Here is the actual vs the expected path:
+
+> C:\Development\StaticProxy.Fody.VS2017\IntegrationTests\StaticProxy.Fody\StaticProxy.Fody.csproj
+C:\Development\StaticProxy.Fody.VS2017\StaticProxy.Fody\StaticProxy.Fody.csproj
+
+The actual path does not exist, that's why a consumer of this path fails.
+
+The complete output for that particular PackageDefinition (which results from a `<ProjectReference Include=""..\StaticProxy.Fody\StaticProxy.Fody.csproj"" />`) is:
+
+> 2>                StaticProxy.Fody/1.0.0
+> 2>                        Name=StaticProxy.Fody
+> 2>                        Path=../StaticProxy.Fody/StaticProxy.Fody.csproj
+> 2>                        ResolvedPath=C:\Development\StaticProxy.Fody.VS2017\IntegrationTests\StaticProxy.Fody\StaticProxy.Fody.csproj
+> 2>                        Type=project
+> 2>                        Version=1.0.0
+
+Excerpts from the *.csproj of the project (targeting net462) follows, but I would like to mention that some of the projects in the solution actualy do target netstandard - don't know if that makes a difference?
+
+	<?xml version=""1.0"" encoding=""utf-8""?>
+	<Project Sdk=""Microsoft.NET.Sdk"">
+	  <PropertyGroup>
+		<TargetFrameworks>net462</TargetFrameworks>
+	  </PropertyGroup>
+	  <ItemGroup>
+		<Reference Include=""System"" />
+		...
+		<PackageReference Include=""Castle.Core"" Version=""4.1.1"" />
+		...
+      </ItemGroup>
+	  ...
+	  <ItemGroup>
+		<ProjectReference Include=""..\StaticProxy.Fody\StaticProxy.Fody.csproj"" />
+	  </ItemGroup>
+	</Project>
+
+
+Link to project: https://github.com/BrunoJuchli/StaticProxy.Fody/tree/7d8b924d90759cb3248803514ba631463358494a/
+
+Diagnostic MSBuild Log: https://gist.github.com/BrunoJuchli/c5c8b5e74571cbaa99e8e8e5997acaf3/raw/9bc0f0bd94cd77ccf0cbfb58bf66982dfca961bb/MsBuildLog.txt","ResolvePackageDependencies produces invalid ResolvedPath for `<ProjectReference .../>`  Running on latest previews (VS2017.3 Preview 4, .net sdk 2.0.0-preview2-006497) my build fails because the `ResolvePackageDependencies` Task produces invalid results /",1442,BrunoJuchli,sdk
+1415,dotnet sdk 2.0 degrades shared projects experience in VS,"**Before upgrading from 1.0.1 to 2.0**
+Clone https://github.com/dotnet/symreader-converter
+Sync to commit 98c41bf14a75994269df842b314c8a32d8e4aa3b.
+
+Run ```restore.cmd``` and open SymReaderConverter.sln in VS.
+![image](https://user-images.githubusercontent.com/41759/28233427-a7a3a684-68ab-11e7-9e2b-78cd517a7230.png)
+
+**After upgrade**
+Sync to PR https://github.com/dotnet/symreader-converter/pull/67.
+Run ```git clean -xfd```, ```restore.cmd```, and open SymReaderConverter.sln in VS.
+
+![image](https://user-images.githubusercontent.com/41759/28233531-568c6c80-68ac-11e7-87e2-ec39d68035c1.png)
+
+Notice all the linked files that shouldn't be displayed in the project.","dotnet sdk 2.0 degrades shared projects experience in VS  **Before upgrading from 1.0.1 to 2.0**
+Clone https://github.com/dotnet/symreader-converter
+Sync to commit 98c41bf14a75994269df842b314c8a32d8e4aa3b.
+
+Run ```restore.cmd``` and open SymReaderConv",1432,dsplaisted,sdk
+7092,"Unable to start process ""dotnet-projectmodel-server"" while starting VS2015","## Steps to reproduce
+Install dotnet cli sdk 1.0.0-preview3-004050
+Open an xproj based solution (I opened the [nuget.core](https://github.com/NuGet/NuGet.Client) solution, Not sure if this is an issue with all xproj solutions.)
+
+## Expected  behavior
+Solution should load without error
+
+## Actual behavior
+
+Get an error - 
+
+![2016-11-04](https://cloud.githubusercontent.com/assets/10507120/20018227/26ccc3ee-a284-11e6-82ab-113cfeb523b8.png)
+
+
+
+## Environment data
+`dotnet --info` output:
+
+```
+E:\nuget\NuGet.Client [dev ≡]> dotnet --info
+.NET Command Line Tools (1.0.0-preview2-003121)
+
+Product Information:
+ Version:            1.0.0-preview2-003121
+ Commit SHA-1 hash:  1e9d529bc5
+
+Runtime Environment:
+ OS Name:     Windows
+ OS Version:  10.0.14393
+ OS Platform: Windows
+ RID:         win10-x86
+
+```
+
+## Extra
+
+Not sure if dev14 is suppose to play nice with preview3. Raising a bug for visibility.
+
+","Unable to start process ""dotnet-projectmodel-server"" while starting VS2015  ## Steps to reproduce
+Install dotnet cli sdk 1.0.0-preview3-004050
+Open an xproj based solution (I opened the [nuget.core](https://github.com/NuGet/NuGet.Client) solution, Not s",1432,dsplaisted,sdk
+1246,Automatically set Link metadata on items outside the project folder,"Fixes #1115 
+
+- Automatically add `Link` metadata for `Compile`, `AdditionalFiles`, `None`, `Content`, and `EmbeddedResource` items where:
+  - `Link` metadata is not already set, and
+  - The item’s `FullPath` is outside of the project directory
+- If setting the `Link` metadata automatically, the value will be set to `%(LinkBase)\%(RecursiveDir)%(Filename)%(Extension)`.  If `LinkBase` or `RecursiveDir` are not defined, then those pieces will be left out of the value.  So `<Compile Include=""..\Shared\**\*.cs"" LinkBase=""Shared"" />` would show the items under the ""Shared"" folder in solution explorer, instead of the root, and would preserve any heirarchy under the shared folder.
+- Allow opting out of automatically adding `Link` metadata by setting the `SetLinkMetadataAutomatically` property to false","Automatically set Link metadata on items outside the project folder  Fixes #1115 
+
+- Automatically add `Link` metadata for `Compile`, `AdditionalFiles`, `None`, `Content`, and `EmbeddedResource` items where:
+  - `Link` metadata is not already set, and",1432,dsplaisted,sdk
+1403,IDE shows missing netstandard.dll while build succeeds,"I’m using the latest (public) version of VS with the latest .NET Core tooling. I’m consuming a .NET Standard 2.0 library from a .NET Framework 4.6.1 project. The project builds and runs just fine, but shows errors in the IDE:
+
+![Errors in IDEs](https://user-images.githubusercontent.com/5169960/28092473-584c1fb8-6648-11e7-928e-5c3b78fa764f.jpg)
+
+## Repro steps
+
+1. Create a .NET Standard 2.0 class library
+2. Change the code of `Class1` as follows:
+    ```C#
+    using System;
+
+    public class Class1
+    {
+        public (string key, int value) GetData()
+        {
+            return (""Meaning of Life"", 42);
+        }
+    }
+    ```
+3. Create a .NET Framework 4.6.1 console app
+4. Add a reference to the class library you created earlier
+4. Change the code of `Program` as follows:
+    ```C#
+    using System;
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var c = new Class1();
+            var data = c.GetData();
+            Console.WriteLine(data);
+        }
+    }
+    ```
+
+## Expected Behavior
+
+No squiggles and no items in the error list.
+
+## Actual Behavior
+
+The error list shows the following errors:
+
+* CS0012: The type `ValueTuple<,>` is defined in an assembly that is not referenced. You must add a reference to assembly `netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51`.
+* CS1503: Argument 1: cannot convert from `(string key, int value)` to `bool`
+
+However, the project compiles & runs fine.
+
+## Findings
+
+From @davkean
+
+> It’s very likely the compiler isn’t being given the netstandard.dll via the design-time build. No idea how this gets added to a .NET Framework 4.6.1 project – but whomever adds that dll should investigate. They can get the results of a design-time build: https://github.com/dotnet/project-system/blob/master/docs/design-time-builds.md#getting-visual-studio-to-output-the-results-of-a-design-time-build.
+
+From @nguerrera 
+
+> Please file a bug on dotnet/sdk as that’s where the component that adds the netstandard ref to netframework projects [now lives](https://github.com/dotnet/sdk/blob/release/2.0.0/src/Tasks/Microsoft.NET.Build.Extensions.Tasks/msbuildExtensions/Microsoft/Microsoft.NET.Build.Extensions/Microsoft.NET.Build.Extensions.NETFramework.targets#L23-L25).
+ ","IDE shows missing netstandard.dll while build succeeds  I’m using the latest (public) version of VS with the latest .NET Core tooling. I’m consuming a .NET Standard 2.0 library from a .NET Framework 4.6.1 project. The project builds and runs just fine, bu",1407,dsplaisted,sdk
+1393,ResolveReferences inconsistencies,"I have a net461 console project using non-SDK tooling that references a netstandard1.4 library project that uses SDK tooling.
+
+If I build the solution, then call `ResolveReferences` on the console project, the `ImplicitlyExpandDesignTimeFacades` target detects that the referenced netstandard project references System.Runtime, and injects all the net461 facades.
+
+However, if I clean the solution, then call `ResolveReferences` again, `ImplicitlyExpandDesignTimeFacades` does _not_ detect the System.Runtime reference, as the referenced project has not yet been built and there is no assembly to inspect.
+
+However, if I do the same thing with a PCL instead of netstandard, `ResolveReferences` works correctly regardless of whether the project has been built or not.
+
+This is because [the logic for injecting the facades](https://github.com/Microsoft/msbuild/blob/6851538897f5d7b08024a6d8435bc44be5869e53/src/Tasks/Microsoft.NETFramework.CurrentVersion.targets#L95) checks whether any of the project references have a `TargetPlatformIdentifier` value of `Portable`. This is true for PCL projects, not NOT for netstandard. For netstandard projects, the value is `Windows`, which is clearly incorrect.","ResolveReferences inconsistencies  I have a net461 console project using non-SDK tooling that references a netstandard1.4 library project that uses SDK tooling.
+
+If I build the solution, then call `ResolveReferences` on the console project, the `Implici",1407,dsplaisted,sdk
+1239,Publishing to win10-arm or win8-arm doesn't generate an exe file for a Console application,"**Steps to recreate issue**
+First I created a dotnetcore 2.0 console app, and added nodes for the RuntimeFrameworkVersion and RuntimeIdentifiers to the csproj file, as shown in the csproj file below.
+```
+<Project Sdk=""Microsoft.NET.Sdk"">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RuntimeFrameworkVersion>2.0.0-preview1-002111-00</RuntimeFrameworkVersion>
+    <RuntimeIdentifiers>win10-arm;win10-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+
+</Project>
+```
+
+Then restore and build this project (using ""dotnet restore"" and ""dotnet build"").
+Now publish with the target of win10-arm using ""dotnet publish -r win10-arm""
+Look in the netcoreapp2.0/win10-arm/publish for the output executable.
+
+**Actual Behavior**
+After restoring and building, when I run ""dotnet publish -r **win10-arm**"", there is not a ConsoleApp.exe file in the netcoreapp2.0/win10-arm/publish directory - there's only a ConsoleApp.dll file. I've tried this for win8-arm as well with the same results.
+
+Everything builds fine in both win10-arm and win10-x64 configurations using ""dotnet restore"" and ""dotnet build"" - no errors.
+
+When I run ""dotnet publish -r **win10-x64**"", as expected there is a ConsoleApp.exe file in the netcoreapp2.0/win10-x64/publish directory.
+
+**Expected behaviour**
+I think the expected behaviour is to see a ConsoleApp.exe in the netcoreapp2.0/win10-arm/publish directory when I publish and target win8-arm or win10-arm. Dotnet core used to create an executable file - I'm running my application on the ""Windows 10 IoT Core"" framework on the Raspberry Pi 3, and have used a generated ConsoleApp.exe file for .net core apps on the Pi. There's not an option to run ""dotnet ConsoleApp.dll"" on Pi running Windows 10 IoT Core.
+
+Jeremy
+","Publishing to win10-arm or win8-arm doesn't generate an exe file for a Console application  **Steps to recreate issue**
+First I created a dotnetcore 2.0 console app, and added nodes for the RuntimeFrameworkVersion and RuntimeIdentifiers to the csproj fil",1317,jeremylindsayni,sdk
+1251,Add a unit test for ARM projects to verify correct files are generated,"This adds a unit test to cover [#1239](https://github.com/dotnet/sdk/issues/1239) - this checks that the correct files are generated for self contained projects which target ARM runtimes.
+
+Quick note for clarity - this request is just a unit test - the original fix was submitted by @eerhardt in [pull request #20187](https://github.com/dotnet/corefx/pull/20187).
+
+@eerhardt @gkhanna79 @ericstj",Add a unit test for ARM projects to verify correct files are generated  This adds a unit test to cover [#1239](https://github.com/dotnet/sdk/issues/1239) - this checks that the correct files are generated for self contained projects which target ARM runti,1317,jeremylindsayni,sdk
+55,Signing does not work on non-Windows,"When signing on non-Windows platforms, we get output something like:
+`error CS7027: Error signing output with public key from file '/Users/livarcocc/Documents/git/core-sdk/build/Targets/../Strong Name Keys/RoslynInternalKey.Private.snk' -- Assembly signing not supported.`
+Once signing is supported on non-Windows, remove the condition in Common.props.","Signing does not work on non-Windows  When signing on non-Windows platforms, we get output something like:
+`error CS7027: Error signing output with public key from file '/Users/livarcocc/Documents/git/core-sdk/build/Targets/../Strong Name Keys/RoslynInte",950,nguerrera,sdk
+656,Lock down public surface of Microsoft.NET.Build.Tasks,There are things that are public for unit testing only. Switch them to IVTA. This requires changing how we handle signing on non-Windows to public sign instead of not signing at all.,Lock down public surface of Microsoft.NET.Build.Tasks  There are things that are public for unit testing only. Switch them to IVTA. This requires changing how we handle signing on non-Windows to public sign instead of not signing at all.,950,nguerrera,sdk
+696,Runtime-specific build fails for projects with P2P references,"[ Moved from dotnet/cli#4992 ]
+
+## Steps to reproduce
+[test_app.zip](https://github.com/dotnet/sdk/files/642914/test_app.zip)
+in test_app\App:
+- ```dotnet restore```
+- ```dotnet build -r win10-x64```
+
+## Expected  behavior
+build succeeds
+
+## Actual behavior
+build fails with output:
+```
+C:\Users\svbomer\AppData\Local\Temp\.NETStandard,Version=v1.4.AssemblyAttributes.cs(4,20): error CS0400: The type or namespace name 'System' could not be found in the global namespace (are you missing an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(6,12): error CS0246: The type or namespace name 'System' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(7,12): error CS0246: The type or namespace name 'System' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(8,12): error CS0246: The type or namespace name 'System' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(9,12): error CS0246: The type or namespace name 'System' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(10,12): error CS0246: The type or namespace name 'System' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(11,12): error CS0246: The type or namespace name 'System' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(12,12): error CS0246: The type or namespace name 'System' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(13,12): error CS0246: The type or namespace name 'System' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(14,12): error CS0246: The type or namespace name 'System' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+C:\Users\svbomer\AppData\Local\Temp\.NETStandard,Version=v1.4.AssemblyAttributes.cs(4,71): error CS0518: Predefined type 'System.String' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+C:\Users\svbomer\AppData\Local\Temp\.NETStandard,Version=v1.4.AssemblyAttributes.cs(4,100): error CS0246: The type or namespace name 'FrameworkDisplayName' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+C:\Users\svbomer\AppData\Local\Temp\.NETStandard,Version=v1.4.AssemblyAttributes.cs(4,123): error CS0518: Predefined type 'System.String' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(6,55): error CS0518: Predefined type 'System.String' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(7,61): error CS0518: Predefined type 'System.String' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(8,59): error CS0518: Predefined type 'System.String' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(9,59): error CS0518: Predefined type 'System.String' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(10,68): error CS0518: Predefined type 'System.String' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(11,55): error CS0518: Predefined type 'System.String' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(12,53): error CS0518: Predefined type 'System.String' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(13,55): error CS0518: Predefined type 'System.String' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(14,63): error CS0518: Predefined type 'System.String' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+Library.cs(1,7): error CS0246: The type or namespace name 'System' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+C:\Users\svbomer\AppData\Local\Temp\.NETStandard,Version=v1.4.AssemblyAttributes.cs(2,7): error CS0246: The type or namespace name 'System' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+C:\Users\svbomer\AppData\Local\Temp\.NETStandard,Version=v1.4.AssemblyAttributes.cs(3,7): error CS0246: The type or namespace name 'System' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(3,7): error CS0246: The type or namespace name 'System' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+obj\Debug\netstandard1.4\Library.AssemblyInfo.cs(4,7): error CS0246: The type or namespace name 'System' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+Library.cs(30,7): error CS0518: Predefined type 'System.Object' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+Library.cs(3,14): error CS0518: Predefined type 'System.Object' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+Library.cs(19,12): error CS0518: Predefined type 'System.Int32' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+Library.cs(24,24): error CS0518: Predefined type 'System.Int32' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+Library.cs(24,12): error CS0518: Predefined type 'System.Void' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]Library.cs(5,13): error CS0518: Predefined type 'System.Int32' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]Library.cs(6,13): error CS0518: Predefined type 'System.Int32' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]Library.cs(8,5): error CS0518: Predefined type 'System.Void' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+Library.cs(14,20): error CS0518: Predefined type 'System.Int32' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+Library.cs(14,5): error CS0518: Predefined type 'System.Void' is not defined or imported [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj] D:\cli\artifacts\win10-x64\stage2\sdk\1.0.0-preview5-004233\Sdks\Microsoft.NET.Sdk\build\Microsoft.NET.Sdk.targets(82,5): error : Assets file 'C:\Users\svbomer\active\projects\managed_linker\test_app\Library\obj\project.assets.json' doesn't have a target for '.NETStandard,Version=v1.4/win10-x64'. Ensure you have restored this project for TargetFramework='netstandard1.4' and RuntimeIdentifier='win10-x64'. [C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj]
+D:\cli\artifacts\win10-x64\stage2\sdk\1.0.0-preview5-004233\Sdks\Microsoft.NET.Sdk\build\Microsoft.NET.Sdk.targets(82,5): error : Cannot find project info for 'C:\Users\svbomer\active\projects\managed_linker\test_app\Library\Library.csproj'. This can indicate a missing project reference. [C:\Users\svbomer\active\projects\managed_linker\test_app\App\test_app.csproj]
+
+```
+## Environment data
+`dotnet --info` output:
+```
+.NET Command Line Tools (1.0.0-preview5-004233)
+
+Product Information:
+ Version:            1.0.0-preview5-004233
+ Commit SHA-1 hash:  1fd99f1588
+
+Runtime Environment:
+ OS Name:     Windows
+ OS Version:  10.0.14393
+ OS Platform: Windows
+ RID:         win10-x64
+ Base Path:   D:\cli\artifacts\win10-x64\stage2\sdk\1.0.0-preview5-004233
+```
+
+","Runtime-specific build fails for projects with P2P references  [ Moved from dotnet/cli#4992 ]
+
+## Steps to reproduce
+[test_app.zip](https://github.com/dotnet/sdk/files/642914/test_app.zip)
+in test_app\App:
+- ```dotnet restore```
+- ```dotnet build -r",828,TheRealPiotrP,sdk
+1674,Allow toolset that tests run against to be controlled by command-line options,"- Tests no longer need to be run from within an enlistment of dotnet/sdk.  You should be able to build the tests, then copy the test folder (`bin\Debug\Tests`) and the `TestAssets` folder to another machine and run the tests there.
+- Command-line options can be used to specify what ""toolset"" to run against:
+
+```
+  -useFullMSBuild         : Use full framework (instead of .NET Core) version of MSBuild found in PATH
+  -fullMSBuildPath <path> : Use full framework version of MSBuild in specified path
+  -dotnetPath <path>      : Use specified path for dotnet host
+  -sdkRepo <path>         : Use specified SDK repo for Microsoft.NET.SDK tasks / targets
+  -sdkConfig <config>     : Use specified configuration for SDK repo
+  -noRepoInference        : Don't automatically find SDK repo to use based on path to test binaries
+  -help                   : Show help
+```","Allow toolset that tests run against to be controlled by command-line options  - Tests no longer need to be run from within an enlistment of dotnet/sdk.  You should be able to build the tests, then copy the test folder (`bin\Debug\Tests`) and the `TestAss",828,TheRealPiotrP,sdk
+814,Ensure same version for multi-targeting scenarios from innerbuilds,"Per phone discussion and these scenarios..
+https://github.com/NuGet/Home/issues/4487
+https://github.com/NuGet/Home/issues/4496","Ensure same version for multi-targeting scenarios from innerbuilds  Per phone discussion and these scenarios..
+https://github.com/NuGet/Home/issues/4487
+https://github.com/NuGet/Home/issues/4496",819,nguerrera,sdk
+422,AssemblyVersion and FileVersion is not affected by VersionPrefix,"I have migrated my .NET Core project to .csproj. The resulting project file contains a `<VersionPrefix>` element. AFAIK it should work that way:
+
+1. `VersionPrefix` is used as a prefix (= 1.2.3 in my .csproj)
+2. `VersionSuffix` is used as a suffix (not defined in my project)
+3. `Version` is computed as `$(VersionPrefix)-$(VersionSuffix)` if not defined in .csproj
+4. `AssemblyVersion` and `FileVersion` is based on `Version`
+
+When I build the project, the `AssemblyVersion` and `FileVersion` are set to 1.0.0 instead of 1.2.3. When I explicitly set `Version` in my .csproj, everything works. There is something wrong.
+
+Am I missing something?","AssemblyVersion and FileVersion is not affected by VersionPrefix  I have migrated my .NET Core project to .csproj. The resulting project file contains a `<VersionPrefix>` element. AFAIK it should work that way:
+
+1. `VersionPrefix` is used as a prefix (=",819,nguerrera,sdk
+93,VersionPrefix defaults to 1.0.0 regardless of whether Version actually starts with 1.0.0 or not,"Today we have in Microsoft.NETCore.Sdk.targets (with one no-op line removed for brevity):
+
+```
+    <VersionPrefix Condition="" '$(VersionPrefix)' == '' "">1.0.0</VersionPrefix>
+    <Version Condition="" '$(Version)' == '' and '$(VersionSuffix)' != '' "">$(VersionPrefix)-$(VersionSuffix)</Version>
+    <Version Condition="" '$(Version)' == '' "">$(VersionPrefix)</Version>
+```
+
+The strange thing about this this logic is that if I, for example, set `<Version>` to 1.2.3-beta in my project, then `<VersionPrefix>` will be set to 1.0.0, but not used for anything. I worry that this will lead to incorrect dependencies on `<VersionPrefix>` always being set and meaningful.
+
+I see two possible solutions:
+
+(1) Only default `<VersionPrefix>` if we're going to use it: 
+
+```
+    <VersionPrefix Condition=""'$(Version)' == '' and '$(VersionPrefix)' == ''>1.0.0</VersionPrefix>
+    <Version Condition="" '$(Version)' == '' and '$(VersionSuffix)' != '' "">$(VersionPrefix)-$(VersionSuffix)</Version>
+    <Version Condition="" '$(Version)' == '' "">$(VersionPrefix)</Version>
+```
+
+(2) Eliminate `<VersionPrefix>` as a concept and just append `<VersionSuffix>` (if any) to `<Version>`:
+
+```
+    <Version Condition="" '$(Version)' == '' "">1.0.0</Version>
+    <Version Condition="" '$(VersionSuffix)' != ''>$(Version)-$(VersionSuffix)</Version>
+```
+
+I am leaning towards (2) because:
+- The logic is simpler to maintain and reason about. 
+- I can introduce a build system that appends version information without touching projects and switching `<Version>` to `<VersionPrefix>`
+
+Another issue: I wonder if the `-` separating parts should be hard-coded. If I want to use http://semver.org/spec/v2.0.0.html I might want to append with `+` or `.` instead. Should we just require the `-`, `.`, or `+` to be part of the suffix? I think so:
+
+```
+   <Version Condition="" '$(VersionSuffix)' != ''>$(Version)$(VersionSuffix)</Version>
+```","VersionPrefix defaults to 1.0.0 regardless of whether Version actually starts with 1.0.0 or not  Today we have in Microsoft.NETCore.Sdk.targets (with one no-op line removed for brevity):
+
+```
+    <VersionPrefix Condition="" '$(VersionPrefix)' == '' "">1.",819,nguerrera,sdk
+527,dotnet build with runtime specified does not create the right output,"Moved from https://github.com/dotnet/cli/issues/5039 on behalf of @Fabi, @nguerrera 
+
+----
+
+## Steps to reproduce
+1. Install Visual Studio 2017 RC
+2. Follow the ""Deploying a simple self-contained deployment"" part from https://docs.microsoft.com/en-us/dotnet/articles/core/preview3/deploying/ until step 5
+
+## Expected  behavior
+After running the dotnet build -r win10-x64 command a folder with the build files (including an .exe file not only dll) should be created at "".\bin\Debug\netcoreapp1.0\<runtime_identifier>""
+
+
+## Actual behavior
+There is no runtime folder with executables generated. That only works with the publish command now.
+Before on json based project files it worked fine.
+
+## Environment data
+`dotnet --info` output:
+
+```
+.NET Command Line Tools (1.0.0-preview4-004233)
+
+Product Information:
+ Version:            1.0.0-preview4-004233
+ Commit SHA-1 hash:  8cec61c6f7
+
+Runtime Environment:
+ OS Name:     Windows
+ OS Version:  10.0.14393
+ OS Platform: Windows
+ RID:         win10-x64
+ Base Path:   C:\Program Files\dotnet\sdk\1.0.0-preview4-004233
+```
+
+
+-----
+
+
+@nguerrera this is the standalone publish scenario. It should work like this:
+
+## on build
+Build produces the portable output as well as a RID-specific output. The RID-specific output contains the portable output + the appropriate RID-specific host for the app. That host still uses deps.json, etc. to load Shared Framework artifacts from the nuget cache
+
+## on publish
+The publish output is RID specific. It includes everything from the RID-specific build output + everything from the RID-specific Shared Framework. The publish output can now be zip'd and then deployed to any host with a matching RID.","dotnet build with runtime specified does not create the right output  Moved from https://github.com/dotnet/cli/issues/5039 on behalf of @Fabi, @nguerrera 
+
+----
+
+## Steps to reproduce
+1. Install Visual Studio 2017 RC
+2. Follow the ""Deploying a simpl",811,eerhardt,sdk
+791,'dotnet run' fails for self-contained applications,"Using this project on a windows machine:
+
+```XML
+<Project Sdk=""Microsoft.NET.Sdk"">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RuntimeFrameworkVersion>2.0.0-beta-001482-00</RuntimeFrameworkVersion>
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+</Project>
+```
+
+```
+$ dotnet restore
+$ dotnet run
+```
+
+Raises an error:
+
+```
+A fatal error was encountered. The library 'hostpolicy.dll' required to execute the application was not found in 'F:\DotNetTest\DependencyTest\bin\Debug\netcoreapp2.0\'.
+```
+
+### Notes
+
+When initially designing .NET Core for MSBuild, we wanted the experience that ""framework-dependent vs. self-contained was a publish time decision"".  That mean that you can take the same .csproj and without modifying it, publish as a ""framework-dependent (a.k.a. portable/shared framework)"" or a ""self-contained"" app. In order to support that, a decision was made that `dotnet build` and `dotnet run` were always framework-dependent.
+
+However, this turns out to not be a great decision because there are scenarios where you want to target a .NET Core runtime that you haven't installed on the machine.  In this case, you explicitly choose that you are a self-contained app, and you target the framework version (like a nightly build of Microsoft.NETCore.App) that you want. You still should be able to `dotnet run` your application. The only thing that works today is to `dotnet publish` and then execute the app, which IDEs don't typically do.
+
+To enable this, I think the things that need to be done are:
+1. Copy the `hostfxr` and `hostpolicy` assemblies to the output folder
+1. (Optional) Copy the `dotnet` executable to the output folder and rename it to $(TargetName)[.exe]
+     - If we do this, we also need to change the ""Run Information"" to point to this executable instead of the `dotnet` on the path.
+1. Set the output folder to have the RID in it.
+     - This might not be required, but that's how project.json based projects did it.
+the `dotnet` muxer.
+
+See https://github.com/dotnet/cli/blob/rel/1.0.0-preview2.1/src/Microsoft.DotNet.Compiler.Common/Executable.cs#L96-L108 for how this worked on project.json based projects.  Specifically the `CoreHost.CopyTo(_runtimeOutputPath, _compilerOptions.OutputName + Constants.ExeSuffix);` part, which does the first two steps above.","'dotnet run' fails for self-contained applications  Using this project on a windows machine:
+
+```XML
+<Project Sdk=""Microsoft.NET.Sdk"">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <Ru",811,eerhardt,sdk
+631,Web project publishes .vscode directory,"Since websdk repo is private, opening an issue here..
+
+The glob patterns in sdk/websdk publish folders that should be considered ""hidden"" like `.vscode`.
+This probably also applies to files/folders that one would expect to be hidden.. Maybe every file/folder starting with a dot?
+
+@guardrex also discovered that the `Properties` folder is deployed as well thus deploying publish profiles.
+
+Steps to reproduce:
+* `dotnet new -t web1.1`
+* `dotnet restore`
+* `code .`
+* Omnisharp-VSCode asks to add ""required assets"" > klick ""yes""
+* `dotnet publish -c Release`
+* `ls -la bin/Release/netcoreapp1.1/publish/.vscode/`
+```
+-rw-r--r--    1 martin  staff  1262 Jan 11 21:44 launch.json
+-rw-r--r--    1 martin  staff   332 Jan 11 21:44 tasks.json
+```
+
+`dotnet --info` output:
+```
+.NET Command Line Tools (1.0.0-preview5-004478)
+
+Product Information:
+ Version:            1.0.0-preview5-004478
+ Commit SHA-1 hash:  4d3e2872fe
+
+Runtime Environment:
+ OS Name:     Mac OS X
+ OS Version:  10.12
+ OS Platform: Darwin
+ RID:         osx.10.12-x64
+ Base Path:   /usr/local/share/dotnet/sdk/1.0.0-preview5-004478
+```
+
+cc @dsplaisted @mlorbetske","Web project publishes .vscode directory  Since websdk repo is private, opening an issue here..
+
+The glob patterns in sdk/websdk publish folders that should be considered ""hidden"" like `.vscode`.
+This probably also applies to files/folders that one woul",806,dsplaisted,sdk
+630,Stop removing items that were included in the project file,"Instead, only apply the patterns that used to be called DefaultRemoves to the items that are implicitly included.  If someone adds an include for a file to their project file, we should respect that.
+
+Fixes #623
+Fixes #588
+
+The `DefaultRemoves` property was originally used so that when you had wildcard includes in your project file, you wouldn't have to specifically exclude the `bin`, `obj`, etc. folders.  When we switched to implicit includes, I left it in with the idea that it would help you have a cleaner project file if you did want to explicitly see a wildcard include in your project, and it would help protect you from accidentally including items that you ""shouldn't"" from the output folders.
+
+However, it's become apparent that it comes with two huge downsides:
+ - If you actually want items that would match the patterns in `DefaultRemoves`, you will include them in the project file, and that won't work, and you will have absolutely no idea why and there's no good way to debug / figure it out
+ - If you do manage to figure out why the items aren't being included, there's no good way to override the behavior to let you include a file.  You have to turn off the `DefaultRemoves` entirely, which then means your implicit globs will suddenly pick up a bunch of files that they shouldn't, unless you jump through even more hoops in your project file.
+
+This PR makes it so that if you put an item in your project file, it will be respected.  The items that will be included implicitly remain the same as before.
+
+This PR also takes the opportunity to remove the `packages` folder from the list of folders that the default includes don't apply to.  It's unclear why this was originally [added in the CLI](https://github.com/dotnet/cli/commit/94bafb17).  @davidfowl [had this to say about it](https://github.com/aspnet/websdk/pull/88/files/621bb3d2a625ceab3b2123b1a11dd69357eb79bd):
+
+> It was likely because of a mix of older packages folder (nuget v2) and xproj. Though that should only have been at the solution level...
+
+Removing this exclusion will make default items in projects with code or other assets in a ""packages"" folder work as people will expect.
+
+This change will need to be made together with a change to the Web SDK, as now it will be its responsibility to remove these items from its default includes.  I will also submit a PR for that.","Stop removing items that were included in the project file  Instead, only apply the patterns that used to be called DefaultRemoves to the items that are implicitly included.  If someone adds an include for a file to their project file, we should respect t",806,dsplaisted,sdk
+745,Don't load assemblies of the wrong version into devenv.exe,"Causes:
+Error occurred while restoring NuGet packages: Method not found: 'NuGet.RuntimeModel.RuntimeGraph NuGet.RuntimeModel.JsonRuntimeFormat.ReadRuntimeGraph(Newtonsoft.Json.Linq.JToken)'.
+
+Was first recorded in NuGet repo: https://github.com/NuGet/Home/issues/4272
+
+Fix for RC3 was taken: https://github.com/dotnet/sdk/pull/699
+
+@onovotny just said on that issue, that it is still reproing with RC3.
+
+??","Don't load assemblies of the wrong version into devenv.exe  Causes:
+Error occurred while restoring NuGet packages: Method not found: 'NuGet.RuntimeModel.RuntimeGraph NuGet.RuntimeModel.JsonRuntimeFormat.ReadRuntimeGraph(Newtonsoft.Json.Linq.JToken)'.
+",762,dsplaisted,sdk
+699,Don't run CheckForImplicitPackageReferenceOverrides before NuGet restore,"This should help avoid assembly loading ordering issues, where the some of the (.NET Standard) NuGet assemblies were being loaded from the .NET SDK instead of the (.NET Framework) versions from the NuGet tasks","Don't run CheckForImplicitPackageReferenceOverrides before NuGet restore  This should help avoid assembly loading ordering issues, where the some of the (.NET Standard) NuGet assemblies were being loaded from the .NET SDK instead of the (.NET Framework) v",762,dsplaisted,sdk
+111,Add .deps.json file for desktop web apps when PreserveCompilationContext = true,"MVC web apps that target the desktop framework need a .deps.json file in order to compile Razor views at runtime.  However, desktop framework apps don't get a .deps.json file written next to the app.  Instead, the file is added as a resource to the app's assembly.
+
+We need to either mimic the CLI's behavior in MSBuild by adding the .deps.json file as a resource to the assembly, or we need to write out a .deps.json file next to the assembly for desktop web apps when PreserveCompilationContext = true.","Add .deps.json file for desktop web apps when PreserveCompilationContext = true  MVC web apps that target the desktop framework need a .deps.json file in order to compile Razor views at runtime.  However, desktop framework apps don't get a .deps.json file",240,nguerrera,sdk
+119,Scenario: enable web apps targeting desktop frameworks,"- [x] How do desktop apps get the `Microsoft.NETCore.Sdk` build functionality? Do they reference that package or do we build another package specifically for desktop projects?
+- [x] #111 Add .deps.json file for desktop web apps when PreserveCompilationContext = true","Scenario: enable web apps targeting desktop frameworks  - [x] How do desktop apps get the `Microsoft.NETCore.Sdk` build functionality? Do they reference that package or do we build another package specifically for desktop projects?
+- [x] #111 Add .deps.j",240,nguerrera,sdk
+182,P2P references don't work in the new project system with <TargetFrameworks> defined,"When converting all our TestAssets to use PackageReference, having a TestApp that has a P2P to a TestLibrary is broken.  When building the TestApp project, you get errors like the following:
+
+```
+Program.cs(13,50): error CS0012: The type 'Object' is defined in an assembly that is not referenced. You must add a reference to assembly 'mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'. [F:\core-sdk\bin\Debug\Tests\It_builds_the_project_successfully\AppWithLibrary\TestApp\TestApp.csproj]
+```
+
+From looking into the build logs, we are not referencing/building the TestLibrary using the same TFM as building the TestApp.
+
+```
+ResolvedFrom=F:\core-sdk\bin\Debug\Tests\It_builds_the_project_successfully\AppWithLibrary\TestLibrary\bin\Debug\TestLibrary.dll 
+```
+
+Note it is using straight from `bin\Debug` and not `bin\Debug\netstandard1.5`.  Also looking at the log, when invoking Csc on TestLibrary we are compiling against mscorlib (which is obviously not acceptable for netstandard libraries):
+
+```
+[‎9/‎27/‎2016 1:38 PM] 
+No Title
+Task ""Csc"" (TaskId:24)
+  Task Parameter:DisabledWarnings=;1701;1702 (TaskId:24)
+  Task Parameter:EmitDebugInformation=True (TaskId:24)
+  Task Parameter:HighEntropyVA=False (TaskId:24)
+  Task Parameter:NoConfig=True (TaskId:24)
+  Task Parameter:NoStandardLib=True (TaskId:24)
+  Task Parameter:OutputAssembly=obj\Debug\TestLibrary.dll (TaskId:24)
+  Task Parameter:Prefer32Bit=False (TaskId:24)
+  Task Parameter:
+      References=
+          C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\mscorlib.dll
+                  CopyLocal=false
+                  FrameworkFile=true
+                  FusionName=mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+                  ImageRuntime=v4.0.30319
+                  OriginalItemSpec=C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\mscorlib.dll
+                  ReferenceSourceTarget=ResolveAssemblyReference
+                  ResolvedFrom=C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\mscorlib.dll
+                  Version=4.0.0.0
+          C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Core.dll
+                  CopyLocal=false
+                  FrameworkFile=true
+                  FusionName=System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+                  ImageRuntime=v4.0.30319
+                  Implicit=true
+                  OriginalItemSpec=System.Core
+                  Redist=Microsoft-Windows-CLRCoreComp.4.0
+                  ReferenceSourceTarget=ResolveAssemblyReference
+                  ResolvedFrom={TargetFrameworkDirectory}
+                  Version=4.0.0.0 (TaskId:24)
+  Task Parameter:
+      Sources=
+          Helper.cs
+          C:\Users\eerhardt\AppData\Local\Temp\.NETFramework,Version=v4.0.AssemblyAttributes.cs (TaskId:24) 
+```
+
+/cc @nguerrera @srivatsn ","P2P references don't work in the new project system with <TargetFrameworks> defined  When converting all our TestAssets to use PackageReference, having a TestApp that has a P2P to a TestLibrary is broken.  When building the TestApp project, you get errors",184,eerhardt,sdk
+185,Re-enable cross-targeting test,"It's been broken since all of the churn to bring in restore3 and package refs. Should be unblocked by #184","Re-enable cross-targeting test  It's been broken since all of the churn to bring in restore3 and package refs. Should be unblocked by #184",184,eerhardt,sdk
+12,Need to fill out the rest of the .deps.json information,"See the TODOs in the DependencyContextBuilder.cs added by https://github.com/dotnet/sdk/pull/8.
+
+Specifically:
+- [ ] RuntimeTargets
+- [ ] CreateResourceAssembly
+- [ ] We also need to add any resource assemblies for the current project.
+- [x] Need to investigate if it is possible for the current project to bring in ""native"" libraries.
+  - This is not possible.
+- [ ] Need to investigate if there is other project information that needs to get put in the .deps.json file","Need to fill out the rest of the .deps.json information  See the TODOs in the DependencyContextBuilder.cs added by https://github.com/dotnet/sdk/pull/8.
+
+Specifically:
+- [ ] RuntimeTargets
+- [ ] CreateResourceAssembly
+- [ ] We also need to add any re",161,eerhardt,sdk
+121,Scenario: enable P2P references across all aspects of the sdk functionality,"- [ ] ensure P2P references are written to the .deps.json file.  (Do they get put into the lock file by NuGet? We currently only use lock file information for .deps.json generation).
+- [ ] ensure they are copied to the build and publish folders
+- [ ] ensure P2P references' resource assemblies are copied to the build and publish folders.  And also that the P2P references' resource assemblies are added to the .deps.json file.",Scenario: enable P2P references across all aspects of the sdk functionality  - [ ] ensure P2P references are written to the .deps.json file.  (Do they get put into the lock file by NuGet? We currently only use lock file information for .deps.json generati,161,eerhardt,sdk
+69,Infer Output Path based off of TFM,"This is dependent on having the capability to use short framework names in the project and map those to the full framework name.
+
+Depends on #30 
+
+@davkean @eerhardt @natidea ","Infer Output Path based off of TFM  This is dependent on having the capability to use short framework names in the project and map those to the full framework name.
+
+Depends on #30 
+
+@davkean @eerhardt @natidea ",154,nguerrera,sdk
+30,NuGet friendly names -> framework names should be statically calculated,"We want to use NuGet friendly names as part of the user-visible TFMs of the project file. Original proposal was to use a target to convert from them -> TFMs, however, that will cause no end of trouble for things that already expect TFMs to be static (common targets) and VS which will require a (slow) design-time build just to figure out what the real TFM is.
+
+Instead we should see if we can come up with a mechanism where we can declare this statically use a series of properties + conditions and have it statically available.","NuGet friendly names -> framework names should be statically calculated   We want to use NuGet friendly names as part of the user-visible TFMs of the project file. Original proposal was to use a target to convert from them -> TFMs, however, that will caus",154,nguerrera,sdk
+380,Remove workarounds for files not adding themselves to MSBuildAllProjects property,"Once the following bugs are fixed, we should remove the workarounds for them in the `GivenThatWeWantToBuildALibrary.All_props_and_targets_add_themselves_to_MSBuildAllTargets` test:
+
+- NuGet/Home#3851
+- Microsoft/msbuild#1298
+- dotnet/cli#4571
+- dotnet/roslyn#14870","Remove workarounds for files not adding themselves to MSBuildAllProjects property  Once the following bugs are fixed, we should remove the workarounds for them in the `GivenThatWeWantToBuildALibrary.All_props_and_targets_add_themselves_to_MSBuildAllTarget",154,nguerrera,sdk
+25,Unify Package Dependency Version numbers to version number under Package Definitions,"Package versions specified as dependencies, might be different from the same package version in the unique packages collection (PackageDefinitions). Meaning PackageDefinitions might contain System.Runtime 4.0.20, but some package A would depend on System.Runtime 4.0.0. In such case your task should match them and unify to 4.0.20 everywhere (otherwise consumers would report that some package are not found). 
+
+Dotnet runtime did it for us and sent a warning (we called it diagnostics) associated with the package A “different version of package System.Runtime was used.”. With or without diagnostics this should be done, diagnostics are separate work item.","Unify Package Dependency Version numbers to version number under Package Definitions  Package versions specified as dependencies, might be different from the same package version in the unique packages collection (PackageDefinitions). Meaning PackageDefin",147,natidea,sdk
+144,build3 throwing null ref exception,"While trying to integrate msbuild /t:pack into the sdk, as soon as I add a package reference to NuGet.Build.Tasks.Pack (3.6.0-beta.1.msbuild.8) , the new build3 command blows up with the following exception : 
+
+```
+""D:\NuGetMSBuild\TestSolutions\NETCore\NetCoreCsproj\NetCoreCsproj.csproj"" (default target) (1) ->
+(RunResolvePackageDependencies target) ->
+  C:\Users\ragrawal\.nuget\packages\microsoft.netcore.sdk\1.0.0-alpha-20160914-1\build\netstandard1.0\Microsoft.PackageDependencyResolution.targets(115,5): error : Object reference not set to an instance of an object.\r [D:\NuGetMSBuild\TestSolutions\NETCore\NetCoreCsproj\NetCoreCsproj.csproj]
+C:\Users\ragrawal\.nuget\packages\microsoft.netcore.sdk\1.0.0-alpha-20160914-1\build\netstandard1.0\Microsoft.PackageDependencyResolution.targets(115,5): error :    at Microsoft.NETCore.Build.Tasks.ResolvePackageDependencies.GetPackageDependencies(LockFileTargetLibrary package, String targetName)\r [D:\NuGetMSBuild\TestSolutions\NETCore\NetCoreCsproj\NetCoreCsproj.csproj]
+C:\Users\ragrawal\.nuget\packages\microsoft.netcore.sdk\1.0.0-alpha-20160914-1\build\netstandard1.0\Microsoft.PackageDependencyResolution.targets(115,5): error :    at Microsoft.NETCore.Build.Tasks.ResolvePackageDependencies.GetPackageAndFileDependencies(LockFileTarget target)\r [D:\NuGetMSBuild\TestSolutions\NETCore\NetCoreCsproj\NetCoreCsproj.csproj]
+C:\Users\ragrawal\.nuget\packages\microsoft.netcore.sdk\1.0.0-alpha-20160914-1\build\netstandard1.0\Microsoft.PackageDependencyResolution.targets(115,5): error :    at Microsoft.NETCore.Build.Tasks.ResolvePackageDependencies.RaiseLockFileTargets()\r [D:\NuGetMSBuild\TestSolutions\NETCore\NetCoreCsproj\NetCoreCsproj.csproj]
+C:\Users\ragrawal\.nuget\packages\microsoft.netcore.sdk\1.0.0-alpha-20160914-1\build\netstandard1.0\Microsoft.PackageDependencyResolution.targets(115,5): error :    at Microsoft.NETCore.Build.Tasks.ResolvePackageDependencies.ExecuteCore()\r [D:\NuGetMSBuild\TestSolutions\NETCore\NetCoreCsproj\NetCoreCsproj.csproj]
+C:\Users\ragrawal\.nuget\packages\microsoft.netcore.sdk\1.0.0-alpha-20160914-1\build\netstandard1.0\Microsoft.PackageDependencyResolution.targets(115,5): error :    at Microsoft.NETCore.Build.Tasks.ResolvePackageDependencies.Execute() [D:\NuGetMSBuild\TestSolutions\NETCore\NetCoreCsproj\NetCoreCsproj.csproj]
+```
+
+I was able to isolate this repro by doing the following steps:
+
+Dotnet new -t msbuild
+Add package reference to above nuget package in project.json
+Dotnet restore
+Dotnet build3
+
+CC: @srivatsn @natidea ","build3 throwing null ref exception  While trying to integrate msbuild /t:pack into the sdk, as soon as I add a package reference to NuGet.Build.Tasks.Pack (3.6.0-beta.1.msbuild.8) , the new build3 command blows up with the following exception : 
+
+```
+""",147,natidea,sdk
+123,Some Assemblies are repeated under Dependencies Node,"![image](https://cloud.githubusercontent.com/assets/7732033/18221594/beeadad4-7134-11e6-9f59-5eb392380964.png)
+
+These are analyzer assemblies that occur once for each language. This will be mitigated by filtering analyzer File dependencies to one language.","Some Assemblies are repeated under Dependencies Node  ![image](https://cloud.githubusercontent.com/assets/7732033/18221594/beeadad4-7134-11e6-9f59-5eb392380964.png)
+
+These are analyzer assemblies that occur once for each language. This will be mitigated",125,natidea,sdk
+28,Add Unit Tests for Package Dependency Resolution Task,"Dependent on getting the unit tests into a runnable state.
+- [x] TODO add tests that exercise specific lock file scenarios","Add Unit Tests for Package Dependency Resolution Task  Dependent on getting the unit tests into a runnable state.
+- [x] TODO add tests that exercise specific lock file scenarios",125,natidea,sdk
+58,dotnet build3 on a Library Project outputs System dlls,"## Repro Steps
+
+This project.json
+
+```
+{
+  ""version"": ""1.0.0-*"",
+  ""buildOptions"": {
+    ""debugType"": ""portable""
+  },
+  ""dependencies"": {},
+  ""frameworks"": {
+    ""netstandard1.6"": {
+      ""dependencies"": {
+        ""NETStandard.Library"": ""1.6.0""
+      }
+    }
+  }
+}
+```
+
+Migrates to:
+
+```
+<Project ToolsVersion=""14.0"">
+  <Import Project=""$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"" />
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <DefineConstants>NETSTANDARD1_6</DefineConstants>
+    <DebugType>portable</DebugType>
+    <AssemblyName>new-lib</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworkIdentifier>.NETStandard</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v1.6</TargetFrameworkVersion>
+    <OutputPath>bin/$(Configuration)/netstandard1.6</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include=""**\*.resx"" Exclude=""$(GlobalExclude)"" />
+    <None Include=""project.json"" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include=""**\*.cs"" Exclude=""bin\**;obj\**;**\*.xproj;packages\**"" />
+    <EmbeddedResource Include=""compiler\resources\**\*;**\*.resx"" Exclude=""bin\**;obj\**;**\*.xproj;packages\**"" />
+  </ItemGroup>
+  <Import Project=""$(MSBuildToolsPath)\Microsoft.CSharp.targets"" />
+</Project>
+```
+
+The project.json based build `dotnet build` has this output set:
+
+```
+/Debug/netstandard1.6/new-lib.deps.json
+/Debug/netstandard1.6/new-lib.dll
+/Debug/netstandard1.6/new-lib.pdb
+```
+
+The build based build `dotnet build3` has this output set:
+
+```
+/Debug/netstandard1.6/new-lib.deps.json
+/Debug/netstandard1.6/new-lib.dll
+/Debug/netstandard1.6/new-lib.pdb
+/Debug/netstandard1.6/System.AppContext.dll
+/Debug/netstandard1.6/System.Buffers.dll
+/Debug/netstandard1.6/System.Collections.Concurrent.dll
+/Debug/netstandard1.6/System.Diagnostics.DiagnosticSource.dll
+/Debug/netstandard1.6/System.IO.Compression.ZipFile.dll
+/Debug/netstandard1.6/System.IO.FileSystem.Primitives.dll
+/Debug/netstandard1.6/System.Linq.dll
+/Debug/netstandard1.6/System.Linq.Expressions.dll
+/Debug/netstandard1.6/System.ObjectModel.dll
+/Debug/netstandard1.6/System.Reflection.Emit.dll
+/Debug/netstandard1.6/System.Reflection.Emit.ILGeneration.dll
+/Debug/netstandard1.6/System.Reflection.Emit.Lightweight.dll
+/Debug/netstandard1.6/System.Reflection.TypeExtensions.dll
+/Debug/netstandard1.6/System.Runtime.Numerics.dll
+/Debug/netstandard1.6/System.Security.Cryptography.OpenSsl.dll
+/Debug/netstandard1.6/System.Security.Cryptography.Primitives.dll
+/Debug/netstandard1.6/System.Text.RegularExpressions.dll
+/Debug/netstandard1.6/System.Threading.dll
+/Debug/netstandard1.6/System.Threading.Tasks.Extensions.dll
+/Debug/netstandard1.6/System.Xml.ReaderWriter.dll
+/Debug/netstandard1.6/System.Xml.XDocument.dll
+```","dotnet build3 on a Library Project outputs System dlls  ## Repro Steps
+
+This project.json
+
+```
+{
+  ""version"": ""1.0.0-*"",
+  ""buildOptions"": {
+    ""debugType"": ""portable""
+  },
+  ""dependencies"": {},
+  ""frameworks"": {
+    ""netstandard1.6"": {",99,eerhardt,sdk
+95,Satellite assemblies are not being generated when building on .NET Core,"The MSBuild logic that normally builds satellite assemblies is turned off when building on .NET Core.  See https://github.com/Microsoft/msbuild/blob/xplat/src/XMakeTasks/Microsoft.Common.CurrentVersion.targets#L3264-L3267
+
+``` XML
+  <Target Name=""GenerateSatelliteAssemblies""
+          Inputs=""$(MSBuildAllProjects);@(_SatelliteAssemblyResourceInputs);$(IntermediateOutputPath)$(TargetName)$(TargetExt)""
+          Outputs=""$(IntermediateOutputPath)%(Culture)\$(TargetName).resources.dll""
+          Condition=""'@(_SatelliteAssemblyResourceInputs)' != '' and '$(MSBuildRuntimeType)' != 'Core'"">
+```
+
+Specifically the `and '$(MSBuildRuntimeType)' != 'Core'` part.
+
+We will need to generate satellite assemblies on .NET Core.
+
+/cc @davkean @srivatsn @piotrpMSFT 
+
+/fyi - msbuild team @rainersigwald @AndyGerlicher @jeffkl @cdmihai ",Satellite assemblies are not being generated when building on .NET Core  The MSBuild logic that normally builds satellite assemblies is turned off when building on .NET Core.  See https://github.com/Microsoft/msbuild/blob/xplat/src/XMakeTasks/Microsoft.Co,99,eerhardt,sdk
+57,Generate AssemblyInfo source from msbuild proper,"We are going to generate AssemblyInfo source from project properties.
+#2 is the spec for the property names.","Generate AssemblyInfo source from msbuild proper  We are going to generate AssemblyInfo source from project properties.
+#2 is the spec for the property names.",81,nguerrera,sdk
+2,AssemblyInfo: Determine which properties will be generated and their msbuild mappings,"In dotnet cli AssemblyInfo is generated during each build from properties present in the project.json file. MSBuild currently relies on a template generated or user created AssemblyInfo to be present. 
+
+For certain options which need to be present in the `csproj` for pack (or other mechanisms) to function, it doesn't make sense to require putting these in both the project and AssemblyInfo.cs. (e.g. `language` )
+
+For this reason it makes sense to generate a subset of the assemblyinfo from the project during build, and leave the rest to be manually entered.
+
+To do this we need to determine what the subset of AssemblyInfo is that we're generating and how they map to msbuild options.",AssemblyInfo: Determine which properties will be generated and their msbuild mappings  In dotnet cli AssemblyInfo is generated during each build from properties present in the project.json file. MSBuild currently relies on a template generated or user cre,81,nguerrera,sdk
+24,Improve Path Resolution in Package Dependency Resolution task,"This is the code in dotnet that was resolving assembly paths https://github.com/dotnet/cli/blob/rel/1.0.0/src/Microsoft.DotNet.ProjectModel/Resolution/PackageDependencyProvider.cs#L43","Improve Path Resolution in Package Dependency Resolution task  This is the code in dotnet that was resolving assembly paths https://github.com/dotnet/cli/blob/rel/1.0.0/src/Microsoft.DotNet.ProjectModel/Resolution/PackageDependencyProvider.cs#L43",78,eerhardt,sdk
+76,ResolvePackageDependencies Task does not work on case-sensitive file systems,"The issue is that nuget lower-cases all file paths in the nuget cache, and ResolvePackageDependencies should do the same.
+
+https://github.com/dotnet/sdk/blob/master/src/Tasks/Microsoft.DotNet.Core.Build.Tasks/ResolvePackageDependencies.cs#L329","ResolvePackageDependencies Task does not work on case-sensitive file systems  The issue is that nuget lower-cases all file paths in the nuget cache, and ResolvePackageDependencies should do the same.
+
+https://github.com/dotnet/sdk/blob/master/src/Tasks/",78,eerhardt,sdk

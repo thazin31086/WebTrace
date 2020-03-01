@@ -1,0 +1,1622 @@
+﻿IssueID,Title,Title_Description,FixedByID,PullRequestID
+1,Initial port and addition of README.md,"Initial port and addition of README.md This is a port of the readme from CodePlex.  Some of the links have been updated to point to locations on GitHub, but many of the links still point back to CodePlex as comparable GitHub locations are currently absent",heejaechang,3247
+10322,Bug in SyntaxGenerator for Visual Basic,"Bug in SyntaxGenerator for Visual Basic **Version Used**: Latest Master
+
+**Steps to Reproduce**:
+1. Create an instance of a `SyntaxGenerator`
+2. Call `generator.DefaultSwitchSection(statements)`
+3. Enjoy the crash
+
+**Expected Behavior**:
+
+It shou",Hosch250,10160
+10392,Local functions: Remove support for `var` return type,"Local functions: Remove support for `var` return type May possibly be relaxed later.",agocke,12015
+10446,Error inferring type of local variable in switch...case... pattern match,"Error inferring type of local variable in switch...case... pattern match **Version Used**: 
+
+future branch, commit 7cad0660501ac371208d8aaf8abfee4cd6532c60
+
+Visual Studio 2015 Update 2
+
+**Steps to Reproduce**:
+1. Check and build newest future branc",gafter,13274
+10544,Incorrect warning CS0649 (field never assigned) with ref return,"Incorrect warning CS0649 (field never assigned) with ref return **Version Used**: Visual Studio ""15"" Preview
+
+**Steps to Reproduce**:
+1. Write the following class in a project with the demo features enabled (`__DEMO__` compilation symbol):
+   
+   ```",VSadov,14418
+10604,Need to confirm how extra compiler generated blocks affect caching,"Need to confirm how extra compiler generated blocks affect caching @AlekseyTs You added the following PROTOTYPE comment, but I'm not sure exactly what it means. Please rewrite this issue to describe it.
+
+``` cs
+            /// <summary>
+            //",AlekseyTs,18662
+10891,"Forbid constructing tuples via ""new""","Forbid constructing tuples via ""new"" The following should work (or perhaps not):
+
+new (int x1, int x2, ...., int x12) ( 1,2,...., 12);
+
+It could be more complicated when constructor initializers are involved, like:
+new (int x1, int x2, ...., int x12)",VSadov,14518
+11019,VisualStudioAnalyzer deadlocks IDE,"VisualStudioAnalyzer deadlocks IDE **Version Used**: master 1.3.0.60502
+
+**Steps to Reproduce**:
+1.  Restore project from commandline that has nuget analyzers
+2.  Also be working in Visual Studio simultaneously
+
+**Expected Behavior**:
+
+Visual Stud",natidea,11857
+11282,Binder.GenerateImplicitConversionError is missing special handling for an erroneous conversion from a tuple literal,"Binder.GenerateImplicitConversionError is missing special handling for an erroneous conversion from a tuple literal  ```
+        [Fact]
+        public void TupleTypeMismatch_02()
+        {
+            var source = @""
+class C
+{
+    static void Main(",VSadov,11989
+11689,Enforce that ValueTuple types are structs,"Enforce that ValueTuple types are structs We seem to be gradually taking some direct or indirect dependencies on tuples being structs already - we allow nullable conversions, may consider ctor invocations equivalent to element-wise assignments into a loca",VSadov,14518
+11772,Throw BadImageFormatException decoding TypeRef with resolution scope with nil AssemblyRef,"Throw BadImageFormatException decoding TypeRef with resolution scope with nil AssemblyRef Throw BadImageFormatException decoding TypeRef with resolution scope with nil AssemblyRef.
+
+BadImageFormatException is handled by callers and the type is typically",cston,11914
+11795,Throw BadImageFormatException decoding TypeRef with resolution scope with nil ModuleRef or TypeRef,"Throw BadImageFormatException decoding TypeRef with resolution scope with nil ModuleRef or TypeRef See comment in #11772.",cston,11914
+11804,Implement ExplicitTupleLiteralConversion,"Implement ExplicitTupleLiteralConversion That is - explicit conversion from expression.
+
+consider scenarios like `int x = 1; y = ((byte, string))(x, null)`",VSadov,12068
+11875,Conversion error reporting crashes when typeless tuples are involved,"Conversion error reporting crashes when typeless tuples are involved Example:
+
+``` c#
+    (int, int) x = (null, null);
+    (int, int) x = null;
+```
+
+Since the asignee does not have type the regular ""T1 does not convert to T2"" is not reported and Ge",VSadov,11989
+11912,Perf - can we bulk close/remove documents on AbstractProject.Disconnect?,"Perf - can we bulk close/remove documents on AbstractProject.Disconnect? When looking at the code involved in project reload, I noticed that in `[AbstractProject.Disconnect()](http://source.roslyn.io/Microsoft.VisualStudio.LanguageServices/R/e6d530d69d1bd",mattwar,11985
+11921,disable workspace document events on project disconnect,"disable workspace document events on project disconnect Fixes #11912 
+
+This change disables all redundant workspace events from firing when a VS project is being removed/unloaded.
+
+@Pilchie @jasonmalinowski please review.",mattwar,11985
+12064,Propagate preferences between explicit and implicit conversions into nullable conversions,"Propagate preferences between explicit and implicit conversions into nullable conversions It is possible to have different implicit and explicit conversion between T an U. Having explicit cast in the code acts as a disambiguator in such cases.
+
+Currentl",VSadov,12068
+12067,Consider storing Conversion on bound conversion nodes and use at lowering.,"Consider storing Conversion on bound conversion nodes and use at lowering. Currently, in many cases, we classify conversions during semantic analysis and then again at lowering.
+
+There are two issues with this:
+- classification has costs. That is possi",VSadov,12068
+12597,Scope changes for patterns and out var,Scope changes for patterns and out var The LDM is reconsidering some scope issues for pattern variables and out variables. The most likely change is that such variables declared in a declaration statement or expression statement that appear in a block are,AlekseyTs,13183
+12763,CS0649 reported even if field is assignable through a ref returning member,"CS0649 reported even if field is assignable through a ref returning member CS0649 warnings reported even though `_f` and `_p` are assignable through `F()` and `P`:
+
+```
+public class A<T>
+{
+    private T _f;
+    public ref T F()
+    {
+        retur",VSadov,14418
+12996,SemanticModel is unable to infer type of a 'var' pattern variable,"SemanticModel is unable to infer type of a 'var' pattern variable ```
+        [Fact]
+        public void FailureToInferTypeOfAVarPatternVariable()
+        {
+            var source =
+@""
+class Program
+{
+    public static void Main(string[] args)",gafter,13274
+13009,Diagnose possible issues with type inference for pattern-matching,"Diagnose possible issues with type inference for pattern-matching The following (in `SourceLocalSymbol.cs`) shows that some assertions were disabled when pattern-matching was added. This should be investigated to ensure there isn't a latent bug hiding.
+",gafter,13274
+13099,CodeStyle -> General and Naming Styles do not support Narrator,"CodeStyle -> General and Naming Styles do not support Narrator Windows Narrator reads the name of the view model type if you highlight one of these combo boxes.
+
+![image](https://cloud.githubusercontent.com/assets/3751401/17602243/a4ef8d94-5fc0-11e6-947",dpoeschl,16380
+13159,PlaceholderLocalRewriter is unable to handle Declaration Pattern,"PlaceholderLocalRewriter is unable to handle Declaration Pattern I will submit a unit-test shortly.
+Because the rewriter doesn't apply appropriate transformation to the BoundDeclarationPattern node, later phases fail with the following exception:
+
+```",AlekseyTs,13183
+13219,out variable declarations do not work in index arguments,"out variable declarations do not work in index arguments `out var` does not work today in index arguments. This can arise in a number of supported scenarios
+- COM interop
+- indexed property (e.g. VB interop)
+- out parameter to an indexer in metadata
+-",gafter,13274
+13579,CodeStyle Tools Options window : improve keyboard navigation,"CodeStyle Tools Options window : improve keyboard navigation 1. Have to tab twice to select severity/preference
+2. should show drop down on some key (space ?)",dpoeschl,16380
+13759,Unnecessarily lifted field in async state machine,"Unnecessarily lifted field in async state machine **Version Used**: 
+2.0.0.60620
+
+**Steps to Reproduce**:
+Compile this code:
+
+``` C#
+using System.IO;
+using System.Threading.Tasks;
+
+class Program
+{
+    public static void Main() { }
+
+    publi",gafter,23930
+14260,Port https://github.com/dotnet/roslyn/pull/14161 to VB,"Port https://github.com/dotnet/roslyn/pull/14161 to VB Fixes: #10891 - Forbid constructing tuples via ""new""
+Fixes: #11689 - Enforce that ValueTuple types are structs
+
+We need exactly same solutions for VB",VSadov,14518
+14337,Add support for /instrument codecoverage for new language features,"Add support for /instrument codecoverage for new language features @JohnHamby mentioned that it does not work for all new C# language features.",gafter,14535
+14437,Enable setting a breakpoint in a local function,"Enable setting a breakpoint in a local function We should implement and add tests for setting a breakpoint in a local function. For example, if you set one on the line defining the local function, it should create the breakpoint in the _body_ of the local",gafter,14535
+14438,Sequence points and breakpoints for expression-bodied members,"Sequence points and breakpoints for expression-bodied members We should add tests (and implementation if needed) so that breakpoints can be added in an expression-bodied ctor, dtor, property accessor, or event accessor.
+
+See #14426 for some recent work",gafter,14535
+14439,Sequence points and breakpoints for deconstruction foreach statement,"Sequence points and breakpoints for deconstruction foreach statement We should add tests and implementation, if necessary, so that breakpoints can be set in a deconstruction foreach statement.
+
+See #14426 for some recent work in this area that may be a",gafter,14535
+14504,Catch exceptions closer to tree serialization,"Catch exceptions closer to tree serialization When SyntaxTree serialization fails the watsons often capture call stacks too far removed from the actual error due to async.   We should capture these failures closer to the actual error.",mattwar,14521
+14506,Catch exceptions closer to tree serialization,"Catch exceptions closer to tree serialization Fixes #14504 
+
+Adds watson checks when SyntaxTrees are serialized and deserialized. This should help find problems in serialization, so the dumps have better information for tracking down the problems.
+
+@j",mattwar,14521
+14519,Port breakpoint PR for pattern switch to RC,"Port breakpoint PR for pattern switch to RC This commit
+
+https://github.com/dotnet/roslyn/commit/5602a0a7d68871963025372ad5f69f040a462609
+
+should be ported to RC so breakpoints can be set in the when clause of a pattern switch.",gafter,14535
+15326,"Naming style ""require uppercase"" doesn't allow numerics or non-Latin characters","Naming style ""require uppercase"" doesn't allow numerics or non-Latin characters From: https://developercommunity.visualstudio.com/content/problem/2440/uppercase-naming-with-number.html
+
+```C#
+internal enum ButtonState : uint
+{
+    FROM_LEFT_1ST_BUTTO",dpoeschl,16597
+15345,Naming rules fire on overrides,"Naming rules fire on overrides The naming rules are firing on overrides - instead, it should be firing on the original declaration, the override cannot do anything about the name.
+
+Like we did in FxCop you should also watch out for:
+
+1. C# Implicit in",dpoeschl,16409
+15486,The naming rule violation is inadequate for non-Latin languages,"The naming rule violation is inadequate for non-Latin languages **Version Used**: 
+
+Visual Studio 2017 RC
+
+**Steps to Reproduce**:
+
+1. Use Japanese characters for identifiers
+
+**Expected Behavior**:
+
+There is no message.
+
+**Actual Behavior**:",dpoeschl,16597
+15508,IDE extract method fails to handle some deconstruction scenarios.,"IDE extract method fails to handle some deconstruction scenarios. The IDE code is not resilient against arbitrary expressions appearing on the left-hand-side of a deconstruction. It tries to produce a zero-element tuple type, which causes an exception to",mkrtich-m,18489
+15536,Bad codegen in call-forward to local function in different switch block,"Bad codegen in call-forward to local function in different switch block From #15322:
+
+```csharp
+class Program
+{
+    static void Main(string[] args)
+    {
+        object o = null;
+        switch (o)
+        {
+            case string x:",AlekseyTs,16593
+15788,NamingStyleCodeFixProvider crashes on const readonly,"NamingStyleCodeFixProvider crashes on const readonly Obviously not a normal scenario, but for the moment that I had `const readonly`, the naming style code fix provider crashed. Possibly related rules (in precedence order):
+(Private|Protected) Static Rea",dpoeschl,16589
+16066,Pattern matching crashes if lambda captures pattern variable,"Pattern matching crashes if lambda captures pattern variable **Version Used**: 
+Microsoft Visual Studio Enterprise 2017 RC
+Version 15.0.26014.0 D15REL
+Microsoft .NET Framework
+Version 4.6.01055
+
+**Steps to Reproduce**:
+Run the following app:
+
+```",AlekseyTs,16593
+16106,False error CS0170: Use of possibly unassigned field 'Item1',"False error CS0170: Use of possibly unassigned field 'Item1' ```
+public class MyClass
+{
+    public void Test4(IEnumerable<((int, int), string)> en)
+    {
+        foreach ((ValueTuple<int,int> t, string s) in en)
+        {
+            var a =t.Item1",tannergooding,16407
+16167,VS crashes if xml is pasted in C# editor,"VS crashes if xml is pasted in C# editor **Version Used**: 
+
+**Steps to Reproduce**:
+
+1. create new C# console app
+2. paste text below as a body of `Main`
+```xml
+      <summary>Copies a range of elements from an <see cref=""T:System.Array"" /> starti",gafter,16467
+16296,ArgumentNullException binding a pattern switch,"ArgumentNullException binding a pattern switch When running some custom static code analysis on Roslyn.sln, I get an ""Unknown hard error"". In the Windows EventViewer, I find the following error:
+```
+Application: csc.exe
+Framework Version: v4.0.30319
+D",gafter,16569
+16306,Inline Declaration refactoring on out parameter crashes IDE,"Inline Declaration refactoring on out parameter crashes IDE Start with the following code:
+
+```c#
+using System;
+using System.Collections.Generic;
+
+class C
+{
+    void Foo()
+    {
+        int rowCountMember;
+        var item = """";
+        int ro",AlekseyTs,18662
+16315,Expression variables declared in a local function parameter default are given a scope,"Expression variables declared in a local function parameter default are given a scope **Customer scenario**
+
+If you declare an expression variable (e.g. out variable) inside the default value
+expression of a parameter to a local function, the IDE crash",gafter,16467
+16431,Naming Styles can be completely broken by adding multiple specifications,"Naming Styles can be completely broken by adding multiple specifications To the point where the option page won't even load.
+
+Rough repro steps:
+1. Add two symbol specifications
+2. Create two rules, that use the two symbol specifications
+3. Save the",dpoeschl,16586
+16513,The semantic of constant pattern,"The semantic of constant pattern I propose to change the semantic of constant pattern match from current:
+```c#
+foo is 42 /* == */ object.Equals(foo, 42)
+```
+…to the opposite:
+```c#
+foo is 42 /* == */ object.Equals(42, foo)
+```
+
+And this is how `",gafter,16592
+16559,Stack Overflow in BindPatternSwitchLabelForInference,"Stack Overflow in BindPatternSwitchLabelForInference **Version Used**: VS2015 RC3
+
+**Steps to Reproduce**:
+
+Attempt to compile this code:
+
+```cs
+public class Program5815
+{
+    public static void Main(string[] args)
+    {
+        switch ((int)M(",gafter,16569
+16588,NamingStyleCodeFixProvider should always be able to find the symbol that generated the diagnostic,"NamingStyleCodeFixProvider should always be able to find the symbol that generated the diagnostic As an example of where it cannot, see https://github.com/dotnet/roslyn/issues/15788",dpoeschl,16589
+16681,"Documentation comment is indented on ""Suppress ... in Source""","Documentation comment is indented on ""Suppress ... in Source"" **Version Used**: Visual Studio 2017 RC 15.0.26020.0
+
+**Code to Reproduce**:
+```csharp
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public static async",sharwell,38906
+16798,Tree perf all work,"Tree perf all work **Customer scenario**
+
+RPS perf violation.  This wins us back around 0.5s (~60%) of a time regression in opening a winforms app.
+
+**Bugs this fixes:** 
+
+https://devdiv.visualstudio.com/DevDiv/_workitems?id=366104&triage=true&_a=ed",sharwell,20171
+16879,RC 26127.3: Debugger broken when using tuples,"RC 26127.3: Debugger broken when using tuples **Version Used**: 26127.3
+
+**Steps to Reproduce**:
+
+1.  Place a breakpoint at the ending brace of the Main method bellow:
+```
+    class Program
+    {
+        static void Main(string[] args)
+        {",cston,18552
+1710,HostAnalyzerManager.GetAnalyzerReferenceId should generate a unique ID,"HostAnalyzerManager.GetAnalyzerReferenceId should generate a unique ID See: http://source.roslyn.io/Microsoft.CodeAnalysis.Features/R/a1c94dbeedc15fae.html
+
+This method uses Display as the analyzer reference ID, which is incorrect as that can return jus",RikkiGibson,34712
+17165,ExtractMethodMatrix.GetVariableStyle Throws exception on code with errors,"ExtractMethodMatrix.GetVariableStyle Throws exception on code with errors **Version Used**: 
+![image](https://cloud.githubusercontent.com/assets/9797472/22995888/8293500a-f381-11e6-923e-4d241adef2f9.png)
+
+**Steps to Reproduce**:
+
+1.  Use Alt+Arrow to",agocke,20004
+17474,InvalidCastException at Microsoft.CodeAnalysis.CSharp.ExtractMethod.CSharpSelectionResult.StatementResult.GetContainingScopeType,"InvalidCastException at Microsoft.CodeAnalysis.CSharp.ExtractMethod.CSharpSelectionResult.StatementResult.GetContainingScopeType **Version Used**: 
+D15Rel 26226.0
+
+**Steps to Reproduce**:
+1. Restore, build and open Roslyn.sln
+2. Open source file: `\s",sharwell,19945
+1763,Don't trigger completion within numeric literals,"Don't trigger completion within numeric literals Or, in VB, date literals. Fixes #1736 
+
+May be interested: @brettfo @jasonmalinowski @Pilchie @dpoeschl @basoundr @balajikris ",balajikris,8184
+18295,[Flaky Test] Roslyn.VisualStudio.IntegrationTests.CSharp.CSharpCodeActions.GenerateMethodInClosedFile,[Flaky Test] Roslyn.VisualStudio.IntegrationTests.CSharp.CSharpCodeActions.GenerateMethodInClosedFile https://ci.dot.net/job/dotnet_roslyn/job/master/job/windows_release_vs-integration/633/testReport/junit/Roslyn.VisualStudio.IntegrationTests.CSharp/CShar,333fred,18605
+18311,Incorrect quick info for ValueTuple<T>,"Incorrect quick info for ValueTuple<T> **Version Used**: VS 2017 (15.0.0+26228.9)
+
+**Steps to Reproduce**:
+
+1. Use the following code:
+
+    ```csharp
+    void Foo()
+    {
+        var y = ValueTuple.Create(1);
+    }
+    ```
+
+2. Hover over `var",mkrtich-m,18489
+18347,ExtractMethodCodeRefactoringProvider crashes on selecting a line that references an argument captured by a local method,"ExtractMethodCodeRefactoringProvider crashes on selecting a line that references an argument captured by a local method **Version Used**: 
+
+Microsoft Visual Studio Community 2017
+Version 15.0.26228.9
+
+**Steps to Reproduce**:
+
+```csharp
+namespace E",agocke,20004
+18443,Accessibility: Narrator says control type twice in the navigation bar,"Accessibility: Narrator says control type twice in the navigation bar  Copied from [VSO tracker](https://devdiv.visualstudio.com/DevDiv/_workitems/edit/394818)
+
+**Version Used**: master
+
+**Steps to Reproduce**:
+
+1. Launch Visual Studio
+2. Create a",AmadeusW,18444
+18549,`IHasArgumentsExpression.ArgumentsInEvaluationOrder` in C# should not use private implementation,"`IHasArgumentsExpression.ArgumentsInEvaluationOrder` in C# should not use private implementation Currently, there is a lot of logic duplicated in C#'s implementation and there is a lot of opportunities to deviate from what LocalRewriter is doing. I believ",genlu,18494
+18550,`WasCompilerGenerated` property on bound node is not a robust way to determine `ArgumentKind` in VB,"`WasCompilerGenerated` property on bound node is not a robust way to determine `ArgumentKind` in VB The implementation in VB bound tree provides a fully populated list of arguments, including arguments with default value and array that is generated by com",genlu,18494
+18602,Broken Tests: CSharp/VB DeleteControl,"Broken Tests: CSharp/VB DeleteControl Tests:
+Roslyn.VisualStudio.IntegrationTests.CSharp.CSharpWinForms.DeleteControl
+Stack:
+```
+    Roslyn.VisualStudio.IntegrationTests.CSharp.CSharpWinForms.DeleteControl
+      System.NullReferenceException : Object",333fred,18605
+18658,Implement GetArgumentMatchingParameter and ArgumentsInParameterOrder as extension methods,"Implement GetArgumentMatchingParameter and ArgumentsInParameterOrder as extension methods Those are removed from core `IHasArgumentsExpression` interface, based on the latest interface design. Will likely bring them back as extension methods instead, once",genlu,18494
+188,Proposal: Add completeness checking to pattern matching draft specification,"Proposal: Add completeness checking to pattern matching draft specification # Background
+
+As noted in issue #180, many modern programming programs are data-focused, especially distributed applications which tend to store, manipulate, and move sets of da",gafter,4882
+19033,Compiler crash,"Compiler crash **Any version below apr 17**: 
+
+```csharp
+using System;
+
+namespace ConsoleApp3
+{
+    class BC { }
+    class DC1 : BC { }
+    class DC2 : BC { }
+    class Program
+    {
+        static void Main(string[] args)
+        {",agocke,21367
+19136,ExtractMethodCodeRefactoringProvider crashed with InvalidOperationException,"ExtractMethodCodeRefactoringProvider crashed with InvalidOperationException VS Build: 26426.1 VSUWPT
+
+Note same code that crashed: https://github.com/dotnet/roslyn/issues/19135.
+
+``` C#
+// Copyright (c) Microsoft.  All Rights Reserved.  Licensed unde",sharwell,19945
+19530,CSharpNavigateTo.NavigateTo is flakey.,"CSharpNavigateTo.NavigateTo is flakey. https://ci.dot.net/job/dotnet_roslyn/job/master/job/windows_release_vs-integration_prtest/4219/consoleFull#9716893042d31e50d-1517-49fc-92b3-2ca637122019
+
+      Roslyn.VisualStudio.IntegrationTests.CSharp.CSharpNavi",sharwell,33611
+19761,Access violation in RoslynCodeAnalysisService32 reading from memory mapped file,"Access violation in RoslynCodeAnalysisService32 reading from memory mapped file **Version Used**: 15.3 preview 1
+
+**Stack trace**
+
+```
+Application: ServiceHub.RoslynCodeAnalysisService32.exe
+Framework Version: v4.0.30319
+Description: The process wa",sharwell,20171
+1985,[Portable PDB] Avoid dependencies on legacy PDB format in EE tests,"[Portable PDB] Avoid dependencies on legacy PDB format in EE tests Currently the tests are disabled. Search EE tests for the bug number.",tmat,8289
+19863,[Perf] Optimize IsOrContainsAccessibleAttribute,"[Perf] Optimize IsOrContainsAccessibleAttribute the AbstractRecommendationService does a filter for which symbols should be included. Given this is called from ShouldIncludeSymbol, with this change we gain:
+1. Fewer iterations, as an Attribute is a type",Neme12,25622
+19878,Need to design how to represent failed conversion in tuple assignement,"Need to design how to represent failed conversion in tuple assignement This is a follow-up issue on https://github.com/dotnet/roslyn/pull/19679
+
+How should we represent failed conversion in tuple assignment and how should it be surfaced through the sema",AlekseyTs,22703
+1989,[Portable PDB] Support TypeSpecs in MetadataDecoder.ResolveSignatureTypeHandleOrThrow,"[Portable PDB] Support TypeSpecs in MetadataDecoder.ResolveSignatureTypeHandleOrThrow ",tmat,8289
+19958,Extract method does not support by-ref pass-through,"Extract method does not support by-ref pass-through **Version Used**: 15.3
+
+This is an extension of #19136.
+
+**Steps to Reproduce**:
+
+Attempt to use the Extract Method refactoring on the following code:
+
+```csharp
+public static int OtherMethod(re",sharwell,19945
+19987,Incorrect IDE0004 (Cast is redundant) in pattern matching,"Incorrect IDE0004 (Cast is redundant) in pattern matching **Version Used**: 15.3 Preview 1
+
+🔗 Originally reported by [Thomas Castiglione](https://developercommunity.visualstudio.com/users/21348/873dad1a-b02f-4f5a-8da9-37ef170c009b.html).
+
+**Steps to",elijah6,20162
+2,Update links in README.md with ported wiki content,"Update links in README.md with ported wiki content ",heejaechang,3247
+20065,Previews for light bulbs leaks solutions,"Previews for light bulbs leaks solutions **Version Used**: 400238e370ef760e178dd7a9db790e5feae7f3fb
+
+**Steps to Reproduce**:
+
+1. Create a new console app.
+2. Invoke removed unused usings on the top.
+3. Wait for the preview to appear.
+4. Dismiss the",mavasani,20096
+20170,Dogfooding crash in memory mapped files,"Dogfooding crash in memory mapped files **Version Used**: 
+VS 2017 Preview 15.3 P 2, + latest Roslyn signed VSIX: 2.3.06181101
+
+**Steps to Reproduce**:
+
+1. Had Roslyn.sln open, rebased my branch to get the latest changes from master (but there weren'",sharwell,20171
+20338,BoundAnonymousObjectCreationExpression has no way to map arguments and declarations for error cases,BoundAnonymousObjectCreationExpression has no way to map arguments and declarations for error cases Arguments and Declarations of an anonymous object creation are stored as separate arrays of bound declarations and expressions in BoundAnonymousObjectCreat,mavasani,28005
+20577,Compiler (csc) crashes with code of a nested recursive function and different scope access,"Compiler (csc) crashes with code of a nested recursive function and different scope access **Version Used**: 
+2.2.0.61624
+**Steps to Reproduce**:
+
+1. Paste this code:
+```
+using System.Linq;
+
+public class Program {
+	public static void Main(string[",agocke,21367
+20591,SymbolFilter parameter to AbstractNavigateToSearchService methods,"SymbolFilter parameter to AbstractNavigateToSearchService methods **Version Used**: 
+0f658a492302a11277348d1fd1ef2e1d0a0e4130
+
+**Expected Behavior**:
+Being able to pass in a SymbolFilter parameter to pre-filter results before passing them to the calle",sharwell,27865
+206,Proposal: Pattern matching and record types,"Proposal: Pattern matching and record types ### The spec has been moved
+
+The specs for pattern matching and records have been moved to https://github.com/dotnet/roslyn/blob/features/patterns/docs/features/patterns.md and https://github.com/dotnet/roslyn",gafter,4882
+20641,Pattern matching IL much larger than non-pattern matching equivalent,"Pattern matching IL much larger than non-pattern matching equivalent **Version Used**:
+2.3.0.61814 (b7f611db)
+
+**Steps to Reproduce**:
+Compile the following program:
+```C#
+using System.Collections;
+using System.Collections.Generic;
+
+class Program",gafter,25739
+21946,Quick-Fix for BC40003 is missing action to add 'Shadows' modifier,"Quick-Fix for BC40003 is missing action to add 'Shadows' modifier Drop this in a new console app.
+
+``` VB.NET
+Class Base
+    Sub M()
+
+    End Sub
+End Class
+
+Class Derived
+    Inherits Base
+
+    Sub M() ' <--- Invoke the light bulb on this line",06needhamt,22871
+21948,'Add Overloads' Quick-Fix for BC40003 produces invalid code,"'Add Overloads' Quick-Fix for BC40003 produces invalid code **Version Used**: VS2017 RTM
+
+**Steps to Reproduce**:
+
+1. Drop this in a new console app.
+
+``` VB.NET
+Class Base
+    Sub M()
+
+    End Sub
+End Class
+
+Class Derived
+    Inherits Base",06needhamt,22871
+22066,Incorrect ArgumentKind for argument to query invocation,"Incorrect ArgumentKind for argument to query invocation Test `ImplicitSelectClause_IOperation` in QueryExpressions.vb
+See https://github.com/dotnet/roslyn/pull/21356#issuecomment-325050215",AlekseyTs,22795
+22289,ArgumentOutOfRangeException in CompletionService.GetCompletionsAsync,"ArgumentOutOfRangeException in CompletionService.GetCompletionsAsync **Version Used**: 
+2.3.2
+
+**Steps to Reproduce**:
+Unfortunately I don't know how to isolate this. This is something I see in logs of my Roslyn-based project, and I wasn't able to rep",ashmind,39258
+22342,Suggested names not provided for tuple elements in generic type arguments,"Suggested names not provided for tuple elements in generic type arguments **Version Used**: 15.4 Preview 2
+
+**Steps to Reproduce**:
+
+1. Type the following as a local variable declaration
+
+    ```csharp
+    Func<(Task task, CancellationToken cancell",MaStr11,22673
+22385,Generate Property CodeAction should know about ref-readonly-ness,"Generate Property CodeAction should know about ref-readonly-ness After `in` is implemented at call-site, the IDE will be able to know if it was in a ref-readonly context or not, therefore, it can generate a property with that `RefKind`.
+This means that `",OmarTawfik,22717
+22472,Change ArgumentSyntax.RefOrOutKeyword to RefKindKeyword,"Change ArgumentSyntax.RefOrOutKeyword to RefKindKeyword And add overloads for compatibility.
+Fixes #22441
+
+This is an API change that reflects the presence of a new ref mode for arguments.
+
+@dotnet/roslyn-compiler @AnthonyDGreen @jaredpar Please revi",OmarTawfik,22717
+22486,Ensure correct syntax node is associated with matched BoundOmittedArgument,Ensure correct syntax node is associated with matched BoundOmittedArgument See unit test `DirectlyBindOmittedArgument_InvocationExpression` and the baseline operation tree for the test. Issue is explained here: https://github.com/dotnet/roslyn/pull/22444#,AlekseyTs,22795
+22650,Unbounded SQLite instances/connections contributing to OOM failures,"Unbounded SQLite instances/connections contributing to OOM failures **Version Used**: 15.3
+
+Currently we fail to bound the number of instances of the following types which are created at runtime:
+
+* `SQLitePCL.sqlite3`
+* `Microsoft.CodeAnalysis.SQLit",sharwell,22729
+22653,Remove duplicate member symbol from EventReferenceExpression,Remove duplicate member symbol from EventReferenceExpression See https://github.com/dotnet/roslyn/pull/22243#discussion_r143185433,genlu,22678
+22675,"Revert ""Remove duplicate member symbol from EventReferenceExpression""","Revert ""Remove duplicate member symbol from EventReferenceExpression"" Reverts dotnet/roslyn#22653
+
+@jinujoseph",genlu,22678
+22723,ContainedDocument can leak if exceptions are thrown,"ContainedDocument can leak if exceptions are thrown Underlying issue:
+
+During the call to `CreateContainedLanguage`, a call is made to `AbstractProject.AddDocument`. This call adds the `ContainedDocument` to two sets. If the key already exists in the se",sharwell,22729
+22736,IPropertyReferenceExpressions in IAnonymousObjectCreationExpression are missing a receiver,"IPropertyReferenceExpressions in IAnonymousObjectCreationExpression are missing a receiver ```
+        <Fact>
+        Public Sub AnonymousTypeFieldsReferences()
+            Dim source = <![CDATA[
+Module ModuleA
+    Sub Test1()
+        Dim v1 As Obje",mavasani,28005
+22754,Naming style code fix does not insert underscores between words,"Naming style code fix does not insert underscores between words **Version Used**: 15.5 preview 1
+
+**Steps to Reproduce**:
+
+Create a style definition for a common test naming style.
+
+1. Add an `.editorconfig` file with the following:
+
+```ini
+[*.cs",06needhamt,22831
+22789,'langword' completion should not appear after typing <,"'langword' completion should not appear after typing < **Version Used**: 15.5 Preview 1
+
+**Steps to Reproduce**:
+
+1. In a documentation comment, type `<se`
+
+**Expected Behavior**:
+
+1. `see` is selected in the completion list
+1. `sealed` is not av",sharwell,22791
+22832,Naming style code fix does not insert underscores between uppercase words,Naming style code fix does not insert underscores between uppercase words Variant of #22754,06needhamt,22831
+22884,"Initialize field from constructor parameter defaults to using ""this."", where it should default to field with prefixed underscore","Initialize field from constructor parameter defaults to using ""this."", where it should default to field with prefixed underscore **Steps to Reproduce**:
+
+1. Ensure you don't have custom naming styles set in Visual Studio.
+2. Add a constructor to some c",wachulski,28013
+23043,UseNullPropagation codefix doesn't recognize `x is null ? null : x.y` pattern,"UseNullPropagation codefix doesn't recognize `x is null ? null : x.y` pattern Also, `ReferenceEquals(foo, null) ? null : foo.y`
+
+```C#
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsUseNullPropagation)]
+        public async Task TestW",schovanec,23610
+23115,Incorrect order of initializer operation nodes in anonymous object creation in query clause,"Incorrect order of initializer operation nodes in anonymous object creation in query clause See https://github.com/dotnet/roslyn/pull/23080/files#r150128874
+
+Source:
+```
+using System.Collections.Generic;
+using System.Linq;
+ 
+ class ClassA
+ {",mavasani,28005
+23179,SourceModuleSymbol.ContainsExplicitDefinitionOfNoPiaLocalTypes forces expensive binding,"SourceModuleSymbol.ContainsExplicitDefinitionOfNoPiaLocalTypes forces expensive binding `SourceModuleSymbol.ContainsExplicitDefinitionOfNoPiaLocalTypes` forces all attributes to be bound, resulting in extreme performance and/or reliability problems when u",AlekseyTs,23505
+23265,Improve the syntax error when a conditional expression used in an interpolated string,"Improve the syntax error when a conditional expression used in an interpolated string **Customer scenario**
+
+When using a conditional expression `e1 ? e2 : e3` inside of an interpolated string `$""{e1 ? e2 : e3}""` the compiler interprets the colon as the",MaStr11,23587
+23268,Covariant return types with respect to nullable reference types,"Covariant return types with respect to nullable reference types **Version Used**: Preview 11152017
+
+**Steps to Reproduce**:
+
+```csharp
+abstract class A {
+  public abstract object? GetData();
+}
+
+class B : A {
+  public override object GetData() =>",agocke,34718
+23323,Would like code fix that fixes conditional expression in an interpolation,"Would like code fix that fixes conditional expression in an interpolation See https://github.com/dotnet/roslyn/issues/12214#issuecomment-345451129
+
+When an interpolation in an interpolated string contains a conditional expression, the colon is considere",MaStr11,23587
+23378,Using __arglist with `out var` causes Visual Studio to crash,"Using __arglist with `out var` causes Visual Studio to crash **Version Used**: 15.4.4 and 15.5.0 Preview 4
+
+**Steps to Reproduce**:
+
+1. Create a new console application targeting .NET Framework v4.7.1
+2. Replace the entire contents of `Program.cs` wi",AlekseyTs,23570
+23462,Optimize allocations in IsDefinedInSourceTree hot paths,"Optimize allocations in IsDefinedInSourceTree hot paths AnalyzerRunner is showing a few allocation hot paths in `IsDefinedInSourceTree`. The primary cases are:
+
+* 677MB (3.5%): `Symbol.IsDefinedInSourceTree` &rarr; `SourceMemberContainerTypeSymbol.Decla",sharwell,23491
+23490,Optimize allocations in IsDefinedInSourceTree hot paths,"Optimize allocations in IsDefinedInSourceTree hot paths  Fix for #23462
+This solutions lazy caches the SyntaxReferences array in the same way the [Children](http://source.roslyn.io/#Microsoft.CodeAnalysis.CSharp/Declarations/MergedTypeDeclaration.cs,196)",sharwell,23491
+2352,VS crash during inline rename: KeyNotFoundException,"VS crash during inline rename: KeyNotFoundException **Reduced Repro**
+
+``` C#
+// In File1.cs
+class Program
+{
+    internal void A() { } // Rename to B
+    internal void B() { }
+}
+
+// In File2.cs
+class Program2
+{
+    void M()
+    {
+        Pr",dpoeschl,3416
+23536,"The ""Convert to interpolated string"" automated refactoring does not escape curly braces","The ""Convert to interpolated string"" automated refactoring does not escape curly braces The refactoring &quot;Convert to interpolated string&quot; does not escape the exisiting curly braces when converting concatenated strings.
+
+Eg. the statements
+int",rik-smeets,23589
+23645,OperationAnalysisContext should expose a SemanticModel,"OperationAnalysisContext should expose a SemanticModel **Version Used**: 2.6.0-beta3
+
+**Expected Behavior**:
+The `OperationAnalysisContext` for analyzers working with operations should expose a `SemanticModel`.
+
+**Actual Behavior**:
+`OperationAnalys",mavasani,27922
+23775,AnalyzerDependencyCheckingService.CheckForConflictsAsync results in 15 seconds of blocked UI opening Roslyn,"AnalyzerDependencyCheckingService.CheckForConflictsAsync results in 15 seconds of blocked UI opening Roslyn **Version Used**: 
+Visual Studio 2017 version 15.5
+
+**Steps to Reproduce**:
+1. Open a large solution where there are analyzer diagnostics in a",mavasani,23794
+23929,Add tests for lifted variables in async/iterator code,"Add tests for lifted variables in async/iterator code We do not have many tests that verify the set of variables lifted in async or iterator code. It would be good to add a bit of testing infrastructure to make that easy, and add tests. Also, this could b",gafter,23930
+24018,Inferred nullability should flow into anonymous type fields,"Inferred nullability should flow into anonymous type fields The anonymous type field in the following should be declared as `string` rather than `string?`. Instead, `y.ToString()` generates a warning that `y` may be null.
+```
+using System.Linq;
+class C",cston,33562
+24135,Speculative semantic model produces different behavior for local functions,"Speculative semantic model produces different behavior for local functions  See the behavior in this test:
+
+```csharp
+        [Fact]
+        public void LocalFunctionAttribute()
+        {
+            const string text = @""
+using System;
+class A :",RikkiGibson,41847
+25119,xUnit crash with -1073740791,"xUnit crash with -1073740791 EditorServices2 crashed with `-1073740791` in a test run. My searching indicates that this code is actually C0000409, which is a stack buffer overflow code. Output:
+
+```
+00:11:19 Errors Roslyn.Services.Editor2.UnitTests.dll",sharwell,25681
+25139,Testplan for new constraints.,"Testplan for new constraints. ## Enum constraint ##
+
+The feature removes restrictions on use of `System.Enum` in constraints. 
+
+- [x] langver test.
+- [x] constraint is enforced - rejects types that do not derive from `System.Enum`
+- [x] constraint c",OmarTawfik,25680
+25244,Turning off/on decompilation doesn't take effect until you restart VS,"Turning off/on decompilation doesn't take effect until you restart VS 1. Turn on 
+![image](https://user-images.githubusercontent.com/1103906/37010246-c6be0720-213e-11e8-9c3c-586d3cf39662.png)
+
+2. _Go to definition_ for an external API
+3. Close documen",sharwell,27940
+25255,"""Enable Navigation to Decompiled Sources"" option only partially works in a VB.NET project","""Enable Navigation to Decompiled Sources"" option only partially works in a VB.NET project After enabling the &quot;Enable Navigation to Decompiled Sources&quot; option I attempted to Go To Definition of `.Show()` of a `System.Windows.Forms.Form` from my V",sharwell,27940
+25261,Follow up on feeback on #24817,"Follow up on feeback on #24817 @alekseyts left some feedback on #24817 after it was approved and merged.
+Comments should be reviewed. This bugs tracks this for 15.7 so that it doesn't get lost.",OmarTawfik,25680
+25266,Inconsistent tree shape is used for initializers within IAnonymousObjectCreationOperation,"Inconsistent tree shape is used for initializers within IAnonymousObjectCreationOperation ```
+        <CompilerTrait(CompilerFeature.IOperation, CompilerFeature.Dataflow)>
+        <Fact()>
+        Public Sub Test_01()
+            Dim source =
+<compil",mavasani,28005
+25315,InteractivePasteCommandhandlerTests.PasteCommandWithInteractiveFormat failure,"InteractivePasteCommandhandlerTests.PasteCommandWithInteractiveFormat failure `InteractivePasteCommandhandlerTests.PasteCommandWithInteractiveFormat` failed in the signed build, https://devdiv.visualstudio.com/DevDiv/_build/index?buildId=1450639&_a=summar",sharwell,25681
+2537,Object creation preselection,"Object creation preselection C# object creation preselection gets very confused in a situation like:
+
+```
+Task x = new $$
+string x = ""foo""
+```
+
+because the new keyword is actually a part of the second assignment
+expression. It therefore selects st",balajikris,3441
+25398,Crash when awaiting a task of ref struct,"Crash when awaiting a task of ref struct Hi Roslyn team,
+
+I'm attempting to make use of the new ref struct modifier in VS 15.6.1, and am getting hard crashes when attempting to do so.  I have verified the same behavior in VS 15.6.1 Preview 1 as well.
+",VSadov,25819
+25469,Add a refactoring to convert a common for-loop form to a foreach-statement.,"Add a refactoring to convert a common for-loop form to a foreach-statement. Tagging @heejaechang .
+
+Todo:
+
+- [x]  VB
+- [x] Tests",sharwell,25747
+25485,VS2017 crashes when parsing C#  Span code,"VS2017 crashes when parsing C#  Span code **Version Used**: 
+
+Microsoft Visual Studio Enterprise 2017
+Version 15.6.2
+
+**Steps to Reproduce**:
+
+1. Create a new Class Library (Classic Desktop) project
+2. Add a NuGet package reference to System.Memor",VSadov,25819
+25558,Production code changes to aid with test stabilization,"Production code changes to aid with test stabilization This pull request contains the changes to production code resulting from a larger effort to stabilize flaky tests.
+
+* Move the listener/waiter test hooks to the workspaces layer
+* Cancel pending as",sharwell,25747
+25560,Block ExportProvider pollution in tests,"Block ExportProvider pollution in tests Currently many tests share instances of `ExportProvider` for efficiency purposes. This mutable type ends up containing mutable objects, and sharing across tests can cause unexpected cross-test behavior changes.
+
+T",sharwell,25681
+25566,Possible decision dag optimization: use pattern variables in place of temps,"Possible decision dag optimization: use pattern variables in place of temps One possible optimization would be to use pattern variables directly rather than using the pattern-matching temps to avoid a copy when the pattern matches.
+
+This would probably",gafter,25739
+25589,Intellisense doens't work in Attributes,"Intellisense doens't work in Attributes When typing out an Attribute, Intellisense doesn't include any available Namespaces other than those included in the System namespace.
+
+This makes traversing Namespaces very difficult when specifying an attribute",Neme12,25622
+2560,Wrong Cast is redundant with Option Strict On in VB,"Wrong Cast is redundant with Option Strict On in VB In a VB.NET project with Option Strict On the following code with += operator trigger ""Cast is redundant"" but when apply the fix, the code became broken:
+
+``` vb
+Dim b As Byte
+b += CByte(1) ' IDE0004",DustinCampbell,8390
+25690,"""Generate Equals"" refactorings produce non-compiling code when using indexers","""Generate Equals"" refactorings produce non-compiling code when using indexers **Version Used**: VS 15.7 Preview 2 (Roslyn 2.8.0.62716, `e205ae18`)
+
+**Steps to Reproduce**:
+
+1. Copy the class below into a C# source file.
+2. Invoke the Quick Fix menu a",Neme12,25700
+25691,Fix failure to initialize RemoteWorkspace in the out-of-process host,"Fix failure to initialize RemoteWorkspace in the out-of-process host ### Customer scenario
+
+Visual Studio crashes as soon as a project is opened.
+
+### Bugs this fixes
+
+https://devdiv.visualstudio.com/DevDiv/NET%20Developer%20Experience%20Productivit",sharwell,25747
+25707,"""Generate Equals"" refactorings should not include set-only properties","""Generate Equals"" refactorings should not include set-only properties **Version Used**: VS 15.7 Preview 2 (Roslyn 2.8.0.62716)
+
+**Steps to Reproduce**:
+
+1. Copy the class below into a C# source file.
+2. Invoke the Quick Fix menu at the marked locatio",Neme12,25700
+25716,[Regression] Syntax no longer shows up in Find All References if it refers to symbols outside of the project,"[Regression] Syntax no longer shows up in Find All References if it refers to symbols outside of the project **Version Used**: 
+Version 15.7.0 Preview 3.0 [27523.0.d15.7]
+
+**Steps to Reproduce**:
+
+1. File -> New Console App (.NET Framework)
+2. In `M",sharwell,25723
+25731,Using Peek Definition disabled decompilation for that type,"Using Peek Definition disabled decompilation for that type **Version Used**: Visual Studio 2017.7 Preview 3 [27526.1.d15.7]
+
+**Steps to Reproduce**:
+
+1.  `Peek Definition` on a type defined in metadata
+2.  Notice that the metadata type is not decompi",sharwell,27940
+26180,Why does IOperation not expose SematicModel?,"Why does IOperation not expose SematicModel? Seems like a reasonable thing to do. @mavasani 
+Maybe it should be exposed from both `OperationAnalysisContext` and `IOperation`",mavasani,27922
+26305,ChangedText.GetTextChanges should not assert,"ChangedText.GetTextChanges should not assert ```csharp
+[Fact]
+        public void ChangedTextTests()
+        {
+            var text0 = SourceText.From(@""using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Sy",ashmind,39258
+26329,"Decompilation from a VB projet produces a C# file, but then opens it in a VB workspace.","Decompilation from a VB projet produces a C# file, but then opens it in a VB workspace. For example:
+
+![image](https://user-images.githubusercontent.com/4564579/39102067-5df62736-4655-11e8-8f97-53cbb0f3b9e5.png)
+
+This clearly breaks everything since t",sharwell,27940
+26992,"""Convert to full property"" creates field with underscore prefix","""Convert to full property"" creates field with underscore prefix When there is no custom naming style for fields, the default behavior of ""Convert to full property"" is to prefix the field with an underscore:
+```c#
+class C
+{
+    int P { get; set; }
+}",wachulski,28013
+27187,[Disassembly] body of method not shown after answering No and then Yes,"[Disassembly] body of method not shown after answering No and then Yes **Version Used**: 15.8 Preview 1.1
+
+🔗 Copied from internal bug [600249](https://devdiv.visualstudio.com/DevDiv/_workitems/edit/600249).
+
+### Steps to reproduce:
+
+1. Create a C#",sharwell,27940
+27338,Incorrect operation tree for anonymous object creation initializer with mixed assignment and non-assignment initializers,"Incorrect operation tree for anonymous object creation initializer with mixed assignment and non-assignment initializers ```
+        [CompilerTrait(CompilerFeature.IOperation)]
+        [Fact()]
+        public void AnonymousTypeCreation_MixedInitializer",mavasani,28005
+27690,Recommend 'this' inside local functions,"Recommend 'this' inside local functions ### Customer scenario
+Try to type `this` inside a local function that is inside an instance method. `this` should be offered as a completion.
+
+### Bugs this fixes
+Fixes https://github.com/dotnet/roslyn/issues/27",nprad,28776
+27850,NavigateToItemProvider hurts Go To File performance by providing irrelevant results,"NavigateToItemProvider hurts Go To File performance by providing irrelevant results **Version Used**: 
+27813.1 d15.8 (latest dogfood build) 
+
+**Steps to Reproduce**:
+
+1. Open big solution like Rolslyn
+2. Invoke Go To File (Ctrl+Shift+T)
+3. Type a f",sharwell,27865
+27874,Returning ref-like ref parameter types by ref should be allowed,"Returning ref-like ref parameter types by ref should be allowed From @tessenr in #27357
+
+Similar problem exists with parameters' ref escape scopes:
+```cs
+class C
+{
+  static ref Span<int> M1(ref Span<int> x)
+  {
+    ref Span<int> q = ref x;
+    re",OmarTawfik,27882
+27923,Completion for `this` is always offered in anonymous functions,"Completion for `this` is always offered in anonymous functions ```c#
+using System;
+
+class Foo
+{
+    static void M()
+    {
+        Action a = () =>
+        {
+			$$
+        };
+
+        Action b = delegate
+        {
+            $$
+        };",nprad,28776
+27972,Escape scope errors are not consistent for different parameter types,"Escape scope errors are not consistent for different parameter types Escape scope errors are not consistent for different parameter types. Example:
+
+```csharp
+class C
+{
+    void M(ref int arg)
+    {
+        int local = default;
+        arg = ref l",OmarTawfik,27882
+27973,Stop calling IVsHerarchy.ParseCanonicalName if we don't need it,"Stop calling IVsHerarchy.ParseCanonicalName if we don't need it We were calling IVsHierarchy.ParseCanonicalName to get the item ID of a file, to then turn around and use that to get the folder names. In some cases, we already had the folder names so this",jasonmalinowski,27993
+28091,IDE0009 misfires when using dictionary initializer syntax within LINQ expression,"IDE0009 misfires when using dictionary initializer syntax within LINQ expression Similar to #23381, except related to dictionary initializer instead of object initializer.
+
+**Version Used**: VS 15.8.0 Preview 3 (27821.2.d15.8)
+
+**Steps to Reproduce**:",Paxxi,28929
+2830,Make AnalyzerManager public and remove its static instance for analyzer state management,Make AnalyzerManager public and remove its static instance for analyzer state management AnalyzerManager has been a source of many recent memory leaks due to it holding onto analyzer state longer than required. The primary reason for this is that currentl,mavasani,20096
+2836,Declared type precedence in new operator (regression),"Declared type precedence in new operator (regression) Mentioned but not addressed in comments at CodePlex [#138](https://roslyn.codeplex.com/workitem/138).
+
+``` csharp
+bool b;
+Program p = new |
+b = false;
+```
+
+This results in Intellisense offering",balajikris,3441
+28509,IDE0009 Add 'this' or 'Me' qualification incorrectly reported,"IDE0009 Add 'this' or 'Me' qualification incorrectly reported Starting with Visual Studio 15.8.0 Preview 3, Visual Studio has started incorrectly reporting that a variable should be prefixes with `this.` when `dotnet_style_qualification_for_method` is set",Paxxi,28929
+28830,VB version of TestDuplicateConstantAttributesMetadata is locale dependent,"VB version of TestDuplicateConstantAttributesMetadata is locale dependent **Version Used**: Master
+
+**Steps to Reproduce**:
+
+1. Set Windows to use Swedish locale for date/time and number settings
+2. restore.cmd
+3. build.cmd
+4. test.cmd
+Alternative",Paxxi,28849
+29889,Nullability mismatch is not reported for an assignment of Anonymous Types,"Nullability mismatch is not reported for an assignment of Anonymous Types ```
+
+        [Fact]
+        public void AnonymousTypes_01()
+        {
+            CSharpCompilation c = CreateCompilation(new[] { @""
+class C
+{
+    static void Main()
+    {}",cston,33562
+29890,Missing ErrorCode.HDN_ExpressionIsProbablyNeverNull diagnostics,"Missing ErrorCode.HDN_ExpressionIsProbablyNeverNull diagnostics ```
+        [Fact]
+        public void AnonymousTypes_06()
+        {
+            var source =
+@""class C
+{
+    static void F(string x, string y)
+    {
+        x = new { x, y }.x ?? x;",cston,33562
+29891,Missing ErrorCode.WRN_NullReferenceReceiver warning involving anonymous type,"Missing ErrorCode.WRN_NullReferenceReceiver warning involving anonymous type ```
+        // PROTOTYPE(NullableReferenceTypes): NullableWalker.VisitAnonymousObjectCreationExpression
+        // should support initializers with inferred nullability.",cston,33562
+29980,Type parameters declared in disabled context should have oblivious nullability,"Type parameters declared in disabled context should have oblivious nullability ```
+        [Fact]
+        public void Constraints_65()
+        {
+            var source =
+@""
+#nullable disable 
+interface I1
+{
+    void F1<TF1>();
+}
+
+#nullabe enab",AlekseyTs,34797
+3,Add symbol files(.pdb/source) to NuGet packages,"Add symbol files(.pdb/source) to NuGet packages It would be nice to be able to step inside Roslyn code when using NuGet packages.
+
+This is nice guide on how to do this:
+http://blog.davidebbo.com/2011/04/easy-way-to-publish-nuget-packages-with.html
+
+<",heejaechang,3247
+30086,Add support for generating current naming rules/options in the editorconfig generator,Add support for generating current naming rules/options in the editorconfig generator See the discussion here: https://github.com/dotnet/roslyn/pull/30043#discussion_r219246165. Current editorconfig file generation only handles formatting and code style o,sharwell,34440
+30544,Intermittent integration test failures: BasicNavigationBar.CodeSpit and BasicNavigationBar.VerifyNavBar,Intermittent integration test failures: BasicNavigationBar.CodeSpit and BasicNavigationBar.VerifyNavBar See https://ci.dot.net/job/dotnet_roslyn/job/master/job/windows_debug_vs-integration_prtest/4564/artifact/Binaries/debug/Logs/Microsoft.VisualStudio.La,sharwell,33611
+30661,Rename tracking crashed,"Rename tracking crashed The initial blame of the null reference is here:
+
+https://github.com/dotnet/roslyn/blob/5a8dabf92d3abb17b47b9c54d33d93313dc8d725/src/EditorFeatures/Core/Implementation/RenameTracking/RenameTrackingTaggerProvider.StateMachine.cs#L",sharwell,31787
+3092,"VB prettylister gets indent wrong for ""End Sub"" of a multiline lambda whose final line is a comment","VB prettylister gets indent wrong for ""End Sub"" of a multiline lambda whose final line is a comment In VB, if I have a multiline lambda whose last line is a comment, then it gets the spacing of the final ""End Sub"" incorrect.
+
+REPRO:
+![vb-prettylist](ht",mattwar,3268
+30958,Contravariant parameter types with respect to nullable reference types,"Contravariant parameter types with respect to nullable reference types **Version Used**: c9c6309
+
+**Steps to Reproduce**:
+
+```csharp
+abstract class A {
+  public abstract void SetData(object value);
+}
+
+class B : A {
+  public override void SetData",agocke,34718
+31142,Enable FormattingAnalyzer,"Enable FormattingAnalyzer Recommend reviewing by individual commit.
+
+Reviewers should pay particular attention to all commits that are not the large and automated application of formatting changes.",sharwell,31801
+31142,Enable FormattingAnalyzer,"Enable FormattingAnalyzer Recommend reviewing by individual commit.
+
+Reviewers should pay particular attention to all commits that are not the large and automated application of formatting changes.",sharwell,31652
+3128,Use block indentation not token alignment rule for multiline lambdas,"Use block indentation not token alignment rule for multiline lambdas Fixes #3092 
+
+There are two different ways to get token/lines to align with each other in a formatting rule.  One is to use the align tokens operation and the other is to use the block",mattwar,3268
+31381,Duplicate diagnostics in error list,"Duplicate diagnostics in error list ![image](https://user-images.githubusercontent.com/10605811/49052309-23a6de80-f1a0-11e8-92c0-9cf6e9658065.png)
+
+Found this while dogfooding the new unused expression analyzer from https://github.com/dotnet/roslyn/pull",mavasani,31794
+31394,Nullability of assigned field ignored,"Nullability of assigned field ignored A null reference warning is reported for `a.F.ToString()`:
+```c#
+#nullable enable
+
+class C<T> { }
+
+class Program
+{
+    static void F(C<object>? x, C<object?> y)
+    {
+        var a = new { F = x };",cston,33562
+31644,Remove OOP related feature options.,"Remove OOP related feature options. This code to make it possible to run features OOP was added around 18 months ago.  Since then there has been no issue with it.  It has also been A/B tested with no stability issues arising, and positive numbers for all",sharwell,34793
+31652,Format documents in Roslyn.sln,"Format documents in Roslyn.sln This extracts the automated portion of #31142 to a separate pull request and assigns @dotnet-bot as the author of the changes.
+ 
+I ran two sanity checks after extracting/rebasing these changes from an earlier pull request:",sharwell,31801
+31743,"""Remove unused parameter"" is firing 10s of times for the same issue","""Remove unused parameter"" is firing 10s of times for the same issue ``` C#
+        private static bool ShouldRouteCommandBackToVS(Guid cmdGuid, uint cmdId, bool translated, bool startsMultiKeyChord)
+        {
+            //Any command that wasn't trans",mavasani,31794
+31820,CFG in presence of condition directives (#if ... #endif),"CFG in presence of condition directives (#if ... #endif) ```
+class C
+{
+    int M()
+    {
+        int x = 0;
+        int y = 0;
+#if DEBUG
+        y = x;
+#endif
+        return y;
+    }
+}
+```
+
+If you request a `ControlFlowGraph` for the above",mavasani,31822
+31821,Revert workaround for unused value assignment/parameters analyzer in presence of conditional directives,"Revert workaround for unused value assignment/parameters analyzer in presence of conditional directives https://github.com/dotnet/roslyn/issues/31820 is the underlying reason for these false positives. For now, we will workaround this issue by bailing out",mavasani,31822
+3198,"Ensure SemanticModel reports node as a default instance access rather than as a type reference, when the type reference is reclassified as such.","Ensure SemanticModel reports node as a default instance access rather than as a type reference, when the type reference is reclassified as such. Addresses DevDiv 1169533.
+
+@VSadov, @gafter, @agocke, @jaredpar, @khyperia Please review.",RikkiGibson,41847
+3232,Add features flag support to parse options,"Add features flag support to parse options CSharpParseOptions was hardcoded to reject any /features flags passed in, and any unit tests that used feature flags. This PR changes that, which is required for any future C#7 experimental language features, as",khyperia,3288
+32540,A number of test scenarios utilizing Default Interface Implementations across assembly boundaries are broken due to a bug in CoreCLR,"A number of test scenarios utilizing Default Interface Implementations across assembly boundaries are broken due to a bug in CoreCLR  Here is a link to the CoreCLR issue https://github.com/dotnet/coreclr/issues/22021.
+
+Affected tests:
+```
+Microsoft.Co",AlekseyTs,33548
+3261,Add features flag support to parse options for VB,"Add features flag support to parse options for VB This is the VB dual of #3232
+
+This enables ParseOptions to accept feature flags, as well as adding the corresponding check in Parser.vb.
+
+There is a stub where flag strings can be added in ParserFeatur",khyperia,3288
+32697,Need to re-analyze method groups,"Need to re-analyze method groups In `Binder.CreateConversion`, the bound method group node gets fixed to have a type (with oblivious annotations). During nullable analysis, we need to undo and re-do that with proper nullable annotation.
+
+Note there is a",cston,35655
+3287,Public API checker should ignore protected members on uninheritable types,"Public API checker should ignore protected members on uninheritable types This concerns APIs which are `protected` on `public` types which can't be inherited from by customers.  In particular:
+- Types which are `sealed`
+- Types whose constructors are al",gafter,3308
+32911,"Test plan for ""readonly members""","Test plan for ""readonly members"" Proposal: dotnet/csharplang#1710
+
+This issue is a place to collect test ideas and track their validation. Use the [compiler test plan](
+https://github.com/dotnet/roslyn/blob/master/docs/contributing/Compiler%20Test%20Pl",RikkiGibson,34712
+32911,"Test plan for ""readonly members""","Test plan for ""readonly members"" Proposal: dotnet/csharplang#1710
+
+This issue is a place to collect test ideas and track their validation. Use the [compiler test plan](
+https://github.com/dotnet/roslyn/blob/master/docs/contributing/Compiler%20Test%20Pl",RikkiGibson,34468
+3295,EnC could skip next statement when active statement is commented out,"EnC could skip next statement when active statement is commented out Internally tracked as 1171881.
+
+Repro: 
+F5, comment out ""Stop"" statement, F10:
+
+``` VB
+Module Module1                
+Sub Main()                          
+   Stop",tmat,3527
+33007,non-nullability of anonymous type properties in lambdas are messed up (part 2),"non-nullability of anonymous type properties in lambdas are messed up (part 2) here's another one:
+
+```c#
+{
+	void Foo(Dictionary<string, int> _) { }
+	Foo(new string[] { }.Select(e => new { e }).ToDictionary(p => p.e, p => 1)); // warning CS8620: Null",cston,33562
+3303,"VS2015RC, Unhandled exception/crash in Microsoft.CodeAnalysis.Workspaces.dll","VS2015RC, Unhandled exception/crash in Microsoft.CodeAnalysis.Workspaces.dll **Reduced Repro**
+
+``` C#
+// In Class1.cs
+partial class C
+{
+    private static void M() // Rename M to Method
+    {
+        M();
+    }
+}
+
+// In Class2.cs
+partial cla",dpoeschl,3416
+33083,An invocation of a delegate to a default interface implementation goes into an infinite loop when the underlying instance is a structure,"An invocation of a delegate to a default interface implementation goes into an infinite loop when the underlying instance is a structure The underlying CLR issue is tracked here https://github.com/dotnet/coreclr/issues/22386.
+A number of test scenarios a",AlekseyTs,33548
+331,Allow 'is' for static classes for compatibility,"Allow 'is' for static classes for compatibility but continue to report the diagnostic if ""strict"" mode is requested.
+Fixes #324
+
+<!---
+@huboard:{""order"":324.25,""milestone_order"":331,""custom_state"":""""}
+-->",sharwell,28781
+33111,Integration test causes Edge to launch,"Integration test causes Edge to launch Observed in https://dev.azure.com/dnceng/public/_build/results?buildId=86911
+
+This should not be happening.
+
+![image](https://user-images.githubusercontent.com/1408396/52242626-cc5a7400-289c-11e9-85fd-4b8181d5960",sharwell,33524
+33112,Integration test causes Recycle bin to launch,"Integration test causes Recycle bin to launch Observed in https://dev.azure.com/dnceng/public/_build/results?buildId=86911
+
+This should not be happening.
+
+![image](https://user-images.githubusercontent.com/1408396/52242688-f744c800-289c-11e9-905c-cca9",sharwell,33524
+332,Remove cancellation token from NavigateTo,"Remove cancellation token from NavigateTo NavigateTo doesn't support cancellation when computing the display properties so the cancellation token is getting removed rather than having to manually handle an OperationCanceledException.",sharwell,28781
+33428,Ensure NullableWalker.InheritNullableStateOfMember is not copying state for invalid members,Ensure NullableWalker.InheritNullableStateOfMember is not copying state for invalid members `NullableWalker.InheritNullableStateOfMember` should assert the member is valid for value and target.,gafter,39301
+33507,[Regression] Fix alls have started running in generated code,"[Regression] Fix alls have started running in generated code This was fixed during the Dev15 cycle, but seems to have been regressed again. 
+
+1.
+```
+> git clone http://github.com/dotnet/project-system
+> cd project-system
+project-system> git checkout",sharwell,33515
+33513,Fix failure to print test results,"Fix failure to print test results Fixes this message following a failed integration test run:
+
+```
+Unhandled Exception: System.NotSupportedException: The given path's format is not supported.
+   at System.Security.Permissions.FileIOPermission.EmulateF",sharwell,33524
+33514,Disable broken checksum validation,"Disable broken checksum validation The failed assertion causes tests to hang.
+
+See #33476",sharwell,33524
+33542,"One of our projects fails to build with: ""csc.exe"" exited with code -2146232797","One of our projects fails to build with: ""csc.exe"" exited with code -2146232797 I don't have any idea why this would happen, this used to build on everything except Visual Studio 2019 Preview 2, preview 1.1 worked.
+
+_This issue has been moved from https",cston,34791
+33635,We drop method group return nullability in nullability reinference,"We drop method group return nullability in nullability reinference When we reinfer a method's type based on its arguments in the nullable walker, if one of those arguments is the method group of a method, we drop the nullability of its return during type",cston,35655
+33637,Method groups not inferred based on receiver type (nullable walker),"Method groups not inferred based on receiver type (nullable walker) In `NullableWalker.VisitMethodGroup`, we recompute the type of the group's receiver and then drop it on the floor.  When the method group is an argument to a generic, we will need the rec",cston,35655
+33637,Method groups not inferred based on receiver type (nullable walker),"Method groups not inferred based on receiver type (nullable walker) In `NullableWalker.VisitMethodGroup`, we recompute the type of the group's receiver and then drop it on the floor.  When the method group is an argument to a generic, we will need the rec",cston,35601
+33766,Settings for using directives not exported to .editorconfig,"Settings for using directives not exported to .editorconfig **Version Used**: VS2019 dogfood
+
+**Steps to Reproduce**:
+
+1. Open Tools -> Options
+2. Configure settings on Text Editor -> C# -> Advanced for how to style using directives
+    * Place 'Sys",sharwell,34440
+338,Create new projects for System.Runtime.Analyzers,"Create new projects for System.Runtime.Analyzers This is the start of work to split up the FxCop analyzers into multiple packages that can ship with the APIs that they address.
+
+Move rule CA1001 to this project. Rewrite the codefixer for it to be based",sharwell,28781
+33946,Add AssertEx.EqualOrDiff,"Add AssertEx.EqualOrDiff Based on work by @AArnott in dotnet/roslyn-sdk#240.",sharwell,34440
+3410,Solution crawler not triggering project analysis on project rename (after the 1st rename),"Solution crawler not triggering project analysis on project rename (after the 1st rename) 1. Create an Analyzer + Fix project (say Analyzer2) and replace the analyzer code with the below code:
+   
+   ``` C#
+   using System.Collections.Immutable;
+   us",heejaechang,3425
+34122,[WIP]Bugfix: Settings for using-directives not exported to .editorconfig,"[WIP]Bugfix: Settings for using-directives not exported to .editorconfig Fixes https://github.com/dotnet/roslyn/issues/33766
+
+At the moment both `dotnet_sort_system_directives_first` and `dotnet_separate_import_directive_groups` rules are not exported w",sharwell,34440
+3414,made us to re-analyze some part of solution when assembly name have c…,"made us to re-analyze some part of solution when assembly name have c… …hanged.
+
+Customer Impact:
+User changed assembly name (hence assembly identity), but all internal visible types are not re-analyzed. which ends up us to either incorrectly not repor",heejaechang,3425
+344,"Roslyn (like the native compiler) allows default(StaticType), array of static type","Roslyn (like the native compiler) allows default(StaticType), array of static type The following program shows that the Roslyn compiler (like the native compiler) allows `default(StaticType)` and allows you to create an array of a static type too. All of",sharwell,28781
+34452,A workaround in TypeSymbol.ComputeImplementationForInterfaceMember might need an adjustment for Default Interface Implementations,"A workaround in TypeSymbol.ComputeImplementationForInterfaceMember might need an adjustment for Default Interface Implementations ```
+                // WORKAROUND: see comment on method.
+                // PROTOTYPE(DefaultInterfaceImplementation): Is",AlekseyTs,38683
+34453,Implementation/usage of TypeSymbol.CheckForImplementationOfCorrespondingPropertyOrEvent might need an adjustment for Default Interface Implementations,"Implementation/usage of TypeSymbol.CheckForImplementationOfCorrespondingPropertyOrEvent might need an adjustment for Default Interface Implementations ```
+            // Dev10 has some extra restrictions and extra wiggle room when finding implicit",AlekseyTs,38683
+34514,Add IMethodSymbol.IsReadOnly to public API,"Add IMethodSymbol.IsReadOnly to public API This proposes adding the following public API to `IMethodSymbol`:
+
+```cs
+/// <summary>
+/// Indicates whether the method is readonly, i.e.
+/// whether 'this' is 'ref readonly' in the scope of the method.
+///",RikkiGibson,34468
+34631,SymbolTreeInfoIncrementalAnalyzerProvider does not run anymore for VSMac,"SymbolTreeInfoIncrementalAnalyzerProvider does not run anymore for VSMac **Version Used**: 
+master
+
+**Steps to Reproduce**:
+
+1. Open a solution
+2. Expect SymbolTreeInfoIncrementalAnalyzerProvider.IncrementalAnalyzer to run
+3. It does not
+
+**Expec",sharwell,34793
+34720,Roslyn compiler fails on compiling for>using>try>finally>await,"Roslyn compiler fails on compiling for>using>try>finally>await **Version Used**: 
+Windows 10.0.17763 Pro
+Visual Studio 2017 Pro
+Docker version 18.09.2, build 6247962
+
+**Steps to Reproduce**:
+
+1. Create NET.Core console app project with following co",cston,34791
+34842,Use of unannotated unconstrained type parameter in nullable diabled code,Use of unannotated unconstrained type parameter in nullable diabled code The issue is the treatment of a reference to a (unconstrainted) type parameter that was both declared and referenced in a disabled context (without an annotation).  Such a reference,gafter,34889
+34844,Unexpected different between inferred type argument nullability and explicit,"Unexpected different between inferred type argument nullability and explicit The issue regards type inference in `M3` versus `M4` below.  Both should have the same annotation for the type argument, either unannotated, or oblivious.  Which it is may depend",AlekseyTs,34797
+34855,Retire ErrorCode.WRN_DotOnDefault.,"Retire ErrorCode.WRN_DotOnDefault. This existing warning is redundant with warnings produced in the nullable pass, and doesn't respect null suppression.  Remove it in favor of the new warnings.",gafter,34889
+34921,Populate nullable state for struct members of interfaces and classes,"Populate nullable state for struct members of interfaces and classes Consider the following:
+
+```csharp
+#nullable enable
+
+interface I<T>
+{
+    T P { get; }
+}
+
+class C<T>
+{
+    internal T F = default!;
+}
+
+class Program
+{
+    static void F1",chsienki,39365
+35180,Offer codefixes on selections,"Offer codefixes on selections ## Scenario
+Codefixes often don't show if code is selected as opposed to only having your cursor placed within a word.
+*  **5 out of the 11 users struggled with this in user studies.** 
+* One user **only** ever double-clic",petrroll,37272
+35180,Offer codefixes on selections,"Offer codefixes on selections ## Scenario
+Codefixes often don't show if code is selected as opposed to only having your cursor placed within a word.
+*  **5 out of the 11 users struggled with this in user studies.** 
+* One user **only** ever double-clic",petrroll,37196
+35274,Roslyn does not warn about mismatching nullability in method group conversions unless qualifier type is specified explicitly,"Roslyn does not warn about mismatching nullability in method group conversions unless qualifier type is specified explicitly **Version Used**: 
+
+Branch master (25 Apr 2019)
+Latest commit 95f137 by Gen Lu:
+Merge pull request #35245 from genlu/FixMockEx",cston,35601
+35434,Avoid caching VS completion item,"Avoid caching VS completion item Due to several reasons:
+
+1. VS item holds a reference to CompletionSource, which holds a references to ITextView. We don't want to keep it alive. Also we have no control on how CompletionSource is used by Editor, so ther",genlu,35616
+35525,Improve discoverability of code refactorings,"Improve discoverability of code refactorings A bunch of recent customer surveys done by @kendrahavens identified that quite a few customers find our refactorings to be not discoverable. The refactorings that they requested were already implemented by us,",petrroll,37272
+35525,Improve discoverability of code refactorings,"Improve discoverability of code refactorings A bunch of recent customer surveys done by @kendrahavens identified that quite a few customers find our refactorings to be not discoverable. The refactorings that they requested were already implemented by us,",petrroll,37196
+35614,Committing unimorted type item doesn't add the missing using directive,"Committing unimorted type item doesn't add the missing using directive ",genlu,35616
+36562,existing code loaded everyone in VS who MEF exported ITableColumnDefi…,existing code loaded everyone in VS who MEF exported ITableColumnDefi… …nition. now we make sure we only load one that we care,mavasani,38835
+36643,Questionable IDE0067 when awaiting class-member Task containing IDisposable,"Questionable IDE0067 when awaiting class-member Task containing IDisposable **Version Used**: 
+16.2.0 Preview 2.0
+
+**Steps to Reproduce**:
+
+```csharp
+using System.IO;
+using System.Threading.Tasks;
+
+public class C
+{
+    private readonly Task<Fil",mavasani,37250
+36709,Make IRecursivePatternOperation public,"Make IRecursivePatternOperation public Fixes #35843",mavasani,37117
+36866,Remove reflection now that IRecursivePatternOperation is public,"Remove reflection now that IRecursivePatternOperation is public See https://github.com/dotnet/roslyn/pull/36709#discussion_r296939885
+
+We should remove this IDE reflection based hack that was added for this API: http://source.roslyn.io/#Microsoft.CodeAn",mavasani,37117
+36930,Disable code formatting for some part of code by using specific comments/region,"Disable code formatting for some part of code by using specific comments/region VSF_TYPE_MARKDOWNOther IDEs have this feature for long. Would like to have an option where the formatting for code is disabled between 2 comments like below
+
+```csharp
+// @",sharwell,38627
+37038,"Completion for ""Show items from unimported namespaces"" within a using alias results in unbuildable code","Completion for ""Show items from unimported namespaces"" within a using alias results in unbuildable code Using aliases need to full specify types used as generic arguments. ""Show items from unimported namespaces"" is unaware of that and attempts to add a us",genlu,37290
+3705,Exclude files or folder from running through the analyzers through a configuration file.,"Exclude files or folder from running through the analyzers through a configuration file. Hi,
+
+we have a lot of generated files that trigger warnings, errors when analyzers run them.
+since the file name of the generated files do not follow the common na",mavasani,40330
+37065,IDE0068 Triggers invalidly for awaited disposables already in a using,"IDE0068 Triggers invalidly for awaited disposables already in a using **Version Used**: VS 16.2 Preview 3
+
+**Steps to Reproduce**:
+This code will trigger IDE0068:
+```c#
+using (var conn = await GetConnectionAsync())
+{
+    return await conn.ExecuteAs",mavasani,37250
+37196,Move some ComputeRefactoringsAsync to common helpers 3/n,Move some ComputeRefactoringsAsync to common helpers 3/n Continuation of work on #35525 and #35180,petrroll,37272
+37224,"Intellisense not listing ""T"" when starting to write a ref return method","Intellisense not listing ""T"" when starting to write a ref return method **Version Used**: 
+VS16.1.6
+
+**Steps to Reproduce**:
+
+1. Inside a C# class, type `ref Span<T>`
+
+**Expected Behavior**:
+
+`ref Span<T>`
+
+**Actual Behavior**:
+
+`ref Span<Thr",diryboy,37323
+37236,Syntax kinds service cleanup,"Syntax kinds service cleanup Based on #37196 (only last commit is new).",petrroll,37272
+37268,"Intellisense not listing ""T"" when starting to write a qualified return type","Intellisense not listing ""T"" when starting to write a qualified return type **Version Used**: 16.2 Preview 3
+
+:link: Found while reviewing #37224
+
+**Steps to Reproduce**:
+
+1. Inside a C# class, type `System.Span<T>`
+
+**Expected Behavior**:
+
+`Sys",diryboy,37323
+37361,SpeculativeT completion does not support tuples.,"SpeculativeT completion does not support tuples. This is found during review of #37323
+
+**Version Used**:
+VS16.2 
+
+**Steps to Reproduce**:
+
+1. Inside a C# class, type `(T `
+
+**Expected Behavior**:
+
+`(T )`
+
+**Actual Behavior**:
+
+`(ThreadStat",diryboy,37323
+37382,Symbol Comparisons should not use default Equals,"Symbol Comparisons should not use default Equals As part of #37247 we changed the default equals to ignore nullability. 
+
+We changed everywhere that change broke to be explicit comparisons, but in reality we should change all of the usages in our code b",chsienki,37247
+37383,"Substituted symbols should override Equals(ISymbol, TypeComparisonKind)","Substituted symbols should override Equals(ISymbol, TypeComparisonKind) In #37247 we updated `TypeSymbol` and `SubstituedMethodSymbol` to consider the compare kind when comparing for equality.
+
+We should additionally light up other symbol types that can",chsienki,37247
+37523,Intellisense for using static adds an import rather than a full qualification,"Intellisense for using static adds an import rather than a full qualification **Version Used**: VS 16.3 preview 1
+
+**Steps to Reproduce**:
+
+![usingStatic](https://user-images.githubusercontent.com/29174528/62006252-19c1ea80-b136-11e9-814d-cd33a63ecd22",genlu,37290
+37802,Add Containing Type and Containing Member columns to FAR,"Add Containing Type and Containing Member columns to FAR Fixes #34336 
+
+This PR adds 2 new columns to the FAR window: Containing Type and Containing Member.  
+![GroupByContaining](https://user-images.githubusercontent.com/25776963/64829257-7fe8bc80-d58",mavasani,38835
+38069,Generated Equals(T) method has pointless [AllowNull] when T is a value type,"Generated Equals(T) method has pointless [AllowNull] when T is a value type **Version Used**: Visual Studio 16.2.2
+
+Generate equality members for:
+
+```cs
+struct Foo
+{
+    public int Bar { get; }
+}
+```
+
+Result:
+
+```cs
+    public bool Equals([",jnm2,39249
+38224,IDE0055 incorrectly indents with intermixed comment styles,"IDE0055 incorrectly indents with intermixed comment styles **Version Used**: 
+3.3.0-beta3-19415-01+f5ba9f2c61a2fe853dc4913888d40df221539147
+
+**Steps to Reproduce**:
+```C#
+using System;
+using System.Runtime.InteropServices;
+
+class Program
+{
+    s",sharwell,38906
+38587,Consider suppressing the formatter when IDE0055 is suppressed,"Consider suppressing the formatter when IDE0055 is suppressed **Version Used**: 16.3 Preview 3
+
+**Steps to Reproduce**:
+
+Run **Format Document** on a file containing the following:
+
+```csharp
+#pragma warning suppress IDE0055 // Fix formatting
+int",sharwell,38627
+38771,Switch expression conversion creates broken code due to unspecific var return,Switch expression conversion creates broken code due to unspecific var return _This issue has been moved from [a ticket on Developer Community](https://developercommunity.visualstudio.com/content/problem/725942/switch-expression-conversion-creates-broken-,allisonchou,39393
+38801,"Test plan for ""local function attributes""","Test plan for ""local function attributes"" Championed issue: dotnet/csharplang#1888
+
+- [ ] Specification checked in to `csharplang`.
+- [x] attribute on declaration
+- [x] attributes on declaration are emitted
+- [x] attribute on return type
+- [x] attri",RikkiGibson,41847
+39051,Add API for marking a syntax tree as generated,Add API for marking a syntax tree as generated Provides API to fix #3705.,mavasani,40330
+39171,"switch expression ""no best type found"" conflicts with IDE0007 C# use 'var' instead of explicit type","switch expression ""no best type found"" conflicts with IDE0007 C# use 'var' instead of explicit type _This issue has been moved from [a ticket on Developer Community](https://developercommunity.visualstudio.com/content/problem/759620/switch-expression-no-b",allisonchou,39393
+39220,Roslyn doesn't handle inferred nullability in the presence of `goto`.,"Roslyn doesn't handle inferred nullability in the presence of `goto`. **Version Used**: 
+```
+Branch master (23 Sep 2019)
+Latest commit 89b4f60 by Charles Stoner:
+Allow conversion of collection initializer Add extension method this arg (#38732)
+```
+",gafter,39301
+39243,'Generate Equals' does not annotate Equals(T) to allow nulls and causes CS8604,"'Generate Equals' does not annotate Equals(T) to allow nulls and causes CS8604 **Version Used**: 16.4p1
+
+In .NET Core 3.0, `IEquatable.Equals` is annotated to accept a nullable parameter:
+
+```cs
+    public interface IEquatable<T>
+    {
+        bool",jnm2,39249
+39297,NullableWalker violates invariants of slot and slot parents,"NullableWalker violates invariants of slot and slot parents I tried adding the following assertion
+
+``` c#
+                HashSet<DiagnosticInfo> discardedUseSiteDiagnostics = null;
+                Debug.Assert(
+                    symbol.Kind != Sy",gafter,39301
+39363,IDE0047 Remove unnecessary parentheses fails to appear for switch expressions,"IDE0047 Remove unnecessary parentheses fails to appear for switch expressions **Version Used**: 16.4.0 P1
+
+**Steps to Reproduce**:
+1. Have a switch expression that contains unnecessary parentheses.
+2. Pull up code fixes menu.
+
+![switchbug](https://u",allisonchou,39393
+39914,Move to new API for GetSuggestedActions,Move to new API for GetSuggestedActions Editor team recently added a new GetSuggestedActions API overload that allows providing a more detailed operation scope message. This PR moves us to that API for Roslyn suggested actions. We now display the name of,mavasani,40274
+40066,Suggestion to replace ToString at end of interpolation expression with colon and format code,"Suggestion to replace ToString at end of interpolation expression with colon and format code I see this now and then:
+
+```cs
+_ = $""...{foo.ToString(""bar"")}..."";
+```
+
+The `.ToString(""` and `"")` spans (or maybe just the `ToString` token?) should be fa",jnm2,41845
+40188,Extract method does not respect .editorconfig settings,"Extract method does not respect .editorconfig settings **Version Used**: 16.4.0 Preview 6.0
+
+**Steps to Reproduce**:
+
+1. Have .editorconfig containing ```csharp_style_expression_bodied_methods = true:silent```
+2. With the following code:
+```
+class",allisonchou,40284
+40206,"Revert ""Move to new API for GetSuggestedActions""","Revert ""Move to new API for GetSuggestedActions"" Reverts dotnet/roslyn#39914
+
+This PR broke DDRITs, likely from upgrading to newer package versions. Reverting to unblock insertion.",mavasani,40274
+40214,ExtractLocalFunction: code style for naming local functions isn't respected,"ExtractLocalFunction: code style for naming local functions isn't respected Currently, if you extract a block of code to a local function, the local function will be named using PascalCase convention, instead of honoring the user's preference.",allisonchou,40284
+40326,Compiler crash when using ranges in Expression<Func<>>,"Compiler crash when using ranges in Expression<Func<>> Code which creates an expression using the range syntax causes a compiler crash.
+
+```csharp
+        public static Expression<Func<string, bool>> CreateCrashingExpression()
+        {
+            /",agocke,42011
+4137,VB partial type completion is incorrect for generic types when commit with parenthesis,"VB partial type completion is incorrect for generic types when commit with parenthesis Consider the following code:
+
+``` VB
+Partial Class C(Of T)
+End Class
+
+Partial Class $$
+```
+
+At the $$, the completion list should show ""C(Of T)"". When completi",lorcanmooney,12092
+41682,"Compiler crash on C# 8.0 ""from end"" index expression in expression tree lambda","Compiler crash on C# 8.0 ""from end"" index expression in expression tree lambda **Version Used**: Microsoft (R) Visual C# Compiler version 3.4.0-beta2-19469-01 (587dad3d)
+
+**Steps to Reproduce**:
+
+Compile the following using 8.0:
+
+```csharp
+using Sy",agocke,42011
+41826,Simplify interpolation does the wrong thing 16.5.0 preview 2,"Simplify interpolation does the wrong thing 16.5.0 preview 2 _This issue has been moved from [a ticket on Developer Community](https://developercommunity.visualstudio.com/content/problem/919342/simplify-interpolation-does-the-wrong-thing-1650-p.html)._
+",jnm2,41845
+42019,Move ISyntaxKindsService language service in shared layer,"Move ISyntaxKindsService language service in shared layer Split `ISyntaxKindsService` into two parts:
+
+1. `ISyntaxKinds`: Pure data query interface, which already exists in CompilerExtensions shared project and can be used by analyzers. This is just ren",mavasani,42015
+4604,Allow collection of C#/VB command line without actually compiling,"Allow collection of C#/VB command line without actually compiling For design-time builds that seek to initialize the language service the command line is all we need. 
+This change makes the command line arguments available to other MSBuild targets or (mo",jasonmalinowski,8362
+4669,History in interactive window should not cycle,History in interactive window should not cycle It should stop when it reaches 1st item in the history list and user tries to go to previous and similarly when it is at the last item and user tries to go to next. This is the behavior in command window too.,ManishJayaswal,4911
+4828,Compiler emits invalid MSIL,"Compiler emits invalid MSIL I have a problem with the compiler in VS2015. The following code will crash the application with an InvalidProgramException. (But only if /optimize+ is passed). Is this a bug in the compiler, or am I doing something wrong?
+
+*",VSadov,4979
+4838,"Incorrect compiler output for code involving async, loop, switch.","Incorrect compiler output for code involving async, loop, switch. I've spotted an issue with compilation output from VS 2015 Enterprise (RTM version).
+
+The following code involving async, loop and switch constructs causes  `ArgumentOutOfRangeException`",VSadov,5014
+4839,Invalid compilation output for code involving async and switch,"Invalid compilation output for code involving async and switch I've spotted an issue with compilation output from VS 2015 Enterprise (RTM version).
+
+The compiler generates invalid IL for the following code involving async and switch constructs.
+
+**Cod",VSadov,5014
+4857,Makes history navigation stop at top and bottom and and fixes several…,"Makes history navigation stop at top and bottom and and fixes several… … history navigation bugs. Fixes #4669 ",ManishJayaswal,4911
+4959,Analyzer test tries to load xUnit into app domain when executed in 64 bit.,Analyzer test tries to load xUnit into app domain when executed in 64 bit. The unit test [`Microsoft.CodeAnalysis.UnitTests.AnalyzerFileReferenceTests.TestAnalyzerLoading_Error()`](http://source.roslyn.io/#Roslyn.Compilers.UnitTests/AnalyzerFileReferenceT,mavasani,7161
+4960,work around a bug when running an analyzer test in 64-bit,"work around a bug when running an analyzer test in 64-bit This PR is to work around #4959 so we can have a passing 64-bit test run until the bug can be properly addressed.
+
+FYI @amcasey @tannergooding",mavasani,7161
+4993,In ICommandHandler<T> implementations ExecuteCommand should respect GetCommandState,"In ICommandHandler<T> implementations ExecuteCommand should respect GetCommandState For example, in `RenameCommandHandler`, which implements `ICommandHandler<RenameCommandArgs>`, `GetCommandState` will delegate to the next handler if `IDocumentSupportsSug",amcasey,5123
+5107,Enable snippets in the Interactive window,"Enable snippets in the Interactive window ",amcasey,5123
+5143,"Proposal: Make ""throw expression"" an expression form","Proposal: Make ""throw expression"" an expression form ### The spec has been moved
+
+The spec for the proposed throw expression has been moved to https://github.com/dotnet/roslyn/blob/future/docs/features/patterns.md
+
+Below is a snapshot that may be out",gafter,4882
+5154,"Proposal: expression-based switch (""match"") for pattern matching","Proposal: expression-based switch (""match"") for pattern matching ### The spec has been moved
+
+The spec for the proposed match expression has been moved to https://github.com/dotnet/roslyn/blob/future/docs/features/patterns.md
+
+Below is a snapshot that",gafter,4882
+5172,"Proposal: ""with"" expressions for record types","Proposal: ""with"" expressions for record types This is a proposed enhancement to the proposal for _records_ in #206.
+
+A new expression form is proposed:
+
+> _primary-expression_:
+> &nbsp;&nbsp;&nbsp;&nbsp;_with-expression_:
+> _with-expression_:
+> &nb",gafter,4882
+5607,"VB ""match closing parenthesis"" fails for some constructs (works for others)","VB ""match closing parenthesis"" fails for some constructs (works for others) ![matchclosingparenthesis](https://cloud.githubusercontent.com/assets/3316258/10220871/76d1e1e6-6818-11e5-86e8-cb7359d407af.gif)
+
+Here's a minimal video repro. In all three line",balajikris,8184
+5757,Notes on Records and Pattern Matching for 2015-10-07 design review,"Notes on Records and Pattern Matching for 2015-10-07 design review ### Records and Pattern Matching (https://github.com/dotnet/roslyn/issues/206)
+
+Prototyped together last year by @semihokur, but that prototype is
+based on very out-of-date Roslyn code.",gafter,4882
+6183,Proposal: out var declaration,"Proposal: out var declaration This feature would allow a variable be declared at the same time that is it passed as an out parameter:
+
+> _argument-value_:
+> &nbsp;&nbsp;&nbsp;&nbsp;`out` _type_ _identifier_
+
+A variable declared this way is read-only",gafter,4882
+6366,VB: No compiler API to get built in-operator of AssignmentStatement,"VB: No compiler API to get built in-operator of AssignmentStatement While we can use `GetSymbolInfo` to retrieve the built-in operator used in an expression, we currently lack an API to retrieve the built-in operator used in a VB assignment statement. Thi",DustinCampbell,8390
+6397,Consecutive keystrokes in Interactive Window should be a single undo action,"Consecutive keystrokes in Interactive Window should be a single undo action When typing in interactive window, each keystroke is a separate action called `Text Buffer Change` in undo/redo history. We expect consecutive keystroke as a single undo action ca",genlu,6995
+6400,Proposal: Destructuring (assignment?) statement,"Proposal: Destructuring (assignment?) statement ### The spec has been moved
+
+The spec for the proposed `let` statement has been moved to https://github.com/dotnet/roslyn/blob/future/docs/features/patterns.md
+
+Below is a snapshot that may be out of dat",gafter,4882
+6590,C# compiler erroneously allows declarations of abstract members in a struct,"C# compiler erroneously allows declarations of abstract members in a struct The following code compiles, but should  not:
+
+```
+struct Foo
+{
+    public abstract void Bar();
+}
+
+new Foo().Bar() //TypeLoadException at runtime: 'Abstract method in non-",leppie,7028
+6616,Review usage of Compilation.References in Services wrt handling of submission chains and #r's,"Review usage of Compilation.References in Services wrt handling of submission chains and #r's E.g.
+
+http://source.roslyn.io/#Microsoft.CodeAnalysis.Workspaces/FindSymbols/SymbolFinder_Declarations.cs,78d3c41c6670ddaa,references",amcasey,6860
+6645,try formatting does not put { on new line,"try formatting does not put { on new line Automatic brace completion setting off. All new line settings default.
+
+``` C#
+try {
+|
+```
+
+Type `}`. Actual:
+
+``` C#
+try {
+}|
+```
+
+Expected:
+
+``` C#
+try
+{
+}|
+```
+
+like in Visual Studio 2013.",basoundr,8417
+6657,AbstractSymbolDescriptionBuilder.GetSemanticModel doesn't handle trees from previous submissions,AbstractSymbolDescriptionBuilder.GetSemanticModel doesn't handle trees from previous submissions Previous submissions aren't returned by `Compilation.References` so this method (and others like it) will need to look in `Compilation.PreviousSubmission` exp,amcasey,6860
+6766,Switch statement population should be available as a refactoring (not just as a snippet function),"Switch statement population should be available as a refactoring (not just as a snippet function) If you have the following in a method:
+
+``` C#
+System.ConsoleModifiers c = default(System.ConsoleModifiers);
+```
+
+And on the next line you type `switch",Hosch250,10160
+6828,Compiler Extension broken on VS 2015 RTM,"Compiler Extension broken on VS 2015 RTM Can't find System.Collections.Immutable or System.Reflection.Metadata.",jasonmalinowski,6841
+6829,Interactive Window is broken on VS 2015 RTM,"Interactive Window is broken on VS 2015 RTM Can't find System.IO.FileSystem.",jasonmalinowski,6841
+6914,Rewrite copy/cut/paste/delete related operations in Interactive Window,"Rewrite copy/cut/paste/delete related operations in Interactive Window 1. Refactored the code related to following operations:
+      `Copy, Cut, CutLine, Delete, DeleteLine, Paste, Return, Backspace, BreakLine, InsertCode`
+   This fixes the behavior for",genlu,6995
+7,Feature: Parameter Name Aliasing,"Feature: Parameter Name Aliasing The human meaning of parameters may vary from method caller's perspective.
+
+It would be useful if the language provides an ability to assign aliases to the parameters.
+
+``` C#
+[Alias({second: [secondAndHalf, quarterTo",chsienki,37247
+7017,Tidy Up after Cmd Line build and test.,"Tidy Up after Cmd Line build and test. `msbuild /v:m /m BuildAndTest.proj /p:PublicBuild=true /p:DeployExtension=false`
+
+What can be done, so that this command cleans up after it has run.
+I have 11 x `MSBuild.exe` and 12 x `VBCSCompiler.exe` still runn",jaredpar,7109
+702,[Portable PDB] Update the Expression Compiler to consume the portable PDB format,"[Portable PDB] Update the Expression Compiler to consume the portable PDB format Phase 1: introduce an abstraction over the custom debug info.",tmat,8289
+7026,Incorrect error message for virtual method/property/event in struct,"Incorrect error message for virtual method/property/event in struct ```
+struct Foo {
+    public virtual void Baz() { }
+}
+error CS0549: 'Foo.Baz()' is a new virtual member in sealed class 'Foo'
+```
+
+Should be:
+
+```
+error CS0106: The modifier 'vir",leppie,7028
+7047,Do not allow any form of inline lambda to be ref/out,"Do not allow any form of inline lambda to be ref/out Fixes #6646. Specifically for `new Action<string>(ref b => b = ""hello"")` that is not for compat with legacy compiler. The case is handled correctly for strict mode. `new Action<string>(ref Foo)` is vali",leppie,7146
+7065,Code Style: Analyzer + Code fix for requiring/prohibiting this/Me,"Code Style: Analyzer + Code fix for requiring/prohibiting this/Me We have an analyzer + code fix to support removing redundant uses, but we need options for what type of access it is (field/property/method/etc), and to require it.",brettfo,8435
+7089,CS7038: Calling methods expecting ref/out delegate argument,"CS7038: Calling methods expecting ref/out delegate argument ```
+using System;
+class p
+{
+    static void Foo<T>(ref Func<T,T> a) { }
+    static void Bar<T>(out Func<T, T> a) { a = null; }
+    static void Main()
+    {
+        Foo<string>(x => x);",leppie,7146
+7090,"""Encapsulate fields"" refactoring should consider personal code style","""Encapsulate fields"" refactoring should consider personal code style If I have this code:
+
+``` csharp
+public class Test
+{
+    protected readonly bool IsATest;
+}
+```
+
+the refactoring generates the following code.
+
+``` csharp
+public class Test",brettfo,8435
+7107,Unit tests should not be creating VBCSCompiler processes,"Unit tests should not be creating VBCSCompiler processes The VBCSCompiler process has a couple of traits that make it unsuitable for use in a unit test:
+- It's long lived and detached from it's parent process.  This makes it difficult / nearly impossible",jaredpar,7109
+7213,"Completion: list partial classes after ""partial class""","Completion: list partial classes after ""partial class"" ``` C#
+namespace blah
+{
+    partial class $$
+}
+```
+
+Would be nice to see a builder and a list of all the partial classes in my namespace.",lorcanmooney,12092
+7289,Let users specify how/when their code styles will be applied.,"Let users specify how/when their code styles will be applied. If the user has certain code styles specified (e.g., qualify member access with this/Me) there are 4 (quite possibly more) distinct levels of enforcement that they may want applied.  Roughly in",brettfo,8435
+7299,IOperation: Doesn't handle conversions of constant expressions,"IOperation: Doesn't handle conversions of constant expressions In this line:
+
+```
+private float f = 0.0;
+```
+
+... the `ConstantValue` property of the `IExpression` represented by the literal `0.0` is `null`. But in this line:
+
+```
+private double",AlekseyTs,22703
+7540,"add options to require this/Me for fields, properties, methods, and events","add options to require this/Me for fields, properties, methods, and events This is a re-creation of PR #7296 to address feedback.  Since there are so many changes I opted to close the other PR and open a new one to preserve an easy comment history and ena",brettfo,8435
+7660,VS2015.1: ArgumentOutOfRangeException while inline renaming in razor,"VS2015.1: ArgumentOutOfRangeException while inline renaming in razor With `Index.cshtml` looking like
+
+``` cshtml
+@using ArgumentOutOfRangeTest.Controllers
+@model Some
+@Html.GetTest().TestMethod(x =>
+{
+    x.SomeMethod(new { Controller = ""Test"", Ac",dpoeschl,16357
+7768,Formatting of automatic properties in WPF and UWP apps,"Formatting of automatic properties in WPF and UWP apps Hi!
+
+When I'm editing a WPF or UWP app in Visual Studio 2015, and I'm creating an automatic property in C#, I type something like: 
+
+``` C#
+public string Whatever {get
+```
+
+but when I type the",balajikris,8425
+7812,New compiler switches need to be threaded through the project system for intellisense builds,"New compiler switches need to be threaded through the project system for intellisense builds Right now these flags are not being passed through to the IDE design time builds:
+- /features
+- /deterministic
+- /pathmap
+- /publicsign
+- /pdb:portable
+
+Is",jasonmalinowski,8362
+7856,[Portable PDB] Expression evaluator doesn't pickup using statements when compiling using portable PDBs,"[Portable PDB] Expression evaluator doesn't pickup using statements when compiling using portable PDBs Repro steps:
+1. Install build of update 2 with core debugger support for portable PDBs (you will need to get this from me at the moment)
+2. Write a li",tmat,8289
+7916,Remove support for inferring the return type of a local function.,"Remove support for inferring the return type of a local function. Fixes #7832 
+
+@dotnet/roslyn-compiler Please review.",agocke,12015
+8228,Autocomplete forces new line,"Autocomplete forces new line Forgot to file this separately (#2837)...
+
+Update 1 RTM (24720), relevant settings:
+C# > Formatting > Wrapping > Leave block on single line  on  (on by default)
+C# > Automatic brace completion  off  (newly on by default)",balajikris,8425
+8381,VB.NET: Short fields are ignored in IDE0003 code fix,"VB.NET: Short fields are ignored in IDE0003 code fix The VB.NET IDE editor does not provide IDE0003 (Name can be simplified) code fix for fields or properties declared as Short (System.Int16).
+
+``` vb
+Class Class1
+    Private field1 As Short
+    Priv",DustinCampbell,8390
+8413,Formatting on close brace doesn't format do/while block,"Formatting on close brace doesn't format do/while block This issue is similar to #6645",basoundr,8417
+8437,"[PR Available] Ref returns/locals: Change Signature - ""ref"" not shown in updated signature preview","[PR Available] Ref returns/locals: Change Signature - ""ref"" not shown in updated signature preview ![image](https://cloud.githubusercontent.com/assets/235241/12863164/af07f38e-cc27-11e5-86f1-6c8d8a9a39d9.png)",dpoeschl,10053
+8781,IOperation: VB - BoundCall.ByRefArgument always reported as positional,"IOperation: VB - BoundCall.ByRefArgument always reported as positional The argument can be named as well.
+
+```
+            Public Overrides ReadOnly Property ArgumentKind As ArgumentKind
+                Get
+                    ' Do the VB bound trees",genlu,18494
+8786,IOperation: What is the value of ParamArray arguments?,"IOperation: What is the value of ParamArray arguments? Given the following API definition:
+
+```
+    /// <summary>
+    /// Kinds of arguments.
+    /// </summary>
+    public enum ArgumentKind
+    {
+        None = 0x0,
+
+        /// <summary>",genlu,18494
+8813,"IOperation: A proposal to change design around IHasArgumentsExpression, IInvocationExpression and IArgument interfaces.","IOperation: A proposal to change design around IHasArgumentsExpression, IInvocationExpression and IArgument interfaces. **Exposing the set of arguments**
+
+Currently we have two APIs that are supposed to expose arguments and every implementer has to impl",genlu,18494
+8814,The scope of a pattern variable in a catch filter should include the catch block,"The scope of a pattern variable in a catch filter should include the catch block Implement pattern variables in a catch filter, whose scope should include the catch block. For example
+
+``` cs
+catch (MyException ex) when (ex.Obj is int i && i == 3) {",AlekseyTs,10136
+8817,Scope of pattern variables declared in statements,"Scope of pattern variables declared in statements We should have tests to ensure correct scoping of pattern variables appearing in statements.
+
+For a `let` statement, variables appearing in the statement's _pattern_ are scoped to the enclosing block.
+",AlekseyTs,10136
+9530,PatternVariableFinder is lacking explicit visibility modifier,"PatternVariableFinder is lacking explicit visibility modifier ",gafter,10050
+9531,PatternVariableFinder doesn't follow style conventions for field names,"PatternVariableFinder doesn't follow style conventions for field names Should also check other new fields introduced by/for Pattern Matching implementation.",gafter,10050
+9960,Inline Rename unusable under Narrator,"Inline Rename unusable under Narrator 1. No indication that Inline Rename has started
+2. No indication that Inline Rename has been cancelled or completed
+3. No way to focus the Dashboard & read options",dpoeschl,16381

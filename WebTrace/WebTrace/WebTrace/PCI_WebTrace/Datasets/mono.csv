@@ -1,0 +1,1982 @@
+﻿IssueID,Title,Description,Title_Description,PullRequestID,FixedByID,RepoID
+16741,XmlSerializer not Using UTF-8 as Default Encoding (.NET 4.8 Mac),"_From @vsfeedback on Mon, 09 Sep 2019 18:30:19 GMT_
+
+_This issue has been moved from [a ticket on Developer Community](https://developercommunity.visualstudio.com/content/problem/722323/xmlserializer-not-using-utf-8-as-default-encoding.html)._
+
+---
+I’ve been using .NET Framework 4.7.x for my Xamarin.Mac app quite a while.
+And my apps are using XmlSerializer for storing configurations and other data.
+Couple of days ago I upgraded them to .NET Framework 4.8 hoping that will somehow … ease future migration path to the upcoming .NET 5…
+Since then all XMLs created by XmlSerializer are encoded as us-ascii instead of utf-8 resulting entire data broken!!! (e.g. all asian texts are unanimously replaced by question mark(?) …) 
+Currently I hot-fixed the issue by implementing XmlWriter’s Settings manually but this should absolutely be addressed ASAP!!!
+
+(By the way, I am fortunate that I had implemented auto-backup solution a month ago so I was able to restore the important a year-worth data.)
+
+---
+### Original Comments
+
+#### Visual Studio Feedback System on 9/5/2019, 01:11 AM: 
+
+<p>We have directed your feedback to the appropriate engineering team for further evaluation. The team will review the feedback and notify you about the next steps.</p>
+
+
+---
+### Original Solutions
+(no solutions)
+
+_Copied from original issue xamarin/xamarin-macios#6944_","XmlSerializer not Using UTF-8 as Default Encoding (.NET 4.8 Mac)  _From @vsfeedback on Mon, 09 Sep 2019 18:30:19 GMT_
+
+_This issue has been moved from [a ticket on Developer Community](https://developercommunity.visualstudio.com/content/problem/722323/x",18836,mdh1418,mono
+18467,Poor Support for Digit Separators,"There are two errors, one has been previously reported:
+1. Digit Separator Copies Digits
+2. Digit Separator Doesn't Work In Fraction
+
+## Steps to Reproduce
+
+In the REPL:
+
+```csharp
+> 1_2;             // 122
+> 122.3_4;     // Fails, (1,6): error CS1525: Unexpected symbol `_4'
+```
+
+### Current & Expected Behavior
+
+There are 2 issues, 1). the digit separator should be valid in the fraction component of a number, and 2). the digit separator should not change the value of the number.
+
+## Platforms
+
+**System Information**
+
+I am running Linux, with the following system information:
+
+```bash
+$ lsb_release -a
+LSB Version:	:core-4.1-amd64:core-4.1-noarch:cxx-4.1-amd64:cxx-4.1-noarch:desktop-4.1-amd64:desktop-4.1-noarch:languages-4.1-amd64:languages-4.1-noarch:printing-4.1-amd64:printing-4.1-noarch
+Distributor ID:	Fedora
+Description:	Fedora release 30 (Thirty)
+Release:	30
+Codename:	Thirty
+$ mono --version
+Mono JIT compiler version 6.8.0.96 (tarball Wed Jan 15 09:00:57 UTC 2020)
+Copyright (C) 2002-2014 Novell, Inc, Xamarin Inc and Contributors. www.mono-project.com
+	TLS:           __thread
+	SIGSEGV:       altstack
+	Notifications: epoll
+	Architecture:  amd64
+	Disabled:      none
+	Misc:          softdebug 
+	Interpreter:   yes
+	LLVM:          yes(610)
+	Suspend:       hybrid
+	GC:            sgen (concurrent by default
+```
+
+## Other Related Issues
+
+https://github.com/mono/mono/issues/16648
+https://github.com/dotnet/csharplang/issues/55#issuecomment-574901596","Poor Support for Digit Separators  There are two errors, one has been previously reported:
+1. Digit Separator Copies Digits
+2. Digit Separator Doesn't Work In Fraction
+
+## Steps to Reproduce
+
+In the REPL:
+
+```csharp
+> 1_2;             // 122
+> 1",18539,mdh1418,mono
+16648,C# 7 digit separator copies digits,"## Steps to Reproduce
+
+In the REPL:
+```
+csharp> 1_2
+122
+csharp> 1_4
+144
+csharp> 1_6
+166
+csharp> 2_4
+244
+csharp> 100_000
+1000000
+csharp> 123_456
+1234456
+csharp>
+```
+
+### Current Behavior
+
+It appears that the digit separator `_` copies the digit to its right instead of having no impact.
+
+### Expected Behavior
+
+The digit separator should have no impact on the actual number.
+
+```
+csharp> 1_2
+12
+csharp> 1_4
+14
+csharp> 1_6
+16
+csharp> 2_4
+24
+csharp> 100_000
+100000
+csharp> 123_456
+123456
+csharp>
+```
+
+## On which platforms did you notice this
+
+[ ] macOS
+[x] Linux
+[ ] Windows
+
+**Version Used**:
+
+Mono JIT compiler version 6.0.0.327 (tarball Thu Aug 29 21:15:03 UTC 2019)","C# 7 digit separator copies digits  ## Steps to Reproduce
+
+In the REPL:
+```
+csharp> 1_2
+122
+csharp> 1_4
+144
+csharp> 1_6
+166
+csharp> 2_4
+244
+csharp> 100_000
+1000000
+csharp> 123_456
+1234456
+csharp>
+```
+
+### Current Behavior
+
+It appears",18539,mdh1418,mono
+18455,[2019-12] System.Core tests crash on iOS 64b devices.,"In the integration PR (https://github.com/xamarin/xamarin-macios/pull/7537) we are running into issues when running the System.Core tests from the second part of the split test dll.
+
+An example of the segfault can be found here:
+
+07:44:26.2262310 	0x105a7e334 - /private/var/containers/Bundle/Application/A4488A3B-0BB2-4955-A96F-F648A0C80E5E/com.xamarin.bcltests.SystemCoreXunit Part 2.app/Frameworks/Mono.framework/Mono : mono_dump_native_crash_info
+07:44:26.2262380 	0x105a746bc - /private/var/containers/Bundle/Application/A4488A3B-0BB2-4955-A96F-F648A0C80E5E/com.xamarin.bcltests.SystemCoreXunit Part 2.app/Frameworks/Mono.framework/Mono : mono_handle_native_crash
+07:44:26.2262670 	0x105a82a14 - /private/var/containers/Bundle/Application/A4488A3B-0BB2-4955-A96F-F648A0C80E5E/com.xamarin.bcltests.SystemCoreXunit Part 2.app/Frameworks/Mono.framework/Mono : mono_sigsegv_signal_handler
+07:44:26.2262730 	0x194880894 - /usr/lib/system/libsystem_platform.dylib : <redacted>
+07:44:26.2262760 	0x105bb88c4 - /private/var/containers/Bundle/Application/A4488A3B-0BB2-4955-A96F-F648A0C80E5E/com.xamarin.bcltests.SystemCoreXunit Part 2.app/Frameworks/Mono.framework/Mono : sgen_check_whole_heap_stw
+07:44:26.2263920 	0x105bb7a04 - /private/var/containers/Bundle/Application/A4488A3B-0BB2-4955-A96F-F648A0C80E5E/com.xamarin.bcltests.SystemCoreXunit Part 2.app/Frameworks/Mono.framework/Mono : sgen_check_whole_heap_stw
+07:44:26.2264090 	0x105bb432c - /private/var/containers/Bundle/Application/A4488A3B-0BB2-4955-A96F-F648A0C80E5E/com.xamarin.bcltests.SystemCoreXunit Part 2.app/Frameworks/Mono.framework/Mono : sgen_perform_collection
+07:44:26.2264420 	0x105bb40f4 - /private/var/containers/Bundle/Application/A4488A3B-0BB2-4955-A96F-F648A0C80E5E/com.xamarin.bcltests.SystemCoreXunit Part 2.app/Frameworks/Mono.framework/Mono : sgen_ensure_free_space
+07:44:26.2265700 	0x105baa2d4 - /private/var/containers/Bundle/Application/A4488A3B-0BB2-4955-A96F-F648A0C80E5E/com.xamarin.bcltests.SystemCoreXunit Part 2.app/Frameworks/Mono.framework/Mono : sgen_alloc_obj_nolock
+07:44:26.2265940 	0x105b63604 - /private/var/containers/Bundle/Application/A4488A3B-0BB2-4955-A96F-F648A0C80E5E/com.xamarin.bcltests.SystemCoreXunit Part 2.app/Frameworks/Mono.framework/Mono : mono_gc_alloc_vector
+
+the tests only fail/crash on release mode on a device. The following links contain useful information:
+
+* Full test run [report](http://xamarin-storage/jenkins/xamarin-macios/pull-request/6f9193f5775639a80101bd2bbcf2605aed544719/3382850/device-tests/jenkins-results/tests/index.html).
+* Full [crash](http://xamarin-storage/jenkins/xamarin-macios/pull-request/6f9193f5775639a80101bd2bbcf2605aed544719/3382850/device-tests/jenkins-results/tests/%5bxUnit%5d%20Mono%20SystemCoreXunit%20Part%202/1853/run-dfa7a72864912a924fe96ee65ce8551f3210a068-20200114_074413.log).","[2019-12] System.Core tests crash on iOS 64b devices.  In the integration PR (https://github.com/xamarin/xamarin-macios/pull/7537) we are running into issues when running the System.Core tests from the second part of the split test dll.
+
+An example of t",18529,monojenkins,mono
+18496,[jit] Compute the instance size/alignment correctly for gshared types whose constraint is a generic valuetype.,Fixes #18455,[jit] Compute the instance size/alignment correctly for gshared types whose constraint is a generic valuetype.  Fixes #18455,18529,monojenkins,mono
+18388,ReflectionOnlyLoad(byte[]) should not apply binding redirects.,"`Assembly.ReflectionOnlyLoad(byte[])` [should ignore binding redirects](http://blogs.microsoft.co.il/sasha/2010/06/09/assemblyreflectiononlyload-ignores-assembly-binding-redirects/).
+
+Original bug report below:
+
+---
+
+I would like to re-enable Roslyn CI testing with nightly Mono.  When I run recent Roslyn tests, however, I see the following error message from around 95 of their tests:
+
+```
+Explicit assembly load didn't update the proper cache: 'System.ValueTuple'
+```
+
+In the `Microsoft.CodeAnalysis.CSharp.Emit.UnitTests` and `Microsoft.CodeAnalysis.CSharp.Semantic.UnitTests` testsuites
+
+## Steps to Reproduce
+
+1. Check out https://github.com/dotnet/roslyn  I am on commit dotnet/roslyn@5453053d807a50f20852321781b917133d31a6a3 (HEAD of master on January 8 2020)
+2. `./build.sh --restore --build`
+3. `./build.sh --testMono`
+4. Look at the html files mentioned in the build output - specifically `roslyn/artifacts/TestResults/Debug/Microsoft.CodeAnalysis.CSharp.Emit.UnitTests_net472_x64.html` and `roslyn/artifacts/TestResults/Debug/Microsoft.CodeAnalysis.CSharp.Semantic.UnitTests_net472_x64.html`
+
+### Current Behavior
+
+Tests fail with `Explicit assembly load didn't update the proper cache: 'System.ValueTuple'`
+
+### Expected Behavior
+
+Tests pass
+
+## On which platforms did you notice this
+
+[x] macOS
+[x] Linux
+[ ] Windows
+
+**Version Used**:
+
+Doesn't seem to be a recent thing in Mono.  Both of these fail:
+
+```
+Mono JIT compiler version 6.4.0.214 (2019-06/476d72b9e32 Tue Oct 15 06:00:27 EDT 2019)
+```
+
+```
+Mono JIT compiler version 6.10.0.40 (2019-12/0a51d89c423 Wed Jan  8 10:18:00 EST 2020)
+```
+
+## Stacktrace
+
+One sample stack trace:
+```
+Microsoft.CodeAnalysis.CSharp.UnitTests.AttributeTests.TestAttributesWithParamArrayInCtor02
+System.Exception : Error getting signatures AttributeTest.Program.MultipleArgumentsToParamsParameter: Explicit assembly load didn't update the proper cache: 'System.ValueTuple' (754a0d2f-8ae6-468c-90a1-fd885ad140fa)\nAssemblies:\n\tmscorlib 5f51f516-d836-4087-b9d9-82220d08047f - Assembly False True\n\tRoslyn.Test.Utilities 458ca654-5631-424c-bd4e-616bb399f511 - Assembly False True\n\tMicrosoft.CodeAnalysis 5245f26a-eddb-4bce-aee6-2bbd41770564 - Assembly False True\n\tnetstandard c59b84a6-69bb-427d-8881-db183a26ea39 - Assembly False True\n\tSystem.Core 6892acea-c016-4fa3-92f7-1112c7c00f48 - Assembly False True\n\tSystem 2bf87a71-b27a-455e-83d3-0b653090f40c - Assembly False True\n\tMono.Security 771bf01f-1b8b-40ea-a853-11995a28957c - Assembly False True\n\tSystem.Configuration fb697d11-a18e-46bc-b311-825458f34ca5 - Assembly False True\n\tSystem.Xml a8f4cebb-7006-4ea0-ab8f-6331e6a7fedf - Assembly False True\n\tSystem.Numerics 22313b05-ad8f-4f6c-ae1f-bf2e5deeda79 - Assembly False True\n\tSystem.Xml.Linq c5c8238b-d376-4f87-b6d8-82f072c5ff81 - Assembly False True\n\tSystem.Collections.Immutable 6518d0e6-0ca8-4f6b-915c-07341a031a32 - Assembly False True\n\tSystem.Reflection.Metadata 4bd432d0-a098-45d3-8673-47e567b864a4 - Assembly False True\n\tSystem.Memory a5006ea2-ea34-4a8e-8c71-a2eb982aadc0 - Assembly False True\n\tSystem.Numerics.Vectors 142bdee2-c07c-4735-87f2-a5980e1caf64 - Assembly False True\n\tSystem.Runtime.CompilerServices.Unsafe 2bdaa6a2-1dbe-4b2a-a392-891cc5d89bb6 - Assembly False True\n\tSystem.Runtime ab9ad344-8c68-4986-bf85-8cecbf3224a3 - Assembly False True\n\tMicrosoft.CodeAnalysis.CSharp 8eb21bb7-fec6-4285-9f9f-dd07df6aff6c - Assembly False True\n\tMicrosoft.CodeAnalysis.VisualBasic 1224a1f6-2a79-4078-a477-434dab63b69c - Assembly False True\n\txunit.core f7d89533-bfdd-4f88-acf3-8c04b8fbf25f - Assembly False True\n\tSystem.Reflection d095b310-526e-4fcc-a4b7-e819839ed750 - Assembly False True\n\tSystem.Threading.Tasks ef864c6a-c5a9-4f70-b586-89971054264e - Assembly False True\n\txunit.abstractions 3adc334d-ab9c-49ae-9d5c-19a9e63d9fbf - Assembly False True\n\tSystem.Collections 83b186fa-311b-4d2e-a12f-f564ab41753e - Assembly False True\n\tSystem.Linq 442b9ebc-5c94-4648-bfae-a314c8d6511a - Assembly False True\n\tSystem.Reflection.Extensions e5d78c51-bed8-4248-a4ca-24d54404b6de - Assembly False True\n\tSystem.Runtime.Extensions 488590a6-6a3b-4c61-b923-9a4132f375c5 - Assembly False True\n\tMicrosoft.Metadata.Visualizer 1921b8aa-c623-4e23-86d8-ac31765a55ff - Assembly False True\n\tSystem.Resources.ResourceManager 91cb7082-e7f5-44b7-8782-7d6984e819a4 - Assembly False True\n\tSystem.Reflection.Primitives ec227304-a34f-4745-a84e-f8d7cbaf791d - Assembly False True\n\tSystem.IO 0e98c355-aa4e-478f-9ddf-c625cdbaf4e7 - Assembly False True\n\tSystem.Globalization 57531cbe-6c7e-414e-9003-9d297d0c2a28 - Assembly False True\n\tSystem.Text.Encoding 6de6dcc5-a8f4-4065-979a-c823017f6bca - Assembly False True\n\tICSharpCode.Decompiler 63c75710-ce36-4af8-bb69-4956fa724da0 - Assembly False True\n\txunit.assert 249f3eb2-5901-4d62-8af0-cc776461881e - Assembly False True\n\tMicrosoft.DiaSymReader.Converter.Xml d998666f-8964-4fa6-ba3b-b11a217f3748 - Assembly False True\n\tMicrosoft.DiaSymReader e11e897f-54f5-4eb7-a3bc-ef234b2b3572 - Assembly False True\n\tMicrosoft.DiaSymReader.PortablePdb bc9ae331-6016-4a18-add5-7fb54f9dc1e2 - Assembly False True\n\tSystem.Runtime.InteropServices a17ea8ea-992c-480d-b65b-fa2214864343 - Assembly False True\n\tSystem.IO.Compression 733dcfa6-3470-49e4-8b00-403636e0d997 - Assembly False True\n\tSystem.Threading adf55201-fcef-41b6-9520-d595b854ac4b - Assembly False True\n\tMicrosoft.CodeAnalysis.Compiler.Test.Resources dacb7f6d-f467-4952-ada6-3df704db159a - Assembly False True\n\tMicrosoft.CodeAnalysis.Test.Resources.Proprietary 3b9c44fe-8dbd-4018-b3b7-550027f1a46f - Assembly False True\n\tB 24ddf78d-576f-4ad6-a3f0-65997ec0def8 - ModuleData False False\n\tA 5f0e569d-6b73-42f4-b48c-b9c52ab6522f - ModuleData False False\n\td5eb4844-8af4-419c-9639-2301268abd52 922a5a1c-9cbf-4d45-b7bc-0f19b5afaf5e - ModuleData False True\n\tSystem.ValueTuple 754a0d2f-8ae6-468c-90a1-fd885ad140fa - ModuleData False False\n\tSystem.Runtime 50857960-f900-4f0f-89bf-49550f878b70 - ModuleData False False\n\tCS2 fef6fc2e-bb30-44bc-a558-ea73d5358f32 - ModuleData True False\n\tVB1 eb57d77b-658b-465b-be3a-70e0bf572278 - ModuleData True False\n\tCS1 6aa27a1b-9448-42cf-8bd5-740098d712a9 - ModuleData True False\n\tVB2 2d274ff3-dfd1-4012-aa6d-e6e78930ce04 - ModuleData True False\n\t47259890-2db9-4c38-a3f9-e36780ba05fb 4585e83c-8b22-4bf3-a481-c16a79cbc2ac - ModuleData False True\n\t10e197aa-ffbe-41b5-8c5f-9ebc2c16a092 28923e26-66e0-4120-93c0-dfc9ae5b87f4 - ModuleData False True\n\t921c5959-c450-43b0-a02d-9c5f9a47a42d d28bb2b3-7007-461e-9fbe-eaecbc0cf544 - ModuleData True False\n\tf3542e8d-91f8-48bd-8f3d-d1f8b74d0b18 c961a995-086d-498d-9cf3-c57b151c5bf0 - ModuleData False False\n\tf56c11f9-e085-49b0-8d45-015932a8fd92 d30c1412-875f-4a18-a9bc-e7191136671c - ModuleData False False\n\t88ab011d-3245-4e5e-ab60-895f7c4439de 4c552cef-2e46-42a5-a09a-db38038bbfec - ModuleData False False\n\td9e3c2e9-6d31-4d1a-8df7-dc81ab4307ef a5089b5e-152e-4a6b-85a3-9000d8ac292b - ModuleData True False\n\t26f9011d-76ec-49f0-9629-9a20ee669083 501f6ca8-0e57-4e21-90ce-57e5d82c80db - ModuleData True False\n\tca479515-6784-431d-a95d-13698bc2a2bb 4aa16b07-38ca-477c-8c3a-9d83c7ba774f - ModuleData False False\n\t1246a6c8-c587-4ebe-a132-373bde3b7d6a 61891886-af98-45cb-ba50-8fac13f7e870 - ModuleData False False\n\t9d1d734d-b1b6-4cc4-aa3d-51b072013430 a24583de-8ae5-4e96-90b4-797e8a9e3f0b - ModuleData False False\n\t1bfbcb7f-5fa7-43a6-8860-573ac52c1780 fa85e900-b72c-4529-a38b-209d219117ad - ModuleData True False\n\tf64bbbf3-097f-4410-839a-4799e3d81275 66f3c7cf-4ad5-4398-bfcb-4a57e35e303b - ModuleData False False\n\t8f3f09a1-3299-48a5-8d6c-56e6e4a2a5e8 d016dd81-3bb7-4ee7-b32e-48bee6747802 - ModuleData False False\n\t9d7e3498-8817-49c8-9427-60a6b390cea6 63e6fb3f-271c-4af2-a220-34b2cd6b8803 - ModuleData False False\n\t1342a6f3-47c6-466e-835e-0953c7d494b8 e92c7bf6-596c-4df7-94b6-cb9bc2ff7f21 - ModuleData False False\n\t3e854e15-defd-45ff-973b-950cb4c3f4aa ce779a0a-a0ac-4bad-b5f4-efc8379b536e - ModuleData False False\n\t777ad6c3-44f2-4063-801b-b1391690505e fc0f8083-bda7-498d-b771-bdaeafea4ab5 - ModuleData True False\n\taad866f8-1bc9-4a7b-9844-8938ed53739a 633cca70-a989-43bd-84ed-9994656319c0 - ModuleData False True\n\n---- System.Exception : Explicit assembly load didn't update the proper cache: 'System.ValueTuple' (754a0d2f-8ae6-468c-90a1-fd885ad140fa)
+
+Server stack trace: 
+  at Roslyn.Test.Utilities.Desktop.RuntimeAssemblyManager.GetMemberSignaturesFromMetadata (System.String fullyQualifiedTypeName, System.String memberName, System.Collections.Generic.List`1[T] searchModules) [0x001df] in <458ca6545631424cbd4e616bb399f511>:0 
+  at (wrapper remoting-invoke-with-check) Roslyn.Test.Utilities.Desktop.RuntimeAssemblyManager.GetMemberSignaturesFromMetadata(string,string,System.Collections.Generic.List`1<Roslyn.Test.Utilities.Desktop.RuntimeModuleDataId>)
+  at (wrapper xdomain-dispatch) Roslyn.Test.Utilities.Desktop.RuntimeAssemblyManager.GetMemberSignaturesFromMetadata(object,byte[]&,byte[]&,string,string)
+
+Exception rethrown at [0]: 
+  at (wrapper xdomain-invoke) Roslyn.Test.Utilities.Desktop.RuntimeAssemblyManager.GetMemberSignaturesFromMetadata(string,string,System.Collections.Generic.List`1<Roslyn.Test.Utilities.Desktop.RuntimeModuleDataId>)
+  at (wrapper remoting-invoke-with-check) Roslyn.Test.Utilities.Desktop.RuntimeAssemblyManager.GetMemberSignaturesFromMetadata(string,string,System.Collections.Generic.List`1<Roslyn.Test.Utilities.Desktop.RuntimeModuleDataId>)
+  at Roslyn.Test.Utilities.Desktop.DesktopRuntimeEnvironment.GetMemberSignaturesFromMetadata (System.String fullyQualifiedTypeName, System.String memberName) [0x00043] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Microsoft.CodeAnalysis.Test.Utilities.MetadataSignatureUnitTestHelper.VerifyMemberSignatureHelper (Roslyn.Test.Utilities.IRuntimeEnvironment appDomainHost, System.String fullyQualifiedTypeName, System.String memberName, System.String& expectedSignature, System.Collections.Generic.List`1[System.String]& actualSignatures) [0x0002d] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Microsoft.CodeAnalysis.Test.Utilities.MetadataSignatureUnitTestHelper.VerifyMemberSignatures (Roslyn.Test.Utilities.IRuntimeEnvironment appDomainHost, Microsoft.CodeAnalysis.Test.Utilities.SignatureDescription[] expectedSignatures) [0x00044] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Microsoft.CodeAnalysis.Test.Utilities.CompilationVerifier.Emit (System.String expectedOutput, System.Nullable`1[T] expectedReturnCode, System.String[] args, System.Collections.Generic.IEnumerable`1[T] manifestResources, Microsoft.CodeAnalysis.Emit.EmitOptions emitOptions, Microsoft.CodeAnalysis.Test.Utilities.Verification peVerify, Microsoft.CodeAnalysis.Test.Utilities.SignatureDescription[] expectedSignatures) [0x00038] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Microsoft.CodeAnalysis.Test.Utilities.CommonTestBase.Emit (Microsoft.CodeAnalysis.Compilation compilation, System.Collections.Generic.IEnumerable`1[T] dependencies, System.Collections.Generic.IEnumerable`1[T] manifestResources, Microsoft.CodeAnalysis.Test.Utilities.SignatureDescription[] expectedSignatures, System.String expectedOutput, System.Nullable`1[T] expectedReturnCode, System.String[] args, System.Action`1[T] assemblyValidator, System.Action`1[T] symbolValidator, Microsoft.CodeAnalysis.Emit.EmitOptions emitOptions, Microsoft.CodeAnalysis.Test.Utilities.Verification verify) [0x00016] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Microsoft.CodeAnalysis.Test.Utilities.CommonTestBase.CompileAndVerifyCommon (Microsoft.CodeAnalysis.Compilation compilation, System.Collections.Generic.IEnumerable`1[T] manifestResources, System.Collections.Generic.IEnumerable`1[T] dependencies, System.Action`1[T] sourceSymbolValidator, System.Action`1[T] assemblyValidator, System.Action`1[T] symbolValidator, Microsoft.CodeAnalysis.Test.Utilities.SignatureDescription[] expectedSignatures, System.String expectedOutput, System.Nullable`1[T] expectedReturnCode, System.String[] args, Microsoft.CodeAnalysis.Emit.EmitOptions emitOptions, Microsoft.CodeAnalysis.Test.Utilities.Verification verify) [0x00074] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Microsoft.CodeAnalysis.CSharp.Test.Utilities.CSharpTestBase.CompileAndVerify (Microsoft.CodeAnalysis.Compilation compilation, System.Collections.Generic.IEnumerable`1[T] manifestResources, System.Collections.Generic.IEnumerable`1[T] dependencies, System.Action`1[T] sourceSymbolValidator, System.Action`1[T] validator, System.Action`1[T] symbolValidator, Microsoft.CodeAnalysis.Test.Utilities.SignatureDescription[] expectedSignatures, System.String expectedOutput, System.Nullable`1[T] expectedReturnCode, System.String[] args, Microsoft.CodeAnalysis.Emit.EmitOptions emitOptions, Microsoft.CodeAnalysis.Test.Utilities.Verification verify) [0x00016] in <a013eee9c6bf438f9a8c80357a72f84c>:0 
+  at Microsoft.CodeAnalysis.CSharp.Test.Utilities.CSharpTestBase.CompileAndVerify (Microsoft.CodeAnalysis.CSharp.Test.Utilities.CSharpTestSource source, System.Collections.Generic.IEnumerable`1[T] references, System.Collections.Generic.IEnumerable`1[T] manifestResources, System.Collections.Generic.IEnumerable`1[T] dependencies, System.Action`1[T] sourceSymbolValidator, System.Action`1[T] assemblyValidator, System.Action`1[T] symbolValidator, Microsoft.CodeAnalysis.Test.Utilities.SignatureDescription[] expectedSignatures, System.String expectedOutput, System.Nullable`1[T] expectedReturnCode, System.String[] args, Microsoft.CodeAnalysis.CSharp.CSharpCompilationOptions options, Microsoft.CodeAnalysis.CSharp.CSharpParseOptions parseOptions, Microsoft.CodeAnalysis.Emit.EmitOptions emitOptions, Roslyn.Test.Utilities.TargetFramework targetFramework, Microsoft.CodeAnalysis.Test.Utilities.Verification verify) [0x00034] in <a013eee9c6bf438f9a8c80357a72f84c>:0 
+  at Microsoft.CodeAnalysis.CSharp.UnitTests.AttributeTests.TestAttributesWithParamArrayInCtor02 () [0x0007e] in <3601373104544e4ab32f1073e1d6c318>:0 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in /Users/builder/jenkins/workspace/build-package-osx-mono/2019-12/external/bockbuild/builds/mono-x64/mcs/class/corlib/System.Reflection/RuntimeMethodInfo.cs:395 
+----- Inner Stack Trace -----
+  at Roslyn.Test.Utilities.Desktop.AppDomainAssemblyCache.GetOrLoad (Roslyn.Test.Utilities.ModuleData moduleData, System.Boolean reflectionOnly) [0x00086] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Roslyn.Test.Utilities.Desktop.RuntimeAssemblyManager.GetAssembly (System.String fullName, System.Boolean reflectionOnly) [0x00072] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Roslyn.Test.Utilities.Desktop.RuntimeAssemblyManager.GetMemberSignaturesFromMetadata (System.String fullyQualifiedTypeName, System.String memberName, System.Collections.Generic.List`1[T] searchModules) [0x00046] in <458ca6545631424cbd4e616bb399f511>:0 
+```","ReflectionOnlyLoad(byte[]) should not apply binding redirects.   `Assembly.ReflectionOnlyLoad(byte[])` [should ignore binding redirects](http://blogs.microsoft.co.il/sasha/2010/06/09/assemblyreflectiononlyload-ignores-assembly-binding-redirects/).
+
+Orig",18459,monojenkins,mono
+18457,[loader] ReflectionOnlyLoad(byte[]) should not apply binding redirects,"Match .NET Framework behavior.
+
+Addresses #18388 ","[loader] ReflectionOnlyLoad(byte[]) should not apply binding redirects  Match .NET Framework behavior.
+
+Addresses #18388 ",18459,monojenkins,mono
+18388,ReflectionOnlyLoad(byte[]) should not apply binding redirects.,"`Assembly.ReflectionOnlyLoad(byte[])` [should ignore binding redirects](http://blogs.microsoft.co.il/sasha/2010/06/09/assemblyreflectiononlyload-ignores-assembly-binding-redirects/).
+
+Original bug report below:
+
+---
+
+I would like to re-enable Roslyn CI testing with nightly Mono.  When I run recent Roslyn tests, however, I see the following error message from around 95 of their tests:
+
+```
+Explicit assembly load didn't update the proper cache: 'System.ValueTuple'
+```
+
+In the `Microsoft.CodeAnalysis.CSharp.Emit.UnitTests` and `Microsoft.CodeAnalysis.CSharp.Semantic.UnitTests` testsuites
+
+## Steps to Reproduce
+
+1. Check out https://github.com/dotnet/roslyn  I am on commit dotnet/roslyn@5453053d807a50f20852321781b917133d31a6a3 (HEAD of master on January 8 2020)
+2. `./build.sh --restore --build`
+3. `./build.sh --testMono`
+4. Look at the html files mentioned in the build output - specifically `roslyn/artifacts/TestResults/Debug/Microsoft.CodeAnalysis.CSharp.Emit.UnitTests_net472_x64.html` and `roslyn/artifacts/TestResults/Debug/Microsoft.CodeAnalysis.CSharp.Semantic.UnitTests_net472_x64.html`
+
+### Current Behavior
+
+Tests fail with `Explicit assembly load didn't update the proper cache: 'System.ValueTuple'`
+
+### Expected Behavior
+
+Tests pass
+
+## On which platforms did you notice this
+
+[x] macOS
+[x] Linux
+[ ] Windows
+
+**Version Used**:
+
+Doesn't seem to be a recent thing in Mono.  Both of these fail:
+
+```
+Mono JIT compiler version 6.4.0.214 (2019-06/476d72b9e32 Tue Oct 15 06:00:27 EDT 2019)
+```
+
+```
+Mono JIT compiler version 6.10.0.40 (2019-12/0a51d89c423 Wed Jan  8 10:18:00 EST 2020)
+```
+
+## Stacktrace
+
+One sample stack trace:
+```
+Microsoft.CodeAnalysis.CSharp.UnitTests.AttributeTests.TestAttributesWithParamArrayInCtor02
+System.Exception : Error getting signatures AttributeTest.Program.MultipleArgumentsToParamsParameter: Explicit assembly load didn't update the proper cache: 'System.ValueTuple' (754a0d2f-8ae6-468c-90a1-fd885ad140fa)\nAssemblies:\n\tmscorlib 5f51f516-d836-4087-b9d9-82220d08047f - Assembly False True\n\tRoslyn.Test.Utilities 458ca654-5631-424c-bd4e-616bb399f511 - Assembly False True\n\tMicrosoft.CodeAnalysis 5245f26a-eddb-4bce-aee6-2bbd41770564 - Assembly False True\n\tnetstandard c59b84a6-69bb-427d-8881-db183a26ea39 - Assembly False True\n\tSystem.Core 6892acea-c016-4fa3-92f7-1112c7c00f48 - Assembly False True\n\tSystem 2bf87a71-b27a-455e-83d3-0b653090f40c - Assembly False True\n\tMono.Security 771bf01f-1b8b-40ea-a853-11995a28957c - Assembly False True\n\tSystem.Configuration fb697d11-a18e-46bc-b311-825458f34ca5 - Assembly False True\n\tSystem.Xml a8f4cebb-7006-4ea0-ab8f-6331e6a7fedf - Assembly False True\n\tSystem.Numerics 22313b05-ad8f-4f6c-ae1f-bf2e5deeda79 - Assembly False True\n\tSystem.Xml.Linq c5c8238b-d376-4f87-b6d8-82f072c5ff81 - Assembly False True\n\tSystem.Collections.Immutable 6518d0e6-0ca8-4f6b-915c-07341a031a32 - Assembly False True\n\tSystem.Reflection.Metadata 4bd432d0-a098-45d3-8673-47e567b864a4 - Assembly False True\n\tSystem.Memory a5006ea2-ea34-4a8e-8c71-a2eb982aadc0 - Assembly False True\n\tSystem.Numerics.Vectors 142bdee2-c07c-4735-87f2-a5980e1caf64 - Assembly False True\n\tSystem.Runtime.CompilerServices.Unsafe 2bdaa6a2-1dbe-4b2a-a392-891cc5d89bb6 - Assembly False True\n\tSystem.Runtime ab9ad344-8c68-4986-bf85-8cecbf3224a3 - Assembly False True\n\tMicrosoft.CodeAnalysis.CSharp 8eb21bb7-fec6-4285-9f9f-dd07df6aff6c - Assembly False True\n\tMicrosoft.CodeAnalysis.VisualBasic 1224a1f6-2a79-4078-a477-434dab63b69c - Assembly False True\n\txunit.core f7d89533-bfdd-4f88-acf3-8c04b8fbf25f - Assembly False True\n\tSystem.Reflection d095b310-526e-4fcc-a4b7-e819839ed750 - Assembly False True\n\tSystem.Threading.Tasks ef864c6a-c5a9-4f70-b586-89971054264e - Assembly False True\n\txunit.abstractions 3adc334d-ab9c-49ae-9d5c-19a9e63d9fbf - Assembly False True\n\tSystem.Collections 83b186fa-311b-4d2e-a12f-f564ab41753e - Assembly False True\n\tSystem.Linq 442b9ebc-5c94-4648-bfae-a314c8d6511a - Assembly False True\n\tSystem.Reflection.Extensions e5d78c51-bed8-4248-a4ca-24d54404b6de - Assembly False True\n\tSystem.Runtime.Extensions 488590a6-6a3b-4c61-b923-9a4132f375c5 - Assembly False True\n\tMicrosoft.Metadata.Visualizer 1921b8aa-c623-4e23-86d8-ac31765a55ff - Assembly False True\n\tSystem.Resources.ResourceManager 91cb7082-e7f5-44b7-8782-7d6984e819a4 - Assembly False True\n\tSystem.Reflection.Primitives ec227304-a34f-4745-a84e-f8d7cbaf791d - Assembly False True\n\tSystem.IO 0e98c355-aa4e-478f-9ddf-c625cdbaf4e7 - Assembly False True\n\tSystem.Globalization 57531cbe-6c7e-414e-9003-9d297d0c2a28 - Assembly False True\n\tSystem.Text.Encoding 6de6dcc5-a8f4-4065-979a-c823017f6bca - Assembly False True\n\tICSharpCode.Decompiler 63c75710-ce36-4af8-bb69-4956fa724da0 - Assembly False True\n\txunit.assert 249f3eb2-5901-4d62-8af0-cc776461881e - Assembly False True\n\tMicrosoft.DiaSymReader.Converter.Xml d998666f-8964-4fa6-ba3b-b11a217f3748 - Assembly False True\n\tMicrosoft.DiaSymReader e11e897f-54f5-4eb7-a3bc-ef234b2b3572 - Assembly False True\n\tMicrosoft.DiaSymReader.PortablePdb bc9ae331-6016-4a18-add5-7fb54f9dc1e2 - Assembly False True\n\tSystem.Runtime.InteropServices a17ea8ea-992c-480d-b65b-fa2214864343 - Assembly False True\n\tSystem.IO.Compression 733dcfa6-3470-49e4-8b00-403636e0d997 - Assembly False True\n\tSystem.Threading adf55201-fcef-41b6-9520-d595b854ac4b - Assembly False True\n\tMicrosoft.CodeAnalysis.Compiler.Test.Resources dacb7f6d-f467-4952-ada6-3df704db159a - Assembly False True\n\tMicrosoft.CodeAnalysis.Test.Resources.Proprietary 3b9c44fe-8dbd-4018-b3b7-550027f1a46f - Assembly False True\n\tB 24ddf78d-576f-4ad6-a3f0-65997ec0def8 - ModuleData False False\n\tA 5f0e569d-6b73-42f4-b48c-b9c52ab6522f - ModuleData False False\n\td5eb4844-8af4-419c-9639-2301268abd52 922a5a1c-9cbf-4d45-b7bc-0f19b5afaf5e - ModuleData False True\n\tSystem.ValueTuple 754a0d2f-8ae6-468c-90a1-fd885ad140fa - ModuleData False False\n\tSystem.Runtime 50857960-f900-4f0f-89bf-49550f878b70 - ModuleData False False\n\tCS2 fef6fc2e-bb30-44bc-a558-ea73d5358f32 - ModuleData True False\n\tVB1 eb57d77b-658b-465b-be3a-70e0bf572278 - ModuleData True False\n\tCS1 6aa27a1b-9448-42cf-8bd5-740098d712a9 - ModuleData True False\n\tVB2 2d274ff3-dfd1-4012-aa6d-e6e78930ce04 - ModuleData True False\n\t47259890-2db9-4c38-a3f9-e36780ba05fb 4585e83c-8b22-4bf3-a481-c16a79cbc2ac - ModuleData False True\n\t10e197aa-ffbe-41b5-8c5f-9ebc2c16a092 28923e26-66e0-4120-93c0-dfc9ae5b87f4 - ModuleData False True\n\t921c5959-c450-43b0-a02d-9c5f9a47a42d d28bb2b3-7007-461e-9fbe-eaecbc0cf544 - ModuleData True False\n\tf3542e8d-91f8-48bd-8f3d-d1f8b74d0b18 c961a995-086d-498d-9cf3-c57b151c5bf0 - ModuleData False False\n\tf56c11f9-e085-49b0-8d45-015932a8fd92 d30c1412-875f-4a18-a9bc-e7191136671c - ModuleData False False\n\t88ab011d-3245-4e5e-ab60-895f7c4439de 4c552cef-2e46-42a5-a09a-db38038bbfec - ModuleData False False\n\td9e3c2e9-6d31-4d1a-8df7-dc81ab4307ef a5089b5e-152e-4a6b-85a3-9000d8ac292b - ModuleData True False\n\t26f9011d-76ec-49f0-9629-9a20ee669083 501f6ca8-0e57-4e21-90ce-57e5d82c80db - ModuleData True False\n\tca479515-6784-431d-a95d-13698bc2a2bb 4aa16b07-38ca-477c-8c3a-9d83c7ba774f - ModuleData False False\n\t1246a6c8-c587-4ebe-a132-373bde3b7d6a 61891886-af98-45cb-ba50-8fac13f7e870 - ModuleData False False\n\t9d1d734d-b1b6-4cc4-aa3d-51b072013430 a24583de-8ae5-4e96-90b4-797e8a9e3f0b - ModuleData False False\n\t1bfbcb7f-5fa7-43a6-8860-573ac52c1780 fa85e900-b72c-4529-a38b-209d219117ad - ModuleData True False\n\tf64bbbf3-097f-4410-839a-4799e3d81275 66f3c7cf-4ad5-4398-bfcb-4a57e35e303b - ModuleData False False\n\t8f3f09a1-3299-48a5-8d6c-56e6e4a2a5e8 d016dd81-3bb7-4ee7-b32e-48bee6747802 - ModuleData False False\n\t9d7e3498-8817-49c8-9427-60a6b390cea6 63e6fb3f-271c-4af2-a220-34b2cd6b8803 - ModuleData False False\n\t1342a6f3-47c6-466e-835e-0953c7d494b8 e92c7bf6-596c-4df7-94b6-cb9bc2ff7f21 - ModuleData False False\n\t3e854e15-defd-45ff-973b-950cb4c3f4aa ce779a0a-a0ac-4bad-b5f4-efc8379b536e - ModuleData False False\n\t777ad6c3-44f2-4063-801b-b1391690505e fc0f8083-bda7-498d-b771-bdaeafea4ab5 - ModuleData True False\n\taad866f8-1bc9-4a7b-9844-8938ed53739a 633cca70-a989-43bd-84ed-9994656319c0 - ModuleData False True\n\n---- System.Exception : Explicit assembly load didn't update the proper cache: 'System.ValueTuple' (754a0d2f-8ae6-468c-90a1-fd885ad140fa)
+
+Server stack trace: 
+  at Roslyn.Test.Utilities.Desktop.RuntimeAssemblyManager.GetMemberSignaturesFromMetadata (System.String fullyQualifiedTypeName, System.String memberName, System.Collections.Generic.List`1[T] searchModules) [0x001df] in <458ca6545631424cbd4e616bb399f511>:0 
+  at (wrapper remoting-invoke-with-check) Roslyn.Test.Utilities.Desktop.RuntimeAssemblyManager.GetMemberSignaturesFromMetadata(string,string,System.Collections.Generic.List`1<Roslyn.Test.Utilities.Desktop.RuntimeModuleDataId>)
+  at (wrapper xdomain-dispatch) Roslyn.Test.Utilities.Desktop.RuntimeAssemblyManager.GetMemberSignaturesFromMetadata(object,byte[]&,byte[]&,string,string)
+
+Exception rethrown at [0]: 
+  at (wrapper xdomain-invoke) Roslyn.Test.Utilities.Desktop.RuntimeAssemblyManager.GetMemberSignaturesFromMetadata(string,string,System.Collections.Generic.List`1<Roslyn.Test.Utilities.Desktop.RuntimeModuleDataId>)
+  at (wrapper remoting-invoke-with-check) Roslyn.Test.Utilities.Desktop.RuntimeAssemblyManager.GetMemberSignaturesFromMetadata(string,string,System.Collections.Generic.List`1<Roslyn.Test.Utilities.Desktop.RuntimeModuleDataId>)
+  at Roslyn.Test.Utilities.Desktop.DesktopRuntimeEnvironment.GetMemberSignaturesFromMetadata (System.String fullyQualifiedTypeName, System.String memberName) [0x00043] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Microsoft.CodeAnalysis.Test.Utilities.MetadataSignatureUnitTestHelper.VerifyMemberSignatureHelper (Roslyn.Test.Utilities.IRuntimeEnvironment appDomainHost, System.String fullyQualifiedTypeName, System.String memberName, System.String& expectedSignature, System.Collections.Generic.List`1[System.String]& actualSignatures) [0x0002d] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Microsoft.CodeAnalysis.Test.Utilities.MetadataSignatureUnitTestHelper.VerifyMemberSignatures (Roslyn.Test.Utilities.IRuntimeEnvironment appDomainHost, Microsoft.CodeAnalysis.Test.Utilities.SignatureDescription[] expectedSignatures) [0x00044] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Microsoft.CodeAnalysis.Test.Utilities.CompilationVerifier.Emit (System.String expectedOutput, System.Nullable`1[T] expectedReturnCode, System.String[] args, System.Collections.Generic.IEnumerable`1[T] manifestResources, Microsoft.CodeAnalysis.Emit.EmitOptions emitOptions, Microsoft.CodeAnalysis.Test.Utilities.Verification peVerify, Microsoft.CodeAnalysis.Test.Utilities.SignatureDescription[] expectedSignatures) [0x00038] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Microsoft.CodeAnalysis.Test.Utilities.CommonTestBase.Emit (Microsoft.CodeAnalysis.Compilation compilation, System.Collections.Generic.IEnumerable`1[T] dependencies, System.Collections.Generic.IEnumerable`1[T] manifestResources, Microsoft.CodeAnalysis.Test.Utilities.SignatureDescription[] expectedSignatures, System.String expectedOutput, System.Nullable`1[T] expectedReturnCode, System.String[] args, System.Action`1[T] assemblyValidator, System.Action`1[T] symbolValidator, Microsoft.CodeAnalysis.Emit.EmitOptions emitOptions, Microsoft.CodeAnalysis.Test.Utilities.Verification verify) [0x00016] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Microsoft.CodeAnalysis.Test.Utilities.CommonTestBase.CompileAndVerifyCommon (Microsoft.CodeAnalysis.Compilation compilation, System.Collections.Generic.IEnumerable`1[T] manifestResources, System.Collections.Generic.IEnumerable`1[T] dependencies, System.Action`1[T] sourceSymbolValidator, System.Action`1[T] assemblyValidator, System.Action`1[T] symbolValidator, Microsoft.CodeAnalysis.Test.Utilities.SignatureDescription[] expectedSignatures, System.String expectedOutput, System.Nullable`1[T] expectedReturnCode, System.String[] args, Microsoft.CodeAnalysis.Emit.EmitOptions emitOptions, Microsoft.CodeAnalysis.Test.Utilities.Verification verify) [0x00074] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Microsoft.CodeAnalysis.CSharp.Test.Utilities.CSharpTestBase.CompileAndVerify (Microsoft.CodeAnalysis.Compilation compilation, System.Collections.Generic.IEnumerable`1[T] manifestResources, System.Collections.Generic.IEnumerable`1[T] dependencies, System.Action`1[T] sourceSymbolValidator, System.Action`1[T] validator, System.Action`1[T] symbolValidator, Microsoft.CodeAnalysis.Test.Utilities.SignatureDescription[] expectedSignatures, System.String expectedOutput, System.Nullable`1[T] expectedReturnCode, System.String[] args, Microsoft.CodeAnalysis.Emit.EmitOptions emitOptions, Microsoft.CodeAnalysis.Test.Utilities.Verification verify) [0x00016] in <a013eee9c6bf438f9a8c80357a72f84c>:0 
+  at Microsoft.CodeAnalysis.CSharp.Test.Utilities.CSharpTestBase.CompileAndVerify (Microsoft.CodeAnalysis.CSharp.Test.Utilities.CSharpTestSource source, System.Collections.Generic.IEnumerable`1[T] references, System.Collections.Generic.IEnumerable`1[T] manifestResources, System.Collections.Generic.IEnumerable`1[T] dependencies, System.Action`1[T] sourceSymbolValidator, System.Action`1[T] assemblyValidator, System.Action`1[T] symbolValidator, Microsoft.CodeAnalysis.Test.Utilities.SignatureDescription[] expectedSignatures, System.String expectedOutput, System.Nullable`1[T] expectedReturnCode, System.String[] args, Microsoft.CodeAnalysis.CSharp.CSharpCompilationOptions options, Microsoft.CodeAnalysis.CSharp.CSharpParseOptions parseOptions, Microsoft.CodeAnalysis.Emit.EmitOptions emitOptions, Roslyn.Test.Utilities.TargetFramework targetFramework, Microsoft.CodeAnalysis.Test.Utilities.Verification verify) [0x00034] in <a013eee9c6bf438f9a8c80357a72f84c>:0 
+  at Microsoft.CodeAnalysis.CSharp.UnitTests.AttributeTests.TestAttributesWithParamArrayInCtor02 () [0x0007e] in <3601373104544e4ab32f1073e1d6c318>:0 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in /Users/builder/jenkins/workspace/build-package-osx-mono/2019-12/external/bockbuild/builds/mono-x64/mcs/class/corlib/System.Reflection/RuntimeMethodInfo.cs:395 
+----- Inner Stack Trace -----
+  at Roslyn.Test.Utilities.Desktop.AppDomainAssemblyCache.GetOrLoad (Roslyn.Test.Utilities.ModuleData moduleData, System.Boolean reflectionOnly) [0x00086] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Roslyn.Test.Utilities.Desktop.RuntimeAssemblyManager.GetAssembly (System.String fullName, System.Boolean reflectionOnly) [0x00072] in <458ca6545631424cbd4e616bb399f511>:0 
+  at Roslyn.Test.Utilities.Desktop.RuntimeAssemblyManager.GetMemberSignaturesFromMetadata (System.String fullyQualifiedTypeName, System.String memberName, System.Collections.Generic.List`1[T] searchModules) [0x00046] in <458ca6545631424cbd4e616bb399f511>:0 
+```","ReflectionOnlyLoad(byte[]) should not apply binding redirects.   `Assembly.ReflectionOnlyLoad(byte[])` [should ignore binding redirects](http://blogs.microsoft.co.il/sasha/2010/06/09/assemblyreflectiononlyload-ignores-assembly-binding-redirects/).
+
+Orig",18458,monojenkins,mono
+18457,[loader] ReflectionOnlyLoad(byte[]) should not apply binding redirects,"Match .NET Framework behavior.
+
+Addresses #18388 ","[loader] ReflectionOnlyLoad(byte[]) should not apply binding redirects  Match .NET Framework behavior.
+
+Addresses #18388 ",18458,monojenkins,mono
+18180,Type.FullName : on Mono = System.ReadOnlyMemory`1[T]& : on .Net core = null,"Take Program.cs
+
+```csharp
+using System;
+using System.Buffers;
+
+namespace typetest
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var t = typeof(ReadOnlySequence<>);
+            var m = t.GetMethod(""TryGet"");
+            var p = m.GetParameters()[1];
+            Console.WriteLine($""Type.Name: {p.ParameterType.Name}"");
+            Console.WriteLine($""Type.FullName: {p.ParameterType.FullName}"");
+        }
+    }
+}
+```
+
+With Mono 6.4 
+
+```console
+$ mcs Program.cs
+$ mono Program.exe
+Type.Name: ReadOnlyMemory`1&
+Type.FullName: System.ReadOnlyMemory`1[T]&
+```
+
+With dotnet core 3.1
+
+```console
+$ dotnet run
+Type.Name: ReadOnlyMemory`1&
+Type.FullName: 
+```
+
+This showed up when generating binding code for one of our Obj-C tools. Not sure it is of any real import, it just happened to break our parser.","Type.FullName : on Mono = System.ReadOnlyMemory`1[T]& : on .Net core = null  Take Program.cs
+
+```csharp
+using System;
+using System.Buffers;
+
+namespace typetest
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {",18390,monojenkins,mono
+18385,[reflection] Fix check for Type.FullName to match CoreCLR,"Fixes #18180 
+
+Updated test to follow in dotnet/runtime","[reflection] Fix check for Type.FullName to match CoreCLR  Fixes #18180 
+
+Updated test to follow in dotnet/runtime",18390,monojenkins,mono
+5,Implemented tx prepare enlistment timeout handling.,"Not sure who's the official mantainer of sys.tx (atsushi@ximian.com?) so, those who receive this spam, please forgiveme.. :)","Implemented tx prepare enlistment timeout handling.  Not sure who's the official mantainer of sys.tx (atsushi@ximian.com?) so, those who receive this spam, please forgiveme.. :)",16309,EgorBo,mono
+14970,[System.Net.Http]: Add hack to the legacy HttpClient to pass down Timeout property. #12577.,"* `HttpClientHandler`, `IMonoHttpClientHandler`: add new internal `MonoSetTimeout (TimeSpan)` function.
+
+* `HttpClient.SendAsyncWorker()`: if `handler` is `HttpClientHandler`, call the new internal
+  `MonoSetTimeout()` function to pass down the timeout.
+
+* `MonoWebRequestHandler.SendAsync()`: this is only used here to pass the timeout to the `HttpWebRequest`.","[System.Net.Http]: Add hack to the legacy HttpClient to pass down Timeout property. #12577.  * `HttpClientHandler`, `IMonoHttpClientHandler`: add new internal `MonoSetTimeout (TimeSpan)` function.
+
+* `HttpClient.SendAsyncWorker()`: if `handler` is `Http",15043,baulig,mono
+12577,HttpClient does not respect Timeout,"_From @csuzw on December 17, 2018 9:15_
+
+I believe this is the same/similar to this issue for Xamarin.iOS: https://github.com/xamarin/xamarin-macios/issues/5190 .  There is a hint in the original issue linked in that IOS issue that using the AndroidClientHandler and setting the ReadTimeout/ConnectTimeout is a workaround but I get the an exception about encoding 'identity' not being supported if I do this.
+
+### Steps to Reproduce
+
+1. Create a HttpClient and set Timeout to a value greater than 100s ( the default value).
+2. Send a request that takes longer than 100s but less than the Timeout set.
+
+### Expected Behavior
+
+The request to return successfully
+
+### Actual Behavior
+
+The request times out after 100s.
+
+### Version Information
+
+Microsoft Visual Studio Enterprise 2017  (2)
+Version 15.9.4
+VisualStudio.15.Release/15.9.4+28307.222
+Microsoft .NET Framework
+Version 4.7.03190
+
+Installed Version: Enterprise
+
+Visual C++ 2017   00369-60000-00001-AA999
+Microsoft Visual C++ 2017
+
+Application Insights Tools for Visual Studio Package   8.14.11009.1
+Application Insights Tools for Visual Studio
+
+ASP.NET and Web Tools 2017   15.9.04012.0
+ASP.NET and Web Tools 2017
+
+ASP.NET Core Razor Language Services   15.8.31590
+Provides languages services for ASP.NET Core Razor.
+
+ASP.NET Web Frameworks and Tools 2017   5.2.60913.0
+For additional information, visit https://www.asp.net/
+
+Azure App Service Tools v3.0.0   15.9.03024.0
+Azure App Service Tools v3.0.0
+
+Azure Functions and Web Jobs Tools   15.9.02046.0
+Azure Functions and Web Jobs Tools
+
+C# Tools   2.10.0-beta2-63501-03+b9fb1610c87cccc8ceb74a770dba261a58e39c4a
+C# components used in the IDE. Depending on your project type and settings, a different version of the compiler may be used.
+
+Common Azure Tools   1.10
+Provides common services for use by Azure Mobile Services and Microsoft Azure Tools.
+
+Extensibility Message Bus   1.1.49 (remotes/origin/d15-8@ee674f3)
+Provides common messaging-based MEF services for loosely coupled Visual Studio extension components communication and integration.
+
+HgSccPackage   2.0.5
+Mercurial source code control package
+
+JavaScript Language Service   2.0
+JavaScript Language Service
+
+JavaScript Project System   2.0
+JavaScript Project System
+
+JavaScript UWP Project System   2.0
+JavaScript UWP Project System
+
+JetBrains ReSharper Ultimate 2018.2.1   Build 182.0.20180829.63240
+JetBrains ReSharper Ultimate package for Microsoft Visual Studio. For more information about ReSharper Ultimate, visit http://www.jetbrains.com/resharper. Copyright © 2018 JetBrains, Inc.
+
+Microsoft Azure Tools   2.9
+Microsoft Azure Tools for Microsoft Visual Studio 2017 - v2.9.10730.2
+
+Microsoft Continuous Delivery Tools for Visual Studio   0.4
+Simplifying the configuration of Azure DevOps pipelines from within the Visual Studio IDE.
+
+Microsoft JVM Debugger   1.0
+Provides support for connecting the Visual Studio debugger to JDWP compatible Java Virtual Machines
+
+Microsoft Library Manager   1.0
+Install client-side libraries easily to any web project
+
+Microsoft MI-Based Debugger   1.0
+Provides support for connecting Visual Studio to MI compatible debuggers
+
+Microsoft Visual C++ Wizards   1.0
+Microsoft Visual C++ Wizards
+
+Microsoft Visual Studio Tools for Containers   1.1
+Develop, run, validate your ASP.NET Core applications in the target environment. F5 your application directly into a container with debugging, or CTRL + F5 to edit & refresh your app without having to rebuild the container.
+
+Microsoft Visual Studio VC Package   1.0
+Microsoft Visual Studio VC Package
+
+MLGen Package Extension   1.0
+MLGen Package Visual Studio Extension Detailed Info
+
+Mono Debugging for Visual Studio   4.13.12-pre (9bc9548)
+Support for debugging Mono processes with Visual Studio.
+
+NuGet Package Manager   4.6.0
+NuGet Package Manager in Visual Studio. For more information about NuGet, visit http://docs.nuget.org/.
+
+ProjectServicesPackage Extension   1.0
+ProjectServicesPackage Visual Studio Extension Detailed Info
+
+ResourcePackage Extension   1.0
+ResourcePackage Visual Studio Extension Detailed Info
+
+ResourcePackage Extension   1.0
+ResourcePackage Visual Studio Extension Detailed Info
+
+Snapshot Debugging Extension   1.0
+Snapshot Debugging Visual Studio Extension Detailed Info
+
+SQL Server Data Tools   15.1.61810.11040
+Microsoft SQL Server Data Tools
+
+Telerik WPF VSExtensions   2018.4.1121.1
+Progress® Telerik® UI for WPF Visual Studio extensions
+
+Telerik Xamarin VSExtensions   2018.4.1121.1
+Progress® Telerik® UI for Xamarin Visual Studio extensions
+
+TypeScript Tools   15.9.20918.2001
+TypeScript Tools for Microsoft Visual Studio
+
+Visual Basic Tools   2.10.0-beta2-63501-03+b9fb1610c87cccc8ceb74a770dba261a58e39c4a
+Visual Basic components used in the IDE. Depending on your project type and settings, a different version of the compiler may be used.
+
+Visual F# Tools 10.2 for F# 4.5   15.8.0.0.  Commit Hash: 6e26c5bacc8c4201e962f5bdde0a177f82f88691.
+Microsoft Visual F# Tools 10.2 for F# 4.5
+
+Visual Studio Code Debug Adapter Host Package   1.0
+Interop layer for hosting Visual Studio Code debug adapters in Visual Studio
+
+Visual Studio Tools for Containers   1.0
+Visual Studio Tools for Containers
+
+Visual Studio Tools for Universal Windows Apps   15.0.28307.208
+The Visual Studio Tools for Universal Windows apps allow you to build a single universal app experience that can reach every device running Windows 10: phone, tablet, PC, and more. It includes the Microsoft Windows 10 Software Development Kit.
+
+VisualStudio.Mac   1.0
+Mac Extension for Visual Studio
+
+Xamarin   4.12.3.77 (d15-9@e3f40b477)
+Visual Studio extension to enable development for Xamarin.iOS and Xamarin.Android.
+
+Xamarin Designer   4.16.13 (45a16efd4)
+Visual Studio extension to enable Xamarin Designer tools in Visual Studio.
+
+Xamarin Templates   1.1.128 (6f5ebb2)
+Templates for building iOS, Android, and Windows apps with Xamarin and Xamarin.Forms.
+
+Xamarin.Android SDK   9.1.4.2 (HEAD/8255f42fc)
+Xamarin.Android Reference Assemblies and MSBuild support.
+
+Xamarin.iOS and Xamarin.Mac SDK   12.2.1.12 (65ec520)
+Xamarin.iOS and Xamarin.Mac Reference Assemblies and MSBuild support.
+
+_Copied from original issue: xamarin/xamarin-android#2544_","HttpClient does not respect Timeout  _From @csuzw on December 17, 2018 9:15_
+
+I believe this is the same/similar to this issue for Xamarin.iOS: https://github.com/xamarin/xamarin-macios/issues/5190 .  There is a hint in the original issue linked in that",15043,baulig,mono
+7377,[Mono.Debugger.Soft] Connections are not properly closed,"For a Mono process with the soft debugger on, running on port 4567:
+
+```csharp
+static void Main(string[] args)
+{
+	var vm = VirtualMachineManager.Connect(new IPEndPoint(IPAddress.Loopback, 4567));
+	vm.Detach();
+
+	vm = VirtualMachineManager.Connect(new IPEndPoint(IPAddress.Loopback, 4567));
+	vm.Detach();
+
+	Console.ReadLine();
+}
+```
+
+We're seeing two threads that are still running and waiting:
+
+![threads](https://user-images.githubusercontent.com/79284/36876357-751d2262-1d69-11e8-96b8-96e6277bc9e6.png)
+
+Both threads are waiting on `Receive` with this stacktrace:
+
+```
+Not Flagged		21928	6	Worker Thread	SDB Receiver
+
+System.dll!System.Net.Sockets.Socket.Receive
+[Managed to Native Transition]	 
+System.dll!System.Net.Sockets.Socket.Receive(byte[] buffer, int offset, int size, System.Net.Sockets.SocketFlags socketFlags)	 
+Mono.Debugger.Soft.dll!Mono.Debugger.Soft.TcpConnection.TransportReceive(byte[] buf, int buf_offset, int len)	 
+Mono.Debugger.Soft.dll!Mono.Debugger.Soft.Connection.Receive(byte[] buf, int buf_offset, int len)	 
+Mono.Debugger.Soft.dll!Mono.Debugger.Soft.Connection.ReadPacket()	 
+Mono.Debugger.Soft.dll!Mono.Debugger.Soft.Connection.ReceivePacket()	 
+Mono.Debugger.Soft.dll!Mono.Debugger.Soft.Connection.receiver_thread_main()	 
+mscorlib.dll!System.Threading.ThreadHelper.ThreadStart_Context(object state)	 
+mscorlib.dll!System.Threading.ExecutionContext.RunInternal(System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, object state, bool preserveSyncCtx)	 
+mscorlib.dll!System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, object state, bool preserveSyncCtx)	 
+mscorlib.dll!System.Threading.ExecutionContext.Run(System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, object state)	 
+mscorlib.dll!System.Threading.ThreadHelper.ThreadStart()	 
+```
+
+The way I look at it in `VirtualMachine.Detach`
+
+```csharp
+public void Detach () {
+	conn.VM_Dispose ();
+	conn.Close ();
+	notify_vm_event (EventType.VMDisconnect, SuspendPolicy.None, 0, 0, null, 0);
+}
+```
+
+VM_Dispose tells the debuggee that we're disposing, and then `Connection.Close` sets the `closed` flag to true. Nothing interrupts the `receiver_thread_main` loop which is waiting.
+
+We've fixed it by switching the calls:
+
+```csharp
+conn.Close ()
+conn.VM_Dispose()
+```
+
+This way we're setting the closed flag to true, sending and reading the reply to `VM_Dispose`, and exiting the `receiver_thread_main`.
+
+@vargaz, what do you think?","[Mono.Debugger.Soft] Connections are not properly closed  For a Mono process with the soft debugger on, running on port 4567:
+
+```csharp
+static void Main(string[] args)
+{
+	var vm = VirtualMachineManager.Connect(new IPEndPoint(IPAddress.Loopback, 4567",14969,monojenkins,mono
+14773,[Mono.Debugger.Soft] Properly close connections,"Trying to unrevert https://github.com/mono/mono/pull/7390.
+Couldn't reproduce the same side effect as that caused before.
+
+This PR fixes #7377
+
+","[Mono.Debugger.Soft] Properly close connections   Trying to unrevert https://github.com/mono/mono/pull/7390.
+Couldn't reproduce the same side effect as that caused before.
+
+This PR fixes #7377
+
+",14969,monojenkins,mono
+13901,[netcore] Allow reflection invocation of methods with ByRef return types,"CoreCLR allows reflection on methods with ByRef return types under certain conditions. The PR implementing it is https://github.com/dotnet/coreclr/pull/17639.
+
+Mono already implemented most of it in the marshalling code but artificially blocked it in `ves_icall_InternalInvoke`. I changed the condition for the exception to match the condition in `emit_invoke_call` (marshal-ilgen.c). It's similar to the condition in CoreCLR, but it may not handle byref-like types correctly. It would have to fixed on both places if it turns out to be the case.
+
+The remaining issue is that null references returned in ByRef are not checked and converted to correct exception. It should result in `NullReferenceException` with special message that doesn't get wrapped in `TargetInvocationException`. I put a TODO marker at a place where I think it should be handled, but it's a bit over my head to implement it.
+
+/cc @vargaz","[netcore] Allow reflection invocation of methods with ByRef return types  CoreCLR allows reflection on methods with ByRef return types under certain conditions. The PR implementing it is https://github.com/dotnet/coreclr/pull/17639.
+
+Mono already implem",14967,filipnavara,mono
+14959,[netcore] Make System.SpanTests.SpanTests.MemoryMarshal_GenericStaticReturningSpan Pass,"The test currently fails with:
+
+```
+System.SpanTests.SpanTests.MemoryMarshal_GenericStaticReturningSpan [FAIL]
+      Assert.Throws() Failure
+      Expected: typeof(System.NotSupportedException)
+      Actual:   typeof(System.Reflection.TargetInvocationException): Exception has been thrown by the target of an invocation.
+      ---- System.Reflection.TargetInvocationException : Exception has been thrown by the target of an invocation.
+      -------- System.BadImageFormatException : Cannot box IsByRefLike type 'System.Span`1'
+      Stack Trace:
+           at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+           at System.Reflection.MethodBase.Invoke(Object obj, Object[] parameters)
+           at System.SpanTests.SpanTests.<>c__DisplayClass3_0.<MemoryMarshal_GenericStaticReturningSpan>b__0()
+        ----- Inner Stack Trace -----
+           at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+           at System.Reflection.MethodBase.Invoke(Object obj, Object[] parameters)
+           at System.SpanTests.SpanTests.<>c__DisplayClass3_0.<MemoryMarshal_GenericStaticReturningSpan>b__0()
+        ----- Inner Stack Trace -----
+           at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+```
+
+Determine what's causing the problem and make the test pass.","[netcore] Make System.SpanTests.SpanTests.MemoryMarshal_GenericStaticReturningSpan Pass  The test currently fails with:
+
+```
+System.SpanTests.SpanTests.MemoryMarshal_GenericStaticReturningSpan [FAIL]
+      Assert.Throws() Failure
+      Expected: type",14967,filipnavara,mono
+14960,[netcore] Make System.SpanTests.SpanTests.Span_Property Pass,"Fails in the same way as https://github.com/mono/mono/issues/14959
+
+Only reason this issue exists is to track individual failures.","[netcore] Make System.SpanTests.SpanTests.Span_Property Pass  Fails in the same way as https://github.com/mono/mono/issues/14959
+
+Only reason this issue exists is to track individual failures.",14967,filipnavara,mono
+14961,[netcore] Make System.SpanTests.SpanTests.ReadOnlySpan_Property Pass,"Fails in the same way as #14959
+
+Only reason this issue exists is to track individual failures.","[netcore] Make System.SpanTests.SpanTests.ReadOnlySpan_Property Pass  Fails in the same way as #14959
+
+Only reason this issue exists is to track individual failures.",14967,filipnavara,mono
+14963,[netcore] Make System.SpanTests.SpanTests.MemoryExtensions_StaticReturningReadOnlySpan Pass,"Fails the same as https://github.com/mono/mono/issues/14959
+
+Only reason this issue exists is to track individual failures.","[netcore] Make System.SpanTests.SpanTests.MemoryExtensions_StaticReturningReadOnlySpan Pass  Fails the same as https://github.com/mono/mono/issues/14959
+
+Only reason this issue exists is to track individual failures.",14967,filipnavara,mono
+13969,(regression) SIGSEGV in RuntimeMethodInfo:InternalInvoke with xunit,"Environment: 
+Ubuntu 16.04 Azure Pipelines image with
+`Mono JIT compiler version 5.18.0.268 (tarball Thu Feb 28 15:29:06 UTC 2019)`
+
+was working completely fine with 
+`Mono JIT compiler version 5.18.0.240 (tarball Wed Jan 16 09:13:03 UTC 2019)`
+
+
+Repro:
+```
+git clone --recursive git@github.com:AvaloniaUI/Avalonia.git
+cd Avalonia
+sudo apt-get update && sudo apt-get install castxml
+dotnet tool install --global Nuke.GlobalTool --version 0.12.3
+nuke --target CiAzureLinux --configuration=Release
+```
+
+One of xunit test assemblies segfaults like this https://dev.azure.com/AvaloniaUI/AvaloniaUI/_build/results?buildId=1851&view=logs&jobId=0da5d1d9-276d-5173-c4c4-9d4d4ed14fdb&taskId=d9b15392-e4ce-5e4c-0c8c-b69645229181&lineStart=1132&lineEnd=1133&colStart=1&colEnd=1
+
+
+I've also checked with mono built from master, still segfaults, but I'm also seeing messages like these:
+```
+ves_icall_TypeBuilder_create_runtime_class_raw USED 151 handles
+ves_icall_TypeBuilder_create_runtime_class_raw USED 156 handles
+ves_icall_TypeBuilder_create_runtime_class_raw USED 104 handles
+ves_icall_TypeBuilder_create_runtime_class_raw USED 108 handles
+ves_icall_TypeBuilder_create_runtime_class_raw USED 158 handles
+```
+
+Not sure if that's relevant.
+
+
+
+
+Also reproduced on OSX with `MonoFramework-MDK-5.18.0.268.macos10.xamarin.universal.pkg`, works fine with 5.18.0.225.","(regression) SIGSEGV in RuntimeMethodInfo:InternalInvoke with xunit  Environment: 
+Ubuntu 16.04 Azure Pipelines image with
+`Mono JIT compiler version 5.18.0.268 (tarball Thu Feb 28 15:29:06 UTC 2019)`
+
+was working completely fine with 
+`Mono JIT comp",14115,monojenkins,mono
+14018,Protecting boxing a null value,"Trying to box a null value crashes inside mono_gc_wbarrier_value_copy_internal. As described by the customer using version 5.18.0.240 the crash doesn't happen.
+
+As I could debug using this version doesn't crash only because is ignoring the SIGSEGV, when I attach to LLDB I can see the same crash in both versions.
+I protected to only add data to res_handle if there is a valid value.
+Fixes #13969
+","Protecting boxing a null value  Trying to box a null value crashes inside mono_gc_wbarrier_value_copy_internal. As described by the customer using version 5.18.0.240 the crash doesn't happen.
+
+As I could debug using this version doesn't crash only becau",14115,monojenkins,mono
+13969,(regression) SIGSEGV in RuntimeMethodInfo:InternalInvoke with xunit,"Environment: 
+Ubuntu 16.04 Azure Pipelines image with
+`Mono JIT compiler version 5.18.0.268 (tarball Thu Feb 28 15:29:06 UTC 2019)`
+
+was working completely fine with 
+`Mono JIT compiler version 5.18.0.240 (tarball Wed Jan 16 09:13:03 UTC 2019)`
+
+
+Repro:
+```
+git clone --recursive git@github.com:AvaloniaUI/Avalonia.git
+cd Avalonia
+sudo apt-get update && sudo apt-get install castxml
+dotnet tool install --global Nuke.GlobalTool --version 0.12.3
+nuke --target CiAzureLinux --configuration=Release
+```
+
+One of xunit test assemblies segfaults like this https://dev.azure.com/AvaloniaUI/AvaloniaUI/_build/results?buildId=1851&view=logs&jobId=0da5d1d9-276d-5173-c4c4-9d4d4ed14fdb&taskId=d9b15392-e4ce-5e4c-0c8c-b69645229181&lineStart=1132&lineEnd=1133&colStart=1&colEnd=1
+
+
+I've also checked with mono built from master, still segfaults, but I'm also seeing messages like these:
+```
+ves_icall_TypeBuilder_create_runtime_class_raw USED 151 handles
+ves_icall_TypeBuilder_create_runtime_class_raw USED 156 handles
+ves_icall_TypeBuilder_create_runtime_class_raw USED 104 handles
+ves_icall_TypeBuilder_create_runtime_class_raw USED 108 handles
+ves_icall_TypeBuilder_create_runtime_class_raw USED 158 handles
+```
+
+Not sure if that's relevant.
+
+
+
+
+Also reproduced on OSX with `MonoFramework-MDK-5.18.0.268.macos10.xamarin.universal.pkg`, works fine with 5.18.0.225.","(regression) SIGSEGV in RuntimeMethodInfo:InternalInvoke with xunit  Environment: 
+Ubuntu 16.04 Azure Pipelines image with
+`Mono JIT compiler version 5.18.0.268 (tarball Thu Feb 28 15:29:06 UTC 2019)`
+
+was working completely fine with 
+`Mono JIT comp",14114,monojenkins,mono
+14018,Protecting boxing a null value,"Trying to box a null value crashes inside mono_gc_wbarrier_value_copy_internal. As described by the customer using version 5.18.0.240 the crash doesn't happen.
+
+As I could debug using this version doesn't crash only because is ignoring the SIGSEGV, when I attach to LLDB I can see the same crash in both versions.
+I protected to only add data to res_handle if there is a valid value.
+Fixes #13969
+","Protecting boxing a null value  Trying to box a null value crashes inside mono_gc_wbarrier_value_copy_internal. As described by the customer using version 5.18.0.240 the crash doesn't happen.
+
+As I could debug using this version doesn't crash only becau",14114,monojenkins,mono
+14056,[netcore] fix some CustomAttribute related tests,"This fixes 12 tests in System.Runtime.Tests.
+Basically the fix replicates https://github.com/dotnet/coreclr/blob/edffbd9c545aa9c1f6cb7ae048efdf5db13d3991/src/System.Private.CoreLib/src/System/Attribute.CoreCLR.cs#L457-L458","[netcore] fix some CustomAttribute related tests  This fixes 12 tests in System.Runtime.Tests.
+Basically the fix replicates https://github.com/dotnet/coreclr/blob/edffbd9c545aa9c1f6cb7ae048efdf5db13d3991/src/System.Private.CoreLib/src/System/Attribute.Co",14063,filipnavara,mono
+14050,[netcore] Misc. fixes,"Test results with master + cherry-picked #14039 + this PR:
+```
+System.Memory.Tests                                       - Total: 45033  Failed: 14    
+System.Runtime.Tests                                      - Total: 32363  Failed: 44    
+System.Linq.Expressions.Tests                             - Total: 31027  Failed: 65    
+System.Collections.Tests                                  - Total: 30406  Failed: 8     
+System.Linq.Parallel.Tests                                - Total: 28883  Failed: 4     
+System.Xml.RW.XmlWriterApi.Tests                          - Total: 23385  Failed: 0     
+Microsoft.VisualBasic.Core.Tests                          - Total: 19079  Failed: 0     
+System.Text.Encoding.Tests                                - Total: 9943   Failed: 23    
+System.ComponentModel.TypeConverter.Tests                 - Total: 6662   Failed: 0     
+System.Runtime.Extensions.Tests                           - Total: 6499   Failed: 16    
+System.Text.Json.Tests                                    - Total: 5995   Failed: 0     
+Microsoft.CSharp.Tests                                    - Total: 4791   Failed: 0     
+System.Net.Security.Tests                                 - Total: 4262   Failed: 0     
+System.IO.FileSystem.Tests                                - Total: 4023   Failed: 2     
+System.Linq.Tests                                         - Total: 3965   Failed: 0     
+System.Collections.NonGeneric.Tests                       - Total: 3941   Failed: 24    
+System.Xml.RW.XmlConvert.Tests                            - Total: 3850   Failed: 0     
+System.Security.Cryptography.Encoding.Tests               - Total: 3326   Failed: 0     
+System.Drawing.Common.Tests                               - Total: 3280   Failed: 22    
+System.Dynamic.Runtime.Tests                              - Total: 2901   Failed: 5     
+System.Net.Primitives.Functional.Tests                    - Total: 2473   Failed: 0     
+System.Web.HttpUtility.Tests                              - Total: 2371   Failed: 0     
+System.CodeDom.Tests                                      - Total: 2302   Failed: 5     
+System.Xml.RW.FactoryReader.Tests                         - Total: 2292   Failed: 0     
+System.Collections.Concurrent.Tests                       - Total: 2233   Failed: 0     
+System.Xml.RW.WrappedReader.Tests                         - Total: 2208   Failed: 0     
+System.Xml.RW.CharCheckingReader.Tests                    - Total: 2182   Failed: 0     
+System.ObjectModel.Tests                                  - Total: 2160   Failed: 0     
+System.Xml.RW.SubtreeReader.Tests                         - Total: 2156   Failed: 0     
+System.Collections.Specialized.Tests                      - Total: 2122   Failed: 1     
+System.Runtime.Numerics.Tests                             - Total: 2087   Failed: 13    
+System.Drawing.Primitives.Tests                           - Total: 2055   Failed: 0     
+System.Collections.Immutable.Tests                        - Total: 1872   Failed: 0     
+System.Data.Common.Tests                                  - Total: 1792   Failed: 8     
+System.Globalization.Tests                                - Total: 1751   Failed: 0     
+System.Net.Http.Unit.Tests                                - Total: 1627   Failed: 0     
+System.Security.Cryptography.Algorithms.Tests             - Total: 1622   Failed: 0     
+System.Xml.Xsl.XslCompiledTransformApi.Tests              - Total: 1621   Failed: 0     
+System.Xml.Xsl.XslTransformApi.Tests                      - Total: 1618   Failed: 24    
+System.Text.RegularExpressions.Tests                      - Total: 1499   Failed: 0     
+System.Xml.XPath.Tests                                    - Total: 1481   Failed: 0     
+System.Xml.XPath.XmlDocument.Tests                        - Total: 1481   Failed: 0     
+System.Xml.XPath.XDocument.Tests                          - Total: 1479   Failed: 0     
+System.ComponentModel.Composition.Tests                   - Total: 1428   Failed: 2     
+System.Globalization.Calendars.Tests                      - Total: 1408   Failed: 0     
+System.Linq.Queryable.Tests                               - Total: 1329   Failed: 0     
+System.ServiceModel.Syndication.Tests                     - Total: 1313   Failed: 0     
+System.Reflection.Tests                                   - Total: 1242   Failed: 31    
+System.Numerics.Vectors.Tests                             - Total: 1150   Failed: 3     
+Common.Tests                                              - Total: 1144   Failed: 0     
+System.Threading.Channels.Tests                           - Total: 1111   Failed: 0     
+System.Text.Encoding.CodePages.Tests                      - Total: 1106   Failed: 0     
+System.Reflection.Emit.Tests                              - Total: 1038   Failed: 32    
+System.IO.Ports.Tests                                     - Total: 952    Failed: 0     
+System.Xml.RW.ReaderSettings.Tests                        - Total: 926    Failed: 0     
+System.Numerics.Tensors.Tests                             - Total: 820    Failed: 0     
+System.IO.Tests                                           - Total: 813    Failed: 0     
+System.Xml.RW.NameTable.Tests                             - Total: 782    Failed: 0     
+System.ComponentModel.Annotations.Tests                   - Total: 768    Failed: 0     
+System.Security.Cryptography.Pkcs.Tests                   - Total: 754    Failed: 0     
+System.Security.Cryptography.X509Certificates.Tests       - Total: 743    Failed: 0     
+System.Runtime.InteropServices.Tests                      - Total: 740    Failed: 5     
+System.Security.Cryptography.OpenSsl.Tests                - Total: 717    Failed: 0     
+System.Private.Uri.Functional.Tests                       - Total: 697    Failed: 0     
+System.Xml.RW.XmlReader.ReadContentAs.Tests               - Total: 667    Failed: 0     
+System.Net.Requests.Tests                                 - Total: 655    Failed: 0     
+System.Threading.Tasks.Tests                              - Total: 650    Failed: 0     
+System.Configuration.ConfigurationManager.Tests           - Total: 614    Failed: 0     
+System.Security.Cryptography.Xml.Tests                    - Total: 597    Failed: 0     
+System.Reflection.MetadataLoadContext.Tests               - Total: 580    Failed: 81    
+System.Reflection.Metadata.Tests                          - Total: 549    Failed: 4     
+System.Xml.XmlDocument.Tests                              - Total: 537    Failed: 0     
+System.IO.Pipes.Tests                                     - Total: 515    Failed: 0     
+System.Xml.XmlSchemaSet.Tests                             - Total: 478    Failed: 0     
+System.Security.Cryptography.Csp.Tests                    - Total: 452    Failed: 0     
+System.Reflection.TypeExtensions.Tests                    - Total: 417    Failed: 20    
+System.Xml.XmlSchema.XmlSchemaValidatorApi.Tests          - Total: 362    Failed: 0     
+System.Xml.Linq.Misc.Tests                                - Total: 360    Failed: 0     
+System.IO.MemoryMappedFiles.Tests                         - Total: 343    Failed: 0     
+System.IO.Pipelines.Tests                                 - Total: 321    Failed: 0     
+System.Threading.Tasks.Dataflow.Tests                     - Total: 321    Failed: 0     
+System.Text.Encodings.Web.Tests                           - Total: 319    Failed: 0     
+System.IO.Compression.Tests                               - Total: 316    Failed: 0     
+System.Xml.RW.RwFactory.Tests                             - Total: 298    Failed: 0     
+Invariant.Tests                                           - Total: 296    Failed: 0     
+System.Globalization.Extensions.Tests                     - Total: 294    Failed: 0     
+System.Transactions.Local.Tests                           - Total: 283    Failed: 0     
+System.Net.Mail.Unit.Tests                                - Total: 279    Failed: 0     
+System.Diagnostics.TraceSource.Tests                      - Total: 273    Failed: 2     
+System.Xml.Linq.Events.Tests                              - Total: 264    Failed: 0     
+System.IO.FileSystem.Watcher.Tests                        - Total: 260    Failed: 0     
+System.Runtime.Serialization.Xml.ReflectionOnly.Tests     - Total: 238    Failed: 0     
+System.Runtime.Serialization.Xml.Tests                    - Total: 238    Failed: 0     
+System.Json.Tests                                         - Total: 236    Failed: 0     
+System.ComponentModel.Primitives.Tests                    - Total: 234    Failed: 0     
+System.Threading.Tasks.Extensions.Tests                   - Total: 232    Failed: 0     
+System.Xml.XmlSerializer.Tests                            - Total: 228    Failed: 0     
+System.Xml.XmlSerializer.ReflectionOnly.Tests             - Total: 226    Failed: 0     
+System.Data.SqlClient.ManualTesting.Tests                 - Total: 201    Failed: 0     
+System.IO.IsolatedStorage.Tests                           - Total: 197    Failed: 0     
+System.Net.Mail.Functional.Tests                          - Total: 183    Failed: 0     
+System.Net.WebSockets.Tests                               - Total: 182    Failed: 0     
+System.Xml.Linq.Properties.Tests                          - Total: 176    Failed: 0     
+System.Data.SqlClient.Tests                               - Total: 172    Failed: 5     
+System.Runtime.Serialization.Json.ReflectionOnly.Tests    - Total: 169    Failed: 0     
+System.Runtime.Serialization.Json.Tests                   - Total: 169    Failed: 0     
+System.Security.Cryptography.Primitives.Tests             - Total: 166    Failed: 0     
+System.Threading.Tasks.Parallel.Tests                     - Total: 164    Failed: 0     
+System.Runtime.Serialization.Formatters.Tests             - Total: 162    Failed: 12    
+System.IO.Packaging.Tests                                 - Total: 144    Failed: 0     
+System.Console.Tests                                      - Total: 140    Failed: 1     
+System.Composition.Tests                                  - Total: 138    Failed: 0     
+System.Security.Permissions.Tests                         - Total: 137    Failed: 0     
+System.ComponentModel.Composition.Registration.Tests      - Total: 130    Failed: 130   
+System.IO.Compression.Brotli.Tests                        - Total: 125    Failed: 0     
+System.Xml.RW.CustomReader.Tests                          - Total: 118    Failed: 0     
+System.Net.WebHeaderCollection.Tests                      - Total: 111    Failed: 0     
+System.Diagnostics.TextWriterTraceListener.Tests          - Total: 110    Failed: 0     
+System.Reflection.Emit.ILGeneration.Tests                 - Total: 110    Failed: 42    
+System.Xml.Linq.SDMSample.Tests                           - Total: 110    Failed: 0     
+System.Diagnostics.StackTrace.Tests                       - Total: 109    Failed: 33    
+System.Runtime.CompilerServices.Unsafe.Tests              - Total: 108    Failed: 0     
+System.Diagnostics.Debug.Tests                            - Total: 103    Failed: 0     
+System.Data.DataSetExtensions.Tests                       - Total: 102    Failed: 0     
+System.Net.NetworkInformation.Functional.Tests            - Total: 102    Failed: 0     
+System.Resources.ResourceManager.Tests                    - Total: 101    Failed: 1     
+System.Composition.Hosting.Tests                          - Total: 96     Failed: 0     
+System.Utf8String.Experimental.Tests                      - Total: 90     Failed: 88    
+System.ValueTuple.Tests                                   - Total: 90     Failed: 0     
+System.Diagnostics.Process.Tests                          - Total: 88     Failed: 0     
+CoreFx.Private.TestUtilities.Tests                        - Total: 87     Failed: 0     
+System.Net.Security.Unit.Tests                            - Total: 86     Failed: 0     
+System.Reflection.Context.Tests                           - Total: 86     Failed: 3     
+System.Composition.Convention.Tests                       - Total: 84     Failed: 0     
+Microsoft.XmlSerializer.Generator.Tests                   - Total: 81     Failed: 0     
+System.Buffers.Tests                                      - Total: 80     Failed: 1     
+System.Net.Primitives.UnitTests.Tests                     - Total: 74     Failed: 0     
+System.Reflection.Emit.Lightweight.Tests                  - Total: 74     Failed: 21    
+System.IO.UnmanagedMemoryStream.Tests                     - Total: 72     Failed: 0     
+System.Composition.Runtime.Tests                          - Total: 67     Failed: 0     
+System.Net.Primitives.Pal.Tests                           - Total: 60     Failed: 0     
+System.Runtime.Serialization.Primitives.Tests             - Total: 58     Failed: 0     
+Microsoft.VisualBasic.VB.Tests                            - Total: 57     Failed: 0     
+System.Diagnostics.DiagnosticSource.Tests                 - Total: 54     Failed: 0     
+System.Net.Ping.Functional.Tests                          - Total: 49     Failed: 0     
+System.Private.Uri.ExtendedFunctional.Tests               - Total: 49     Failed: 0     
+System.Threading.Thread.Tests                             - Total: 48     Failed: 0     
+System.Composition.TypedParts.Tests                       - Total: 47     Failed: 4     
+System.ComponentModel.EventBasedAsync.Tests               - Total: 46     Failed: 0     
+System.Security.Claims.Tests                              - Total: 45     Failed: 0     
+System.Reflection.Extensions.Tests                        - Total: 44     Failed: 0     
+System.Security.SecureString.Tests                        - Total: 42     Failed: 0     
+System.Threading.Timer.Tests                              - Total: 42     Failed: 0     
+System.IO.Compression.ZipFile.Tests                       - Total: 41     Failed: 0     
+System.Xml.Linq.Streaming.Tests                           - Total: 41     Failed: 0     
+System.Threading.ThreadPool.Tests                         - Total: 39     Failed: 2     
+System.Net.WebClient.Tests                                - Total: 36     Failed: 0     
+System.Xml.Linq.Axes.Tests                                - Total: 36     Failed: 0     
+System.Xml.XmlNodeReader.Tests                            - Total: 36     Failed: 0     
+System.Composition.AttributeModel.Tests                   - Total: 29     Failed: 0     
+System.Reflection.DispatchProxy.Tests                     - Total: 29     Failed: 0     
+System.Private.Uri.Unit.Tests                             - Total: 28     Failed: 0     
+System.Xml.RW.XmlReader.Tests                             - Total: 28     Failed: 0     
+System.Diagnostics.Tracing.Tests                          - Total: 27     Failed: 3     
+System.Resources.Reader.Tests                             - Total: 25     Failed: 0     
+System.Runtime.Loader.Tests                               - Total: 25     Failed: 20    
+System.Net.WebSockets.Client.Tests                        - Total: 24     Failed: 0     
+System.Xml.Misc.Tests                                     - Total: 23     Failed: 0     
+System.Xml.XmlResolver.Tests                              - Total: 22     Failed: 0     
+System.Net.ServicePoint.Tests                             - Total: 21     Failed: 0     
+System.Net.WebProxy.Tests                                 - Total: 21     Failed: 0     
+System.Threading.Overlapped.Tests                         - Total: 21     Failed: 14    
+System.Diagnostics.Contracts.Tests                        - Total: 19     Failed: 0     
+System.Xml.Linq.xNodeBuilder.Tests                        - Total: 19     Failed: 0     
+System.AppContext.Tests                                   - Total: 15     Failed: 0     
+System.Data.Odbc.Tests                                    - Total: 15     Failed: 0     
+System.Xml.Linq.TreeManipulation.Tests                    - Total: 15     Failed: 0     
+System.Net.NameResolution.Unit.Tests                      - Total: 14     Failed: 0     
+System.Runtime.Handles.Tests                              - Total: 13     Failed: 0     
+System.Xml.RW.XmlWriter.Tests                             - Total: 13     Failed: 0     
+System.Xml.Schema.Extensions.Tests                        - Total: 13     Failed: 0     
+System.Console.Manual.Tests                               - Total: 10     Failed: 0     
+System.Net.NameResolution.Pal.Tests                       - Total: 9      Failed: 0     
+System.Diagnostics.FileVersionInfo.Tests                  - Total: 8      Failed: 0     
+System.Reflection.TypeExtensions.CoreCLR.Tests            - Total: 8      Failed: 1     
+System.Runtime.InteropServices.RuntimeInformation.Tests   - Total: 8      Failed: 0     
+System.Diagnostics.Tools.Tests                            - Total: 7      Failed: 0     
+System.Net.WebSockets.WebSocketProtocol.Tests             - Total: 7      Failed: 0     
+System.Resources.Writer.Tests                             - Total: 7      Failed: 0     
+System.Xml.RW.XmlSystemPathResolver.Tests                 - Total: 7      Failed: 0     
+System.ComponentModel.Tests                               - Total: 5      Failed: 0     
+System.IO.FileSystem.DriveInfo.Tests                      - Total: 5      Failed: 0     
+System.Text.Encoding.Extensions.Tests                     - Total: 5      Failed: 0     
+System.Xml.Linq.xNodeReader.Tests                         - Total: 5      Failed: 0     
+System.IO.FileSystem.Primitives.Tests                     - Total: 4      Failed: 0     
+System.Reflection.CoreCLR.Tests                           - Total: 4      Failed: 1     
+System.Runtime.CompilerServices.VisualC.Tests             - Total: 3      Failed: 0     
+System.Runtime.Loader.DefaultContext.Tests                - Total: 2      Failed: 1     
+Microsoft.Win32.Primitives.Tests                          - Total: 1      Failed: 0     
+System.Globalization.CalendarsWithConfigSwitch.Tests      - Total: 1      Failed: 0     
+System.Runtime.Loader.RefEmitLoadContext.Tests            - Total: 1      Failed: 1     
+XsltCompiler.Tests                                        - Total: 1      Failed: 0     
+System.Data.SqlClient.Stress.Tests                        - Total: 0      Failed: 0     
+System.Net.Sockets.Async.Stress.Tests                     - Total: 0      Failed: 0     
+System.Runtime.InteropServices.WindowsRuntime.Tests       - Total: 0      Failed: 0     
+Total: 358542 Failed: 842
+```","[netcore] Misc. fixes  Test results with master + cherry-picked #14039 + this PR:
+```
+System.Memory.Tests                                       - Total: 45033  Failed: 14    
+System.Runtime.Tests                                      - Total: 32363  Fai",14063,filipnavara,mono
+13162,BinaryFormatter deserialize fails with System.ArgumentException,"Similar to https://github.com/mono/mono/issues/8915, but appears to specifically affect `InitOnly` fields.
+
+## Steps to Reproduce
+
+1. Build and run the following test case.
+2. Note that adding `private set` to the `Foos` property on line 14 fixes the problem.
+
+### Test Case
+
+```csharp
+using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+
+namespace BinaryFormatterTest {
+
+	[Serializable]
+	struct Foo<T> {
+		public T [] Stuff;
+	}
+
+	[Serializable]
+	class MainClass {
+		public Foo<byte> Foos { get; }
+		public MainClass () => Foos = new Foo<byte> { Stuff = new byte [0] };
+		public static void Main (string [] args)
+		{
+			var formatter = new BinaryFormatter ();
+			using (var stream = new MemoryStream ()) {
+				formatter.Serialize (stream, new MainClass ());
+				stream.Position = 0;
+				formatter.Deserialize (stream);
+			}	
+		}
+	}
+}
+```
+
+### Current Behavior
+
+Deserialization fails with `System.ArgumentException`
+
+### Expected Behavior
+
+Successful deserialization
+
+## On which platforms did you notice this
+
+- [x] macOS
+- [ ] Linux
+- [ ] Windows
+
+**Version Used**:
+
+```
+Mono Framework MDK
+Runtime:
+	Mono 5.16.0.221 (2018-06/b63e5378e38) (64-bit)
+	Package version: 516000221
+
+Operating System
+Mac OS X 10.14.2
+Darwin 18.2.0 Darwin Kernel Version 18.2.0
+    Mon Nov 12 20:24:46 PST 2018
+    root:xnu-4903.231.4~2/RELEASE_X86_64 x86_64
+```
+
+## Stacktrace
+
+```
+[ERROR] FATAL UNHANDLED EXCEPTION: System.ArgumentException: Field in TypedReferences cannot be static or init only.
+  at System.TypedReference.MakeTypedReference (System.Object target, System.Reflection.FieldInfo[] flds) [0x00123] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/typedreference.cs:71 
+  at System.Runtime.Serialization.ObjectManager.DoValueTypeFixup (System.Reflection.FieldInfo memberToFix, System.Runtime.Serialization.ObjectHolder holder, System.Object value) [0x0014d] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/objectmanager.cs:438 
+  at System.Runtime.Serialization.ObjectManager.CompleteObject (System.Runtime.Serialization.ObjectHolder holder, System.Boolean bObjectFullyComplete) [0x0020a] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/objectmanager.cs:593 
+  at System.Runtime.Serialization.ObjectManager.DoNewlyRegisteredObjectFixups (System.Runtime.Serialization.ObjectHolder holder) [0x00040] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/objectmanager.cs:670 
+  at System.Runtime.Serialization.ObjectManager.RegisterObject (System.Object obj, System.Int64 objectID, System.Runtime.Serialization.SerializationInfo info, System.Int64 idOfContainingObj, System.Reflection.MemberInfo member, System.Int32[] arrayIndex) [0x00165] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/objectmanager.cs:820 
+  at System.Runtime.Serialization.Formatters.Binary.ObjectReader.RegisterObject (System.Object obj, System.Runtime.Serialization.Formatters.Binary.ParseRecord pr, System.Runtime.Serialization.Formatters.Binary.ParseRecord objectPr, System.Boolean bIsString) [0x00079] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryobjectreader.cs:1280 
+  at System.Runtime.Serialization.Formatters.Binary.ObjectReader.RegisterObject (System.Object obj, System.Runtime.Serialization.Formatters.Binary.ParseRecord pr, System.Runtime.Serialization.Formatters.Binary.ParseRecord objectPr) [0x00000] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryobjectreader.cs:1243 
+  at System.Runtime.Serialization.Formatters.Binary.ObjectReader.ParseArray (System.Runtime.Serialization.Formatters.Binary.ParseRecord pr) [0x000c7] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryobjectreader.cs:716 
+  at System.Runtime.Serialization.Formatters.Binary.ObjectReader.ParseObject (System.Runtime.Serialization.Formatters.Binary.ParseRecord pr) [0x00041] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryobjectreader.cs:491 
+  at System.Runtime.Serialization.Formatters.Binary.ObjectReader.Parse (System.Runtime.Serialization.Formatters.Binary.ParseRecord pr) [0x00053] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryobjectreader.cs:396 
+  at System.Runtime.Serialization.Formatters.Binary.__BinaryParser.ReadArray (System.Runtime.Serialization.Formatters.Binary.BinaryHeaderEnum binaryHeaderEnum) [0x0031c] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryparser.cs:996 
+  at System.Runtime.Serialization.Formatters.Binary.__BinaryParser.Run () [0x000e4] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryparser.cs:162 
+  at System.Runtime.Serialization.Formatters.Binary.ObjectReader.Deserialize (System.Runtime.Remoting.Messaging.HeaderHandler handler, System.Runtime.Serialization.Formatters.Binary.__BinaryParser serParser, System.Boolean fCheck, System.Boolean isCrossAppDomain, System.Runtime.Remoting.Messaging.IMethodCallMessage methodCallMessage) [0x00069] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryobjectreader.cs:174 
+  at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize (System.IO.Stream serializationStream, System.Runtime.Remoting.Messaging.HeaderHandler handler, System.Boolean fCheck, System.Boolean isCrossAppDomain, System.Runtime.Remoting.Messaging.IMethodCallMessage methodCallMessage) [0x00099] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryformatter.cs:197 
+  at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize (System.IO.Stream serializationStream, System.Runtime.Remoting.Messaging.HeaderHandler handler, System.Boolean fCheck, System.Runtime.Remoting.Messaging.IMethodCallMessage methodCallMessage) [0x00000] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryformatter.cs:173 
+  at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize (System.IO.Stream serializationStream, System.Runtime.Remoting.Messaging.HeaderHandler handler, System.Boolean fCheck) [0x00000] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryformatter.cs:118 
+  at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize (System.IO.Stream serializationStream, System.Runtime.Remoting.Messaging.HeaderHandler handler) [0x00000] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryformatter.cs:149 
+  at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize (System.IO.Stream serializationStream) [0x00000] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryformatter.cs:111 
+  at BinaryFormatterTest.MainClass.Main (System.String[] args) [0x00024] in /Users/alex/Projects/BinaryFormatterTest/Program.cs:22 
+```
+
+<!--
+You can join us at https://gitter.im/mono/mono to discuss your reported issue
+-->","BinaryFormatter deserialize fails with System.ArgumentException  Similar to https://github.com/mono/mono/issues/8915, but appears to specifically affect `InitOnly` fields.
+
+## Steps to Reproduce
+
+1. Build and run the following test case.
+2. Note that",14007,MaximLipnin,mono
+13991,Remove #if-def for TypedReference.MakeTypedReference readonly restriction,Fixes #13162,Remove #if-def for TypedReference.MakeTypedReference readonly restriction  Fixes #13162,14007,MaximLipnin,mono
+13162,BinaryFormatter deserialize fails with System.ArgumentException,"Similar to https://github.com/mono/mono/issues/8915, but appears to specifically affect `InitOnly` fields.
+
+## Steps to Reproduce
+
+1. Build and run the following test case.
+2. Note that adding `private set` to the `Foos` property on line 14 fixes the problem.
+
+### Test Case
+
+```csharp
+using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+
+namespace BinaryFormatterTest {
+
+	[Serializable]
+	struct Foo<T> {
+		public T [] Stuff;
+	}
+
+	[Serializable]
+	class MainClass {
+		public Foo<byte> Foos { get; }
+		public MainClass () => Foos = new Foo<byte> { Stuff = new byte [0] };
+		public static void Main (string [] args)
+		{
+			var formatter = new BinaryFormatter ();
+			using (var stream = new MemoryStream ()) {
+				formatter.Serialize (stream, new MainClass ());
+				stream.Position = 0;
+				formatter.Deserialize (stream);
+			}	
+		}
+	}
+}
+```
+
+### Current Behavior
+
+Deserialization fails with `System.ArgumentException`
+
+### Expected Behavior
+
+Successful deserialization
+
+## On which platforms did you notice this
+
+- [x] macOS
+- [ ] Linux
+- [ ] Windows
+
+**Version Used**:
+
+```
+Mono Framework MDK
+Runtime:
+	Mono 5.16.0.221 (2018-06/b63e5378e38) (64-bit)
+	Package version: 516000221
+
+Operating System
+Mac OS X 10.14.2
+Darwin 18.2.0 Darwin Kernel Version 18.2.0
+    Mon Nov 12 20:24:46 PST 2018
+    root:xnu-4903.231.4~2/RELEASE_X86_64 x86_64
+```
+
+## Stacktrace
+
+```
+[ERROR] FATAL UNHANDLED EXCEPTION: System.ArgumentException: Field in TypedReferences cannot be static or init only.
+  at System.TypedReference.MakeTypedReference (System.Object target, System.Reflection.FieldInfo[] flds) [0x00123] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/typedreference.cs:71 
+  at System.Runtime.Serialization.ObjectManager.DoValueTypeFixup (System.Reflection.FieldInfo memberToFix, System.Runtime.Serialization.ObjectHolder holder, System.Object value) [0x0014d] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/objectmanager.cs:438 
+  at System.Runtime.Serialization.ObjectManager.CompleteObject (System.Runtime.Serialization.ObjectHolder holder, System.Boolean bObjectFullyComplete) [0x0020a] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/objectmanager.cs:593 
+  at System.Runtime.Serialization.ObjectManager.DoNewlyRegisteredObjectFixups (System.Runtime.Serialization.ObjectHolder holder) [0x00040] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/objectmanager.cs:670 
+  at System.Runtime.Serialization.ObjectManager.RegisterObject (System.Object obj, System.Int64 objectID, System.Runtime.Serialization.SerializationInfo info, System.Int64 idOfContainingObj, System.Reflection.MemberInfo member, System.Int32[] arrayIndex) [0x00165] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/objectmanager.cs:820 
+  at System.Runtime.Serialization.Formatters.Binary.ObjectReader.RegisterObject (System.Object obj, System.Runtime.Serialization.Formatters.Binary.ParseRecord pr, System.Runtime.Serialization.Formatters.Binary.ParseRecord objectPr, System.Boolean bIsString) [0x00079] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryobjectreader.cs:1280 
+  at System.Runtime.Serialization.Formatters.Binary.ObjectReader.RegisterObject (System.Object obj, System.Runtime.Serialization.Formatters.Binary.ParseRecord pr, System.Runtime.Serialization.Formatters.Binary.ParseRecord objectPr) [0x00000] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryobjectreader.cs:1243 
+  at System.Runtime.Serialization.Formatters.Binary.ObjectReader.ParseArray (System.Runtime.Serialization.Formatters.Binary.ParseRecord pr) [0x000c7] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryobjectreader.cs:716 
+  at System.Runtime.Serialization.Formatters.Binary.ObjectReader.ParseObject (System.Runtime.Serialization.Formatters.Binary.ParseRecord pr) [0x00041] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryobjectreader.cs:491 
+  at System.Runtime.Serialization.Formatters.Binary.ObjectReader.Parse (System.Runtime.Serialization.Formatters.Binary.ParseRecord pr) [0x00053] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryobjectreader.cs:396 
+  at System.Runtime.Serialization.Formatters.Binary.__BinaryParser.ReadArray (System.Runtime.Serialization.Formatters.Binary.BinaryHeaderEnum binaryHeaderEnum) [0x0031c] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryparser.cs:996 
+  at System.Runtime.Serialization.Formatters.Binary.__BinaryParser.Run () [0x000e4] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryparser.cs:162 
+  at System.Runtime.Serialization.Formatters.Binary.ObjectReader.Deserialize (System.Runtime.Remoting.Messaging.HeaderHandler handler, System.Runtime.Serialization.Formatters.Binary.__BinaryParser serParser, System.Boolean fCheck, System.Boolean isCrossAppDomain, System.Runtime.Remoting.Messaging.IMethodCallMessage methodCallMessage) [0x00069] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryobjectreader.cs:174 
+  at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize (System.IO.Stream serializationStream, System.Runtime.Remoting.Messaging.HeaderHandler handler, System.Boolean fCheck, System.Boolean isCrossAppDomain, System.Runtime.Remoting.Messaging.IMethodCallMessage methodCallMessage) [0x00099] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryformatter.cs:197 
+  at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize (System.IO.Stream serializationStream, System.Runtime.Remoting.Messaging.HeaderHandler handler, System.Boolean fCheck, System.Runtime.Remoting.Messaging.IMethodCallMessage methodCallMessage) [0x00000] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryformatter.cs:173 
+  at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize (System.IO.Stream serializationStream, System.Runtime.Remoting.Messaging.HeaderHandler handler, System.Boolean fCheck) [0x00000] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryformatter.cs:118 
+  at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize (System.IO.Stream serializationStream, System.Runtime.Remoting.Messaging.HeaderHandler handler) [0x00000] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryformatter.cs:149 
+  at System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize (System.IO.Stream serializationStream) [0x00000] in /Users/builder/jenkins/workspace/build-package-osx-mono/2018-06/external/bockbuild/builds/mono-x64/mcs/class/referencesource/mscorlib/system/runtime/serialization/formatters/binary/binaryformatter.cs:111 
+  at BinaryFormatterTest.MainClass.Main (System.String[] args) [0x00024] in /Users/alex/Projects/BinaryFormatterTest/Program.cs:22 
+```
+
+<!--
+You can join us at https://gitter.im/mono/mono to discuss your reported issue
+-->","BinaryFormatter deserialize fails with System.ArgumentException  Similar to https://github.com/mono/mono/issues/8915, but appears to specifically affect `InitOnly` fields.
+
+## Steps to Reproduce
+
+1. Build and run the following test case.
+2. Note that",14006,monojenkins,mono
+13991,Remove #if-def for TypedReference.MakeTypedReference readonly restriction,Fixes #13162,Remove #if-def for TypedReference.MakeTypedReference readonly restriction  Fixes #13162,14006,monojenkins,mono
+11442,Added missing cts.Cancel() in HttpClient Dispose() method,Fixes #11441,Added missing cts.Cancel() in HttpClient Dispose() method  Fixes #11441,11539,monojenkins,mono
+11441,HttpClient requests not cancelled in Dispose(),"Currently running HttpClient requests are not cancelled when going out of  `using` scope
+
+## Steps to Reproduce
+Example method
+```
+public Task<string> GetString(string url)
+{
+	using (var client = new HttpClient())	
+	{
+		return client.GetStringAsync(url);
+	}
+}
+```
+### Current Behavior
+
+Download completes without interruption.
+
+### Expected Behavior
+
+System.Threading.Tasks.TaskCanceledException thrown
+
+## On which platforms did you notice this
+
+[x ] macOS
+[ ] Linux
+[ ] Windows","HttpClient requests not cancelled in Dispose()  Currently running HttpClient requests are not cancelled when going out of  `using` scope
+
+## Steps to Reproduce
+Example method
+```
+public Task<string> GetString(string url)
+{
+	using (var client = new",11539,monojenkins,mono
+11505,[corlib] Remove incorrectly converted silverlight check,"Fixes #11478
+
+
+
+<!--
+Thank you for your Pull Request!
+
+If you are new to contributing to Mono, please try to do your best at conforming to our coding guidelines http://www.mono-project.com/community/contributing/coding-guidelines/ but don't worry if you get something wrong. One of the project members will help you to get things landed.
+
+Does your pull request fix any of the existing issues? Please use the following format: Fixes #issue-number
+-->","[corlib] Remove incorrectly converted silverlight check  Fixes #11478
+
+
+
+<!--
+Thank you for your Pull Request!
+
+If you are new to contributing to Mono, please try to do your best at conforming to our coding guidelines http://www.mono-project.com/co",11506,monojenkins,mono
+11478,[XA] [2018-10] Failure in PropertyInfoTests.GetValue_Invalid,"The test
+
+```System.Reflection.Tests.PropertyInfoTests.System.Reflection.Tests.PropertyInfoTests.GetValue_Invalid```
+
+seems to be failing on the 2018-10 XA integration build.
+
+The failure can be seen below:
+
+```
+https://jenkins.mono-project.com/job/xamarin-android-pr-builder/4440/testReport/Test%20collection%20for%20System.Reflection.Tests/PropertyInfoTests/System_Reflection_Tests_PropertyInfoTests_GetValue_Invalid_type__typeof_System_Reflection_Tests_PropertyInfoTests_CustomIndexerNameClass___name____BasicIndexer____obj__CustomIndexerNameClass___BasicIndexer____throws_MethodAccessException_____index__null__exceptionType__typeof_System_Reflection_TargetParameterCountException_____Release/
+```
+
+with the failure
+
+```
+Error Message
+Assert.Throws() Failure\nExpected: typeof(System.Reflection.TargetParameterCountException)\nActual:   typeof(System.MethodAccessException): Attempt to access the method failed.
+Stacktrace
+  at System.Reflection.MonoProperty.CreateGetterDelegate (System.Reflection.MethodInfo method) [0x00069] in <78b79c336020418b9f7fbd251b5cf7d3>:0 
+  at System.Reflection.MonoProperty.GetValue (System.Object obj, System.Object[] index) [0x0004b] in <78b79c336020418b9f7fbd251b5cf7d3>:0 
+  at System.Reflection.Tests.PropertyInfoTests+<>c__DisplayClass5_0.<GetValue_Invalid>b__0 () [0x00000] in <735e0c0d8f494f248d3c6d783b79d0fc>:0  
+```
+
+https://github.com/xamarin/xamarin-android/pull/2253","[XA] [2018-10] Failure in PropertyInfoTests.GetValue_Invalid  The test
+
+```System.Reflection.Tests.PropertyInfoTests.System.Reflection.Tests.PropertyInfoTests.GetValue_Invalid```
+
+seems to be failing on the 2018-10 XA integration build.
+
+The failure",11506,monojenkins,mono
+11437,[System]: `lock` protect `SystemCertificateProvider.EnsureInitialize()`.,Fixes #11434,[System]: `lock` protect `SystemCertificateProvider.EnsureInitialize()`.  Fixes #11434,11449,monojenkins,mono
+11434,Concurrent requests fail with Mono.Security.Interface.TlsException: Certificate validation threw exception,"## Steps to Reproduce
+
+1. Compile and Run following
+
+```c#
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.Net.Http.Headers;
+
+class X {
+
+	private HttpClient _httpClient;
+
+	void Foo ()
+	{
+		_httpClient = new HttpClient ();
+		_httpClient.DefaultRequestHeaders.UserAgent.Add (new ProductInfoHeaderValue (""name"", ""version""));
+		_httpClient.DefaultRequestHeaders.UserAgent.Add (new ProductInfoHeaderValue (""(comment)""));
+	}
+
+	private async Task DoIt () => await Task.Run (DoThat);
+
+	private async Task DoThat ()
+	{
+		await _httpClient.GetAsync (""http://microsoft.com"");
+	}
+
+	public static void Main ()
+	{
+		while (true) {
+			var x = new X ();
+			x.Foo ();
+			Task.WhenAll (x.DoIt (), x.DoIt ()).Wait ();
+		}
+	}
+}
+```
+### Current Behavior
+
+```
+System.AggregateException: One or more errors occurred. (An error occurred while sending the request) ---> System.Net.Http.HttpRequestException: An error occurred while sending the request ---> System.Net.WebException: Error: SecureChannelFailure (Authentication failed, see inner exception.) ---> System.Security.Authentication.AuthenticationException: Authentication failed, see inner exception. ---> Mono.Security.Interface.TlsException: Certificate validation threw exception.
+  at Mono.AppleTls.AppleTlsContext.EvaluateTrust () [0x0008b] in /Users/marek/git/mono/mono/mcs/class/System/Mono.AppleTls/AppleTlsContext.cs:275 
+  at Mono.AppleTls.AppleTlsContext.ProcessHandshake () [0x0004e] in /Users/marek/git/mono/mono/mcs/class/System/Mono.AppleTls/AppleTlsContext.cs:205 
+  at Mono.Net.Security.MobileAuthenticatedStream.ProcessHandshake (Mono.Net.Security.AsyncOperationStatus status, System.Boolean renegotiate) [0x000a1] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/MobileAuthenticatedStream.cs:821 
+  at (wrapper remoting-invoke-with-check) Mono.Net.Security.MobileAuthenticatedStream.ProcessHandshake(Mono.Net.Security.AsyncOperationStatus,bool)
+  at Mono.Net.Security.AsyncHandshakeRequest.Run (Mono.Net.Security.AsyncOperationStatus status) [0x00000] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/AsyncProtocolRequest.cs:283 
+  at Mono.Net.Security.AsyncProtocolRequest.ProcessOperation (System.Threading.CancellationToken cancellationToken) [0x000ff] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/AsyncProtocolRequest.cs:221 
+  at Mono.Net.Security.AsyncProtocolRequest.StartOperation (System.Threading.CancellationToken cancellationToken) [0x00046] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/AsyncProtocolRequest.cs:187 
+   --- End of inner exception stack trace ---
+  at Mono.Net.Security.MobileAuthenticatedStream.ProcessAuthentication (System.Boolean runSynchronously, Mono.Net.Security.MonoSslAuthenticationOptions options, System.Threading.CancellationToken cancellationToken) [0x0024c] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/MobileAuthenticatedStream.cs:396 
+  at Mono.Net.Security.MonoTlsStream.CreateStream (System.Net.WebConnectionTunnel tunnel, System.Threading.CancellationToken cancellationToken) [0x00126] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/MonoTlsStream.cs:129 
+  at System.Net.WebConnection.CreateStream (System.Net.WebOperation operation, System.Boolean reused, System.Threading.CancellationToken cancellationToken) [0x00170] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebConnection.cs:222 
+   --- End of inner exception stack trace ---
+  at System.Net.WebConnection.CreateStream (System.Net.WebOperation operation, System.Boolean reused, System.Threading.CancellationToken cancellationToken) [0x00208] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebConnection.cs:234 
+  at System.Net.WebConnection.InitConnection (System.Net.WebOperation operation, System.Threading.CancellationToken cancellationToken) [0x000f7] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebConnection.cs:263 
+  at System.Net.WebOperation.Run () [0x00052] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebOperation.cs:268 
+  at System.Net.WebCompletionSource`1[T].WaitForCompletion () [0x0008e] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebCompletionSource.cs:111 
+  at System.Net.HttpWebRequest.RunWithTimeoutWorker[T] (System.Threading.Tasks.Task`1[TResult] workerTask, System.Int32 timeout, System.Action abort, System.Func`1[TResult] aborted, System.Threading.CancellationTokenSource cts) [0x000e8] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/HttpWebRequest.cs:956 
+  at System.Net.HttpWebRequest.EndGetResponse (System.IAsyncResult asyncResult) [0x00019] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/HttpWebRequest.cs:1200 
+  at System.Threading.Tasks.TaskFactory`1[TResult].FromAsyncCoreLogic (System.IAsyncResult iar, System.Func`2[T,TResult] endFunction, System.Action`1[T] endAction, System.Threading.Tasks.Task`1[TResult] promise, System.Boolean requiresSynchronization) [0x0000f] in <6a2f04b93184477e9598d63b7f8cd078>:0 
+--- End of stack trace from previous location where exception was thrown ---
+
+  at System.Net.Http.HttpClientHandler.SendAsync (System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken) [0x003d3] in /Users/marek/git/mono/mono/mcs/class/System.Net.Http/System.Net.Http/HttpClientHandler.cs:402 
+   --- End of inner exception stack trace ---
+  at System.Net.Http.HttpClientHandler.SendAsync (System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken) [0x0046c] in /Users/marek/git/mono/mono/mcs/class/System.Net.Http/System.Net.Http/HttpClientHandler.cs:406 
+  at System.Net.Http.HttpClient.SendAsyncWorker (System.Net.Http.HttpRequestMessage request, System.Net.Http.HttpCompletionOption completionOption, System.Threading.CancellationToken cancellationToken) [0x00080] in /Users/marek/git/mono/mono/mcs/class/System.Net.Http/System.Net.Http/HttpClient.cs:276 
+  at X.DoThat () [0x0002a] in /Users/marek/Projects/console66/Program.cs:20 
+  at X.DoIt () [0x0002a] in /Users/marek/Projects/console66/Program.cs:16 
+   --- End of inner exception stack trace ---
+  at System.Threading.Tasks.Task.ThrowIfExceptional (System.Boolean includeTaskCanceledExceptions) [0x00013] in /Users/marek/git/mono/mono/external/corert/src/System.Private.CoreLib/src/System/Threading/Tasks/Task.cs:2029 
+  at System.Threading.Tasks.Task.Wait (System.Int32 millisecondsTimeout, System.Threading.CancellationToken cancellationToken) [0x00043] in /Users/marek/git/mono/mono/external/corert/src/System.Private.CoreLib/src/System/Threading/Tasks/Task.cs:2759 
+  at System.Threading.Tasks.Task.Wait () [0x00000] in /Users/marek/git/mono/mono/external/corert/src/System.Private.CoreLib/src/System/Threading/Tasks/Task.cs:2625 
+  at X.Main () [0x00011] in /Users/marek/Projects/console66/Program.cs:28 
+---> (Inner Exception #0) System.Net.Http.HttpRequestException: An error occurred while sending the request ---> System.Net.WebException: Error: SecureChannelFailure (Authentication failed, see inner exception.) ---> System.Security.Authentication.AuthenticationException: Authentication failed, see inner exception. ---> Mono.Security.Interface.TlsException: Certificate validation threw exception.
+  at Mono.AppleTls.AppleTlsContext.EvaluateTrust () [0x0008b] in /Users/marek/git/mono/mono/mcs/class/System/Mono.AppleTls/AppleTlsContext.cs:275 
+  at Mono.AppleTls.AppleTlsContext.ProcessHandshake () [0x0004e] in /Users/marek/git/mono/mono/mcs/class/System/Mono.AppleTls/AppleTlsContext.cs:205 
+  at Mono.Net.Security.MobileAuthenticatedStream.ProcessHandshake (Mono.Net.Security.AsyncOperationStatus status, System.Boolean renegotiate) [0x000a1] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/MobileAuthenticatedStream.cs:821 
+  at (wrapper remoting-invoke-with-check) Mono.Net.Security.MobileAuthenticatedStream.ProcessHandshake(Mono.Net.Security.AsyncOperationStatus,bool)
+  at Mono.Net.Security.AsyncHandshakeRequest.Run (Mono.Net.Security.AsyncOperationStatus status) [0x00000] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/AsyncProtocolRequest.cs:283 
+  at Mono.Net.Security.AsyncProtocolRequest.ProcessOperation (System.Threading.CancellationToken cancellationToken) [0x000ff] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/AsyncProtocolRequest.cs:221 
+  at Mono.Net.Security.AsyncProtocolRequest.StartOperation (System.Threading.CancellationToken cancellationToken) [0x00046] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/AsyncProtocolRequest.cs:187 
+   --- End of inner exception stack trace ---
+  at Mono.Net.Security.MobileAuthenticatedStream.ProcessAuthentication (System.Boolean runSynchronously, Mono.Net.Security.MonoSslAuthenticationOptions options, System.Threading.CancellationToken cancellationToken) [0x0024c] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/MobileAuthenticatedStream.cs:396 
+  at Mono.Net.Security.MonoTlsStream.CreateStream (System.Net.WebConnectionTunnel tunnel, System.Threading.CancellationToken cancellationToken) [0x00126] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/MonoTlsStream.cs:129 
+  at System.Net.WebConnection.CreateStream (System.Net.WebOperation operation, System.Boolean reused, System.Threading.CancellationToken cancellationToken) [0x00170] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebConnection.cs:222 
+   --- End of inner exception stack trace ---
+  at System.Net.WebConnection.CreateStream (System.Net.WebOperation operation, System.Boolean reused, System.Threading.CancellationToken cancellationToken) [0x00208] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebConnection.cs:234 
+  at System.Net.WebConnection.InitConnection (System.Net.WebOperation operation, System.Threading.CancellationToken cancellationToken) [0x000f7] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebConnection.cs:263 
+  at System.Net.WebOperation.Run () [0x00052] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebOperation.cs:268 
+  at System.Net.WebCompletionSource`1[T].WaitForCompletion () [0x0008e] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebCompletionSource.cs:111 
+  at System.Net.HttpWebRequest.RunWithTimeoutWorker[T] (System.Threading.Tasks.Task`1[TResult] workerTask, System.Int32 timeout, System.Action abort, System.Func`1[TResult] aborted, System.Threading.CancellationTokenSource cts) [0x000e8] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/HttpWebRequest.cs:956 
+  at System.Net.HttpWebRequest.EndGetResponse (System.IAsyncResult asyncResult) [0x00019] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/HttpWebRequest.cs:1200 
+  at System.Threading.Tasks.TaskFactory`1[TResult].FromAsyncCoreLogic (System.IAsyncResult iar, System.Func`2[T,TResult] endFunction, System.Action`1[T] endAction, System.Threading.Tasks.Task`1[TResult] promise, System.Boolean requiresSynchronization) [0x0000f] in <6a2f04b93184477e9598d63b7f8cd078>:0 
+--- End of stack trace from previous location where exception was thrown ---
+
+  at System.Net.Http.HttpClientHandler.SendAsync (System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken) [0x003d3] in /Users/marek/git/mono/mono/mcs/class/System.Net.Http/System.Net.Http/HttpClientHandler.cs:402 
+   --- End of inner exception stack trace ---
+  at System.Net.Http.HttpClientHandler.SendAsync (System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken) [0x0046c] in /Users/marek/git/mono/mono/mcs/class/System.Net.Http/System.Net.Http/HttpClientHandler.cs:406 
+  at System.Net.Http.HttpClient.SendAsyncWorker (System.Net.Http.HttpRequestMessage request, System.Net.Http.HttpCompletionOption completionOption, System.Threading.CancellationToken cancellationToken) [0x00080] in /Users/marek/git/mono/mono/mcs/class/System.Net.Http/System.Net.Http/HttpClient.cs:276 
+  at X.DoThat () [0x0002a] in Program.cs:20 
+  at X.DoIt () [0x0002a] in Program.cs:16 <---
+```
+### Expected Behavior
+
+No Crash
+
+## On which platforms did you notice this
+
+[x] macOS
+[ ] Linux
+[ ] Windows
+
+**Version Used**: master
+","Concurrent requests fail with Mono.Security.Interface.TlsException: Certificate validation threw exception  ## Steps to Reproduce
+
+1. Compile and Run following
+
+```c#
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.Net.Http.Header",11449,monojenkins,mono
+11437,[System]: `lock` protect `SystemCertificateProvider.EnsureInitialize()`.,Fixes #11434,[System]: `lock` protect `SystemCertificateProvider.EnsureInitialize()`.  Fixes #11434,11448,monojenkins,mono
+11434,Concurrent requests fail with Mono.Security.Interface.TlsException: Certificate validation threw exception,"## Steps to Reproduce
+
+1. Compile and Run following
+
+```c#
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.Net.Http.Headers;
+
+class X {
+
+	private HttpClient _httpClient;
+
+	void Foo ()
+	{
+		_httpClient = new HttpClient ();
+		_httpClient.DefaultRequestHeaders.UserAgent.Add (new ProductInfoHeaderValue (""name"", ""version""));
+		_httpClient.DefaultRequestHeaders.UserAgent.Add (new ProductInfoHeaderValue (""(comment)""));
+	}
+
+	private async Task DoIt () => await Task.Run (DoThat);
+
+	private async Task DoThat ()
+	{
+		await _httpClient.GetAsync (""http://microsoft.com"");
+	}
+
+	public static void Main ()
+	{
+		while (true) {
+			var x = new X ();
+			x.Foo ();
+			Task.WhenAll (x.DoIt (), x.DoIt ()).Wait ();
+		}
+	}
+}
+```
+### Current Behavior
+
+```
+System.AggregateException: One or more errors occurred. (An error occurred while sending the request) ---> System.Net.Http.HttpRequestException: An error occurred while sending the request ---> System.Net.WebException: Error: SecureChannelFailure (Authentication failed, see inner exception.) ---> System.Security.Authentication.AuthenticationException: Authentication failed, see inner exception. ---> Mono.Security.Interface.TlsException: Certificate validation threw exception.
+  at Mono.AppleTls.AppleTlsContext.EvaluateTrust () [0x0008b] in /Users/marek/git/mono/mono/mcs/class/System/Mono.AppleTls/AppleTlsContext.cs:275 
+  at Mono.AppleTls.AppleTlsContext.ProcessHandshake () [0x0004e] in /Users/marek/git/mono/mono/mcs/class/System/Mono.AppleTls/AppleTlsContext.cs:205 
+  at Mono.Net.Security.MobileAuthenticatedStream.ProcessHandshake (Mono.Net.Security.AsyncOperationStatus status, System.Boolean renegotiate) [0x000a1] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/MobileAuthenticatedStream.cs:821 
+  at (wrapper remoting-invoke-with-check) Mono.Net.Security.MobileAuthenticatedStream.ProcessHandshake(Mono.Net.Security.AsyncOperationStatus,bool)
+  at Mono.Net.Security.AsyncHandshakeRequest.Run (Mono.Net.Security.AsyncOperationStatus status) [0x00000] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/AsyncProtocolRequest.cs:283 
+  at Mono.Net.Security.AsyncProtocolRequest.ProcessOperation (System.Threading.CancellationToken cancellationToken) [0x000ff] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/AsyncProtocolRequest.cs:221 
+  at Mono.Net.Security.AsyncProtocolRequest.StartOperation (System.Threading.CancellationToken cancellationToken) [0x00046] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/AsyncProtocolRequest.cs:187 
+   --- End of inner exception stack trace ---
+  at Mono.Net.Security.MobileAuthenticatedStream.ProcessAuthentication (System.Boolean runSynchronously, Mono.Net.Security.MonoSslAuthenticationOptions options, System.Threading.CancellationToken cancellationToken) [0x0024c] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/MobileAuthenticatedStream.cs:396 
+  at Mono.Net.Security.MonoTlsStream.CreateStream (System.Net.WebConnectionTunnel tunnel, System.Threading.CancellationToken cancellationToken) [0x00126] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/MonoTlsStream.cs:129 
+  at System.Net.WebConnection.CreateStream (System.Net.WebOperation operation, System.Boolean reused, System.Threading.CancellationToken cancellationToken) [0x00170] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebConnection.cs:222 
+   --- End of inner exception stack trace ---
+  at System.Net.WebConnection.CreateStream (System.Net.WebOperation operation, System.Boolean reused, System.Threading.CancellationToken cancellationToken) [0x00208] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebConnection.cs:234 
+  at System.Net.WebConnection.InitConnection (System.Net.WebOperation operation, System.Threading.CancellationToken cancellationToken) [0x000f7] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebConnection.cs:263 
+  at System.Net.WebOperation.Run () [0x00052] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebOperation.cs:268 
+  at System.Net.WebCompletionSource`1[T].WaitForCompletion () [0x0008e] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebCompletionSource.cs:111 
+  at System.Net.HttpWebRequest.RunWithTimeoutWorker[T] (System.Threading.Tasks.Task`1[TResult] workerTask, System.Int32 timeout, System.Action abort, System.Func`1[TResult] aborted, System.Threading.CancellationTokenSource cts) [0x000e8] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/HttpWebRequest.cs:956 
+  at System.Net.HttpWebRequest.EndGetResponse (System.IAsyncResult asyncResult) [0x00019] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/HttpWebRequest.cs:1200 
+  at System.Threading.Tasks.TaskFactory`1[TResult].FromAsyncCoreLogic (System.IAsyncResult iar, System.Func`2[T,TResult] endFunction, System.Action`1[T] endAction, System.Threading.Tasks.Task`1[TResult] promise, System.Boolean requiresSynchronization) [0x0000f] in <6a2f04b93184477e9598d63b7f8cd078>:0 
+--- End of stack trace from previous location where exception was thrown ---
+
+  at System.Net.Http.HttpClientHandler.SendAsync (System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken) [0x003d3] in /Users/marek/git/mono/mono/mcs/class/System.Net.Http/System.Net.Http/HttpClientHandler.cs:402 
+   --- End of inner exception stack trace ---
+  at System.Net.Http.HttpClientHandler.SendAsync (System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken) [0x0046c] in /Users/marek/git/mono/mono/mcs/class/System.Net.Http/System.Net.Http/HttpClientHandler.cs:406 
+  at System.Net.Http.HttpClient.SendAsyncWorker (System.Net.Http.HttpRequestMessage request, System.Net.Http.HttpCompletionOption completionOption, System.Threading.CancellationToken cancellationToken) [0x00080] in /Users/marek/git/mono/mono/mcs/class/System.Net.Http/System.Net.Http/HttpClient.cs:276 
+  at X.DoThat () [0x0002a] in /Users/marek/Projects/console66/Program.cs:20 
+  at X.DoIt () [0x0002a] in /Users/marek/Projects/console66/Program.cs:16 
+   --- End of inner exception stack trace ---
+  at System.Threading.Tasks.Task.ThrowIfExceptional (System.Boolean includeTaskCanceledExceptions) [0x00013] in /Users/marek/git/mono/mono/external/corert/src/System.Private.CoreLib/src/System/Threading/Tasks/Task.cs:2029 
+  at System.Threading.Tasks.Task.Wait (System.Int32 millisecondsTimeout, System.Threading.CancellationToken cancellationToken) [0x00043] in /Users/marek/git/mono/mono/external/corert/src/System.Private.CoreLib/src/System/Threading/Tasks/Task.cs:2759 
+  at System.Threading.Tasks.Task.Wait () [0x00000] in /Users/marek/git/mono/mono/external/corert/src/System.Private.CoreLib/src/System/Threading/Tasks/Task.cs:2625 
+  at X.Main () [0x00011] in /Users/marek/Projects/console66/Program.cs:28 
+---> (Inner Exception #0) System.Net.Http.HttpRequestException: An error occurred while sending the request ---> System.Net.WebException: Error: SecureChannelFailure (Authentication failed, see inner exception.) ---> System.Security.Authentication.AuthenticationException: Authentication failed, see inner exception. ---> Mono.Security.Interface.TlsException: Certificate validation threw exception.
+  at Mono.AppleTls.AppleTlsContext.EvaluateTrust () [0x0008b] in /Users/marek/git/mono/mono/mcs/class/System/Mono.AppleTls/AppleTlsContext.cs:275 
+  at Mono.AppleTls.AppleTlsContext.ProcessHandshake () [0x0004e] in /Users/marek/git/mono/mono/mcs/class/System/Mono.AppleTls/AppleTlsContext.cs:205 
+  at Mono.Net.Security.MobileAuthenticatedStream.ProcessHandshake (Mono.Net.Security.AsyncOperationStatus status, System.Boolean renegotiate) [0x000a1] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/MobileAuthenticatedStream.cs:821 
+  at (wrapper remoting-invoke-with-check) Mono.Net.Security.MobileAuthenticatedStream.ProcessHandshake(Mono.Net.Security.AsyncOperationStatus,bool)
+  at Mono.Net.Security.AsyncHandshakeRequest.Run (Mono.Net.Security.AsyncOperationStatus status) [0x00000] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/AsyncProtocolRequest.cs:283 
+  at Mono.Net.Security.AsyncProtocolRequest.ProcessOperation (System.Threading.CancellationToken cancellationToken) [0x000ff] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/AsyncProtocolRequest.cs:221 
+  at Mono.Net.Security.AsyncProtocolRequest.StartOperation (System.Threading.CancellationToken cancellationToken) [0x00046] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/AsyncProtocolRequest.cs:187 
+   --- End of inner exception stack trace ---
+  at Mono.Net.Security.MobileAuthenticatedStream.ProcessAuthentication (System.Boolean runSynchronously, Mono.Net.Security.MonoSslAuthenticationOptions options, System.Threading.CancellationToken cancellationToken) [0x0024c] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/MobileAuthenticatedStream.cs:396 
+  at Mono.Net.Security.MonoTlsStream.CreateStream (System.Net.WebConnectionTunnel tunnel, System.Threading.CancellationToken cancellationToken) [0x00126] in /Users/marek/git/mono/mono/mcs/class/System/Mono.Net.Security/MonoTlsStream.cs:129 
+  at System.Net.WebConnection.CreateStream (System.Net.WebOperation operation, System.Boolean reused, System.Threading.CancellationToken cancellationToken) [0x00170] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebConnection.cs:222 
+   --- End of inner exception stack trace ---
+  at System.Net.WebConnection.CreateStream (System.Net.WebOperation operation, System.Boolean reused, System.Threading.CancellationToken cancellationToken) [0x00208] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebConnection.cs:234 
+  at System.Net.WebConnection.InitConnection (System.Net.WebOperation operation, System.Threading.CancellationToken cancellationToken) [0x000f7] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebConnection.cs:263 
+  at System.Net.WebOperation.Run () [0x00052] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebOperation.cs:268 
+  at System.Net.WebCompletionSource`1[T].WaitForCompletion () [0x0008e] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/WebCompletionSource.cs:111 
+  at System.Net.HttpWebRequest.RunWithTimeoutWorker[T] (System.Threading.Tasks.Task`1[TResult] workerTask, System.Int32 timeout, System.Action abort, System.Func`1[TResult] aborted, System.Threading.CancellationTokenSource cts) [0x000e8] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/HttpWebRequest.cs:956 
+  at System.Net.HttpWebRequest.EndGetResponse (System.IAsyncResult asyncResult) [0x00019] in /Users/marek/git/mono/mono/mcs/class/System/System.Net/HttpWebRequest.cs:1200 
+  at System.Threading.Tasks.TaskFactory`1[TResult].FromAsyncCoreLogic (System.IAsyncResult iar, System.Func`2[T,TResult] endFunction, System.Action`1[T] endAction, System.Threading.Tasks.Task`1[TResult] promise, System.Boolean requiresSynchronization) [0x0000f] in <6a2f04b93184477e9598d63b7f8cd078>:0 
+--- End of stack trace from previous location where exception was thrown ---
+
+  at System.Net.Http.HttpClientHandler.SendAsync (System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken) [0x003d3] in /Users/marek/git/mono/mono/mcs/class/System.Net.Http/System.Net.Http/HttpClientHandler.cs:402 
+   --- End of inner exception stack trace ---
+  at System.Net.Http.HttpClientHandler.SendAsync (System.Net.Http.HttpRequestMessage request, System.Threading.CancellationToken cancellationToken) [0x0046c] in /Users/marek/git/mono/mono/mcs/class/System.Net.Http/System.Net.Http/HttpClientHandler.cs:406 
+  at System.Net.Http.HttpClient.SendAsyncWorker (System.Net.Http.HttpRequestMessage request, System.Net.Http.HttpCompletionOption completionOption, System.Threading.CancellationToken cancellationToken) [0x00080] in /Users/marek/git/mono/mono/mcs/class/System.Net.Http/System.Net.Http/HttpClient.cs:276 
+  at X.DoThat () [0x0002a] in Program.cs:20 
+  at X.DoIt () [0x0002a] in Program.cs:16 <---
+```
+### Expected Behavior
+
+No Crash
+
+## On which platforms did you notice this
+
+[x] macOS
+[ ] Linux
+[ ] Windows
+
+**Version Used**: master
+","Concurrent requests fail with Mono.Security.Interface.TlsException: Certificate validation threw exception  ## Steps to Reproduce
+
+1. Compile and Run following
+
+```c#
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.Net.Http.Header",11448,monojenkins,mono
+7907,[runtime] Fix class visibility check for protected nested classes.,Fixes https://github.com/mono/mono/issues/7657,[runtime] Fix class visibility check for protected nested classes.  Fixes https://github.com/mono/mono/issues/7657,7914,lambdageek,mono
+7657,Method is inaccessible from method in nested classes with inheritance.,"## Steps to Reproduce
+
+1. Compile Program.cs `mcs Program.cs`
+2. Run Program.exe `mono Program.exe`
+
+```c#
+namespace ConsoleApplication1
+{
+    public abstract class SuperClass
+    {
+        protected abstract class SuperInnerAbstractClass
+        {
+            protected class SuperInnerInnerClass
+            {
+            }
+        }
+    }
+
+    public class ChildClass : SuperClass
+    {
+        private class ChildInnerClass : SuperInnerAbstractClass
+        {
+            private readonly SuperInnerInnerClass s_class = new SuperInnerInnerClass();
+        }
+
+        public ChildClass()
+        {
+            var childInnerClass = new ChildInnerClass();
+        }
+    }
+    
+    internal class Program
+    {
+        public static void Main(string[] args)
+        {
+            new ChildClass();
+        }
+    }
+}
+```
+
+<!--
+You may drag & drop the attachment (repro code/solution, screenshot, etc.) onto the issue.
+-->
+
+## Current Behavior
+The code compiles successfully, but when run on mono `System.MethodAccessException` is thrown.
+
+## Expected Behavior
+Code should execute without exception.  I have tested this on Windows 10, Visual Studio 2017 and this code executes, and runs without error.
+
+### On which platforms did you notice this
+
+- [x] macOS
+- [ ] Linux
+- [ ] Windows
+
+**Version Used**:
+```
+Mono JIT compiler version 5.10.0.176 (2017-12/a7adb18ce2f Wed Mar 14 06:05:24 EDT 2018)
+Copyright (C) 2002-2014 Novell, Inc, Xamarin Inc and Contributors. www.mono-project.com
+	TLS:           normal
+	SIGSEGV:       altstack
+	Notification:  kqueue
+	Architecture:  amd64
+	Disabled:      none
+	Misc:          softdebug 
+	Interpreter:   yes
+	LLVM:          yes(3.6.0svn-mono-master/8b1520c8aae)
+	GC:            sgen (concurrent by default)
+```
+
+### Stacktrace
+
+```
+Unhandled Exception:
+System.MethodAccessException: Method `ConsoleApplication1.SuperClass+SuperInnerAbstractClass+SuperInnerInnerClass..ctor()' is inaccessible from method `ConsoleApplication1.ChildClass+ChildInnerClass..ctor()'
+  at (wrapper managed-to-native) System.Object.__icall_wrapper_mono_throw_method_access(intptr,intptr)
+  at ConsoleApplication1.Program.Main (System.String[] args) [0x00001] in /Users/jeff/Projects/ConsoleApplication1/ConsoleApplication1/Program.cs:30 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.MethodAccessException: Method `ConsoleApplication1.SuperClass+SuperInnerAbstractClass+SuperInnerInnerClass..ctor()' is inaccessible from method `ConsoleApplication1.ChildClass+ChildInnerClass..ctor()'
+  at (wrapper managed-to-native) System.Object.__icall_wrapper_mono_throw_method_access(intptr,intptr)
+  at ConsoleApplication1.Program.Main (System.String[] args) [0x00001] in /Users/jeff/Projects/ConsoleApplication1/ConsoleApplication1/Program.cs:30 
+
+```
+","Method is inaccessible from method in nested classes with inheritance.  ## Steps to Reproduce
+
+1. Compile Program.cs `mcs Program.cs`
+2. Run Program.exe `mono Program.exe`
+
+```c#
+namespace ConsoleApplication1
+{
+    public abstract class SuperClass",7914,lambdageek,mono
+7907,[runtime] Fix class visibility check for protected nested classes.,Fixes https://github.com/mono/mono/issues/7657,[runtime] Fix class visibility check for protected nested classes.  Fixes https://github.com/mono/mono/issues/7657,7913,lambdageek,mono
+7657,Method is inaccessible from method in nested classes with inheritance.,"## Steps to Reproduce
+
+1. Compile Program.cs `mcs Program.cs`
+2. Run Program.exe `mono Program.exe`
+
+```c#
+namespace ConsoleApplication1
+{
+    public abstract class SuperClass
+    {
+        protected abstract class SuperInnerAbstractClass
+        {
+            protected class SuperInnerInnerClass
+            {
+            }
+        }
+    }
+
+    public class ChildClass : SuperClass
+    {
+        private class ChildInnerClass : SuperInnerAbstractClass
+        {
+            private readonly SuperInnerInnerClass s_class = new SuperInnerInnerClass();
+        }
+
+        public ChildClass()
+        {
+            var childInnerClass = new ChildInnerClass();
+        }
+    }
+    
+    internal class Program
+    {
+        public static void Main(string[] args)
+        {
+            new ChildClass();
+        }
+    }
+}
+```
+
+<!--
+You may drag & drop the attachment (repro code/solution, screenshot, etc.) onto the issue.
+-->
+
+## Current Behavior
+The code compiles successfully, but when run on mono `System.MethodAccessException` is thrown.
+
+## Expected Behavior
+Code should execute without exception.  I have tested this on Windows 10, Visual Studio 2017 and this code executes, and runs without error.
+
+### On which platforms did you notice this
+
+- [x] macOS
+- [ ] Linux
+- [ ] Windows
+
+**Version Used**:
+```
+Mono JIT compiler version 5.10.0.176 (2017-12/a7adb18ce2f Wed Mar 14 06:05:24 EDT 2018)
+Copyright (C) 2002-2014 Novell, Inc, Xamarin Inc and Contributors. www.mono-project.com
+	TLS:           normal
+	SIGSEGV:       altstack
+	Notification:  kqueue
+	Architecture:  amd64
+	Disabled:      none
+	Misc:          softdebug 
+	Interpreter:   yes
+	LLVM:          yes(3.6.0svn-mono-master/8b1520c8aae)
+	GC:            sgen (concurrent by default)
+```
+
+### Stacktrace
+
+```
+Unhandled Exception:
+System.MethodAccessException: Method `ConsoleApplication1.SuperClass+SuperInnerAbstractClass+SuperInnerInnerClass..ctor()' is inaccessible from method `ConsoleApplication1.ChildClass+ChildInnerClass..ctor()'
+  at (wrapper managed-to-native) System.Object.__icall_wrapper_mono_throw_method_access(intptr,intptr)
+  at ConsoleApplication1.Program.Main (System.String[] args) [0x00001] in /Users/jeff/Projects/ConsoleApplication1/ConsoleApplication1/Program.cs:30 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.MethodAccessException: Method `ConsoleApplication1.SuperClass+SuperInnerAbstractClass+SuperInnerInnerClass..ctor()' is inaccessible from method `ConsoleApplication1.ChildClass+ChildInnerClass..ctor()'
+  at (wrapper managed-to-native) System.Object.__icall_wrapper_mono_throw_method_access(intptr,intptr)
+  at ConsoleApplication1.Program.Main (System.String[] args) [0x00001] in /Users/jeff/Projects/ConsoleApplication1/ConsoleApplication1/Program.cs:30 
+
+```
+","Method is inaccessible from method in nested classes with inheritance.  ## Steps to Reproduce
+
+1. Compile Program.cs `mcs Program.cs`
+2. Run Program.exe `mono Program.exe`
+
+```c#
+namespace ConsoleApplication1
+{
+    public abstract class SuperClass",7913,lambdageek,mono
+4437,[runtime] Mark mono_error_init external only.,Runtime should use the error_init() from mono/utils/mono-error-internals.h,[runtime] Mark mono_error_init external only.  Runtime should use the error_init() from mono/utils/mono-error-internals.h,7863,AustinWise,mono
+13767,Bump version to 6.3,"","Bump version to 6.3  ",7863,AustinWise,mono
+18118,Blazor preview 4 linker issue unhelpful error.,"_From @dazinator on Tuesday, December 10, 2019 4:38:32 PM_
+
+### Describe the bug
+I have a blazor (wasm) preview 4 project.
+I had not realised that one of the dependencies I was including was still compiled against preview 3, here is the offending package if you need to replicate:
+
+```
+    <PackageReference Include=""NetPack.BrowserReload.BlazorClient"" Version=""0.3.0-alpha0144"" Condition=""$(DefineConstants.Contains(DEBUG))"" />
+
+```
+
+When I build the application, the linker gives me an error on a particular assembly: `'Microsoft.AspNetCore.Http.Abstractions.dll'` here is the build output:
+
+> Microsoft Windows [Version 10.0.18362.476]
+(c) 2019 Microsoft Corporation. All rights reserved.
+
+> C:\Users\DarrellTunnell\source\repos\HubCore\src\Hub.Client>dotnet build
+Microsoft (R) Build Engine version 16.4.0+e901037fe for .NET Core
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+>   Restore completed in 33.99 ms for C:\Users\DarrellTunnell\source\repos\HubCore\src\Hub.Client\Hub.Client.csproj.
+  Restore completed in 33.98 ms for C:\Users\DarrellTunnell\source\repos\HubCore\src\Hub.Shared\Hub.Shared.csproj.
+  Hub.Shared -> C:\Users\DarrellTunnell\source\repos\HubCore\src\Hub.Shared\bin\Debug\netstandard2.1\Hub.Shared.dll
+>  WebCompiler: Begin compiling compilerconfig.json
+  WebCompiler: Done compiling compilerconfig.json
+  Hub.Client -> C:\Users\DarrellTunnell\source\repos\HubCore\src\Hub.Client\bin\Debug\netstandard2.1\Hub.Client.dll
+  Fatal error in Mono CIL Linker
+C:\Users\DarrellTunnell\.nuget\packages\microsoft.aspnetcore.blazor.build\3.1.0-preview4.19579.2\targets\Blazor.MonoRuntime.targets(204,5): error : Unhandled exception. Mono.Linker.MarkException: Error processing method: 'System.Threading.Tasks.Task Microsoft.AspNetCore.Http.Authentication.AuthenticationManager::AuthenticateAsync(Microsoft.AspNetCore.Http.Features.Authentication.AuthenticateContext)' in assembly: 'Microsoft.AspNetCore.Http.Abstractions.dll' [C:\Users\DarrellTunnell\source\repos\HubCore\src\Hub.Client\Hub.Client.csproj]
+   ---> Mono.Cecil.ResolutionException: Failed to resolve Microsoft.AspNetCore.Http.Features.Authentication.AuthenticateContext
+     at Mono.Linker.Steps.MarkStep.HandleUnresolvedType(TypeReference reference)
+     at Mono.Linker.Steps.MarkStep.MarkType(TypeReference reference)
+     at Mono.Linker.Steps.MarkStep.ProcessMethod(MethodDefinition method)
+     at Mono.Linker.Steps.MarkStep.ProcessQueue()
+     --- End of inner exception stack trace ---
+     at Mono.Linker.Steps.MarkStep.ProcessQueue()
+     at Mono.Linker.Steps.MarkStep.ProcessPrimaryQueue()
+     at Mono.Linker.Steps.MarkStep.Process()
+     at Mono.Linker.Steps.MarkStep.Process(LinkContext context)
+     at Mono.Linker.Pipeline.ProcessStep(LinkContext context, IStep step)
+     at Mono.Linker.Pipeline.Process(LinkContext context)
+     at Mono.Linker.Driver.Run(ILogger customLogger)
+     at Mono.Linker.Driver.Execute(String[] args, ILogger customLogger)
+     at Mono.Linker.Driver.Main(String[] args)
+C:\Users\DarrellTunnell\.nuget\packages\microsoft.aspnetcore.blazor.build\3.1.0-preview4.19579.2\targets\Blazor.MonoRuntime.targets(204,5): error : ILLink failed with exited code -532462766. [C:\Users\DarrellTunnell\source\repos\HubCore\src\Hub.Client\Hub.Client.csproj]
+
+> Build FAILED.
+
+> C:\Users\DarrellTunnell\.nuget\packages\microsoft.aspnetcore.blazor.build\3.1.0-preview4.19579.2\targets\Blazor.MonoRuntime.targets(204,5): error : Unhandled exception. Mono.Linker.MarkException: Error processing method: 'System.Threading.Tasks.Task Microsoft.AspNetCore.Http.Authentication.AuthenticationManager::AuthenticateAsync(Microsoft.AspNetCore.Http.Features.Authentication.AuthenticateContext)' in assembly: 'Microsoft.AspNetCore.Http.Abstractions.dll' [C:\Users\DarrellTunnell\source\repos\HubCore\src\Hub.Client\Hub.Client.csproj]
+C:\Users\DarrellTunnell\.nuget\packages\microsoft.aspnetcore.blazor.build\3.1.0-preview4.19579.2\targets\Blazor.MonoRuntime.targets(204,5): error : ILLink failed with exited code -532462766. [C:\Users\DarrellTunnell\source\repos\HubCore\src\Hub.Client\Hub.Client.csproj]
+
+There is nothing in that error that really helped me track down the issue of the particular offending package. All I could tell was that the problem seems to be with 'Microsoft.AspNetCore.Http.Abstractions.dll' so the first thing I attempted was to add 'Microsoft.AspNetCore.Http.Abstractions.dll' to the linker file to ignore this assembly when linking:
+
+```
+<?xml version=""1.0"" encoding=""UTF-8"" ?>
+<!--
+  This file specifies which parts of the BCL or Blazor packages must not be
+  stripped by the IL Linker even if they aren't referenced by user code.
+  See https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/blazor/configure-linker?view=aspnetcore-3.0#control-linking-with-a-configuration-file
+-->
+<linker>
+  <assembly fullname=""mscorlib"">
+    <!--
+      Preserve the methods in WasmRuntime because its methods are called by 
+      JavaScript client-side code to implement timers.
+      Fixes: https://github.com/aspnet/Blazor/issues/239
+    -->
+    <type fullname=""System.Threading.WasmRuntime"" />
+  </assembly>
+  <assembly fullname=""System.Core"">
+    <!--
+      System.Linq.Expressions* is required by Json.NET and any 
+      expression.Compile caller. The assembly isn't stripped.
+    -->
+    <type fullname=""System.Linq.Expressions*"" />   
+  </assembly>
+
+  <!-- The problematic assembly  -->
+  <assembly fullname=""Microsoft.AspNetCore.Http.Abstractions"" />  
+
+  <!--
+    In this example, the app's entry point assembly is listed. The assembly
+    isn't stripped by the IL Linker.
+  -->
+  <assembly fullname=""Hub.Client""/>
+</linker>
+
+```
+
+But this does nothing. The linker config still processes the assembly and errors, even though I've asked it to be ignored. This is counter intuitive (unless you know the internals of how the linker works). The same error continues to occur. I finally got to the bottom of this, by removing one package reference on at a time to see if it made any difference. Low and behold when I remove the aformentioned one the linker no longer complained. 
+
+### To Reproduce
+1. Create a new blazor wasm project (preview 4)
+2. Add a package reference for a package still compiled against preview 3 like this one:
+```
+    <PackageReference Include=""NetPack.BrowserReload.BlazorClient"" Version=""0.3.0-alpha0144"" Condition=""$(DefineConstants.Contains(DEBUG))"" />
+```
+3. Build (linker should be enabled).
+
+
+```
+
+### Further technical details
+- 3.1.0
+- Include the output of `dotnet --info`
+> .NET Core SDK (reflecting any global.json):
+ Version:   3.1.100
+ Commit:    cd82f021f4
+
+Runtime Environment:
+ OS Name:     Windows
+ OS Version:  10.0.18362
+ OS Platform: Windows
+ RID:         win10-x64
+ Base Path:   C:\Program Files\dotnet\sdk\3.1.100\
+
+Host (useful for support):
+  Version: 3.1.0
+  Commit:  65f04fb6db
+
+.NET Core SDKs installed:
+  1.1.13 [C:\Program Files\dotnet\sdk]
+  2.1.502 [C:\Program Files\dotnet\sdk]
+  2.1.503 [C:\Program Files\dotnet\sdk]
+  2.1.504 [C:\Program Files\dotnet\sdk]
+  2.1.505 [C:\Program Files\dotnet\sdk]
+  2.1.507 [C:\Program Files\dotnet\sdk]
+  2.1.508 [C:\Program Files\dotnet\sdk]
+  2.1.509 [C:\Program Files\dotnet\sdk]
+  2.1.600 [C:\Program Files\dotnet\sdk]
+  2.1.602 [C:\Program Files\dotnet\sdk]
+  2.1.700-preview-009601 [C:\Program Files\dotnet\sdk]
+  2.1.700-preview-009618 [C:\Program Files\dotnet\sdk]
+  2.1.800-preview-009677 [C:\Program Files\dotnet\sdk]
+  2.1.800-preview-009696 [C:\Program Files\dotnet\sdk]
+  2.1.800 [C:\Program Files\dotnet\sdk]
+  2.2.101 [C:\Program Files\dotnet\sdk]
+  3.0.100 [C:\Program Files\dotnet\sdk]
+  3.1.100 [C:\Program Files\dotnet\sdk]
+
+.NET Core runtimes installed:
+  Microsoft.AspNetCore.All 2.1.6 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.All 2.1.7 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.All 2.1.8 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.All 2.1.9 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.All 2.1.11 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.All 2.1.12 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.All 2.1.13 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.All 2.1.14 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.All 2.2.0 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.All]
+  Microsoft.AspNetCore.App 2.1.6 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 2.1.7 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 2.1.8 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 2.1.9 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 2.1.11 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 2.1.12 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 2.1.13 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 2.1.14 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 2.2.0 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 3.1.0 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.NETCore.App 1.0.15 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 1.1.12 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.1.6 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.1.7 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.1.8 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.1.9 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.1.11 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.1.12 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.1.13 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.1.14 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 2.2.0 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 3.1.0 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.WindowsDesktop.App 3.1.0 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+
+> To install additional .NET Core runtimes or SDKs:
+  https://aka.ms/dotnet-download
+- The IDE (VS / VS Code/ VS4Mac) you're running on, and it's version
+Version 16.5.0 Preview 1.0
+
+
+
+_Copied from original issue: aspnet/AspNetCore#17738_","Blazor preview 4 linker issue unhelpful error.  _From @dazinator on Tuesday, December 10, 2019 4:38:32 PM_
+
+### Describe the bug
+I have a blazor (wasm) preview 4 project.
+I had not realised that one of the dependencies I was including was still compil",961,ermshiperete,mono
+18114,[interp] relop result is always int,"This can lead to problems on big endian.
+
+```
+result.i = (int) 1;
+--> 0x0000_0001_XXXX_XXXX;
+
+result.l = (long) 1;
+--> 0x0000_0000_0000_0001;
+```
+
+On little endian it's always `0x0000_0000_0000_0001`, so it doesn't matter.
+","[interp] relop result is always int  This can lead to problems on big endian.
+
+```
+result.i = (int) 1;
+--> 0x0000_0001_XXXX_XXXX;
+
+result.l = (long) 1;
+--> 0x0000_0000_0000_0001;
+```
+
+On little endian it's always `0x0000_0000_0000_0001`, so it d",961,ermshiperete,mono
+18113,[wasm] Re-enable System.Numerics.Tests.BigIntegerConstructorTest.RunCtorByteArrayTests test,"`System.Numerics.Tests.BigIntegerConstructorTest.RunCtorByteArrayTests` passes locally. Let's see CI verdict.
+
+/cc @steveisok","[wasm] Re-enable System.Numerics.Tests.BigIntegerConstructorTest.RunCtorByteArrayTests test  `System.Numerics.Tests.BigIntegerConstructorTest.RunCtorByteArrayTests` passes locally. Let's see CI verdict.
+
+/cc @steveisok",961,ermshiperete,mono
+2394,Fixed runtime dependency on libgdiplus with developer soname,"Fixes https://bugzilla.xamarin.com/show_bug.cgi?id=34314.","Fixed runtime dependency on libgdiplus with developer soname  Fixes https://bugzilla.xamarin.com/show_bug.cgi?id=34314.",948,ermshiperete,mono
+2090,[C6SR1] Bug 25480 - OutputPath property is not set for this project,"","[C6SR1] Bug 25480 - OutputPath property is not set for this project   ",942,ermshiperete,mono
+15504,[wasm] Ongoing work.,"","[wasm] Ongoing work.  ",942,ermshiperete,mono
+16374,Inline mono_string_length_internal and mono_string_chars_internal,"https://github.com/mono/mono/pull/16352 but with verify.
+
+Alternative to https://github.com/mono/mono/pull/16351.
+
+Contributes to https://github.com/mono/mono/issues/16172, because ""unknown"" functions require spilling volatiles around.","Inline mono_string_length_internal and mono_string_chars_internal  https://github.com/mono/mono/pull/16352 but with verify.
+
+Alternative to https://github.com/mono/mono/pull/16351.
+
+Contributes to https://github.com/mono/mono/issues/16172, because ""un",942,ermshiperete,mono
+11778,Move `NegotiateStreamPal` from `System.Data` into `System`.,"Make `System` internals visible to `System.Data` and move some of the internal
+GSS sources into `System`.","Move `NegotiateStreamPal` from `System.Data` into `System`.  Make `System` internals visible to `System.Data` and move some of the internal
+GSS sources into `System`.",701,steffen-kiess,mono
+9611,[wasm] Call the correct single step trampoline. Fixes some step-into scenarios.,"","[wasm] Call the correct single step trampoline. Fixes some step-into scenarios.  ",701,steffen-kiess,mono
+10789,[runtime-tests] Add xunit xml output option to test-runner.exe,"The default behavior is still to produce an NUnit xml file but we can now produce xunit format too with the --xunit option.
+
+Slightly refactored the xml reporting into distinct methods for NUnit/xunit.
+
+Part of #9099
+
+","[runtime-tests] Add xunit xml output option to test-runner.exe  The default behavior is still to produce an NUnit xml file but we can now produce xunit format too with the --xunit option.
+
+Slightly refactored the xml reporting into distinct methods for",584,martinpotter,mono
+6404,Experimental pull request to explore increasing the inline limit to 100 instructions,"Per the discussion on this thread:
+
+https://github.com/mono/mono/issues/6397","Experimental pull request to explore increasing the inline limit to 100 instructions  Per the discussion on this thread:
+
+https://github.com/mono/mono/issues/6397",584,martinpotter,mono

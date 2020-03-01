@@ -1,0 +1,917 @@
+﻿IssueID,Title,Description,Title_Description,PullRequestID,FixedByID,RepoID
+3395,Canonical and None URL mappings don't work correctly on localized sites,"## Description of bug
+Canonical and None URL mappings don't work correctly on localized sites. This is pretty much what #3017 is about, but steps to reproduce are more precise.
+
+## Steps to reproduce
+1. Set up a new IIS web site for DNN 9.4.3. Name it `platform-9-4-3.dnndev.me`.
+2. Install DNN 9.4.3 with default settings (as in `/install.aspx`).
+3. Add non primary alias `www-platform-9-4-3.dnndev.me` (and corresponding IIS binding)
+4. Ensure URL Mapping is set to `Canonical`
+5. Add French as a second language
+6. Enable content localization, create localized pages, mark all as translated, activate French pages, publish all French pages.
+7. Create additional non-primary aliases:
+7.a) `www-platform-9-4-3.dnndev.me/en-us` for English
+7.b) `www-platform-9-4-3.dnndev.me/fr-fr` for French
+7. Navigate to `www-platform-9-4-3.dnndev.me/fr-fr/`
+
+## Current behavior
+DNN redirects to `platform-9-4-3.dnndev.me/fr-fr` (the primary alias)
+
+## Expected behavior
+Given URL mapping is set to canonical, no redirection should be performed.
+
+## Additional context
+Some pitfalls with Chrome:
+* Chrome hides ""www."" prefix from the URL, which can be very confusing. That's why I used ""www-"" (with a dash) to avoid this.
+* Keep the Dev Tools panel open at all times with the cache disabled. This will get rid of confusing caching issues.
+
+## Affected version
+* [X] 10.0.0 alpha build
+* [X] 9.5.0 alpha build
+* [X] 9.4.x latest supported release
+* [X] 9.3.x latest supported release
+(not sure about older versions)
+
+## Affected browser
+N/A","Canonical and None URL mappings don't work correctly on localized sites  ## Description of bug
+Canonical and None URL mappings don't work correctly on localized sites. This is pretty much what #3017 is about, but steps to reproduce are more precise.
+
+#",3396,daguiler,Dnn.Platform
+3017,Portal alias redirecting to Primary alias when adding new language and enabling content localization,"Portal alias redirecting to Primary alias when adding new language and enabling content localization. Before new language and content localization alias are working fine for canonical or none mode
+
+## Description of bug
+Portal alias redirecting to Primary alias when adding new language and enabling content localization. Before new language and content localization alias are working fine for canonical or none mode
+
+## Steps to reproduce
+1/ create a new portal with at least 1 published page
+2/ Site Settings -> Languages ... add at least one additional language and enable it
+3/ Enable localized content (with all pages translatable) - this should create localized copies of all pages and also create language-specific aliases
+4/ translate and publish pages you want to test
+5/ add an additional alias for the portal and also for each language
+6/ set ""Site Alias Mapping Mode"" to None or to Canonical
+7/ try to access a page using the additional alias - you will be always redirected to the primary alias
+
+## Current result
+When you try to access any of the secondary pages via the additional alias, you get redirected to the primary one. Eg.
+https://aliasen931.dnndev.me/en-gb/what-we-do gets redirected to https://en931.morganphilips.com/en-gb/what-we-do
+
+## Expected result
+When access https://aliasen931.dnndev.me/en-gb/what-we-do it should not redirect
+
+## Affected version
+* [X ] 9.1.1
+* [X ] 9.2.0
+* [X ] 9.3.0
+* [X ] 9.4.0 latest supported release",Portal alias redirecting to Primary alias when adding new language and enabling content localization  Portal alias redirecting to Primary alias when adding new language and enabling content localization. Before new language and content localization alias,3396,daguiler,Dnn.Platform
+2841,PortalAlias Settings Not Correctly Observed,"## Description of bug
+We just experienced this on the dnncommunity.org website.  Basically, we installed under one URL, upgraded a couple of times, then added a new URL as primary and the original URL was still being used.  From what I could tell, the first URL in the database was being used, despite a different domain name being specified as `IsPrimary` and Site Alias Mapping Mode being set to Redirect.
+
+**IMPORTANT:**  If this is indeed a bug, it could have massive impacts on the ecosystem.  Websites may be incorrectly serving out the wrong domain names and the website owners may not have any clue that it's happening.
+
+## Steps to reproduce
+List the steps to reproduce the behavior:
+1. Install DNN 9.1.1 and use a specific URL (e.g., domain1.org, and www.domain1.org)
+2. Upgrade to DNN 9.2.2
+3. Upgrade to DNN 9.3.2
+4. Add another domain, and set it to be the primary site alias now (e.g., domain2.org (primary), and www.domain2.org)
+5. View the website using the new URL/portal alias
+
+## Current result
+Originally, it was redirecting to the correct primary URL, but a lot of time, it doesn't.
+
+## Expected result
+The primary URL should be used when the setting exists and a HTTP 301 redirect should be performed is Redirect is the mapping mode.
+
+## Additional context
+We managed to fix this by deleting the original primary alias (that was no longer primary) and adding it to the end.
+
+## Screenshots
+![image](https://user-images.githubusercontent.com/938023/59397915-25eb1780-8d43-11e9-8009-a9cc1d20c22d.png)
+
+## Affected version
+
+* [x] 9.3.2
+* [x] 9.3.1
+* [x] 9.2.2
+* [x] 9.2.1
+* [x] 9.2
+* [x] 9.1.1
+* [ ] 9.1
+* [ ] 9.0
+
+## Affected browser
+
+* [x] Chrome
+* [x] Firefox
+* [x] Safari
+* [x] Internet Explorer
+* [x] Edge","PortalAlias Settings Not Correctly Observed  ## Description of bug
+We just experienced this on the dnncommunity.org website.  Basically, we installed under one URL, upgraded a couple of times, then added a new URL as primary and the original URL was stil",3396,daguiler,Dnn.Platform
+123,"Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""","See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.","Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""  See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.",3386,thabaum,Dnn.Platform
+3371,Email is below password fields on registration form,"<!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+  Any potential security issues should be sent to security@dnnsoftware.com, rather than posted on GitHub
+-->
+
+## Description of bug
+Provide a clear and concise description of what the bug is.
+
+## Steps to reproduce
+List the steps to reproduce the behavior:
+1. Go to registration form
+2. view order and see email is below the password fields.
+
+
+## Current result
+If you have to retype a captcha you might need to scroll up to re-enter passwords each time the code does not work.
+
+## Expected result
+Fields you may have to re-enter are close to the submit button.
+
+## Screenshots
+If applicable, provide screenshots to help explain your problem.
+
+## Error log
+Paste the error log that is related to this issue.
+
+## Additional context
+It would be nice to group the help icon and label together so they stick together if it is put on top of the text area.
+
+## Affected version
+<!-- 
+Please add X in at least one of the boxes as appropriate. In order for an issue to be accepted, a developer needs to be able to reproduce the issue on a currently supported version. If you are looking for a workaround for an issue with an older version, please visit the forums at https://dnncommunity.org/forums
+-->
+
+* [ ] 10.0.0 alpha build
+* [ ] 9.4.3 alpha build
+* [ ] 9.4.2 latest supported release
+
+## Affected browser
+<!-- 
+  Check all that apply and add more if necessary.
+  If possible, please also specify exact versions and mention the operating system
+-->
+
+* [ ] Chrome
+* [ ] Firefox
+* [ ] Safari
+* [ ] Internet Explorer
+* [ ] Edge","Email is below password fields on registration form  <!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+  Any potential security issues should be sent to security@dnnsoftware.c",3386,thabaum,Dnn.Platform
+3372,Email Above Username in User.ascx.cs & Registration Form Issue #3371,"<!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+-->
+
+<!-- 
+  Please make sure that there is a corresponding issue created and reference it in the PR by writing
+  `Fixes #123` or `Closes #123`. 
+  A PR without an accompanying issue will be accepted and merged on a very rare occasion
+-->
+Closes issue #3371
+## Summary
+Changed code to create email address field above Username on registration form and the User.ascx.cs file to match the User.ascx email order.
+
+
+<!-- 
+
+  
+  Any new unit tests will be highly appreciated.
+-->","Email Above Username in User.ascx.cs & Registration Form Issue #3371  <!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+-->
+
+<!-- 
+  Please make sure that there is a corres",3386,thabaum,Dnn.Platform
+123,"Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""","See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.","Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""  See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.",3384,berkarslan-xo,Dnn.Platform
+3383,Console error displayed for missing gif file associated with European English,"<!-- 
+  If you need community support or would like to solicit a Request for Comments (RFC), please post to the DNN Community forums at https://dnncommunity.org/forums for now.  In the future, we are planning to implement a more robust solution for cultivating new ideas and nuturing these from concept to creation.  We will update this template when this solution is generally available.  In the meantime, we appreciate your patience as we endeavor to streamline our GitHub focus and efforts.
+  
+  Please read the CONTRIBUTING guidelines at https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md prior to submitting an issue.
+
+  Any potential security issues SHOULD NOT be posted on GitHub.  Instead, please send an email to security@dnnsoftware.com.
+-->
+## Description of bug
+The flag icon on the home page header is broken.
+
+## Steps to reproduce
+List the precise steps to reproduce the bug:
+1. Enable localization
+2. Add ""English (Europe)"" as a new language
+3. Browse to the home screen
+
+## Current behavior
+Console error is shown about the gif being not found.
+
+## Expected behavior
+The flag should be shown.
+
+## Screenshots
+![image](https://user-images.githubusercontent.com/45750757/70328930-435cf200-184b-11ea-8dbc-3b8e728d38d7.png)
+
+## Error information
+
+## Additional context
+
+## Affected version
+<!-- 
+Please add X in at least one of the boxes as appropriate. In order for an issue to be accepted, a developer needs to be able to reproduce the issue on a currently supported version. If you are looking for a workaround for an issue with an older version, please visit the forums at https://dnncommunity.org/forums
+-->
+* [x] 9.4.3 latest supported release
+
+## Affected browser
+<!-- 
+  Check all that apply, and add more if necessary. As appropriate, please specify the exact version(s) of the browser and operating system.
+-->
+* [x] Chrome
+* [x] Firefox
+* [x] Safari
+* [x] Internet Explorer
+* [x] Edge","Console error displayed for missing gif file associated with European English  <!-- 
+  If you need community support or would like to solicit a Request for Comments (RFC), please post to the DNN Community forums at https://dnncommunity.org/forums for now",3384,berkarslan-xo,Dnn.Platform
+3361,Merges latest changes from 9.4.x into development,This is a release management task and we are self approving it for that reason.,Merges latest changes from 9.4.x into development  This is a release management task and we are self approving it for that reason.,3366,bdukes,Dnn.Platform
+2869,Removal of Obsolete Code,"## Summary
+This the first commit for the resolution of #2800, this addresses solely the removal of methods that were flagged as obsolete for removal in 10.x.  Initial smoke testing has been completed against the core, however, due to the dependencies between this and the PB additional testing and future PR's might be necessary.
+
+## Items for later consideration
+There are a few other items to consider as well that might be follow-on work.
+
+### Removal of Stored Procedures
+Calls to the following Stored Procedures, were removed
+DeleteContentWorkflowState
+UpdateContentWorkflowState
+GetContentWorkflowState
+GetContentWorkflowStates
+AddContentWorkflowLog
+GetContentWorkflowLogs
+DeleteContentWorkflowLogs
+GetContentWorkflowSource
+AddContentWorkflowSource
+
+However, it appears that other areas are STILL using them, therefore I do not believe we SHOULD remove these but a more detailed review is necessary.
+
+### jQuery Objects
+The obsolete items were removed from the jQuery.cs file, however, further investigation might result in a complete removal of the class.","Removal of Obsolete Code  ## Summary
+This the first commit for the resolution of #2800, this addresses solely the removal of methods that were flagged as obsolete for removal in 10.x.  Initial smoke testing has been completed against the core, however, d",3366,bdukes,Dnn.Platform
+2898,"Fix ModuleSettings > Added to Pages grid, pager wasn't working Issue #2897","In Module Settings > Added to Pages section, the pager does not work when there is a large number of pages.
+
+Closes #2897","Fix ModuleSettings > Added to Pages grid, pager wasn't working Issue #2897  In Module Settings > Added to Pages section, the pager does not work when there is a large number of pages.
+
+Closes #2897",3366,bdukes,Dnn.Platform
+3333,Search Results: Advanced Search Scopes - inaccurate behavior,"<!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+-->
+
+<!-- 
+  Please make sure that there is a corresponding issue created and reference it in the PR by writing
+  `Fixes #123` or `Closes #123`. 
+  A PR without an accompanying issue will be accepted and merged on a very rare occasion
+-->
+Fixes #3332 
+
+## Summary
+<!-- 
+  Please describe the code changes as you see fit so that the reviewers have an easier task understanding what changed and why.
+  New unit tests will be highly appreciated.
+-->
+The fix is as simple as the code should look for a exact match of the scope so we replaced Contains with Equals
+Fix Confirmation Video: https://drive.google.com/file/d/1ge7l5F9W37mp_GizncDFIUCzATeSByJi/view","Search Results: Advanced Search Scopes - inaccurate behavior  <!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+-->
+
+<!-- 
+  Please make sure that there is a corresponding",3366,bdukes,Dnn.Platform
+123,"Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""","See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.","Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""  See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.",3353,aelibyary,Dnn.Platform
+3351,Unable to edit Module settings after moving Module to another page,"<!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+  Any potential security issues should be sent to security@dnnsoftware.com, rather than posted on GitHub
+-->
+
+## Description of bug
+DNN Platform/Library/Entities/Modules/ModuleController.cs MoveModule only updates the tabid for TabModules table but not updating the tabid for ContentItems table for the same module
+
+## Steps to reproduce
+List the steps to reproduce the behavior:
+1. From DB, find the latest module on the system 
+`select top 1 ModuleID from Modules order by 1 desc`
+2. Then, select the TabModules and the ContentItems based on that moduleID
+```
+select TabID from TabModules where moduleID = {moduleID from step 1}
+select TabID from ContentItems where moduleID = {moduleID from step 1}
+```
+3. execute DNN Platform/Library/Entities/Modules/ModuleController.cs >MoveModule function giving it the moduleID, the TabID found on step 2, the new tabID , and the pane name of the new tabID
+4. select Step 2 again and notice the returned TabID
+
+## Current result
+TabID of the TabModules has been updated while TabID of the ContentItems has not been updated.
+
+## Expected result
+both tables should have been updated by this function.
+
+## Screenshots
+
+## Error log
+[ERROR] DotNetNuke.Services.Exceptions.Exceptions - System.InvalidOperationException: This module does not belong to the page. Please move to the master page to change the module. at DotNetNuke.Entities.Tabs.TabChangeTracker.TrackModuleModification(ModuleInfo module, Int32 moduleVersion, Int32 userId)
+
+## Additional context
+Add any other context about the bug that may be helpful for resolution.
+
+## Affected version
+<!-- 
+Please add X in at least one of the boxes as appropriate. In order for an issue to be accepted, a developer needs to be able to reproduce the issue on a currently supported version. If you are looking for a workaround for an issue with an older version, please visit the forums at https://dnncommunity.org/forums
+-->
+
+* [ ] 10.0.0 alpha build
+* [ ] 9.4.2 alpha build
+* [ ] 9.4.1 latest supported release
+
+## Affected browser
+<!-- 
+  Check all that apply and add more if necessary.
+  If possible, please also specify exact versions and mention the operating system
+-->
+
+* [ ] Chrome
+* [ ] Firefox
+* [ ] Safari
+* [ ] Internet Explorer
+* [ ] Edge","Unable to edit Module settings after moving Module to another page  <!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+  Any potential security issues should be sent to securit",3353,aelibyary,Dnn.Platform
+3340,Add safe access to UrlReferrer in Log404,"Allow safe access to the UrlReferrer property in Log404 in case of bad format UrlReferrer property.
+Issue #3339
+
+## Summary
+We intercept the error in Log404 method and get the missing information from the header.","Add safe access to UrlReferrer in Log404  Allow safe access to the UrlReferrer property in Log404 in case of bad format UrlReferrer property.
+Issue #3339
+
+## Summary
+We intercept the error in Log404 method and get the missing information from the head",3341,bdukes,Dnn.Platform
+3339,UrlReferrer format exception in Log404,"## Description of bug
+We get System.UriFormatException when a bad format **UrlReferrer** is given in **Log404** method, loosing the information on the UrlReferrer itself and all subsequent logs. In the event log we get a general exception with no information. 
+This is a common scenario in case of Host\Split Exploitable Antipatterns in Unicode Normalization attack.
+
+## Steps to reproduce
+To reproduce the exception provide a bad format UrlReferrer.
+
+## Expected result
+Manage the UriFormatException in Log404 method and continue with the information logs about the request.
+
+## Screenshots
+![immagine](https://user-images.githubusercontent.com/11808127/69527131-f1bf8800-0f6b-11ea-8b11-8d0b57c893d2.png)
+
+## Error log
+DotNetNuke.Services.Exceptions.Exceptions - System.UriFormatException: Invalid URI: The hostname could not be parsed.
+   at System.Uri.CreateThis(String uri, Boolean dontEscape, UriKind uriKind)
+   at System.Uri..ctor(String uriString)
+   at System.Web.HttpRequest.get_UrlReferrer()
+   at DotNetNuke.Entities.Urls.AdvancedUrlRewriter.IgnoreRequestForInstall(HttpRequest request)
+   at DotNetNuke.Entities.Urls.AdvancedUrlRewriter.RewriteUrl(Object sender, EventArgs e)
+
+## Affected version
+* [X] 10.0.0 alpha build
+* [X] 9.4.2 alpha build
+* [X] 9.4.1 latest supported release","UrlReferrer format exception in Log404   ## Description of bug
+We get System.UriFormatException when a bad format **UrlReferrer** is given in **Log404** method, loosing the information on the UrlReferrer itself and all subsequent logs. In the event log w",3341,bdukes,Dnn.Platform
+123,"Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""","See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.","Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""  See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.",3333,aelibyary,Dnn.Platform
+3332,Search Results: Advanced Search Scopes - inaccurate behavior,"<!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+  Any potential security issues should be sent to security@dnnsoftware.com, rather than posted on GitHub
+-->
+
+## Description of bug
+Advanced Search > List of available Filters returns other options than the selected ones from the Settings > Results Scope for Content Type(s) and
+This is due to how the code matches the scopes,
+Currently, it will look for the selected scope, and will check if the name of the other scopes is contained within it. In this example it checks if ""Blog Subscribe"" contains ""Blog"" which returns true and therefore it ends up showing that scope as well which is not the expected behavior.
+
+The line with doing the 'contains' match is
+https://github.com/dnnsoftware/Dnn.Platform/blob/development/DNN%20Platform/Website/DesktopModules/Admin/SearchResults/SearchResults.ascx.cs#L232
+## Steps to reproduce
+List the steps to reproduce the behavior:
+1. Go to the Search Results page of your site.
+2. Go into Edit mode, and go to the settings of the Search Results Module.
+3. Go to the 'Search Results Settings' Tab
+4. For the 'Results Scope for Content Type(s), uncheck all of the entries and only leave ""Blog Roster""
+5. Save the Settings and Refresh the Page.
+6. Click on the Advanced Drop-down located at the right of the search bar
+7. Review the List of available Filters
+
+## Current result
+It is showing 2 different Scopes ""Blog"" and ""Blog Roster"" even though only one scope has been selected.
+
+## Expected result
+It should only show the scopes that were selected in the settings.
+
+## Screenshots
+https://drive.google.com/file/d/1QUWOku7j7fjJMusI24WS9BKNbe0GoGvL/view
+
+## Error log
+
+
+## Additional context
+
+
+## Affected version
+<!-- 
+Please add X in at least one of the boxes as appropriate. In order for an issue to be accepted, a developer needs to be able to reproduce the issue on a currently supported version. If you are looking for a workaround for an issue with an older version, please visit the forums at https://dnncommunity.org/forums
+-->
+
+* [ ] 10.0.0 alpha build
+* [ ] 9.4.2 alpha build
+* [x] 9.4.1 latest supported release
+
+## Affected browser
+<!-- 
+  Check all that apply and add more if necessary.
+  If possible, please also specify exact versions and mention the operating system
+-->
+
+* [x] Chrome
+* [x] Firefox
+* [x] Safari
+* [x] Internet Explorer
+* [x] Edge","Search Results: Advanced Search Scopes - inaccurate behavior  <!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+  Any potential security issues should be sent to security@dnns",3333,aelibyary,Dnn.Platform
+3318,Google Analytics TrackingID is stored in lowercase,"## Description of bug
+When adding the analytics tracking code in analytics connector, it will be stored in lowercase. This makes analytics not tracking anything.
+
+## Steps to reproduce
+List the steps to reproduce the behavior:
+1. Go to 'Settings' --> 'Connectors'
+2. Click on 'Google Analytics' --> Edit
+3. Enter Google TrackingID (eg UA-123456789-0)
+4. Click 'Save'
+
+## Current result
+The 'SiteAnalytics.config' in website root directory will contain the TrackingID in lowercase: (ua-123456789-0)
+
+## Expected result
+The 'SiteAnalytics.config' in website root directory should contain the TrackingID in an unchanged form: (UA-123456789-0)
+
+## Affected version
+* [x] 9.4.2 latest supported release
+
+## Affected browser
+* [x] All Browsers","Google Analytics TrackingID is stored in lowercase  ## Description of bug
+When adding the analytics tracking code in analytics connector, it will be stored in lowercase. This makes analytics not tracking anything.
+
+## Steps to reproduce
+List the steps",3322,coretoco,Dnn.Platform
+3319,Fix bug #3318,"Closes #3318
+
+## Summary
+The TrackingId should be uppercase to work with Google Analytics.","Fix bug #3318  Closes #3318
+
+## Summary
+The TrackingId should be uppercase to work with Google Analytics.",3322,coretoco,Dnn.Platform
+123,"Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""","See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.","Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""  See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.",3249,berkarslan-xo,Dnn.Platform
+3248,Not able to delete custom roles if their associated social group folder isn't empty,"<!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+  Any potential security issues should be sent to security@dnnsoftware.com, rather than posted on GitHub
+-->
+
+## Description of bug
+When trying to delete the Role which is associated with a Social Group, it throws Internal Server Error 500.
+
+## Steps to reproduce
+List the steps to reproduce the behavior:
+1. Create a Social Group
+2. Note the Social Group ID
+3. Upload nested folder and files under Portals\0\Groups\<GROUPID>
+4. Attempt to delete the Custom Role associated with the Social Group
+
+Reproduction video: https://drive.google.com/file/d/1tTEJreF3SdKrKdK13tYH0R7vlKpMgKJC/view?usp=sharing
+
+## Current result
+1. General exception error caught in the Admin Logs with ""Message:The directory is not empty.""
+2. 500 API error caught in the browser's Dev Tools under the Network Tab
+3. The Custom Role doesn't get deleted.
+
+## Expected result
+The Custom Role gets deleted.
+
+## Screenshots
+If applicable, provide screenshots to help explain your problem.
+
+## Error log
+Paste the error log that is related to this issue.
+
+## Additional context
+Add any other context about the bug that may be helpful for resolution.
+
+## Affected version
+<!-- 
+Please add X in at least one of the boxes as appropriate. In order for an issue to be accepted, a developer needs to be able to reproduce the issue on a currently supported version. If you are looking for a workaround for an issue with an older version, please visit the forums at https://dnncommunity.org/forums
+-->
+
+* [x] 9.4.x build
+
+## Affected browser
+<!-- 
+  Check all that apply and add more if necessary.
+  If possible, please also specify exact versions and mention the operating system
+-->
+
+* [x] Chrome
+* [x] Firefox
+* [x] Safari
+* [x] Internet Explorer
+* [x] Edge","Not able to delete custom roles if their associated social group folder isn't empty  <!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+  Any potential security issues should b",3249,berkarslan-xo,Dnn.Platform
+123,"Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""","See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.","Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""  See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.",3244,thabaum,Dnn.Platform
+123,"Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""","See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.","Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""  See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.",3237,thabaum,Dnn.Platform
+123,"Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""","See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.","Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""  See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.",3234,thabaum,Dnn.Platform
+123,"Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""","See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.","Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""  See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.",3223,tingung,Dnn.Platform
+2916,"After creating a new group in the page, page redirect to Group activity page instead of current page","<!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+  Any potential security issues should be sent to security@dnnsoftware.com, rather than posted on GitHub
+-->
+
+## Description of bug
+Provide a clear and concise description of what the bug is.
+After creating a new group in the page, page redirect to Group activity page instead of current page. 
+
+## Steps to reproduce
+List the steps to reproduce the behavior:
+1. Go to any page
+2. Click on ""Edit""  (pencil icon) at the bottom of the page. The page should in edit mode.
+3. Click the ""Add Module"".
+4. Add Module Pop Up will open - Scroll down and Add Social Groups 
+5. Drag social groups in one of html div section 
+6. Click on Auto Configure 
+7. Click on Create New Group and fill in the details. 
+8. Click on Create Group button.
+
+## Current result
+Explain what the current result is.
+Page navigates to the Group-Activity/groupid URL. 
+And in order to publish the page, user again need to click on respective page and click on Pencil icon and then click on publish button in order to publish the page. 
+
+## Expected result
+Provide a clear and concise description of what you expected to happen.
+After clicking on create group button, the page should remain at the Edit Mode such that the user can publish the page.
+
+## Screenshots
+If applicable, provide screenshots to help explain your problem.
+
+## Error log
+Paste the error log that is related to this issue.
+
+## Additional context
+Add any other context about the bug that may be helpful for resolution.
+Both edit mode and actual page are sharing the same module, make changes will affecting both unless we check for the condition for the edit mode. However, I think it is  acceptable to stay at current page after creating group in regardless in edit mode or not. 
+
+## Affected version
+<!-- 
+Please add X in at least one of the boxes as appropriate. In order for an issue to be accepted, a developer needs to be able to reproduce the issue on a currently supported version. If you are looking for a workaround for an issue with an older version, please visit the forums at https://dnncommunity.org/forums
+-->
+
+* [ ] 10.0.0 nightly build
+* [ ] 9.4.1 nightly build
+* [ ] 9.4.0 release candidate
+* [ ] 9.3.2 latest supported release
+
+## Affected browser
+<!-- 
+  Check all that apply and add more if necessary.
+  If possible, please also specify exact versions and mention the operating system
+-->
+
+* [x] Chrome
+* [x] Firefox
+* [x] Safari
+* [x] Internet Explorer
+* [x] Edge","After creating a new group in the page, page redirect to Group activity page instead of current page  <!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+  Any potential securit",3223,tingung,Dnn.Platform
+3186,Possible memory leak (dependency injection)?,"## Description of bug
+I'm sorry if this is not the right place to post this. But I suspect that Dependency Injection implemented in DNN 9.4 is causing memory leaks and if so it might be important for others too.
+
+After upgrading from DNN 8.0.4 to 9.4.1 the memory consumption of my website (the w3wp process) is increasing indefinitely until all server resources is consumed. The site is **not** slowing down or affected in any way though, i.e. no errors in the admin logs.
+
+The site is not using any 3rd part modules. But only ""thin"" frontend modules pulling data from custom build web api services (a project with controllers that inherits from DnnApiController).
+
+No source code was changed when upgrading other than changing target .NET Framework version of the project to 4.7.2. No compiler errors and no errors in the DNN log.
+
+I've been ""debugging"" in production by deactivating the use of different parts of the service, but without luck. 
+
+When analyzing a memory dump of the IIS w3wp process (using dotMemory from Jetbrains and DebugDiag from MS) I see the the garbage collector heap usage (generation 2) is quite large with about 2/3 of the total memory usage. Also there are a lot of ""objects ready for finalization"". (see [https://ibb.co/Yt1GVkG](https://ibb.co/Yt1GVkG) )
+
+And at the top of memory usage list is _Microsoft.Extensions.DependencyInjection.ServiceProvider_ (see [https://ibb.co/vjK5rsc](https://ibb.co/vjK5rsc) ).
+
+I've run out of ideas. If this is caused by Dependency Injection, then others might experience the same. Perhaps without knowing it yet. I have a lot of traffic on the site (20-25k user session per day) and the memory consumption hits 2 GB in about 6 hours at which point the app pool recycles.
+
+Is it possible for this to be related to DI, perhaps in combination with using DnnApiController (my code was not changed during upgrade)? Could DI prevent the garbage collector from eliminating dead objects?
+
+If needed I can add source code examples (even though no exceptions are thrown) or more info from the memory profiler.
+
+Thanks a lot.
+
+
+## Steps to reproduce
+I have not been able to reproduce this locally. Perhaps a different stress testing tool is needed. Or maybe it's related to the production server environment (Windows Server 2008 R2 + IIS 7.5)
+
+## Current result
+Ever increasing memory consumption.
+
+## Expected result
+Memory usage should be stable. It was stable at 600 MB in DNN8 using the same code.
+
+## Screenshots
+This is screenshots of some of the memory profiler reports:
+[https://ibb.co/Yt1GVkG](https://ibb.co/Yt1GVkG)
+[https://ibb.co/vjK5rsc](https://ibb.co/vjK5rsc) 
+
+## Error log
+No errors in error log.
+
+## Affected version
+* [?] 10.0.0 alpha build
+* [x] 9.4.1
+* [?] 9.4.0 
+","Possible memory leak (dependency injection)?  ## Description of bug
+I'm sorry if this is not the right place to post this. But I suspect that Dependency Injection implemented in DNN 9.4 is causing memory leaks and if so it might be important for others t",3192,MichalStrehovsky,corert
+3186,Possible memory leak (dependency injection)?,"## Description of bug
+I'm sorry if this is not the right place to post this. But I suspect that Dependency Injection implemented in DNN 9.4 is causing memory leaks and if so it might be important for others too.
+
+After upgrading from DNN 8.0.4 to 9.4.1 the memory consumption of my website (the w3wp process) is increasing indefinitely until all server resources is consumed. The site is **not** slowing down or affected in any way though, i.e. no errors in the admin logs.
+
+The site is not using any 3rd part modules. But only ""thin"" frontend modules pulling data from custom build web api services (a project with controllers that inherits from DnnApiController).
+
+No source code was changed when upgrading other than changing target .NET Framework version of the project to 4.7.2. No compiler errors and no errors in the DNN log.
+
+I've been ""debugging"" in production by deactivating the use of different parts of the service, but without luck. 
+
+When analyzing a memory dump of the IIS w3wp process (using dotMemory from Jetbrains and DebugDiag from MS) I see the the garbage collector heap usage (generation 2) is quite large with about 2/3 of the total memory usage. Also there are a lot of ""objects ready for finalization"". (see [https://ibb.co/Yt1GVkG](https://ibb.co/Yt1GVkG) )
+
+And at the top of memory usage list is _Microsoft.Extensions.DependencyInjection.ServiceProvider_ (see [https://ibb.co/vjK5rsc](https://ibb.co/vjK5rsc) ).
+
+I've run out of ideas. If this is caused by Dependency Injection, then others might experience the same. Perhaps without knowing it yet. I have a lot of traffic on the site (20-25k user session per day) and the memory consumption hits 2 GB in about 6 hours at which point the app pool recycles.
+
+Is it possible for this to be related to DI, perhaps in combination with using DnnApiController (my code was not changed during upgrade)? Could DI prevent the garbage collector from eliminating dead objects?
+
+If needed I can add source code examples (even though no exceptions are thrown) or more info from the memory profiler.
+
+Thanks a lot.
+
+
+## Steps to reproduce
+I have not been able to reproduce this locally. Perhaps a different stress testing tool is needed. Or maybe it's related to the production server environment (Windows Server 2008 R2 + IIS 7.5)
+
+## Current result
+Ever increasing memory consumption.
+
+## Expected result
+Memory usage should be stable. It was stable at 600 MB in DNN8 using the same code.
+
+## Screenshots
+This is screenshots of some of the memory profiler reports:
+[https://ibb.co/Yt1GVkG](https://ibb.co/Yt1GVkG)
+[https://ibb.co/vjK5rsc](https://ibb.co/vjK5rsc) 
+
+## Error log
+No errors in error log.
+
+## Affected version
+* [?] 10.0.0 alpha build
+* [x] 9.4.1
+* [?] 9.4.0 
+","Possible memory leak (dependency injection)?  ## Description of bug
+I'm sorry if this is not the right place to post this. But I suspect that Dependency Injection implemented in DNN 9.4 is causing memory leaks and if so it might be important for others t",3192,ahoefling,Dnn.Platform
+123,"Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""","See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.","Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""  See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.",3152,ahoefling,Dnn.Platform
+2687,OAuth2 Custom Providers: Thread Aborts With No Reason,"<!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+  Any potential security issues should be sent to security@dnnsoftware.com, rather than posted on GitHub
+-->
+
+## Description of bug
+When building an OAuth2 Authorization Provider, during the login phase `OAuthClient.Authorize()` an exception is captured and is ignored that states the thread is aborted.
+
+```
+{""Thread was being aborted.""}
+    Data: {System.Collections.ListDictionaryInternal}
+    ExceptionState: Unable to evaluate expression because the code is optimized or a native frame is on top of the call stack.
+    HResult: -2146233040
+    HelpLink: null
+    InnerException: null
+    Message: ""Thread was being aborted.""
+    Source: ""mscorlib""
+    StackTrace: ""   at System.Threading.Thread.AbortInternal()\r\n   at System.Threading.Thread.Abort(Object stateInfo)\r\n   at DotNetNuke.Services.Authentication.OAuth.OAuthClientBase.AuthorizeV2() ... <omitted stack> ...""
+    TargetSite: {Void AbortInternal()}
+```
+
+## Steps to reproduce
+List the steps to reproduce the behavior:
+1. Create OAuth Authorization Provider
+2. Install module
+3. Login
+
+## Details of problem
+The OAuth `Authorize` workflow lives in the `OAuthClient` class of the `DotNetNuke.Library`. This is the class that is used to create custom OAuth Provider Modules. The Module will manually invoke
+```var result = OAuthClient.Authorize();```
+
+(Code Truncated for brevity)
+```
+public virtual AuthorisationResult Authorize()
+{
+    if (OAuthVersion == ""1.0"")
+    {
+        return AuthorizeV1();
+    }
+    return AuthorizeV2();
+}
+
+private AuthorisationResult AuthorizeV2()
+{
+    string errorReason = HttpContext.Current.Request.Params[""error_reason""];
+    bool userDenied = (errorReason != null);
+    if (userDenied)
+    {
+        return AuthorisationResult.Denied;
+    }
+
+    if (!HaveVerificationCode())
+    {
+        var parameters = new List<QueryParameter>
+                                {
+                                    new QueryParameter(""scope"", Scope),
+                                    new QueryParameter(OAuthClientIdKey, APIKey),
+                                    new QueryParameter(OAuthRedirectUriKey, HttpContext.Current.Server.UrlEncode(CallbackUri.ToString())),
+                                    new QueryParameter(""state"", Service),
+                                    new QueryParameter(""response_type"", ""code"")
+                                };
+
+        HttpContext.Current.Response.Redirect(AuthorizationEndpoint + ""?"" + parameters.ToNormalizedString(), true);
+        return AuthorisationResult.RequestingCode;
+    }
+
+    ExchangeCodeForToken();
+
+    return String.IsNullOrEmpty(AuthToken) ? AuthorisationResult.Denied : AuthorisationResult.Authorized;
+}
+```
+
+The problem has to deal with the following line of code:
+```
+HttpContext.Current.Response.Redirect(AuthorizationEndpoint + ""?"" + parameters.ToNormalizedString(), true);
+```
+
+The parameter request if the thread aborts or not and we are passing in `true`. If we update this code to `false` the thread will not abort.
+
+### My Thoughts
+Aborting the thread or continuing doesn't really matter for an OAuth2 integration, but it makes it **VERY** confusing to a module developer on what is happening when the error just reads the Thread was aborted. I think we should allow the thread to continue along and finish processing any logic that may exist in the custom module.
+
+## Screenshots
+N/A
+
+## Error log
+N/A
+
+## Additional context
+N/A
+
+## Affected version
+<!-- Check all that apply and add more if necessary -->
+
+* [x] 9.3.0
+* [x] 9.2.2
+* [x] 9.2.1
+* [x] 9.2
+* [x] 9.1.1
+* [x] 9.1
+* [x] 9.0
+
+## Affected browser
+<!-- 
+  Check all that apply and add more if necessary.
+  If possible, please also specify exact versions and mention the operating system
+-->
+
+* [x] Chrome
+* [x] Firefox
+* [x] Safari
+* [x] Internet Explorer
+* [x] Edge","OAuth2 Custom Providers: Thread Aborts With No Reason  <!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+  Any potential security issues should be sent to security@dnnsoftware",3152,ahoefling,Dnn.Platform
+123,"Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""","See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.","Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""  See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.",3123,berkarslan-xo,Dnn.Platform
+2955,Infinite loop occurs in vocabularies,"<!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+  Any potential security issues should be sent to security@dnnsoftware.com, rather than posted on GitHub
+-->
+
+## Description of bug
+Page hangs infinitely when a sort of special characters are entered into Tag Add page.
+
+## Steps to reproduce
+List the steps to reproduce the behavior:
+1. Install 9.2.2 (or use 9.4.x branch) and login as host; 
+2. Go to Settings > Vocabularies
+3. Open Tags panel
+4. Try to add a new term named ""&test;"". 
+
+## Current result
+The request will never complete.
+
+## Expected result
+The name should able added.
+
+## Screenshots
+
+## Error log
+
+## Additional context
+
+## Affected version
+<!-- 
+Please add X in at least one of the boxes as appropriate. In order for an issue to be accepted, a developer needs to be able to reproduce the issue on a currently supported version. If you are looking for a workaround for an issue with an older version, please visit the forums at https://dnncommunity.org/forums
+-->
+
+* [x] 9.4.0 release candidate
+
+## Affected browser
+<!-- 
+  Check all that apply and add more if necessary.
+  If possible, please also specify exact versions and mention the operating system
+-->
+
+* [x] Chrome
+* [x] Firefox
+* [x] Safari
+* [x] Internet Explorer
+* [x] Edge","Infinite loop occurs in vocabularies  <!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+  Any potential security issues should be sent to security@dnnsoftware.com, rather than",3123,berkarslan-xo,Dnn.Platform
+2956,Infinite loop occurs in vocabularies,"<!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+-->
+
+<!-- 
+  Please make sure that there is a correcponding issue created and reference it in the PR by writing
+  `Fixes #123` or `Closes #123`. 
+  A PR without an accompanying issue will be accepted and merged on a very rare occasion
+-->
+Fixes #2955 
+## Summary
+<!-- 
+  Please describe the code changes as you see fit so that the reviewers have an easier task understanding what changed and why.
+  
+  Any new unit tests will be highly appreciated.
+-->
+If ""System.Net.WebUtility.HtmlDecode"" returns the same value as the input, it will cause an infinite loop because of the while loop. There are no needs for a while loop here since it's enough for ""System.Net.WebUtility.HtmlDecode"" to work only once.
+
+Demo: https://drive.google.com/open?id=1nG5P1_drh8Ncx-AvwNcSDI1MANxAz9Ve
+
+Note: The retargeted PR (for release/9.4.x) can be found in #2956","Infinite loop occurs in vocabularies  <!-- 
+  Please read contribution guideline first: https://github.com/dnnsoftware/Dnn.Platform/blob/development/CONTRIBUTING.md 
+-->
+
+<!-- 
+  Please make sure that there is a correcponding issue created and refere",3123,berkarslan-xo,Dnn.Platform
+123,"Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""","See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.","Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""  See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.",2371,sleupold,Dnn.Platform
+123,"Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""","See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.","Fix DNN-5576: ""SecureFolder: Cannot sync folder if files ""Filename.Extenstion"" and ""Filename.Extenstion.resources"" exist""  See https://dnntracker.atlassian.net/browse/DNN-5576 for more details.",2209,Mohtshum,Dnn.Platform
+2211,Email as username breaks login/Unauthorized message,"## Steps to reproduce
+
+1. Set Emails as Username to True. 
+2. Create a new user. 
+3. Set the user to unauthorized. 
+3. Try to login with the created user. 
+
+## Current result
+
+You'll get A critical error has occurred. Please check the Event Viewer for further details. 
+
+## Expected result
+
+Unauthorized message appears correctly and usernames as emails is available for login purposes.
+
+## Affected version
+
+<!-- Check all that apply and add more if necessary -->
+
+* [x] 9.2
+* [x] 8.0.2
+* [x] 8.4.1","Email as username breaks login/Unauthorized message  ## Steps to reproduce
+
+1. Set Emails as Username to True. 
+2. Create a new user. 
+3. Set the user to unauthorized. 
+3. Try to login with the created user. 
+
+## Current result
+
+You'll get A crit",2209,Mohtshum,Dnn.Platform
+1854,DNN-9408: Upgrade ClientDependency.Core source code to latest,"","DNN-9408: Upgrade ClientDependency.Core source code to latest  ",1891,bdukes,Dnn.Platform
+108,Ability to exclude link to active tab,"It can be useful in some skins to exclude link to active tab in a LINKS skinobject. 
+
+I've added IncludeActiveTab property to LINKS skinobject with default value of ""True"" -  to make this change backward-compatible. So, if no IncludeActiveTab is specified for control instance, then link to active tab included in a list.","Ability to exclude link to active tab  It can be useful in some skins to exclude link to active tab in a LINKS skinobject. 
+
+I've added IncludeActiveTab property to LINKS skinobject with default value of ""True"" -  to make this change backward-compatible",1891,bdukes,Dnn.Platform
+684,DNN-7315 DCC Not all elements are localized in the Content Type Editor,"Note - must be merged after PR #683","DNN-7315 DCC Not all elements are localized in the Content Type Editor  Note - must be merged after PR #683",686,cnurse,Dnn.Platform
+683,DNN-7273 DCC - No error msg if you attempt to save a Content or Data type with an existing name,"","DNN-7273 DCC - No error msg if you attempt to save a Content or Data type with an existing name  ",686,cnurse,Dnn.Platform
+588,DNN-6931 Add a Content Field to a Content Type,"Please ensure that Pull Request #576 is processed before this one","DNN-6931 Add a Content Field to a Content Type  Please ensure that Pull Request #576 is processed before this one",589,cnurse,Dnn.Platform
+576,DNN-6997 - View the Content Field List,"This pull request completes the story which describes displaying a list of Content Fields for a Content Type","DNN-6997 - View the Content Field List  This pull request completes the story which describes displaying a list of Content Fields for a Content Type",589,cnurse,Dnn.Platform
+128,Build localization into list entries,"Build localization into list entries so they can be localized by dropping a resource file into the App_GlobalResources folder. This would take care of DNN-5568.","Build localization into list entries  Build localization into list entries so they can be localized by dropping a resource file into the App_GlobalResources folder. This would take care of DNN-5568.",253,bdukes,Dnn.Platform
+148,DNN-5799 Isolate list localization in GlobalResources usinfg List_ prefix,"","DNN-5799 Isolate list localization in GlobalResources usinfg List_ prefix  ",253,bdukes,Dnn.Platform

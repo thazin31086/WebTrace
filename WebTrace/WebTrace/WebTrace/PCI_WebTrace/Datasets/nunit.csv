@@ -1,0 +1,1193 @@
+﻿IssueID,Title,Description,Title_Description,PullRequestID,FixedByID,RepoID
+3315,Assert.DoesNotThrow() stopped working as it was previously,"Some specs of environment first.
+Windows 10 1809 build 17763.557
+VS 2017 v15.9.12
+.Net Framework Version: 4.7.03190
+Test project is targeted for .Net Core 2.0.3
+NUnit package version: 3.12.0 (latest for now)
+NUnit3TestAdapter package version 3.12.0
+
+Let's say we have an extension method like:
+
+```
+public static void Run<T>(this IEnumerable<T> sequence)     {
+     foreach (var item in sequence);
+}
+```
+
+and I used to use it like
+  `Assert.DoesNotThrow(someEnumerable.Run)`
+
+because IDE (or resharper, whatever)  suggests me use it instead of 
+  `Assert.DoesNotThrow(()=>someEnumerable.Run())`
+
+And everything was fine but then I had to update because another bug was fixed it started failing my tests with the exception
+""System.ArgumentException : The actual value must be a parameterless delegate but was TestDelegate.
+Parameter name: parameterName""
+
+What is that? Do you even test the changes you make, guys?
+
+Here is the test:
+
+```
+[Test]
+public void NunitDoesNotThrowTest()
+{
+  TestDelegate fullform = () => Enumerable.Repeat(1, 10).Run(); // it is your TestDelegate. working
+  TestDelegate shortForm = Enumerable.Repeat(1, 10).Run; // this is to. should be working because IT IS your TestDelegate (acording to VS) you want me to pass into DoesNotThrow() method!
+  Assert.DoesNotThrow(() => Assert.DoesNotThrow(fullform));
+  Assert.DoesNotThrow(() => Assert.DoesNotThrow(shortForm));
+}
+```","Assert.DoesNotThrow() stopped working as it was previously  Some specs of environment first.
+Windows 10 1809 build 17763.557
+VS 2017 v15.9.12
+.Net Framework Version: 4.7.03190
+Test project is targeted for .Net Core 2.0.3
+NUnit package version: 3.12.0",3317,jnm2,nunit
+3257,Running under mono,"trying to run the .NET 4.5 build under mono, executing nunitlite.tests.exe results in:
+
+```
+mono nunitlite.tests.exe
+NUnitLite 3.13.0 (.NET Framework 4.5 Debug)
+Copyright (c) 2019 Charlie Poole, Rob Prouse
+
+Runtime Environment
+   OS Version: Unix 4.4.0.148
+  CLR Version: 4.0.30319.17020
+
+Test Files
+    /media/sf_D_DRIVE/Projects/github/nunit/bin/debug/net45/nunitlite.tests.exe
+
+Test Discovery
+  Start time: 2019-05-22 11:19:56Z
+    End time: 2019-05-22 11:19:56Z
+    Duration: 0.023 seconds
+
+System.TypeLoadException: Could not load type 'NUnit.Framework.Internal.TestSuiteResult' from assembly 'nunit.framework, Version=3.13.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb'.
+  at NUnit.Framework.Internal.Execution.WorkItemBuilder.CreateWorkItem (ITest test, ITestFilter filter, Boolean recursive) <0x41997a00 + 0x00143> in <filename unknown>:0
+  at NUnit.Framework.Api.NUnitTestAssemblyRunner.RunAsync (ITestListener listener, ITestFilter filter) <0x41994900 + 0x0010f> in <filename unknown>:0
+  at NUnit.Framework.Api.NUnitTestAssemblyRunner.Run (ITestListener listener, ITestFilter filter) <0x41994880 + 0x0001b> in <filename unknown>:0
+  at NUnitLite.TextRunner.RunTests (NUnit.Framework.Internal.TestFilter filter, IDictionary`2 runSettings) <0x41994610 + 0x00059> in <filename unknown>:0
+  at NUnitLite.TextRunner.Execute () <0x41984560 + 0x0071f> in <filename unknown>:0
+```
+
+I have no idea what to do to debug this.  This test exe runs correctly under .NET 4.5 on windows.","Running under mono  trying to run the .NET 4.5 build under mono, executing nunitlite.tests.exe results in:
+
+```
+mono nunitlite.tests.exe
+NUnitLite 3.13.0 (.NET Framework 4.5 Debug)
+Copyright (c) 2019 Charlie Poole, Rob Prouse
+
+Runtime Environment",3271,jnm2,nunit
+3261,Workaround for lost MethodInfo.Invoke stack trace beginning in Mono 5.20,"Fixes #3257. This is a regression in Mono 5.20 which is interfering with @oznetmaster's work and which will be on Azure Pipelines any minute as far as I know, affecting all our builds. (5.20 has been out for a month and a half and AzDO is still on 5.18.)
+
+I stepped through the code on MonoDevelop on Ubuntu. The stack trace is present when the exception is initially thrown:
+
+![image](https://user-images.githubusercontent.com/8040367/58386509-a03f3c00-7fce-11e9-9ca9-c5c7e6737904.png)
+
+On the very next step when you press F10, the step out of MethodInfo.Invoke, the stack trace has been overwritten with useless info:
+
+![image](https://user-images.githubusercontent.com/8040367/58386536-29567300-7fcf-11e9-99ad-80ebe7f7697a.png)
+
+Full text of the thrown exception's StackTrace after stepping out of MethodInfo.Invoke:
+
+![image](https://user-images.githubusercontent.com/8040367/58386539-34110800-7fcf-11e9-882e-24722fab8947.png)","Workaround for lost MethodInfo.Invoke stack trace beginning in Mono 5.20  Fixes #3257. This is a regression in Mono 5.20 which is interfering with @oznetmaster's work and which will be on Azure Pipelines any minute as far as I know, affecting all our buil",3271,jnm2,nunit
+3222,Our build script tests hang when run with Mono on Windows,"When I run the equivalent of test45 using Mono 5.20 on Windows just like we do on Linux, the test run hangs consistently. It looks similar to what we've seen intermittently in CI.
+
+Steps to reproduce from a PowerShell prompt on Windows:
+
+- `choco install mono -y` if you don't have it already
+
+- `.\build.ps1 -t build`
+
+- ```
+  &""C:\Program Files\Mono\bin\mono.exe"" `
+    tools/NUnit.ConsoleRunner.3.9.0/tools/nunit3-console.exe `
+    bin/Release/net45/nunit.framework.tests.dll `
+    --result=test-results/net45/nunit.framework.tests.xml `
+    --process=InProcess
+  ```
+
+The test run has never completed for me.","Our build script tests hang when run with Mono on Windows   When I run the equivalent of test45 using Mono 5.20 on Windows just like we do on Linux, the test run hangs consistently. It looks similar to what we've seen intermittently in CI.
+
+Steps to rep",3225,jnm2,nunit
+2023,Ability to abort threads running a message pump,"Closes everything in #1996 that is actionable at this time.
+For reference to make it easy to see what is involved in aborting threads when testing GUI.","Ability to abort threads running a message pump  Closes everything in #1996 that is actionable at this time.
+For reference to make it easy to see what is involved in aborting threads when testing GUI.",3225,jnm2,nunit
+3027,TimeoutAttribute not available when targeting netcoreapp framework,"Fixes #1638 
+
+As mentioned in the issue #1638, I had to delete the inital branch I created using abbotwares code, this was due to the branch being corrupt and not to do with the discussion around contribution. I then worked on a number of other PR's. When I started again on this issue, I decided enough time had gone by to be able to implement my own version as my memory was hazy to details, even if based on his concept. This means the thorny issue of contribution is side stepped, hopefully.
+
+Happy to address any short comings but wanted to get PR out to get feedback. The original issue seems to have been lost in the very long thread, so no real definition to the solution. I've done the basics, i.e. allowed `TimeoutAttribute` to be applied to `.NetStandard1.4` and '.NetStandard1.6' or more specifically, `.NetCoreApp1.1` and `.NetCoreApp2.0`.
+
+Tests added and no broken tests in other targets.","TimeoutAttribute not available when targeting netcoreapp framework  Fixes #1638 
+
+As mentioned in the issue #1638, I had to delete the inital branch I created using abbotwares code, this was due to the branch being corrupt and not to do with the discuss",3190,mikkelbu,nunit
+1638,TimeoutAttribute not available when targeting netcoreapp framework,"It seems that TimeoutAttribute is not available in the portable version of NUnit 3 when targeting .NET core with a netcoreapp test. This is extremely useful for any sort of test involving threading or integration test, so it would be really useful if this was made available.
+
+Using: NUnit 3.4.0, dotnet-test-nunit 3.4.0-beta1.",TimeoutAttribute not available when targeting netcoreapp framework  It seems that TimeoutAttribute is not available in the portable version of NUnit 3 when targeting .NET core with a netcoreapp test. This is extremely useful for any sort of test involving,3190,mikkelbu,nunit
+8,[SetUpFixture] is not working as expected in GUI - Flat list mode,"When Settings->Gui->Tree Display->Test structure->Flat list of TestFixtures is selected then
+1. [SetUpFixture] methods are not being called when GUI Runner is used
+2.Class having [SetUpFixture] attribute is being shown in tests list in the GUI.
+
+More info at https://bugs.launchpad.net/nunit-3.0/+bug/807873","[SetUpFixture] is not working as expected in GUI - Flat list mode  When Settings->Gui->Tree Display->Test structure->Flat list of TestFixtures is selected then
+1. [SetUpFixture] methods are not being called when GUI Runner is used
+2.Class having [SetUpF",3154,ztittle,nunit
+5,Need a way to repeatedly run the same test on different threads,"I need a new attribute similar to [Repeat] that starts the test on multiple threads concurrently. A similar attribute is available in MbUnit - ThreadedRepeat. The [ThreadedRepeat(5)] attribute will call the test 5 times in parallel, firing off a separate thread for each one.
+
+ I couldn't find the MbUnit documentation for the ThreadedRepeat attribute, but there is a blog post that explains it: http://darrell.mozingo.net/2008/05/30/mbunits-threadedrepeat-attribute/
+
+From https://bugs.launchpad.net/nunit-3.0/+bug/590804",Need a way to repeatedly run the same test on different threads  I need a new attribute similar to [Repeat] that starts the test on multiple threads concurrently. A similar attribute is available in MbUnit - ThreadedRepeat. The [ThreadedRepeat(5)] attribu,3154,ztittle,nunit
+6,Log4net not working with NUnit,"Problem: Using log4net with newer versions of nunit means that no
+log file is created.
+
+Demonstration follows.
+
+I created the solution in VS 2008.
+The OS is Windows XP.
+I tested using both the nunit GUI and console.
+I compared Nunit 2.2.5 with 2.5.5 (I suspect 2.5.0 will fail as well.)
+The solution is created as a console app.
+
+When the app is run as a console application a Log file is produced.
+When the app is run using 2.2.5 a Log file is produced.
+When the app is run using 2.5.5 no Log file is produced.
+
+Repro details and other info at https://bugs.launchpad.net/nunit-3.0/+bug/605034","Log4net not working with NUnit  Problem: Using log4net with newer versions of nunit means that no
+log file is created.
+
+Demonstration follows.
+
+I created the solution in VS 2008.
+The OS is Windows XP.
+I tested using both the nunit GUI and console.",3154,ztittle,nunit
+7,Dynamic loading of tests,"Obviously, the current implementation is the following:
+- First, the Properties which are used for TestCaseSource are asked (static or not)
+- Then the methods attributed with TestFixtureSetUp are called.
+- Then test startup is done
+  and the test called.
+
+It is possible to change the first two steps? The current behaviour is a problem for us. Because the property for the TestCaseSource should have some data from the database which the Connection is established in FixtureSetUp. The parameter vor the database, username, password and so on are set in the constructor of the class.
+
+More info at https://bugs.launchpad.net/nunit-3.0/+bug/664018","Dynamic loading of tests  Obviously, the current implementation is the following:
+- First, the Properties which are used for TestCaseSource are asked (static or not)
+- Then the methods attributed with TestFixtureSetUp are called.
+- Then test startup is",3154,ztittle,nunit
+4,SimpleTestRunner miss handles point of exception,"The SimpleTestRunner performs a an odd skip of Exception processing when faced with a fully un-implemented EventListener. What happens is that my RunStarted throws an Exception and this gets caught end then RunFinished is called which then throws an exception -- the stack trace makes it look like the RunFinished was the culprit when in fact the RunStart began the exceptional behavior. This occurs mainly because the catch( Exception exception ) catches everything. Perhaps what it should do is catch NUnit exceptions and throw all other exceptions -- I'm not familiar enough with the architecture around Exception testing, Assert Exceptions, etc.
+
+So here is the culprit code in SimpleTestRunner, Line 141, of release 2.5.5.101112.
+
+public virtual TestResult Run( EventListener listener, ITestFilter filter )
+{
+ try
+ {
+        log.Debug(""Starting test run"");
+
+  // Take note of the fact that we are running
+  this.runThread = Thread.CurrentThread;
+
+  listener.RunStarted( this.Test.TestName.FullName, test.CountTestCases( filter ) );
+
+  testResult = test.Run( listener, filter );
+
+  // Signal that we are done
+  listener.RunFinished( testResult );
+        log.Debug(""Test run complete"");
+
+  // Return result array
+  return testResult;
+ }
+ catch( Exception exception )
+ {
+                // RunStart actually threw the exception. so RunFinish doesn't make sense.
+
+```
+            // RunFinish then throws an exception when really the first exception should be handled first.
+```
+
+  // Signal that we finished with an exception
+  listener.RunFinished( exception );
+  // Rethrow - should we do this?
+  throw;
+ }
+ finally
+ {
+  runThread = null;
+ }
+}
+
+Cheers,
+L",SimpleTestRunner miss handles point of exception  The SimpleTestRunner performs a an odd skip of Exception processing when faced with a fully un-implemented EventListener. What happens is that my RunStarted throws an Exception and this gets caught end th,3154,ztittle,nunit
+1,Add Monotouch build,"Build NUnitLite using the monotouch profile. This requires a Mac.
+
+From https://bugs.launchpad.net/nunit-3.0/+bug/1047579","Add Monotouch build  Build NUnitLite using the monotouch profile. This requires a Mac.
+
+From https://bugs.launchpad.net/nunit-3.0/+bug/1047579",3154,ztittle,nunit
+2,Data Driven TestFixture,"I have hierarchy like data-driven test cases that’s 3 levels deep.
+Currently the TestFixture can only be instantiated only a constant
+number of times. How can I parameterize the TestFixture based on
+source input, same like the TestCaseSource attribute?
+
+More info at https://bugs.launchpad.net/nunit-3.0/+bug/505700","Data Driven TestFixture  I have hierarchy like data-driven test cases that’s 3 levels deep.
+Currently the TestFixture can only be instantiated only a constant
+number of times. How can I parameterize the TestFixture based on
+source input, same like the",3154,ztittle,nunit
+3,Need a way to generate data when test is executed,"NUnit 2.5.2 and 2.5.3 run every method targeted by TestCaseSource, even if the test targeting it is Explicit or the test fixture is Explicit.
+
+The behaviour I expect is: NUnit shouldn't run a test's TestCaseSource if the test itself won't be run.
+
+Detail:
+
+I have an expensive TestCaseSource generating a few hundred thousand permutations and combinations. I've applied Explicit to both the test targeting the source and the fixture surrounding both test and source.
+
+NUnit console spends ten minutes needlessly constructing test cases from the TestCaseSource before ignoring them and proceeding with the non-Explicit tests.
+
+If I throw NotImplementedException from the first line of the expensive TestCaseSource. NUnit runs the non-Explicit tests immediately. If I put a MessageBox.Show call in the first line, I see the message box.
+
+More info at https://bugs.launchpad.net/nunit-3.0/+bug/538070","Need a way to generate data when test is executed  NUnit 2.5.2 and 2.5.3 run every method targeted by TestCaseSource, even if the test targeting it is Explicit or the test fixture is Explicit.
+
+The behaviour I expect is: NUnit shouldn't run a test's Tes",3154,ztittle,nunit
+2286,Add support for custom Task (i.e. ValueTask),"Can you add support for custom Tasks, i.e. ValueTask (new in C# 7.0).
+
+Right now looking at Assert.ThrowsAsync.","Add support for custom Task (i.e. ValueTask)  Can you add support for custom Tasks, i.e. ValueTask (new in C# 7.0).
+
+Right now looking at Assert.ThrowsAsync.",3095,jnm2,nunit
+3023,NUnit runner fails when test method returns ValueTask<>,"**Versions**: 
+
+Nuget packages:
+NUnit 3.10.1
+NUnit3TestAdapter 3.10.0
+System.Threading.Tasks.Extensions 4.5.1
+
+Environment:
+Windows 10.1803 17134.286 
+Visual Studio 2017 15.8.4
+
+**Steps to Reproduce**:
+
+1. Create C# Class Library, .NET 4.7.2
+2. Add Nuget references for NUnit, NUnit3TestAdapter and System.Threading.Tasks.Extensions
+3. Add Test Class:
+``` csharp
+using System.Threading.Tasks;
+using NUnit.Framework;
+
+namespace ClassLibrary1
+{
+    public class Class1
+    {
+        [Test(/*ExpectedResult = 100*/)]
+        public async ValueTask<int> AsyncGetValueTest()
+        {
+            return await Task.FromResult(100);
+        }
+    }
+}
+```
+4. Run test ""AsyncGetValueTest""
+
+
+**Expected Behavior**:
+NUnit says ""Missed ExpectedResult in Test attribute"" or ""Test methods with return type *ValueTask<>* are not supported""
+
+**Actual Behavior**:
+NUnit fails with an internal error:
+System.NullReferenceException : Object reference not set to an instance of an object.
+   at NUnit.Framework.Internal.AsyncInvocationRegion.AsyncTaskInvocationRegion.WaitForPendingOperationsToComplete(Object invocationResult)
+  at C:\src\nunit\nunit\src\NUnitFramework\framework\Internal\AsyncInvocationRegion.cs:line 109
+  at NUnit.Framework.Internal.Commands.TestMethodCommand.RunAsyncTestMethod(TestExecutionContext context)
+ at C:\src\nunit\nunit\src\NUnitFramework\framework\Internal\Commands\TestMethodCommand.cs:line 96
+","NUnit runner fails when test method returns ValueTask<>  **Versions**: 
+
+Nuget packages:
+NUnit 3.10.1
+NUnit3TestAdapter 3.10.0
+System.Threading.Tasks.Extensions 4.5.1
+
+Environment:
+Windows 10.1803 17134.286 
+Visual Studio 2017 15.8.4
+
+**Steps t",3095,jnm2,nunit
+3093,Tests having TaskLike objects as their return type throws Exception,"After upgrading NUnit.3.10.1 to NUnit.3.11.0 tests which returned TaskLike objects have failed.
+
+Message: System.InvalidOperationException: The delegate did not return a Task.
+
+StackTrace:
+AsyncToSyncAdapter.Await(Func`1 invoke)
+TestMethodCommand.RunTestMethod(TestExecutionContext context)
+
+The tests have passed before the upgrade without fail.
+
+I looked at the code and it throws this exception if returnType FullName is Task's type name.
+
+A TaskLike object is defined by a certain attribute which force the Task interface.
+The attribute:
+System.Runtime.CompilerServices.AsyncMethodBuilderAttribute
+
+The comment in the code applies this feature is soon to come however I couldn't find an open issue about it.
+I would like to know when to expect a resolution.
+
+This issue is important because many of our tests fail due to this behaviour.","Tests having TaskLike objects as their return type throws Exception  After upgrading NUnit.3.10.1 to NUnit.3.11.0 tests which returned TaskLike objects have failed.
+
+Message: System.InvalidOperationException: The delegate did not return a Task.
+
+Stack",3095,jnm2,nunit
+2168,ThrowsAsync reports OperationCanceledException as TaskCanceledException,"The `ThrowsAsync` method reports exceptions of type `OperationCanceledException` as `TaskCanceledException` instead.
+
+Repro:
+
+```
+Assert.ThrowsAsync<OperationCanceledException>(async () =>
+{
+    await Task.Yield();
+    throw new OperationCanceledException();
+});
+```
+
+Result:
+
+```
+Failed : NUnitRepro.Tests.Repro
+  Expected: <System.OperationCanceledException>
+  But was:  <System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at NUnit.Framework.Internal.AsyncInvocationRegion.AsyncTaskInvocationRegion.WaitForPendingOperationsToComplete(Object invocationResult)
+   at NUnit.Framework.Assert.ThrowsAsync(IResolveConstraint expression, AsyncTestDelegate code, String message, Object[] args)>
+```
+
+Other exception types are reported correctly. The following test passes.
+
+```
+Assert.ThrowsAsync<TimeoutException>(async () =>
+{
+    await Task.Yield();
+    throw new TimeoutException();
+});
+```
+
+I believe it's possible to workaround this issue using the ""constraint model"". The following test passes.
+
+```
+Assert.That(async () =>
+{
+    await Task.Yield();
+    throw new OperationCanceledException();
+}, Throws.InstanceOf<OperationCanceledException>());
+```
+
+I observed the issue in version 3.5.0. I updated to 3.6.1 and confirmed that the issue is still present in the latest version.
+
+I also installed the console runner and tested from the command line as per the contributing guidelines. Test output below.
+
+```
+C:\...\NUnitRepro\NUnitRepro\bin\Debug>..\..\..\packages\NUnit.ConsoleRunner.3.6.1\tools\nunit3-console.exe NUnitRepro.exe
+NUnit Console Runner 3.6.1
+Copyright (C) 2017 Charlie Poole
+
+Runtime Environment
+   OS Version: Microsoft Windows NT 10.0.14393.0
+  CLR Version: 4.0.30319.42000
+
+Test Files
+    NUnitRepro.exe
+
+
+Errors, Failures and Warnings
+
+1) Failed : NUnitRepro.Tests.Repro
+  Expected: <System.OperationCanceledException>
+  But was:  <System.Threading.Tasks.TaskCanceledException: A task was canceled.
+   at NUnit.Framework.Internal.AsyncInvocationRegion.AsyncTaskInvocationRegion.WaitForPendingOperationsToComplete(Object invocationResult)
+   at NUnit.Framework.Assert.ThrowsAsync(IResolveConstraint expression, AsyncTestDelegate code, String message, Object[] args)>
+at NUnitRepro.Tests.Repro() in c:\...\NUnitRepro\NUnitRepro\Tests.cs:line 16
+
+Run Settings
+    DisposeRunners: True
+    WorkDirectory: C:\...\NUnitRepro\NUnitRepro\bin\Debug
+    ImageRuntimeVersion: 4.0.30319
+    ImageTargetFrameworkName: .NETFramework,Version=v4.6
+    ImageRequiresX86: True
+    RunAsX86: True
+    ImageRequiresDefaultAppDomainAssemblyResolver: False
+    NumberOfTestWorkers: 4
+
+Test Run Summary
+  Overall result: Failed
+  Test Count: 3, Passed: 2, Failed: 1, Warnings: 0, Inconclusive: 0, Skipped: 0
+    Failed Tests - Failures: 1, Errors: 0, Invalid: 0
+  Start time: 2017-05-15 15:43:50Z
+    End time: 2017-05-15 15:43:50Z
+    Duration: 0.564 seconds
+
+Results (nunit3) saved as TestResult.xml
+```","ThrowsAsync reports OperationCanceledException as TaskCanceledException  The `ThrowsAsync` method reports exceptions of type `OperationCanceledException` as `TaskCanceledException` instead.
+
+Repro:
+
+```
+Assert.ThrowsAsync<OperationCanceledException>(",3095,jnm2,nunit
+3222,Our build script tests hang when run with Mono on Windows,"When I run the equivalent of test45 using Mono 5.20 on Windows just like we do on Linux, the test run hangs consistently. It looks similar to what we've seen intermittently in CI.
+
+Steps to reproduce from a PowerShell prompt on Windows:
+
+- `choco install mono -y` if you don't have it already
+
+- `.\build.ps1 -t build`
+
+- ```
+  &""C:\Program Files\Mono\bin\mono.exe"" `
+    tools/NUnit.ConsoleRunner.3.9.0/tools/nunit3-console.exe `
+    bin/Release/net45/nunit.framework.tests.dll `
+    --result=test-results/net45/nunit.framework.tests.xml `
+    --process=InProcess
+  ```
+
+The test run has never completed for me.","Our build script tests hang when run with Mono on Windows   When I run the equivalent of test45 using Mono 5.20 on Windows just like we do on Linux, the test run hangs consistently. It looks similar to what we've seen intermittently in CI.
+
+Steps to rep",3095,jnm2,nunit
+3045,XSD Schemas missing from the ZIP Package,"I am running the tests for the 3.11 release. When running the tests from the ZIP file produced as part of packaging, the .NET 4.5 tests are failing because the XSD schema files are not included in the ZIP file. **I am fixing this as part of the release, just entering this issue to track the fix.**
+
+Here is one error;
+
+```
+1) Error : NUnit.Framework.Api.SchemaTests.MultipleTestsAreAllowedInsideTestRun
+System.IO.DirectoryNotFoundException : Could not find a part of the path 'C:\tmp\bin\net45\Schemas\TestResult.xsd'.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)
+   at NUnit.TestUtilities.SchemaTestUtils.AssertValidXsd(String schemaFile)
+   at NUnit.TestUtilities.SchemaTestUtils.RunValidation(String xml, String schemaFileName, ValidationEventHandler validationHandler)
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate) in C:\src\nunit\nunit\src\NUnitFramework\framework\Assert.cs:line 323
+```
+
+I also noticed that the `netcoreapp1.1` and `netcoreapp2.0` directories are not in the ZIP.","XSD Schemas missing from the ZIP Package  I am running the tests for the 3.11 release. When running the tests from the ZIP file produced as part of packaging, the .NET 4.5 tests are failing because the XSD schema files are not included in the ZIP file. **",3046,rprouse,nunit
+2960,Planning for 3.11 Release,"We are past due for a 3.11 release. I went through the issues and cleaned up. We only have 33 completed issues so far for 3.11, so I don't think there is a huge rush, so I was thinking mid to late September for a release. @nunit/framework-team if there is anything you are working on or planning on working on that you would like to see in 3.11, please add to the milestone. I removed a couple of long running issues/PRs from the milestone. If work is ongoing and you'd like to get them in, feel free to re-add.","Planning for 3.11 Release  We are past due for a 3.11 release. I went through the issues and cleaned up. We only have 33 completed issues so far for 3.11, so I don't think there is a huge rush, so I was thinking mid to late September for a release. @nunit",3046,rprouse,nunit
+2994,Error in .NET Standard 1.4 DictionaryContainsKeyConstraint MetadataToken compatibility methods,"@oznetmaster identified issues with the two `Matched()` methods added by https://github.com/nunit/nunit/pull/2967 - where `return true` looks like it should be `return false`. See https://github.com/nunit/nunit/commit/feb226fe9180b07b6c348bcb30f6e745ec5850da#r30332971
+
+This initially looks like a mistake - it would be good to verify that, and also work out why the tests passed on CI, and on my local machine, but not for @oznetmaster. (And of course, if we can write a test to fill whatever the gap is!)",Error in .NET Standard 1.4 DictionaryContainsKeyConstraint MetadataToken compatibility methods  @oznetmaster identified issues with the two `Matched()` methods added by https://github.com/nunit/nunit/pull/2967 - where `return true` looks like it should be,3000,DaiMichael,nunit
+2963,Flakey tests in FrameworkControllerTests,"Several tests in FrameworkControllerTests have recently failed in a flaky manner on the CI builds. We need to look into why that is, and make a fix.
+
+The failures don't appear to be platform-specific, here are a few sample failure messages:
+
+```
+Errors, Failures and Warnings
+1) Failed : NUnit.Framework.Api.FrameworkControllerTests.RunTestsAction_AfterLoad_ReturnsRunnableSuite(""<filter/>"")
+  Expected: not null and String starting with ""ID""
+  But was:  ""8601""
+  at NUnit.Framework.Api.FrameworkControllerTests.RunTestsAction_AfterLoad_ReturnsRunnableSuite (System.String filter) [0x00000] in <1df9fb68b85648378ea6dd2e640b0ed4>:0 
+```
+```
+1) Failed : NUnit.Framework.Api.FrameworkControllerTests.ExploreTestsAction_FilterCategory_ReturnsTests
+  Expected: not null and String starting with ""ID""
+  But was:  ""7680""
+   at NUnit.Framework.Api.FrameworkControllerTests.ExploreTestsAction_FilterCategory_ReturnsTests() in /home/travis/build/nunit/nunit/src/NUnitFramework/tests/Api/FrameworkControllerTests.cs:line 316
+```
+```
+1) Failed : NUnit.Framework.Api.FrameworkControllerTests.RunTestsAction_AfterLoad_ReturnsRunnableSuite(""<filter/>"")
+  Expected: not null and String starting with ""ID""
+  But was:  ""8508""
+  at NUnit.Framework.Api.FrameworkControllerTests.RunTestsAction_AfterLoad_ReturnsRunnableSuite (System.String filter) [0x00000] in <9278af9c5d3e455d8858b76816878cf6>:0 
+```
+
+As always, contributions welcome!","Flakey tests in FrameworkControllerTests   Several tests in FrameworkControllerTests have recently failed in a flaky manner on the CI builds. We need to look into why that is, and make a fix.
+
+The failures don't appear to be platform-specific, here are",2993,jnm2,nunit
+2986,Quick fix for test instability around Test.IdPrefix,"As noted in #2963 , some tests in the solution are changing `Test.IdPrefix` to a value that's not expected by other tests, causing intermittent test failures, due to the fact that `IdPrefix` is a static field.  As a quick fix, we should go through all tests that set `IdPrefix` to a invalid value and revert to its original value on test teardown.","Quick fix for test instability around Test.IdPrefix  As noted in #2963 , some tests in the solution are changing `Test.IdPrefix` to a value that's not expected by other tests, causing intermittent test failures, due to the fact that `IdPrefix` is a static",2993,jnm2,nunit
+1200,async test + Apartment(ApartmentState.STA) => await not returning on STA thread,"There is the old post on SO: 
+http://stackoverflow.com/questions/18838116/nunit-async-test-requiressta-await-not-returning-on-sta-thread
+It seems like this issue has been there long time ago, but we faced it only after upgrading to NUnit 3.0.1.
+
+We have tests that use async/await with Apartment(ApartmentState.STA) and before the upgrade to NUnit 3.0.1 they used to work, but after the upgrade they fail because WPF components don't run on STA thread after await statement.","async test + Apartment(ApartmentState.STA) => await not returning on STA thread  There is the old post on SO: 
+http://stackoverflow.com/questions/18838116/nunit-async-test-requiressta-await-not-returning-on-sta-thread
+It seems like this issue has been t",2818,jnm2,nunit
+2774,SynchronizationContexts and awaiting,"Going for a high-level view. I've been talking about finishing off the async PR for too long. I'm going to spend some time in airports/planes tomorrow and do a fresh spike. The PRs can be small and incremental, tackling a section at a time.
+
+I'll be eager for any @nunit/framework-team comments on any part, though I know this is not most people's favorite thought experiment. 🙃 If you get a chance, please especially glance at the ❔s.
+
+### Specially-recognized synchronization contexts
+
+If `SynchronizationContext.Current` is an instance of `WindowsFormsSynchronizationContext` (Windows Forms control has been created) or `DispatcherSynchronizationContext` (WPF), NUnit should not call `.Wait()` on async methods or delegates or there will be a guaranteed deadlock. This is https://github.com/nunit/nunit/issues/2123. Sam ran into this a couple days ago. I've been making my test methods non-async and using [this workaround](https://gist.github.com/jnm2/4643df73fdda0efe1df3a03ad0188c46) for a long time.
+
+### Default synchronization contexts
+
+If `SynchronizationContext.Current` is null or an instance of `SynchronizationContext`, and the current apartment state is STA, we should install our own [`SingleThreadedSynchronizationContext`](https://github.com/nunit/nunit/issues/1200#issuecomment-312120851). Otherwise, awaits will continue on non-STA threads. This is https://github.com/nunit/nunit/issues/1200.
+
+❔ Should we consider always installing a `SingleThreadedSynchronizationContext` so that all awaits in test methods and delegates keep continuing on the original thread, even if it isn't STA? If people don't like this, they can use `.ConfigureAwait(false)`. (You do have a habit of using that, right? 😉)
+
+### Custom synchronization contexts
+
+❔ Should we create a framework extension point so that people can override the waiting logic with custom code? Say, for example, some custom native message loop like certain DirectX libraries ship?
+Probably not unless asked, but we would want to do this internally to some extent and make our four SynchronizationContext strategies pluggable.
+
+### Fallthrough
+
+In all other cases, we have no option but to block-wait. If continuations need to be pumped, there's no way NUnit can pump them and the tests will deadlock. If on the other hand they are scheduled on threadpool threads, they'll execute off-thread and finally complete the async task. This is what we currently do in all cases.
+
+### Fallthrough—awaitable spec
+
+This is https://github.com/nunit/nunit/issues/2286.
+
+❕ Instead of `.Wait()`, we should be using `.GetAwaiter()`, checking `awaiter.IsCompleted`, then creating a ManualResetEventSlim, passing its Set method to `awaiter.UnsafeOnCompleted` if it implements ICriticalNotifyCompletion and `awaiter.OnCompleted` otherwise, and block-waiting on it. Finally, we call `awaiter.GetResult()`. (This is straight from the C# 5 spec and has not changed since.)
+
+If the awaitable object's type is known to be `System.Threading.Tasks.Task`, we can use its internal shared ManualResetEventSlim by skipping the IsCompleted and OnCompleted parts of the protocol and going directly to `GetResult()`. This optimization is only valid on `System.Threading.Tasks.Task` since awaiters in general are not contractually obliged to block-wait in GetResult.
+
+**Benefits:**
+
+ - Exception and cancellation handling are higher-fidelity with the awaitable API than with the TPL API. For example, `Task.Wait()` unconditionally wraps the exception in AggregateException.
+ - We light up support for `ValueTask` and any other awaitable type besides `Task`.
+
+
+","SynchronizationContexts and awaiting  Going for a high-level view. I've been talking about finishing off the async PR for too long. I'm going to spend some time in airports/planes tomorrow and do a fresh spike. The PRs can be small and incremental, tackli",2818,jnm2,nunit
+2579,AppVeyor Test Failures under .NET 3.5,"These test failures under .NET 3.5 are getting consistent enough that we are getting few passing builds and we had [one build time out at 60 minutes](https://ci.appveyor.com/project/CharliePoole/nunit/build/3.10.0-ci-04854-pr-2380/messages) in the .NET 3.5 tests.
+
+In PR #2380 I am going to `#if net35` and increase the timeout as a temporary workaround, but we should look at this. I am curious why we are having so many .NET 3.5 threading issues, but no other target.
+
+```
+1) Failed : NUnit.Framework.Internal.Execution.EventQueueTests+SetWaitHandle_Enqueue_AsynchronousTest.SetWaitHandle_Enqueue_Asynchronous
+Test exceeded Timeout value of 1000ms
+```
+
+```
+1) Failed : NUnit.Framework.Internal.Execution.EventQueueTests+DequeueBlocking_StopTest.DequeueBlocking_Stop
+Test exceeded Timeout value of 1000ms
+```
+
+```
+7) Cancelled : NUnit.Framework.Internal.Execution.EventQueueTests+SetWaitHandle_Enqueue_AsynchronousTest.SetWaitHandle_Enqueue_Asynchronous
+Test cancelled by user
+   at NUnit.Framework.Internal.Reflect.InvokeMethod(MethodInfo method, Object fixture, Object[] args) in C:\projects\nunit\src\NUnitFramework\framework\Internal\Reflect.cs:line 232
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunNonAsyncTestMethod(TestExecutionContext context) in C:\projects\nunit\src\NUnitFramework\framework\Internal\Commands\TestMethodCommand.cs:line 109
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context) in C:\projects\nunit\src\NUnitFramework\framework\Internal\Commands\TestMethodCommand.cs:line 64
+   at NUnit.Framework.Internal.Commands.BeforeTestCommand.Execute(TestExecutionContext context) in C:\projects\nunit\src\NUnitFramework\framework\Internal\Commands\BeforeTestCommand.cs:line 50
+   at NUnit.Framework.Internal.Commands.BeforeAndAfterTestCommand.Execute(TestExecutionContext context) in C:\projects\nunit\src\NUnitFramework\framework\Internal\Commands\BeforeAndAfterTestCommand.cs:line 59
+```
+
+```
+1) Failed : NUnit.Framework.Assertions.CollectionAssertTest.PerformanceTests(System.Linq.Enumerable+<RangeIterator>d__b1)
+Elapsed time of 137.7538ms exceeds maximum of 100ms
+```",AppVeyor Test Failures under .NET 3.5  These test failures under .NET 3.5 are getting consistent enough that we are getting few passing builds and we had [one build time out at 60 minutes](https://ci.appveyor.com/project/CharliePoole/nunit/build/3.10.0-ci,2726,rprouse,nunit
+2695,MultipleAssertException doesn't provide proper details on failures,"When using `Assert.Multiple` and assertion failures happen inside the lambda, a `MultipleAssertException` is thrown by the framework.
+
+**This exception has absolutely no details on the actual failures that happened**, which drastically impacts the debugging experience: users have to wait for the run to finish and then inspect the Test Explorer window to see what errors have occurred.
+
+This is where it is being thrown currently:
+`https://github.com/nunit/nunit/blob/efd115b26c8f5d4ebe6d52f5108097ceb0c77ffb/src/NUnitFramework/framework/Assert.cs#L340`
+```
+            if (context.MultipleAssertLevel == 0 && context.CurrentResult.PendingFailures > 0)
+                throw new MultipleAssertException();
+```
+
+This results in the following message:
+> ""One or more failures in Multiple Assert block:""
+
+This gives no hint to what happened and leaves the developer wondering how to see the actual failures. I think this is a really bad practice with exceptions in general: they should provide as much detail as humanly possible.
+
+I'm aware that the display on Test Explorer has full details, but NUnit shouldn't assume that all developers _run_ tests instead of _debugging_ them.
+
+I propose the following:
+1. **That failures be integrated as inner exceptions**
+This would be similar to how an `AggregateException` works: have all failures as child exceptions so that people debugging the application can see what errors occurred. Maybe using an `AggregateException` would be ideal, but I heard you had some issues with that because the type doesn't exist in all versions of the framework. Instead of just inspecting the `PendingFailures` counter like above, we could convert any `AssertionResult` into `AssertionException`s and add them to the parent `MultipleAssertException` before throwing it. I'd even suggest ditching the `AssertionResult` model itself in favor of directly handling `AssertionException` objects, but that's probably a bigger discussion that I don't want to get into right now.
+
+2. **Create an user-friedly `.ToString` implementation on `MultipleAssertException`**
+In combination with # 1, the exception's `ToString` should provide a summary of failures. That would allow developers to see what errors were reported easily, and only have to inspect the inner exceptions in case further details are required. Maybe ommiting the stacktrace for each error on this summary would be a good idea, for example.
+
+This lack of debugging support had a very significant impact when migrating to `Assert.Multiple` on our team: we used to have a custom method to perform this task which reported a much cleaner error in debug mode showing all assertions that failed, and when we switched to `Assert.Multiple` there was justified backlash.","MultipleAssertException doesn't provide proper details on failures  When using `Assert.Multiple` and assertion failures happen inside the lambda, a `MultipleAssertException` is thrown by the framework.
+
+**This exception has absolutely no details on the",2700,CharliePoole,nunit
+2699,Warnings are not consistently displayed,"Working on #2695 I realized I'd opened a rather large can of works around the display of warnings. I'm using this issue to try to summarize the problems and figure out a direction.
+
+As background: warnings were added after multiple asserts and rely on the infrastructure created for multiple asserts. That's why they work well in conjunction with failures but not with other terminating events.
+
+In this context, a terminating event for a test is one of the following:
+ * An Error, i.e. an exception that is not one NUnit itself understands
+ * A failure, caused by Assert.Fail or any assert that fails.
+ * An Ignored event, caused by Assert.Ignore
+ * An Inconclusive event, caused by Assert.Inconclusive or the failure of an Assume
+ * A Pass event, caused by Assert.Pass
+
+A Warning, of course, is not a terminating event.
+
+The following table shows the problems I see when several warnings are followed by a terminating event __outside__ of a Multiple Assert block. As in...
+
+```C#
+Assert.Warn(""Warning1"");
+Assert.Warn(""Warning2"");
+Assert.Fail(""Terminating Event!"");
+```
+
+The action varies according to the nature of the terminating event.
+
+Event | Displays | Test Result | Notes
+------|----------|------------|-------
+Error | Warnings plus error | Error     | Correct behavior
+Fail    | Warnings plus failure | Failure  | Correct behavior
+Ignore | Ignore message    | Ignored | Should display warnings
+Inconclusive | Inconclusive message| Inconclusive | Should display warnings
+Pass | Pass message | Pass | Should display warnings. Not clear whether this should override the warnings and Pass. Options: (1) Record as error (2)  record as warning (3) add an extra warning and pass.
+
+If the terminating event occurs within a multiple assert block, the actions are slightly different...
+
+Event | Displays | Test Result | Notes
+------|----------|------------|-------
+Error | Warnings plus error | Error     | Correct behavior
+Fail    | Warnings plus failure (at end of block) | Failure  | Correct behavior
+Ignore | Error message  | Error | Should display all messages. See discussion of result below.
+Inconclusive | Error message| Error | Should display all messages. See discussion of result below.
+Pass | Error message | Error | Should display all messages. See discussion of result below.
+
+Three of these events cause an error result. Assert.Pass, Assume failures, Assert.Inconclusive and Assert.Pass are not permitted inside a multiple assert block. This seems arbitrary in retrospect. I see two general approaches:
+1. Let the events terminate execution immediately, within the block.
+2. Save the results till the end of the block.
+
+In both cases, we would need to have some logic to decide on the test result. Our existing end-of-block logic uses the ""worst"" result. Should we continue to do that or use the __last__ event to guide us. There's a lot of ambiguity here, which is why I disallowed those events within a multiple assert block in the first place. Nevertheless, I think it's worth discussing now.","Warnings are not consistently displayed  Working on #2695 I realized I'd opened a rather large can of works around the display of warnings. I'm using this issue to try to summarize the problems and figure out a direction.
+
+As background: warnings were a",2700,CharliePoole,nunit
+2050,Creation of TestExecutionContext should be explicit,"Originally, in V2,  it seemed to make sense to set `CurrentContext` lazily to a new context in the getter, whenever it was found to be null.
+
+Now, with parallel dispatching, things are more complicated. The context is  changed as different tests begin to execute and the current work item both controls and depends upon it's content. When the context is discovered to be null, it's an error that we should not be masking.
+
+The basic refactoring here is
+* Make the getter function as a simple getter, returning null if that's what is found.
+* Remove the `GetTestExecutionContext()` method, replacing all calls with use of the property.
+* Discover all points in the code where the context is found to be null, and fix them.
+
+Obviously, the last point is going to be difficult.","Creation of TestExecutionContext should be explicit  Originally, in V2,  it seemed to make sense to set `CurrentContext` lazily to a new context in the getter, whenever it was found to be null.
+
+Now, with parallel dispatching, things are more complicate",2055,CharliePoole,nunit
+1962,A Theory with no data passes,"As a result of changes made for issue #1933, an internal problem was made visible. A Theory, for which no data is supplied, will pass.
+
+If a Theory has data but all of it is unsuitable (assumptions fail), then the Theory itself fails. It's somewhat inconsistent for a Theory without data to pass - it should fail as well.
+
+The source of the problem is in how NUnit runs test suites with no test cases. In NUnit V2, such suites were not handled in a special way. Any one-time setup (TestFixtureSetUp) and teardown (TestFixtureTearDown) was run, whether there were tests or not. In NUnit 3, we decided to change this behavior and only run one-time setup and teardown if there are actually child tests to be run. This saves wasted cycles when the one-time setup performs a lot of work, which is more common these days with folks doing database and web testing using NUnit.
+
+Unfortunately, we did not change how Theories examine the result of their individual cases and decide whether they should pass or faill. This was (and is still) done by a special command added to the one-time teardown for the parameterized test suite representing the theory. Since one-time teardown is not run when there are no tests (i.e. no data) the command is never run.
+
+To fix this requires re-thinking how we want to handle the overall result of a suite. In the general case, this is done each time a test case result is added to the suite result. In the case of Theories, a special action is taken to override the default behavior of suites. We will probably want to handle this by creating a special result for Theories with it's own aggregation behavior.
+
+Since this is part of the fundamental architecture of the framework, I'm assigning it to myself for now.","A Theory with no data passes  As a result of changes made for issue #1933, an internal problem was made visible. A Theory, for which no data is supplied, will pass.
+
+If a Theory has data but all of it is unsuitable (assumptions fail), then the Theory it",2049,rprouse,nunit
+2017,Two NUnit project's tests fail on systems with comma decimal mark settings,"The following tests fail on systems with comma decimal mark settings:
+- NUnit.Framework.Internal.Results.TestResultGeneralTests.SuiteResultXml_Duration
+- NUnit.Framework.Internal.Results.TestResultGeneralTests.TestResultXml_Duration
+
+Steps to reproduce:
+1. Change system region, or language settings to one with comma  decimal mark ([Countries using Arabic numerals with decimal comma](https://en.wikipedia.org/wiki/Decimal_mark#Countries_using_Arabic_numerals_with_decimal_comma))
+2. Run the build script with `-Target Test` option
+3. See aforementioned tests fail for every framework","Two NUnit project's tests fail on systems with comma decimal mark settings  The following tests fail on systems with comma decimal mark settings:
+- NUnit.Framework.Internal.Results.TestResultGeneralTests.SuiteResultXml_Duration
+- NUnit.Framework.Interna",2049,rprouse,nunit
+1994,NUnitLite runner crashing when --trace is specified,Using the nunitlite.runner with arguments `nunit.framework.tests.dll --trace:Info` causes null reference exception in `TextRunner.GetLogFileName()`,NUnitLite runner crashing when --trace is specified  Using the nunitlite.runner with arguments `nunit.framework.tests.dll --trace:Info` causes null reference exception in `TextRunner.GetLogFileName()`,2049,rprouse,nunit
+1986,NUnitLite ignores --workers option,"I came across this working on #164. Changing the number of test workers with the command-line `--workers` option didn't have any effect on the duration of the test. On investigation, it's clear that although the option is accepted there is no code to transmit it to the framework as a setting.","NUnitLite ignores --workers option  I came across this working on #164. Changing the number of test workers with the command-line `--workers` option didn't have any effect on the duration of the test. On investigation, it's clear that although the option",2049,rprouse,nunit
+2043,Regression in 3.6.0 when catching AssertionException,"@pdpurcell commented on [Thu Feb 16 2017](https://github.com/nunit/docs/issues/168)
+
+In version 3.5.0, catching a failed assertion would allow the test to continue and the test would then pass.  Version 3.6.0 continues running the code, but the final state will be set to failed.  Is this a regression?  I see no mention of this sort of behaviour change in the [release notes](https://github.com/nunit/docs/wiki/Release-Notes#nunit-36---january-9-2017).  
+I have [attached an example solution](https://github.com/nunit/docs/files/780587/WithProblem36.zip) that contains two projects that have identical tests; one using 3.5.0 and one using 3.6.0.  
+eg:
+```
+try
+{
+    Assert.AreEqual(0, 1);
+}
+catch(AssertionException)
+{
+    // The failed assertion is caught but in 3.6.0 the test still fails
+}
+```
+
+---
+
+@CharliePoole commented on [Thu Feb 16 2017](https://github.com/nunit/docs/issues/168#issuecomment-280498245)
+
+The bad news is that this has __never actually been supported__ even though it's a technique promulgated on many blogs and forums. That is...
+
+*NUnit makes no guarantee that failures cause an AssertionException that catching the exception will prevent the failure from happening. This is certainly not a guarantee in NUnit 3 and - to my memory - never was in NUnit V2 either.*
+
+When this technique has come up, I have frequently tried to warn people off using it. There are lots of reasons to avoid it:
+
+* It implies that your test knows something about the framework that is executing it, which is a serious violation of encapsulation - that is, unless you are actually testing the internals of framework itself.
+
+* There are usually supported ways to accomplish whatever you are trying to do, without the  try / catch.
+
+* Where there is an unsupported need, it makes more sense to request a feature, which will be supported now and in the future.
+
+* It's an implementation detail of NUnit, which could change at any time.
+
+Of course, the last point has come true in the latest release.
+
+In NUnit 3.6, the details of the implementation have changed. We still use an exception to terminate execution of your test. It's the only way we have to unwind any nested calls you have made. However, we no longer use the exception to report that the test failed. That info is recorded before the exception is thrown. This allows us to use a consistent approach for single assertion failures, multiple assertion failures and warnings.
+
+As you say, there is no mention of this in the release notes. That's because we felt that there was no need to document an internal change that should never be used by users. For the same reason, we didn't list this as a breaking change. From some of the feedback, it's clear that there are users who did __not__ consider this a detail of implementation and relied on it. There are already several issues.
+
+Most of the issues - like yours - illustrate the ""problem"" without motivating the need to be able to intercept a failure. In each case, I have asked the submitter of the issue to give a motivating example that would help us meet the need. IOW we need to know __why__ you want to be able to prevent a failure by catching the AssertionException. In the long term, we may want to add features that make it unnecessary for you to do such a thing!
+
+Since you're the fourth or fifth person to raise the issue, it is clear that we need to do something, in spite of my continued belief that you should not really be relying on how NUnit is implemented. I'll close this comment and start a fresh one with a proposal to partially role back the change.
+
+---
+
+@CharliePoole commented on [Thu Feb 16 2017](https://github.com/nunit/docs/issues/168#issuecomment-280501306)
+
+@nunit/framework-team @nunit/core-team 
+As stated in my first comment here and on several other issues, I continue to believe that folks who rely on AssertionException and particularly on catching it are making a mistake. ""NUnit implements failures via an assertion exception and you can stop the failure by catching it"" is __not a sentence in our documentation__ and not part of the API we provide to programmers.
+
+Several people have pointed out reasons why it should work, however:
+* Most other frameworks work that way
+* It has worked in the past
+* Exceptions thrown is part of the API of many methods
+
+I could argue against all of those points, but why bother? It seems that a number of users are affected and I think there's a change that can be made. Here's what I propose...
+
+1. Stop creating the failure message in the result before throwing an AssertionException outside of a Multiple Assert block.
+
+2. Continue to create the failure message without throwing when inside a Multiple Assert block.
+
+3. Upon exit from a MultipleAssertBlock in which failures have occured, throw a (new) MultipleAssertionException rather than an AssertionException, so that the framework knows that one or more failures have already been recorded and need to be reported.
+
+4. Continue to handle warnings as we do, recording them without throwing an exception.
+
+This will ensure that __where we do throw an AssertionException__ it works exactly as before. Those places where we don't throw one are new features so no compatibility issue arises.
+
+I think this is critical enough to warrant a hot fix release. Please let me know if you agree with that as well as with the fix itself. I can do the fix myself pretty quickly once we agree on it.
+","Regression in 3.6.0 when catching AssertionException  @pdpurcell commented on [Thu Feb 16 2017](https://github.com/nunit/docs/issues/168)
+
+In version 3.5.0, catching a failed assertion would allow the test to continue and the test would then pass.  Vers",2049,rprouse,nunit
+164,Run test methods within a fixture in parallel,"Currently, we only have implemented parallel execution at the fixture level. It should be possible to run individual methods of a fixture in parallel as well as individual test cases for a parameterized method.
+
+We should be able to specify the exact level of parallelism on the fixture or method.
+
+This issue was previously part of #66","Run test methods within a fixture in parallel  Currently, we only have implemented parallel execution at the fixture level. It should be possible to run individual methods of a fixture in parallel as well as individual test cases for a parameterized metho",2011,CharliePoole,nunit
+2003,Better user info about ParallelizableAttribute and ParallelScope,"This comes up as I work on issue #164 and I'll implement it in conjunction with that is.sue. However, I think it needs to have separate review, which is why I'm creating this issue.
+
+`ParallelizableAttribute` takes an optional argument of Type `ParallelScope`. The values of `ParallelScope` are a mix of things. Some apply to the item on which the attribute appears and others to descendants. In addition, `ParallelScope.None` is used both when specified by the user and as a default. This turns out to lose info for us, since there are three, rather than two, actions the dispatcher may take in running a test:
+ * Run directly on the same thread as parent
+ * Enqueue on a parallel queue
+ * Enqueue on a non-parallel queue
+
+I'm proposing a number of changes to make parallel test cases work and also to clarify things for users:
+
+1. I have already defined `ParallelScope.Default` which indicates that no attribute was used. This turned out to be necessary to effectively implement parallel test cases.
+
+2. For convenience internally I have re-defined the various scopes in two ranges, separating those flags that affect the item on which they appear from those that affect descendants. I use two masks to pick out the flags that are needed in a particular instance.
+
+[Remaining items have to do with how this appears to users]
+
+3. I'd like to deprecate `ParallelScope.None` in favor of `ParallelScope.NonParallel`. The former name is confusing enough that it was confusing me in working #164. Its implementation has always been ""run test on non-parallel queue"" but it sounds as if it means ""not specified"" or ""use default"". I'm open to other names. I considered ""Never"" as an option.
+
+4. For consistency, I'd like to define `ParallelScope.Parallel` as a synonym for `ParallelScope.Self`. I wouldn't deprecate the latter, however, because combos like `ParallelScope.Self+ParallelScope.Children` read quite well.
+
+5. To make it even easier for users. It may be useful to define `NonParallelizableAttribute` with no arguments. Just as `[Parallelizable]` defaults to `[Parallelizable(ParallelScope.Self)`, this new attribute would mean the same as `[Parallelizable(ParallelScope.NonParallel)`
+
+6. Some values of `ParallelScope` make no sense in certain places and are currently ignored silently. For example, `Parallelizable(ParallelScope.Fixtures)` has no effect if placed on a test case. Rather than silently ignoring the attribute, I propose that we mark the test as invalid so that the user knows it won't do whatever is expected and removes it. Implementation will require looking at each scope value and deciding whether to allow it on an Assembly, a class or a method. It seems to me that getting an early error is better for the user than having their intent (which we don't know of course) ignored silently.
+
+7. I propose adding `ParallelScope.Cases` to the set of scopes that impact descendants. Used at the assembly level without combining with other scopes, it would cause test fixtures to run sequentially but all the cases within them to run in parallel. I don't think this will get a lot of use but it's consistent with the presense of `ParallelScope.Fixtures`. I would redefine `Children` as `Fixtures+Cases` if we do this.
+
+Please comment! For implementation details, you'll be able to review the PR of course.","Better user info about ParallelizableAttribute and ParallelScope  This comes up as I work on issue #164 and I'll implement it in conjunction with that is.sue. However, I think it needs to have separate review, which is why I'm creating this issue.
+
+`Par",2011,CharliePoole,nunit
+1638,TimeoutAttribute not available when targeting netcoreapp framework,"It seems that TimeoutAttribute is not available in the portable version of NUnit 3 when targeting .NET core with a netcoreapp test. This is extremely useful for any sort of test involving threading or integration test, so it would be really useful if this was made available.
+
+Using: NUnit 3.4.0, dotnet-test-nunit 3.4.0-beta1.",TimeoutAttribute not available when targeting netcoreapp framework  It seems that TimeoutAttribute is not available in the portable version of NUnit 3 when targeting .NET core with a netcoreapp test. This is extremely useful for any sort of test involving,2010,dsplaisted,sdk
+1638,TimeoutAttribute not available when targeting netcoreapp framework,"It seems that TimeoutAttribute is not available in the portable version of NUnit 3 when targeting .NET core with a netcoreapp test. This is extremely useful for any sort of test involving threading or integration test, so it would be really useful if this was made available.
+
+Using: NUnit 3.4.0, dotnet-test-nunit 3.4.0-beta1.",TimeoutAttribute not available when targeting netcoreapp framework  It seems that TimeoutAttribute is not available in the portable version of NUnit 3 when targeting .NET core with a netcoreapp test. This is extremely useful for any sort of test involving,2010,ChrisMaddock,nunit
+1238,Feature request: Print LoaderExceptions when fixture loading fails,"Hi.
+
+I have a problem in my test fixture - when trying to run it with the console runner, I get 
+
+```
+Agent process 13984 starting
+Running under version 4.0.30319.42000, Net 4.5
+Agent process 13984 exiting
+
+Errors and Failures
+
+1) Invalid : c:\PathToMy\Tests.dll
+Unable to load one or more of the requested types. Retrieve the LoaderExceptions property for more information.
+```
+
+Obviously this error message is not very helpful - the real value would be to print the contents of the LoaderExceptions.
+
+So I cloned the nunit code and fired up the the console runner - only to realize that the problem of course happens inside the nunit agent. Setting the --debug-agent flag did not help - the ""c:\program files..\nunit3-agent"" was loaded. I then realized that I had to explicitly compile the agent (so that it exists in the same folder as my debug console). This was of course all natural and intentional, but not obvious on first go. Just realized that the command to get all the debug dll's compiled is `build.cmd build.cake Default Debug` :smile: 
+
+Further investigation showed that if I _explicitly_ set the framework: --framework=net-4.5 - I get a nice BadImageFormatException (Because that was the error).
+
+However - if I do not explicitly specify the framework, I get the generic, not very helpfull error message.
+Ideally NUnit should print the content of the loader exception directly...","Feature request: Print LoaderExceptions when fixture loading fails  Hi.
+
+I have a problem in my test fixture - when trying to run it with the console runner, I get 
+
+```
+Agent process 13984 starting
+Running under version 4.0.30319.42000, Net 4.5
+Ag",1976,ChrisMaddock,nunit
+1651,Too little information passed on ReflectionTypeLoadException in DefaultTestAssemblyBuilder.GetCandidateFixtureTypes,"When a required assembly isn't found, an exception like this is thrown by the Console Runner and framework 3.4.1:
+
+```
+    1) Invalid : [...]\UnitTestProject1.dll
+    Unable to load one or more of the requested types. Retrieve the LoaderExceptions property for more information.
+```
+
+Since I didn't initially guess the root cause, I used the NUnit source code to track down the `ReflectionTypeLoadException`, which is thrown in `DefaultTestAssemblyBuilder.GetCandidateFixtureTypes` upon calling `GetTypes` on `assembly`.
+It would be helpful to propagate information from the `LoaderExceptions` into the test result.
+Repro sample project: [UnitTestProject1.zip](https://github.com/nunit/nunit/files/351691/UnitTestProject1.zip)","Too little information passed on ReflectionTypeLoadException in DefaultTestAssemblyBuilder.GetCandidateFixtureTypes  When a required assembly isn't found, an exception like this is thrown by the Console Runner and framework 3.4.1:
+
+```
+    1) Invalid :",1976,ChrisMaddock,nunit
+1965,TestContext does not flow in async method,"Example tests recreating issue:
+```C#
+[TestFixture]
+public class TestContext_async_issue
+{
+    [Test]
+    public async Task TestContext_Out_should_flow_with_async_execution()
+    {
+        var expected = TestContext.Out;
+        await Task.Yield();
+        Assert.AreSame(expected, TestContext.Out);
+    }
+
+    [Test]
+    public async Task TestContext_CurrentContext_should_flow_with_async_execution()
+    {
+        var expected = TestContext.CurrentContext;
+        await Task.Yield();
+        Assert.AreSame(expected, TestContext.CurrentContext);
+    }
+}
+```
+
+The side effect of that behaviour is that it is not possible to use `TestContext.WriteLine()` after await as it causes `NullReferenceException`.
+
+Tested with `NUnit 3.5.0`, `net46` and `netcoreapp1.0`","TestContext does not flow in async method  Example tests recreating issue:
+```C#
+[TestFixture]
+public class TestContext_async_issue
+{
+    [Test]
+    public async Task TestContext_Out_should_flow_with_async_execution()
+    {
+        var expected =",1973,Suremaker,nunit
+1952,TestContext.Out null when used in task with .NET Core,"Hi,
+
+I have a test project targeting both .NET Framework (4.6.2) and .NET Core (1.1) and am finding that for the latter `TextContext.Out` is null when used from a `Task`. The code below reproduces the issue:
+
+```C#
+[Test]
+public void SomeTest()
+{
+    if (TestContext.Out == null)
+    {
+        Console.WriteLine(""Out null"");
+    }
+    else
+    {
+        Console.WriteLine(""All ok"");
+    }
+
+    Task.Factory.StartNew(() =>
+                          {
+                              if (TestContext.Out == null)
+                              {
+                                  Console.WriteLine(""Out null"");
+                              }
+                              else
+                              {
+                                  Console.WriteLine(""All ok"");
+                              }
+                           }).Wait();
+}
+```
+
+For .NET Core 1.1 I get
+```
+All ok
+Out null
+```
+printed at the console.
+
+I'm using NUnitLite 3.5.0 with dotnet-test-nunit 3.4.0-beta-3. The failure occurs when using `dotnet test` from the command-line as well as from Visual Studio.","TestContext.Out null when used in task with .NET Core  Hi,
+
+I have a test project targeting both .NET Framework (4.6.2) and .NET Core (1.1) and am finding that for the latter `TextContext.Out` is null when used from a `Task`. The code below reproduces t",1973,Suremaker,nunit
+1880,AttributeUsage for various Attributes,"I have noticed that many the attributes do not have the AttributeUsageAttribute applies to them.
+
+For instance, the RandomAttribute, which only applies to a parameter, is not constrained by an AttributeUsageAttribute with a AttributeTargets.Parameter flag set.
+
+It seems like it should be.
+
+I have not examined all of the attributes, but there may be others that are not constrained that should be.","AttributeUsage for various Attributes  I have noticed that many the attributes do not have the AttributeUsageAttribute applies to them.
+
+For instance, the RandomAttribute, which only applies to a parameter, is not constrained by an AttributeUsageAttribu",1959,CharliePoole,nunit
+1044,Re-order Test Summary Errors/Failures,"This is a little detail that has always bugged me but I have never fixed. Our current test summary looks like this,
+
+```
+Test Run Summary
+    Overall result: Failed
+   Tests run: 29, Passed: 28, Errors: 0, Failures: 1, Inconclusive: 0
+     Not run: 0, Invalid: 0, Ignored: 0, Explicit: 0, Skipped: 0
+  Start time: 2015-11-19 21:14:28Z
+    End time: 2015-11-19 21:14:28Z
+    Duration: 0.344 seconds
+```
+
+Our main purpose is Passed/Failed tests, but Errors come before Failures. I also think Failures should be renamed to Failed to match Passed.
+
+I think it should look like this,
+
+```
+Test Run Summary
+    Overall result: Failed
+   Tests run: 29, Passed: 28, Failed: 1, Errors: 0, Inconclusive: 0
+     Not run: 0, Invalid: 0, Ignored: 0, Explicit: 0, Skipped: 0
+  Start time: 2015-11-19 21:14:28Z
+    End time: 2015-11-19 21:14:28Z
+    Duration: 0.344 seconds
+```
+
+If we do this NUnitLite will probably need to be changed too.","Re-order Test Summary Errors/Failures  This is a little detail that has always bugged me but I have never fixed. Our current test summary looks like this,
+
+```
+Test Run Summary
+    Overall result: Failed
+   Tests run: 29, Passed: 28, Errors: 0, Failu",1101,michaelhofer,nunit
+1113,Console runner and xml output consistency,"Currently I have a set of tests which are reporting the following in the console runner summary;
+
+```
+Test Run Summary
+    Overall result: Failed
+   Tests run: 59, Passed: 56, Errors: 1, Failures: 1, Inconclusive: 1
+     Not run: 8, Invalid: 1, Ignored: 4, Explicit: 1, Skipped: 2
+  Start time: 2015-12-03 04:27:39Z
+    End time: 2015-12-03 04:27:39Z
+    Duration: 0.489 seconds
+```
+
+The same test run produces the following test-run node in my XML output. 
+
+```
+<test-run id=""2"" testcasecount=""67"" result=""Failed"" total=""67"" passed=""56"" failed=""3"" inconclusive=""1"" skipped=""7"" asserts=""11"" engine-version=""3.0.5797.27553"" ..... >
+```
+
+After some thinking I can work out what the elements total, passed, failed, inconclusive, and skipped in the test-run node relate to in the console summary. The request is to simplify this process and place the same summary elements from the console into the XML node.
+
+Thank you. ","Console runner and xml output consistency   Currently I have a set of tests which are reporting the following in the console runner summary;
+
+```
+Test Run Summary
+    Overall result: Failed
+   Tests run: 59, Passed: 56, Errors: 1, Failures: 1, Inconc",1101,michaelhofer,nunit
+990,V2 driver is passing invalid filter elements to NUnit V2,"Here's the output I get:
+
+```
+$ mono SOME_PATH/bin/nunit3-console.exe SOME_DLL --labels=All --where ""class=='SOME_CLASS'""
+NUnit Console Runner 3.0.5783
+Copyright (C) 2015 Charlie Poole
+
+Runtime Environment
+   OS Version: MacOSX 14.5.0.0
+  CLR Version: 4.0.30319.17020
+
+Test Files
+    SOME_DLL
+
+Test Filters
+    Where: class=='SOME_CLASS'
+
+
+Errors and Failures
+
+1) Error :
+Invalid filter element: class
+Parameter name: xmlNode
+  at System.Runtime.Remoting.Proxies.RealProxy.PrivateInvoke (System.Runtime.Remoting.Proxies.RealProxy rp, IMessage msg, System.Exception& exc, System.Object[]& out_args) [0x00000] in <filename unknown>:0
+
+Test Run Summary
+    Overall result: Failed
+   Tests run: 0, Passed: 0, Errors: 0, Failures: 0, Inconclusive: 0
+     Not run: 0, Invalid: 0, Ignored: 0, Explicit: 0, Skipped: 0
+  Start time: 2015-11-05 11:47:00Z
+    End time: 2015-11-05 11:47:00Z
+    Duration: 0.007 seconds
+
+Results (nunit3) saved as TestResult.xml
+```
+
+It does work when filtering on the category (`cat == XXX`).","V2 driver is passing invalid filter elements to NUnit V2  Here's the output I get:
+
+```
+$ mono SOME_PATH/bin/nunit3-console.exe SOME_DLL --labels=All --where ""class=='SOME_CLASS'""
+NUnit Console Runner 3.0.5783
+Copyright (C) 2015 Charlie Poole
+
+Runt",992,CharliePoole,nunit
+991,Mono.Options should not be exposed to public directly,"nunit3 adopts `Mono.Options` classes.
+However, this leads to namespace collision of the library user.
+The user's app may also ship another copy of `Mono.Options` classes.
+
+Since class `CommandLineOptions` relies on inheriting `Mono.Options` classes,
+I suggest to rename the namespace to something like `NUnit.Options` to avoid namespace collision.","Mono.Options should not be exposed to public directly  nunit3 adopts `Mono.Options` classes.
+However, this leads to namespace collision of the library user.
+The user's app may also ship another copy of `Mono.Options` classes.
+
+Since class `CommandLine",992,CharliePoole,nunit
+867,Remove Warnings from Ignored tests,"Before releasing the RC, we should get rid of all Ignored tests, which show up as a warning in our build.
+In some cases, this may mean making a feature work. In others it may mean revising the test.","Remove Warnings from Ignored tests  Before releasing the RC, we should get rid of all Ignored tests, which show up as a warning in our build.
+In some cases, this may mean making a feature work. In others it may mean revising the test.",935,rprouse,nunit
+868,Review skipped tests,"We have a fairly large number of tests skipped on certain platforms. We should review all these and determine if the exclusions are still proper or if they can be corrected. Searching tests for use of the PlatformAttribute should locate most of these.
+
+Lacking a better category, I marked this as a (potential) bug.",Review skipped tests  We have a fairly large number of tests skipped on certain platforms. We should review all these and determine if the exclusions are still proper or if they can be corrected. Searching tests for use of the PlatformAttribute should loc,935,rprouse,nunit
+352,Test with infinite loop in TearDown cannot be aborted,"Pursuant to a discussion on issue #326 I added some tests in order to see the behavior of tests that caused a timeout because of a hung SetUp or a hung TearDown. An infinite loop in the SetUp is handled the same as one in the test but a loop in TearDown causes the entire run to hang.
+
+The cause of this phenomenon is that we run TearDown out of a finally clause. Code in a finally clause is not interupted by a ThreadAbortException.
+
+The same behavior occurs in NUnit V2. See https://github.com/nunit/nunitv2/issues/26
+
+It appears that there are three options:
+1. Don't run TearDown in a finally clause.
+2. Don't use Thread.Abort to cancel a test that times out.
+3. Have NUnit host the CLR and thereby gain the ability to escalate aborts.
+
+All of these are fairly big deals, so some design work is needed.  ",Test with infinite loop in TearDown cannot be aborted  Pursuant to a discussion on issue #326 I added some tests in order to see the behavior of tests that caused a timeout because of a hung SetUp or a hung TearDown. An infinite loop in the SetUp is handl,935,rprouse,nunit
+575,Add support for ASP.NET 5 and the new Core CLR,"I tried to create an NUnit test project using Visual Studio 2015 using the ASP.NET 5 class library that uses the Core CLR. It built fine against the full CLR, but failed to compile against the Core CLR.
+
+Web development is probably one of the areas that .NET is most widely used in, so we should be ready for the next version of ASP.NET.
+
+**Update**
+
+At this point, the new portable NUnit framework built using the `nunit-dnx.sln` targets the following frameworks;
+- .NET Framework 4.6 (net46)
+- ASP.NET Core 5.0 (dnxcore50) and
+- Windows Universal 10.0 (uwp.10.0)
+
+This is intended to allow testing of cross-platform ASP.NET 5 applications, Windows 10 Universal apps and .NET Core applications.
+
+For information on installing and using ASP.NET 5 on Windows, see https://docs.asp.net/en/latest/index.html
+
+The nunitlite.runner assembly will allow you to create a new .NET Core Console Application that will self run any unit tests contained within itself.
+
+![image](https://cloud.githubusercontent.com/assets/493828/10590992/cec4430e-7681-11e5-8bdf-78aa423a2afa.png)
+
+**Outstanding Tasks**
+- Add the new assemblies to the framework and nunitlite NuGet packages
+- Add the ability to build, test and package the new projects to NUnit.proj
+- Add a project template to nunit/nunit.templates
+- Create a more full featured test runner including running tests from Visual Studio","Add support for ASP.NET 5 and the new Core CLR  I tried to create an NUnit test project using Visual Studio 2015 using the ASP.NET 5 class library that uses the Core CLR. It built fine against the full CLR, but failed to compile against the Core CLR.
+
+W",915,rprouse,nunit
+876,Remove SilverLight as a target in the Portable Framework,"We already have a version of the Framework that targets SilverLight and doing so within the portable framework limits the functionality that is available in portable.","Remove SilverLight as a target in the Portable Framework  We already have a version of the Framework that targets SilverLight and doing so within the portable framework limits the functionality that is available in portable.",915,rprouse,nunit
+59,Length of generated test names should be limited,"Since NUnit uses the value of a string argument to a test as part of the name, it's possible for the names to be arbitrarily long. This causes problems, particularly in the Gui, where GDI+ exceptions may be thrown and in the VS adapter, which may either reject the name or truncate it arbitrarily.
+
+Names generated in the framework should be limited to a reasonable length <= 449 characters, the length that is enforced by the adapter. However, we don't want to simply truncate the name after generating it. Ideally, each individual parameter should be truncated in a way that limits the overall length of the name while preserving the general outline of FixtureName(args).TestName(args). 
+
+Since any  truncation may cause duplicate names, which NUnit itself does not mind but which can break some clients like TestExplorer, name generation should include adding a unique value like the test id where needed. Note that it would be possible to use the test id alone for a unique name, but that this would not result in a good user experience in runners (TestExplorer again) that use the test name as a display name.
+
+We may want to provide the raw materials for separating the display name from the ""real"" unique test name for those runners that want to take advantage of it.","Length of generated test names should be limited  Since NUnit uses the value of a string argument to a test as part of the name, it's possible for the names to be arbitrarily long. This causes problems, particularly in the Gui, where GDI+ exceptions may b",912,CharliePoole,nunit
+68,Customization of test case name generation,"It's definitely more a feature request than a bug... but nonetheless:
+
+I have a TestCaseSource that returns a collection of XElements, i.e. XML nodes. Because by default the test case generation calls ToString on each parameter, the final test name looks quite ugly:
+DoSth(<Element myAttribute=""MyTestCaseName""/>) ... or worse
+
+So, to overwrite this behaviour I thought I'd encapsulate my data in TestCaseData:
+new TestCaseData(myXElement).SetName(myXElement.@myAttribute)
+However, this not only overwrites the argument, but the whole name, including the method name:
+myTestCaseName
+
+So all tests that reference this TestCaseSource end up with the same set of names. This is ugly, because obviously each test is defined via its test data AND its test behaviour.
+
+If I could imitate the original test name layout, this would be no problem. But the TestContext isn't set when reading the TestCaseSource.
+So my guess is: the test case generator uses some algorithm to create the test name, and TestCaseData.SetName breaks this behaviour.
+
+So, it would be nice if either .SetName would be handled the same way as the default .ToString implementation, or if the test case name creation would be customizable somehow.","Customization of test case name generation  It's definitely more a feature request than a bug... but nonetheless:
+
+I have a TestCaseSource that returns a collection of XElements, i.e. XML nodes. Because by default the test case generation calls ToString",912,CharliePoole,nunit
+904,InternalPreserveStackTrace is not supported on all Portable platforms,"Attempting to use the portable framework on Windows Phone, I got the following exception,
+
+```
+An exception was thrown while loading the test.
+System.TypeInitializationException: The type initializer for 'NUnit.Framework.Internal.AsyncInvocationRegion' threw an exception. ---> System.InvalidOperationException: The API 'System.Exception.InternalPreserveStackTrace()' cannot be used on the current platform. See http://go.microsoft.com/fwlink/?LinkId=248273 for more information.
+```
+
+The problem code is in `AsyncInvocationRegion`,
+
+``` C#
+#if NET_4_0 || PORTABLE
+        private static readonly Action<Exception> PreserveStackTrace;
+
+        static AsyncInvocationRegion()
+        {
+            var method = typeof(Exception).GetMethod(""InternalPreserveStackTrace"", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            if (method != null)
+            {
+                PreserveStackTrace = (Action<Exception>)Delegate.CreateDelegate(typeof (Action<Exception>), method);
+            }
+            else 
+            {
+                PreserveStackTrace = _ => { };
+            }
+        }
+#endif
+```
+
+I need to check, but I think that the `GetMethod` call is throwing an `InvalidOperationException` rather than returning null. 
+
+This issue is blocking Windows Phone support, nunit/nunit.runners#4","InternalPreserveStackTrace is not supported on all Portable platforms  Attempting to use the portable framework on Windows Phone, I got the following exception,
+
+```
+An exception was thrown while loading the test.
+System.TypeInitializationException: T",905,rprouse,nunit
+4,SimpleTestRunner miss handles point of exception,"The SimpleTestRunner performs a an odd skip of Exception processing when faced with a fully un-implemented EventListener. What happens is that my RunStarted throws an Exception and this gets caught end then RunFinished is called which then throws an exception -- the stack trace makes it look like the RunFinished was the culprit when in fact the RunStart began the exceptional behavior. This occurs mainly because the catch( Exception exception ) catches everything. Perhaps what it should do is catch NUnit exceptions and throw all other exceptions -- I'm not familiar enough with the architecture around Exception testing, Assert Exceptions, etc.
+
+So here is the culprit code in SimpleTestRunner, Line 141, of release 2.5.5.101112.
+
+public virtual TestResult Run( EventListener listener, ITestFilter filter )
+{
+ try
+ {
+        log.Debug(""Starting test run"");
+
+  // Take note of the fact that we are running
+  this.runThread = Thread.CurrentThread;
+
+  listener.RunStarted( this.Test.TestName.FullName, test.CountTestCases( filter ) );
+
+  testResult = test.Run( listener, filter );
+
+  // Signal that we are done
+  listener.RunFinished( testResult );
+        log.Debug(""Test run complete"");
+
+  // Return result array
+  return testResult;
+ }
+ catch( Exception exception )
+ {
+                // RunStart actually threw the exception. so RunFinish doesn't make sense.
+
+```
+            // RunFinish then throws an exception when really the first exception should be handled first.
+```
+
+  // Signal that we finished with an exception
+  listener.RunFinished( exception );
+  // Rethrow - should we do this?
+  throw;
+ }
+ finally
+ {
+  runThread = null;
+ }
+}
+
+Cheers,
+L",SimpleTestRunner miss handles point of exception  The SimpleTestRunner performs a an odd skip of Exception processing when faced with a fully un-implemented EventListener. What happens is that my RunStarted throws an Exception and this gets caught end th,905,rprouse,nunit
+863,Eliminate core engine,"In preparation for resolving issue #793 (in the 3.2 milestone) we should go ahead and remove the core engine from the build. This will avoid any third-party developers beginning to rely on it when we plan to remove it anyway. 
+
+As a separate issue, we will also have to create a build of the nunit3-vs-adapter that uses the full engine rather than the core engine.","Eliminate core engine  In preparation for resolving issue #793 (in the 3.2 milestone) we should go ahead and remove the core engine from the build. This will avoid any third-party developers beginning to rely on it when we plan to remove it anyway. 
+
+As",864,CharliePoole,nunit
+793,Replace CoreEngine by use of Extensions,"If every feature of the full engine that is excluded by the core engine were made into an extension, we could eliminate the separate core engine build and simply deploy the engine without those extensions in situations we now use the core engine. This could also eliminate the need for any other engine builds, such as the mini-engine we have discussed for CF.
+
+I'm marking this for the RC only to the extent that we should at least address it as an idea before that milestone. We may decide to implement it in 3.0, in a later version or not at all.","Replace CoreEngine by use of Extensions  If every feature of the full engine that is excluded by the core engine were made into an extension, we could eliminate the separate core engine build and simply deploy the engine without those extensions in situat",864,CharliePoole,nunit
+33,TestCaseSource cannot refer to a parameterized test fixture,"TestCaseSource always instantiates the object providing data using the default constructor. Parameterized fixtures usually don't have one and adding one would mean that no parameters were available to generate data.
+
+From https://bugs.launchpad.net/nunit-3.0/+bug/1239046",TestCaseSource cannot refer to a parameterized test fixture  TestCaseSource always instantiates the object providing data using the default constructor. Parameterized fixtures usually don't have one and adding one would mean that no parameters were availa,56,markwhitfeld,nunit
